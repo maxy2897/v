@@ -1,0 +1,210 @@
+// API URL - usa variable de entorno en producción, localhost en desarrollo
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+
+// Obtener token del localStorage
+const getToken = () => {
+    return localStorage.getItem('token');
+};
+
+// Configurar headers con token
+const getAuthHeaders = () => {
+    const token = getToken();
+    return {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+    };
+};
+
+// Registro de usuario
+export const register = async (userData: {
+    name: string;
+    email: string;
+    password: string;
+    phone?: string;
+    address?: string;
+}) => {
+    const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al registrar usuario');
+    }
+
+    // Guardar token
+    if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+    }
+
+    return data;
+};
+
+// Login de usuario
+export const login = async (credentials: {
+    email: string;
+    password: string;
+}) => {
+    const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al iniciar sesión');
+    }
+
+    // Guardar token
+    if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+    }
+
+    return data;
+};
+
+// Logout
+export const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+};
+
+// Obtener usuario actual
+export const getCurrentUser = async () => {
+    const response = await fetch(`${API_URL}/auth/me`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al obtener usuario');
+    }
+
+    return data;
+};
+
+// Actualizar perfil
+export const updateProfile = async (userData: FormData | {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    username?: string;
+}) => {
+    // Determinar headers: si es FormData (tiene archivo o imagen), dejar que browser setee Content-Type
+    const isFormData = userData instanceof FormData;
+    const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
+    const body = isFormData ? userData : JSON.stringify(userData);
+
+    const token = getToken();
+    const finalHeaders = {
+        ...headers,
+        ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
+
+    const response = await fetch(`${API_URL}/users/profile`, {
+        method: 'PUT',
+        headers: finalHeaders,
+        body: body,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al actualizar perfil');
+    }
+
+    // Actualizar usuario en localStorage
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    localStorage.setItem('user', JSON.stringify({ ...currentUser, ...data }));
+
+    return data;
+};
+
+// Obtener envíos del usuario
+export const getUserShipments = async () => {
+    const response = await fetch(`${API_URL}/users/shipments`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al obtener envíos');
+    }
+
+    return data;
+};
+
+// Crear nuevo envío
+export const createShipment = async (shipmentData: {
+    trackingNumber: string;
+    origin: string;
+    destination: string;
+    weight: number;
+    price: number;
+    description?: string;
+}) => {
+    const response = await fetch(`${API_URL}/users/shipments`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(shipmentData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al crear envío');
+    }
+
+    return data;
+};
+
+// Verificar si hay token
+export const isAuthenticated = () => {
+    return !!getToken();
+};
+
+// Obtener usuario del localStorage
+export const getStoredUser = () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+};
+
+// Crear nueva transferencia
+export const createTransfer = async (formData: FormData) => {
+    // Nota: No establecemos 'Content-Type' manualmente cuando enviamos FormData,
+    // el navegador lo hace automáticamente incluyendo el boundary.
+    const token = getToken();
+    const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const response = await fetch(`${API_URL}/transfers`, {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al crear transferencia');
+    }
+
+    return data;
+};
