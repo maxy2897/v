@@ -24,8 +24,10 @@ app.set('trust proxy', 1);
 
 // CORS Configuration
 const corsOptions = {
-    // TEMPORAL: Permitir todo para solucionar el error de "Failed to fetch"
-    callback(null, true);
+    origin: (origin, callback) => {
+        // TEMPORAL: Permitir todo
+        callback(null, true);
+    },
     credentials: true,
     optionsSuccessStatus: 200
 };
