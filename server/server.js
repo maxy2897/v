@@ -4,9 +4,13 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import connectDB from './config/db.js';
-import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
+import authRoutes from './routes/auth.js';
 import transferRoutes from './routes/transfers.js';
+import shipmentRoutes from './routes/shipments.js';
+import adminRoutes from './routes/admin.js';
+import reportRoutes from './routes/reports.js';
+import configRoutes from './routes/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,6 +45,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transfers', transferRoutes);
+app.use('/api/shipments', shipmentRoutes); // Added shipmentRoutes
+app.use('/api/admin', adminRoutes);       // Added adminRoutes
+app.use('/api/reports', reportRoutes);     // Added reportRoutes
+app.use('/api/config', configRoutes);     // Added configRoutes
 
 // Servir carpeta de uploads estáticamente
 app.use('/uploads', express.static(join(__dirname, '../uploads')));

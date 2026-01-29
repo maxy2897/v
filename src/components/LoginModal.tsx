@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -7,9 +7,10 @@ import ForgotPasswordModal from './ForgotPasswordModal';
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onOpenForgotPassword?: () => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPassword }) => {
     const { login, registerWithSocial } = useAuth();
     const { t } = useSettings();
     const navigate = useNavigate();
@@ -21,6 +22,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+    // Bloquear scroll del body cuando el modal está abierto
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -73,7 +86,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                     )}
 
                     {/* Social Login */}
-                    <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="grid grid-cols-1 gap-4 mb-8">
                         <button
                             type="button"
                             onClick={async () => {
@@ -103,32 +116,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             </svg>
                             <span className="text-xs font-bold text-gray-600 group-hover:text-black transition-colors">Google</span>
                         </button>
-                        <button
-                            type="button"
-                            onClick={async () => {
-                                try {
-                                    const { signInWithApple } = await import('../firebase');
-                                    const user = await signInWithApple();
-                                    await registerWithSocial({
-                                        name: user.displayName || 'Usuario Apple',
-                                        email: user.email,
-                                        photoUrl: user.photoURL,
-                                        provider: 'apple',
-                                        uid: user.uid
-                                    });
-                                    onClose();
-                                    navigate('/dashboard');
-                                } catch (error) {
-                                    alert('Error con Apple: ' + error);
-                                }
-                            }}
-                            className="flex items-center justify-center gap-3 py-4 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors group"
-                        >
-                            <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.78 1.18-.19 2.31-.89 3.51-.84 1.59.06 2.53.75 3.2 1.54-3.14 1.83-2.58 5.7.41 6.84-.66 1.76-1.58 3.51-2.2 4.65zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.16 2.29-1.95 4.19-3.74 4.25z" />
-                            </svg>
-                            <span className="text-xs font-bold text-gray-600 group-hover:text-black transition-colors">Apple</span>
-                        </button>
                     </div>
 
                     <div className="relative mb-6">
@@ -140,8 +127,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
                     <form className="space-y-5" onSubmit={handleSubmit}>
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('login.email')}</label>
+                            <label htmlFor="login-email" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('login.email')}</label>
                             <input
+                                id="login-email"
                                 type="email"
                                 name="email"
                                 value={formData.email}
@@ -152,9 +140,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('login.password')}</label>
+                            <label htmlFor="login-password" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('login.password')}</label>
                             <div className="relative">
                                 <input
+                                    id="login-password"
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formData.password}
@@ -174,6 +163,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                     )}
                                 </button>
+                                <div className="flex justify-end mt-2">
+                                    <button
+                                        type="button"
+                                        onClick={onOpenForgotPassword}
+                                        className="text-[10px] font-bold text-teal-600 uppercase tracking-wide hover:underline"
+                                    >
+                                        {t('login.forgot')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -202,11 +200,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
                 <button
                     onClick={onClose}
-                    className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+                    className="absolute top-6 right-6 text-white hover:text-teal-400 transition-colors bg-white/10 p-2 rounded-full backdrop-blur-sm"
                     title="Cerrar modal"
                     aria-label="Cerrar modal"
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
         </div>

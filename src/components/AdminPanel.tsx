@@ -11,8 +11,11 @@ interface AdminPanelProps {
   setConfig: (config: AppConfig) => void;
 }
 
+import { useSettings } from '../context/SettingsContext';
+
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
-  const [activeTab, setActiveTab] = useState<'products' | 'branding'>('products');
+  const { appConfig, updateConfig } = useSettings();
+  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational'>('products');
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     color: '',
@@ -26,19 +29,50 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
   if (!isOpen) return null;
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'logo') => {
-    const file = e.target.files?.[0];
-    if (file) {
+  const resizeImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        if (target === 'product') {
-          setNewProduct({ ...newProduct, image: base64String });
-        } else {
-          setConfig({ ...config, customLogoUrl: base64String });
-        }
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 500;
+
+          if (width > height) {
+            if (width > maxDim) {
+              height *= maxDim / width;
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width *= maxDim / height;
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.src = e.target?.result as string;
       };
       reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'logo') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const resizedBase64 = await resizeImage(file);
+      if (target === 'product') {
+        setNewProduct({ ...newProduct, image: resizedBase64 });
+      } else {
+        setConfig({ ...config, customLogoUrl: resizedBase64 });
+      }
     }
   };
 
@@ -68,143 +102,584 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[#00151a]/95 backdrop-blur-md" onClick={onClose} />
-      <div className="relative bg-white w-full max-w-4xl h-[80vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col animate-in zoom-in duration-300">
-        <div className="bg-[#00151a] p-8 flex justify-between items-center shrink-0">
+      <div className="relative bg-white w-full max-w-6xl h-[85vh] rounded-[2.5rem] overflow-hidden shadow-2xl flex animate-in zoom-in duration-300">
+
+        {/* Sidebar Navigation */}
+        <aside className="w-64 bg-[#00151a] text-white flex flex-col justify-between p-6 shrink-0">
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tighter">Panel de Administración</h2>
-            <p className="text-teal-400 text-[10px] font-black uppercase tracking-widest mt-1">Gestión de Contenido</p>
+            <div className="mb-10 pl-2">
+              <h2 className="text-xl font-black tracking-tighter">Admin Panel</h2>
+              <p className="text-teal-400 text-[9px] font-black uppercase tracking-widest mt-1">Gestión Global</p>
+            </div>
+
+            <nav className="space-y-2">
+              <button
+                onClick={() => setActiveTab('products')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'products' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                Productos
+              </button>
+              <button
+                onClick={() => setActiveTab('content')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'content' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                Contenido Web
+              </button>
+              <button
+                onClick={() => setActiveTab('operational')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'operational' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                Operativo
+              </button>
+              <button
+                onClick={() => setActiveTab('branding')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'branding' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                Marca / Logo
+              </button>
+              <button
+                onClick={() => setActiveTab('reports')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'reports' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-1m-4-4l-4 4m0 0l-4-4m4 4V3" /></svg>
+                Reportes
+              </button>
+              <button
+                onClick={() => setActiveTab('config')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'config' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                Tarifas y Fechas
+              </button>
+            </nav>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveTab('products')}
-              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'products' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10'}`}
-            >
-              Productos
-            </button>
-            <button
-              onClick={() => setActiveTab('branding')}
-              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'branding' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10'}`}
-            >
-              Marca / Logo
-            </button>
-          </div>
+
           <button
             onClick={onClose}
-            className="text-white/50 hover:text-white transition-colors ml-4"
-            title="Cerrar panel de administración"
-            aria-label="Cerrar panel de administración"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-colors mt-auto"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            Cerrar Panel
           </button>
-        </div>
+        </aside>
 
-        <div className="flex-1 overflow-y-auto p-10">
-          {activeTab === 'products' ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <section>
-                <h3 className="text-lg font-black text-[#00151a] mb-6 uppercase tracking-widest border-b pb-2">Añadir Nuevo Producto</h3>
-                <form onSubmit={addProduct} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <input required type="text" placeholder="Nombre del producto" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} />
-                    <input required type="text" placeholder="Precio (Ej: 25.000 FCFA)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} />
-                  </div>
-                  <input required type="text" placeholder="Color / Variante" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full" value={newProduct.color} onChange={e => setNewProduct({ ...newProduct, color: e.target.value })} />
-                  <textarea required placeholder="Descripción detallada" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full h-24 resize-none" value={newProduct.description} onChange={e => setNewProduct({ ...newProduct, description: e.target.value })} />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Tag (Ej: TOP VENTAS)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full" value={newProduct.tag} onChange={e => setNewProduct({ ...newProduct, tag: e.target.value })} />
-                    <input type="text" placeholder="Eslogan (Entre comillas)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full" value={newProduct.slogan} onChange={e => setNewProduct({ ...newProduct, slogan: e.target.value })} />
-                  </div>
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto bg-white relative">
+          {/* Top Bar Mobile/Desc */}
+          <div className="sticky top-0 bg-white/90 backdrop-blur-sm z-10 px-8 py-6 border-b border-gray-50 flex justify-between items-center">
+            <h3 className="text-xl font-black text-[#00151a] uppercase tracking-tighter">
+              {activeTab === 'products' ? 'Gestión de Productos' :
+                activeTab === 'branding' ? 'Marca y Personalización' :
+                  activeTab === 'reports' ? 'Centro de Reportes' : 'Configuración Global'}
+            </h3>
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              {new Date().toLocaleDateString()}
+            </div>
+          </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-gray-400">Imagen del Producto</label>
-                    <div className="flex items-center gap-4">
-                      {newProduct.image && <img src={newProduct.image} className="w-16 h-16 object-cover rounded-xl border" alt="Vista previa del producto" />}
-                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'product')} className="text-xs font-bold" title="Subir imagen de producto" />
+          <div className="p-8">
+            {activeTab === 'products' ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section>
+                  <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">Añadir Nuevo Producto</h3>
+                  <form onSubmit={addProduct} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <input aria-label="Nombre del producto" required type="text" placeholder="Nombre del producto" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full focus:ring-2 focus:ring-teal-500 outline-none transition-all" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} />
+                      <input aria-label="Precio" required type="text" placeholder="Precio (Ej: 25.000 FCFA)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full focus:ring-2 focus:ring-teal-500 outline-none transition-all" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} />
+                    </div>
+                    <input aria-label="Color o Variante" required type="text" placeholder="Color / Variante" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full focus:ring-2 focus:ring-teal-500 outline-none transition-all" value={newProduct.color} onChange={e => setNewProduct({ ...newProduct, color: e.target.value })} />
+                    <textarea aria-label="Descripción detallada" required placeholder="Descripción detallada" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full h-24 resize-none focus:ring-2 focus:ring-teal-500 outline-none transition-all" value={newProduct.description} onChange={e => setNewProduct({ ...newProduct, description: e.target.value })} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <input aria-label="Tag" type="text" placeholder="Tag (Ej: TOP VENTAS)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full focus:ring-2 focus:ring-teal-500 outline-none transition-all" value={newProduct.tag} onChange={e => setNewProduct({ ...newProduct, tag: e.target.value })} />
+                      <input aria-label="Eslogan" type="text" placeholder="Eslogan (Entre comillas)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium w-full focus:ring-2 focus:ring-teal-500 outline-none transition-all" value={newProduct.slogan} onChange={e => setNewProduct({ ...newProduct, slogan: e.target.value })} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-gray-400">Imagen del Producto</label>
+                      <div className="flex items-center gap-4">
+                        {newProduct.image && <img src={newProduct.image} className="w-16 h-16 object-cover rounded-xl border" alt="Vista previa del producto" />}
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'product')} className="text-xs font-bold file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" title="Subir imagen de producto" />
+                      </div>
+                    </div>
+
+                    <button type="submit" className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-teal-500 transition-all shadow-xl">
+                      Publicar Producto
+                    </button>
+                  </form>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">Productos Actuales</h3>
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    {products.map(product => (
+                      <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-teal-200 transition-all">
+                        <div className="flex items-center gap-4">
+                          <img src={product.image} className="w-12 h-12 object-cover rounded-lg" alt={product.name} />
+                          <div>
+                            <p className="text-sm font-black text-[#00151a] leading-none">{product.name}</p>
+                            <p className="text-[10px] font-bold text-teal-600 mt-1 uppercase tracking-widest">{product.price}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => deleteProduct(product.id)}
+                          className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                          title={`Eliminar ${product.name}`}
+                          aria-label={`Eliminar ${product.name}`}
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                      </div>
+                    ))}
+                    {products.length === 0 && <p className="text-center text-gray-400 font-bold py-10">No hay productos en la tienda.</p>}
+                  </div>
+                </section>
+              </div>
+            ) : activeTab === 'branding' ? (
+              <div className="max-w-xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100">
+                  <h3 className="text-sm font-black text-gray-400 mb-8 uppercase tracking-widest text-center">Configuración de Marca</h3>
+
+                  <div className="space-y-8">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Texto del Logo</label>
+                      <input
+                        aria-label="Texto del logo"
+                        type="text"
+                        className="w-full px-6 py-4 bg-white rounded-2xl border border-gray-100 text-xl font-black tracking-tighter"
+                        value={config.logoText}
+                        onChange={e => setConfig({ ...config, logoText: e.target.value })}
+                        title="Editar texto del logo"
+                        placeholder="Texto del logo"
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Imagen de Logo (Sustituye al texto)</label>
+                      <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-3xl border border-dashed border-gray-200">
+                        {config.customLogoUrl && (
+                          <div className="relative group">
+                            <img src={config.customLogoUrl} className="h-24 object-contain" alt="Logo corporativo" />
+                            <button
+                              onClick={() => setConfig({ ...config, customLogoUrl: undefined })}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Eliminar logo"
+                              aria-label="Eliminar logo"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                          </div>
+                        )}
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} className="text-xs font-bold file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" title="Subir archivo de logo" />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <div className="p-6 bg-teal-50 rounded-2xl border border-teal-100 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-teal-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-teal-500/20">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <p className="text-xs font-bold text-teal-900 leading-snug">
+                    Los cambios realizados en la marca se reflejan instantáneamente en toda la plataforma. Usa imágenes con fondo transparente para un mejor resultado.
+                  </p>
+                </div>
+              </div>
+            ) : activeTab === 'reports' ? (
+              <div className="max-w-xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-gradient-to-br from-[#00151a] to-[#002f3a] p-10 rounded-[2.5rem] shadow-2xl text-white relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+
+                  <h3 className="text-2xl font-black mb-2 tracking-tighter">Contabilidad Mensual</h3>
+                  <p className="text-gray-400 text-sm font-medium mb-8 max-w-sm">
+                    Genera un reporte detallado en Excel (.csv) con todas las transacciones, envíos y registros de usuarios para tu control financiero.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                      <p className="text-[10px] font-black uppercase text-teal-400 tracking-widest mb-1">Incluye</p>
+                      <ul className="text-xs space-y-1 text-gray-300">
+                        <li>• Envíos de Paquetes</li>
+                        <li>• Transferencias</li>
+                        <li>• Registros Nuevos</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                      <p className="text-[10px] font-black uppercase text-teal-400 tracking-widest mb-1">Formato</p>
+                      <p className="text-xs text-gray-300">Archivo .CSV compatible con Excel, Numbers y Google Sheets.</p>
                     </div>
                   </div>
 
-                  <button type="submit" className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-teal-500 transition-all shadow-xl">
-                    Publicar Producto
-                  </button>
-                </form>
-              </section>
+                  <button
+                    onClick={async () => {
+                      if (!confirm('¿Descargar reporte de contabilidad completo?')) return;
+                      try {
+                        const userStr = localStorage.getItem('user');
+                        const token = userStr ? JSON.parse(userStr).token : '';
 
-              <section>
-                <h3 className="text-lg font-black text-[#00151a] mb-6 uppercase tracking-widest border-b pb-2">Productos Actuales</h3>
-                <div className="space-y-4">
-                  {products.map(product => (
-                    <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 group">
-                      <div className="flex items-center gap-4">
-                        <img src={product.image} className="w-12 h-12 object-cover rounded-lg" alt={product.name} />
+                        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reports/accounting`, {
+                          headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                        });
+
+                        if (!response.ok) throw new Error('Error en la descarga');
+
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Reporte_Bodipo_${new Date().toISOString().split('T')[0]}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                      } catch (error) {
+                        alert('Error al descargar el reporte. Verifica que tengas permisos de administrador.');
+                        console.error(error);
+                      }
+                    }}
+                    className="w-full bg-teal-500 text-[#00151a] py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-teal-400 transition-all shadow-xl shadow-teal-900/50 flex items-center justify-center gap-3"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Descargar Excel (.CSV)
+                  </button>
+                </section>
+              </div>
+            ) : activeTab === 'content' ? (
+              <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+                  <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                    <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">Contenido Web</h3>
+                    <button
+                      onClick={() => updateConfig && appConfig && updateConfig(appConfig)}
+                      className="bg-[#00151a] text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-teal-500 hover:text-[#00151a] transition-all"
+                    >
+                      Guardar Cambios
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    {/* Hero Section */}
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">🏠 Portada (Hero)</h4>
+                      <div className="space-y-4">
                         <div>
-                          <p className="text-sm font-black text-[#00151a] leading-none">{product.name}</p>
-                          <p className="text-[10px] font-bold text-teal-600 mt-1 uppercase tracking-widest">{product.price}</p>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título Principal</label>
+                          <input
+                            aria-label="Título Principal"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.content?.hero?.title || ''}
+                            onChange={(e) => updateConfig && updateConfig({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, title: e.target.value } } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Subtítulo</label>
+                          <textarea
+                            aria-label="Subtítulo"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm h-24 resize-none"
+                            value={appConfig?.content?.hero?.subtitle || ''}
+                            onChange={(e) => updateConfig && updateConfig({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, subtitle: e.target.value } } } as any)}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Botón Primario</label>
+                            <input
+                              aria-label="Botón Primario"
+                              type="text"
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                              value={appConfig?.content?.hero?.ctaPrimary || ''}
+                              onChange={(e) => updateConfig && updateConfig({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, ctaPrimary: e.target.value } } } as any)}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Botón Secundario</label>
+                            <input
+                              aria-label="Botón Secundario"
+                              type="text"
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                              value={appConfig?.content?.hero?.ctaSecondary || ''}
+                              onChange={(e) => updateConfig && updateConfig({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, ctaSecondary: e.target.value } } } as any)}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <button
-                        onClick={() => deleteProduct(product.id)}
-                        className="p-2 text-gray-300 hover:text-red-500 transition-colors"
-                        title={`Eliminar ${product.name}`}
-                        aria-label={`Eliminar ${product.name}`}
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                      </button>
                     </div>
-                  ))}
-                  {products.length === 0 && <p className="text-center text-gray-400 font-bold py-10">No hay productos en la tienda.</p>}
-                </div>
-              </section>
-            </div>
-          ) : (
-            <div className="max-w-xl mx-auto space-y-12">
-              <section className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100">
-                <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-widest text-center">Configuración de Marca</h3>
 
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Texto del Logo</label>
-                    <input
-                      type="text"
-                      className="w-full px-6 py-4 bg-white rounded-2xl border border-gray-100 text-xl font-black tracking-tighter"
-                      value={config.logoText}
-                      onChange={e => setConfig({ ...config, logoText: e.target.value })}
-                      title="Editar texto del logo"
-                      placeholder="Texto del logo"
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Imagen de Logo (Sustituye al texto)</label>
-                    <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-3xl border border-dashed border-gray-200">
-                      {config.customLogoUrl && (
-                        <div className="relative group">
-                          <img src={config.customLogoUrl} className="h-24 object-contain" alt="Logo corporativo" />
-                          <button
-                            onClick={() => setConfig({ ...config, customLogoUrl: undefined })}
-                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Eliminar logo"
-                            aria-label="Eliminar logo"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                          </button>
-                        </div>
-                      )}
-                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} className="text-xs font-bold" title="Subir archivo de logo" />
+                    {/* Social Links */}
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">🌐 Redes Sociales</h4>
+                      <div className="space-y-4">
+                        {[
+                          { key: 'whatsapp', label: 'WhatsApp Link', icon: 'M3 21l1.65-3.8C2.8 15.4 2.05 13.4 2.05 11.3 2.05 6.4 6.05 2.5 11 2.5c2.4 0 4.6 1 6.3 2.6 1.7 1.7 2.6 3.9 2.6 6.3 0 4.9-4 8.9-8.9 8.9-2 0-3.8-.75-5.3-2L3 21z' },
+                          { key: 'instagram', label: 'Instagram Link', icon: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m0 0' },
+                          { key: 'tiktok', label: 'TikTok Link', icon: 'M16.7 8.2c.4 0 .9.1 1.3.2V5.2c-.4-.1-.9-.1-1.3-.1-2.5 0-4.6 1.8-5 4.2V2.5h-3v11c0 2.2 1.8 4 4 4s4-1.8 4-4V8.2z' },
+                          { key: 'facebook', label: 'Facebook Link', icon: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z' }
+                        ].map(({ key, label }) => (
+                          <div key={key}>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">{label}</label>
+                            <input
+                              aria-label={label}
+                              type="text"
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                              value={appConfig?.content?.social?.[key as 'whatsapp' | 'instagram' | 'tiktok' | 'facebook'] || ''}
+                              onChange={(e) => updateConfig && updateConfig({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, [key]: e.target.value } } } as any)}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
-
-              <div className="p-6 bg-teal-50 rounded-2xl border border-teal-100 flex items-center gap-4">
-                <div className="w-10 h-10 bg-teal-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-teal-500/20">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <p className="text-xs font-bold text-teal-900 leading-snug">
-                  Los cambios realizados en la marca se reflejan instantáneamente en toda la plataforma. Usa imágenes con fondo transparente para un mejor resultado.
-                </p>
+                </section>
               </div>
-            </div>
-          )}
+            ) : activeTab === 'operational' ? (
+              <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+                  <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                    <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">Datos Operativos</h3>
+                    <button
+                      onClick={() => updateConfig && appConfig && updateConfig(appConfig)}
+                      className="bg-[#00151a] text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-teal-500 hover:text-[#00151a] transition-all"
+                    >
+                      Guardar Cambios
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    {/* Contact Info */}
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">📞 Contacto y Direcciones</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Teléfono España 🇪🇸</label>
+                          <input
+                            aria-label="Teléfono España"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.contact?.phones?.es || ''}
+                            onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, es: e.target.value } } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Teléfono Guinea Ecuatorial 🇬🇶</label>
+                          <input
+                            aria-label="Teléfono Guinea Ecuatorial"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.contact?.phones?.gq || ''}
+                            onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, gq: e.target.value } } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Dirección Madrid</label>
+                          <textarea
+                            aria-label="Dirección Madrid"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm h-20 resize-none"
+                            value={appConfig?.contact?.addresses?.es || ''}
+                            onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, addresses: { ...appConfig?.contact?.addresses, es: e.target.value } } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Dirección Malabo / Bata</label>
+                          <textarea
+                            aria-label="Dirección Malabo / Bata"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm h-20 resize-none"
+                            value={appConfig?.contact?.addresses?.gq || ''}
+                            onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, addresses: { ...appConfig?.contact?.addresses, gq: e.target.value } } } as any)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bank Info */}
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">🏦 Datos Bancarios</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Titular de la Cuenta</label>
+                          <input
+                            aria-label="Titular de la Cuenta"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.bank?.holder || ''}
+                            onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, holder: e.target.value } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Número de Cuenta</label>
+                          <input
+                            aria-label="Número de Cuenta"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.bank?.accountNumber || ''}
+                            onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, accountNumber: e.target.value } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">IBAN</label>
+                          <input
+                            aria-label="IBAN"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.bank?.iban || ''}
+                            onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, iban: e.target.value } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Bizum</label>
+                          <input
+                            aria-label="Bizum"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.bank?.bizum || ''}
+                            onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, bizum: e.target.value } } as any)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            ) : (
+              <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+                  <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                    <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">Configuración Global</h3>
+                    <button
+                      onClick={() => updateConfig && appConfig && updateConfig(appConfig)}
+                      className="bg-[#00151a] text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-teal-500 hover:text-[#00151a] transition-all"
+                    >
+                      Guardar Cambios
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    {/* Dates Configuration */}
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">📅 Calendario de Salidas</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Próxima Salida Aérea</label>
+                          <input
+                            aria-label="Próxima Salida Aérea"
+                            type="date"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm focus:ring-2 focus:ring-teal-500"
+                            value={appConfig?.dates.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture).toISOString().split('T')[0] : ''}
+                            onChange={(e) => updateConfig && updateConfig({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } })}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Próxima Salida Marítima</label>
+                          <input
+                            aria-label="Próxima Salida Marítima"
+                            type="date"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm focus:ring-2 focus:ring-teal-500"
+                            value={appConfig?.dates.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture).toISOString().split('T')[0] : ''}
+                            onChange={(e) => updateConfig && updateConfig({ dates: { ...appConfig?.dates, nextSeaDeparture: e.target.value } })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rates Configuration */}
+                    <div className="space-y-6">
+                      <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">💶 Tarifas y Cambio</h4>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Aéreo ES &rarr; GQ (€/Kg)</label>
+                            <input
+                              aria-label="Tarifa Aérea ES a GQ"
+                              type="number"
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                              value={appConfig?.rates.air.es_gq || 0}
+                              onChange={(e) => updateConfig && updateConfig({ rates: { ...appConfig?.rates, air: { ...appConfig?.rates.air, es_gq: parseFloat(e.target.value) } } as any })}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Marítimo ES &rarr; GQ (€/Kg)</label>
+                            <input
+                              aria-label="Tarifa Marítima ES a GQ"
+                              type="number"
+                              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                              value={appConfig?.rates.sea.es_gq || 0}
+                              onChange={(e) => updateConfig && updateConfig({ rates: { ...appConfig?.rates, sea: { ...appConfig?.rates.sea, es_gq: parseFloat(e.target.value) } } as any })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="bg-teal-50 p-4 rounded-xl border border-teal-100">
+                          <label className="text-[10px] font-bold text-teal-800 uppercase tracking-widest block mb-1">Tasa de Cambio (1 EUR = X CFA)</label>
+                          <input
+                            aria-label="Tasa de Cambio"
+                            type="number"
+                            className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 font-black text-lg text-teal-900"
+                            value={appConfig?.rates.exchange.eur_xaf || 0}
+                            onChange={(e) => updateConfig && updateConfig({ rates: { ...appConfig?.rates, exchange: { ...appConfig?.rates.exchange, eur_xaf: parseFloat(e.target.value) } } as any })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Schedule Blocks Configuration */}
+                  <div className="space-y-6 md:col-span-2">
+                    <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">🗓️ Resumen Anual (Bloques)</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1, 2, 3, 4].map((num) => {
+                        const blockKey = `block${num}` as keyof typeof appConfig.content.schedule;
+                        return (
+                          <div key={num} className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <p className="text-[9px] font-black uppercase text-teal-400 mb-2">Bloque {num}</p>
+                            <div className="space-y-2">
+                              <input
+                                aria-label={`MesBloque${num}`}
+                                type="text"
+                                placeholder="Mes (Ej: ENERO)"
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold"
+                                value={appConfig?.content?.schedule?.[blockKey]?.month || ''}
+                                onChange={(e) => updateConfig && updateConfig({
+                                  content: {
+                                    ...appConfig?.content,
+                                    schedule: {
+                                      ...appConfig?.content?.schedule,
+                                      [blockKey]: { ...appConfig?.content?.schedule?.[blockKey], month: e.target.value }
+                                    }
+                                  }
+                                } as any)}
+                              />
+                              <input
+                                aria-label={`DiasBloque${num}`}
+                                type="text"
+                                placeholder="Días (Ej: 2, 17 y 30)"
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium"
+                                value={appConfig?.content?.schedule?.[blockKey]?.days || ''}
+                                onChange={(e) => updateConfig && updateConfig({
+                                  content: {
+                                    ...appConfig?.content,
+                                    schedule: {
+                                      ...appConfig?.content?.schedule,
+                                      [blockKey]: { ...appConfig?.content?.schedule?.[blockKey], days: e.target.value }
+                                    }
+                                  }
+                                } as any)}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </section>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

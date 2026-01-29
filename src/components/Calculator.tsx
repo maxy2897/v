@@ -3,7 +3,7 @@ import { PackageInfo } from '../../types';
 import { useSettings } from '../context/SettingsContext';
 
 const Calculator: React.FC = () => {
-  const { t } = useSettings();
+  const { t, appConfig } = useSettings();
   const [calcMode, setCalcMode] = useState<'kg' | 'bulto' | 'documento'>('kg');
   const [info, setInfo] = useState<PackageInfo>({
     weight: 0,
@@ -46,17 +46,18 @@ const Calculator: React.FC = () => {
 
       if (info.origin === 'España') {
         if (info.type === 'Aéreo') {
-          rate = info.destination === 'Malabo' ? 11 : 13;
+          // Dynamic Rate
+          rate = appConfig?.rates.air.es_gq || 11;
         } else {
-          // Marítimo
-          rate = info.destination === 'Malabo' ? 4 : 5;
+          // Dynamic Rate
+          rate = appConfig?.rates.sea.es_gq || 4;
         }
         currency = '€';
       } else if (info.origin === 'Camerún') {
-        rate = info.destination === 'Malabo' ? 3000 : 2000;
+        rate = appConfig?.rates.air.cm_gq || 3000;
         currency = 'XAF';
       } else if (info.origin === 'Guinea Ecuatorial') {
-        rate = 5000;
+        rate = 5000; // Fixed for now or add to config
         currency = 'XAF';
       }
       setTotal({ value: info.weight * rate, currency });
@@ -219,8 +220,9 @@ const Calculator: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('calc.weight.label')}</label>
+                    <label htmlFor="calc-weight" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('calc.weight.label')}</label>
                     <input
+                      id="calc-weight"
                       type="number"
                       value={info.weight || ''}
                       onChange={(e) => setInfo({ ...info, weight: parseFloat(e.target.value) || 0 })}
@@ -300,9 +302,9 @@ const Calculator: React.FC = () => {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{t('calc.form.subtitle')}</p>
               </div>
               <form onSubmit={handleFinalSubmit} className="space-y-5">
-                <input required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.name')} value={userData.fullName} onChange={e => setUserData({ ...userData, fullName: e.target.value })} />
-                <input required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.phone')} value={userData.phone} onChange={e => setUserData({ ...userData, phone: e.target.value })} />
-                <input required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.id')} value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
+                <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.name')} value={userData.fullName} onChange={e => setUserData({ ...userData, fullName: e.target.value })} />
+                <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.phone')} value={userData.phone} onChange={e => setUserData({ ...userData, phone: e.target.value })} />
+                <input aria-label={t('calc.form.id')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.id')} value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
 
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-[10px] font-black uppercase tracking-widest text-[#007e85] mb-4">{t('calc.form.pay_confirm')}</p>

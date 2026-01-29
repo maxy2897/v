@@ -9,6 +9,52 @@ interface SettingsContextType {
     toggleTheme: () => void;
     setLanguage: (lang: Language) => void;
     t: (key: string) => string;
+    // Dynamic Config
+    appConfig: DynamicConfig | null;
+    refreshConfig: () => Promise<void>;
+    updateConfig: (newConfig: Partial<DynamicConfig>) => Promise<void>;
+}
+
+export interface DynamicConfig {
+    rates: {
+        air: { es_gq: number; gq_es: number; cm_gq: number };
+        sea: { es_gq: number };
+        exchange: { eur_xaf: number; xaf_eur: number };
+    };
+    dates: {
+        nextAirDeparture?: string;
+        nextSeaDeparture?: string;
+    };
+    content: {
+        hero: {
+            title: string;
+            subtitle: string;
+            ctaPrimary: string;
+            ctaSecondary: string;
+        };
+        social: {
+            tiktok: string;
+            whatsapp: string;
+            instagram: string;
+            facebook: string;
+        };
+        schedule: {
+            block1: { month: string; days: string };
+            block2: { month: string; days: string };
+            block3: { month: string; days: string };
+            block4: { month: string; days: string };
+        };
+    };
+    contact: {
+        phones: { es: string; gq: string };
+        addresses: { es: string; gq: string };
+    };
+    bank: {
+        accountNumber: string;
+        iban: string;
+        bizum: string;
+        holder: string;
+    };
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -317,6 +363,24 @@ const translations: Record<Language, Record<string, string>> = {
         'theme.light': 'Modo Claro',
         'btn.back': 'Volver atrás',
         'btn.forward': 'Ir adelante',
+
+        // New Footer Keys
+        'footer.logistics_desc': 'Logística de excelencia conectando España 🇪🇸, Camerún 🇨🇲 y Guinea Ecuatorial 🇬🇶. Operaciones diarias con los más altos estándares de seguridad.',
+        'footer.admin_access': 'Acceso Admin',
+        'footer.direct_contact': 'Contacto Directo',
+        'footer.spain': 'España',
+        'footer.cameroon': 'Camerún',
+        'footer.guinea': 'Guinea Ecuatorial',
+        'footer.logistics_services': 'Servicios Logísticos',
+        'footer.calc_rates': 'Calculadora de Tarifas',
+        'footer.calendar': 'Calendario Mensual',
+        'footer.tracking': 'Rastreo en Tiempo Real',
+        'footer.advisor': 'Asesor de Servicios',
+        'footer.locations': 'Ubicaciones',
+        'footer.loc.madrid': 'Alcalá de Henares, Madrid 🇪🇸',
+        'footer.loc.yaounde': 'Universidad Católica, Yaoundé 🇨🇲',
+        'footer.loc.gq': 'Malabo & Bata, G.E. 🇬🇶',
+        'footer.copyright': '© 2026 BODIPOBUSINESS S.L.',
     },
     en: {
         // Navigation
@@ -620,6 +684,24 @@ const translations: Record<Language, Record<string, string>> = {
         'theme.light': 'Light Mode',
         'btn.back': 'Go back',
         'btn.forward': 'Go forward',
+
+        // New Footer Keys
+        'footer.logistics_desc': 'Excellence logistics connecting Spain 🇪🇸, Cameroon 🇨🇲 and Equatorial Guinea 🇬🇶. Daily operations with the highest safety standards.',
+        'footer.admin_access': 'Admin Access',
+        'footer.direct_contact': 'Direct Contact',
+        'footer.spain': 'Spain',
+        'footer.cameroon': 'Cameroon',
+        'footer.guinea': 'Equatorial Guinea',
+        'footer.logistics_services': 'Logistics Services',
+        'footer.calc_rates': 'Rate Calculator',
+        'footer.calendar': 'Monthly Calendar',
+        'footer.tracking': 'Real-Time Tracking',
+        'footer.advisor': 'Service Advisor',
+        'footer.locations': 'Locations',
+        'footer.loc.madrid': 'Alcalá de Henares, Madrid 🇪🇸',
+        'footer.loc.yaounde': 'Catholic University, Yaoundé 🇨🇲',
+        'footer.loc.gq': 'Malabo & Bata, E.G. 🇬🇶',
+        'footer.copyright': '© 2026 BODIPOBUSINESS S.L.',
     },
     fr: {
         // Navigation
@@ -958,12 +1040,65 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         setLanguageState(lang);
     };
 
+    const [appConfig, setAppConfig] = useState<DynamicConfig | null>(null);
+
+    const refreshConfig = async () => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/config`);
+            if (res.ok) {
+                const data = await res.json();
+                setAppConfig(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch config', error);
+        }
+    };
+
+    const updateConfig = async (newConfig: Partial<DynamicConfig>) => {
+        try {
+            const userStr = localStorage.getItem('user');
+            const token = userStr ? JSON.parse(userStr).token : '';
+
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/config`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(newConfig)
+            });
+
+            if (res.ok) {
+                const updated = await res.json();
+                setAppConfig(updated);
+            }
+        } catch (error) {
+            console.error('Failed to update config', error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        refreshConfig();
+    }, []);
+
     const t = (key: string) => {
         return translations[language][key] || key;
     };
 
+    const value = {
+        theme,
+        language,
+        toggleTheme,
+        setLanguage,
+        t,
+        appConfig,
+        refreshConfig,
+        updateConfig
+    };
+
     return (
-        <SettingsContext.Provider value={{ theme, language, toggleTheme, setLanguage, t }}>
+        <SettingsContext.Provider value={value}>
             {children}
         </SettingsContext.Provider>
     );

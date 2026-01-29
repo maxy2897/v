@@ -6,7 +6,7 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
-    const { t } = useSettings();
+    const { t, appConfig } = useSettings();
     return (
         <>
             {/* Hero Section */}
@@ -17,26 +17,23 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
                         <div className="lg:col-span-7 space-y-8">
-
-
                             <h1 className="text-5xl md:text-7xl font-black text-[#00151a] tracking-tighter leading-[0.9]">
-                                {t('home.hero.title')} <br />
-                                {t('home.hero.title_highlight')}
+                                {appConfig?.content?.hero?.title || t('home.hero.title')}
                             </h1>
 
                             <p className="text-xl text-gray-500 max-w-xl leading-relaxed font-medium">
-                                {t('home.hero.subtitle')}
+                                {appConfig?.content?.hero?.subtitle || t('home.hero.subtitle')}
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
                                 <a href="/tarifas" className="px-10 py-5 bg-[#00151a] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#007e85] transition-all shadow-2xl shadow-teal-900/40">
-                                    {t('home.hero.cta_ship')}
+                                    {appConfig?.content?.hero?.ctaPrimary || t('home.hero.cta_ship')}
                                 </a>
                                 <a
                                     href="/acceso"
                                     className="px-10 py-5 bg-teal-500 text-[#00151a] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20"
                                 >
-                                    {t('home.hero.cta_register')}
+                                    {appConfig?.content?.hero?.ctaSecondary || t('home.hero.cta_register')}
                                 </a>
                             </div>
                         </div>
@@ -112,7 +109,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
                     <div className="flex justify-center space-x-8">
                         {/* TikTok */}
                         <a
-                            href="https://www.tiktok.com/@b.businnes?is_from_webapp=1&sender_device=pc"
+                            href={appConfig?.content?.social?.tiktok || "https://www.tiktok.com/@b.businnes?is_from_webapp=1&sender_device=pc"}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
@@ -127,7 +124,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
 
                         {/* WhatsApp Channel */}
                         <a
-                            href="https://whatsapp.com/channel/0029Vb49nL9DOQISuab0Tl3V"
+                            href={appConfig?.content?.social?.whatsapp || "https://whatsapp.com/channel/0029Vb49nL9DOQISuab0Tl3V"}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
@@ -143,7 +140,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
 
                         {/* Instagram */}
                         <a
-                            href="https://www.instagram.com/bodipo_business?igsh=M3hjNXV2b2xydnhj"
+                            href={appConfig?.content?.social?.instagram || "https://www.instagram.com/bodipo_business?igsh=M3hjNXV2b2xydnhj"}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
@@ -154,6 +151,21 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
                                     <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
                                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                                     <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        {/* Facebook */}
+                        <a
+                            href={appConfig?.content?.social?.facebook || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group"
+                            title="Síguenos en Facebook"
+                        >
+                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#1877F2] text-white transition-all duration-300 shadow-lg shadow-blue-200/50 group-hover:scale-110 group-hover:shadow-blue-300/50 group-hover:shadow-2xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
                                 </svg>
                             </div>
                         </a>

@@ -5,11 +5,12 @@ import Header from './src/components/Header';
 import AIChat from './src/components/AIChat';
 import RegisterModal from './src/components/RegisterModal';
 import LoginModal from './src/components/LoginModal';
+import ForgotPasswordModal from './src/components/ForgotPasswordModal';
 import AdminPanel from './src/components/AdminPanel';
 import { Product, AppConfig } from './types';
 import AnimatedPage from './src/components/AnimatedPage';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
-import { SettingsProvider } from './src/context/SettingsContext';
+import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 
 // Pages
 import HomePage from './src/pages/HomePage';
@@ -74,10 +75,32 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Component to handle "First Visit" logic
+const FirstVisitRedirect = () => {
+  const location = useLocation();
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('has_visited_session');
+    if (!hasVisited && location.pathname !== '/') {
+      // Only redirect if it's the very first load and not already on home
+      // But wait... actually if they refresh, session storage persists.
+      // If they close tab and open again, session storage clears.
+      // That matches "First access -> Home", "Refresh -> Stay".
+      window.location.replace('/');
+    }
+    sessionStorage.setItem('has_visited_session', 'true');
+    setIsFirstVisit(false);
+  }, []);
+
+  return null;
+};
+
 const AnimatedRoutes: React.FC<{
   onOpenRegister: () => void;
+  onOpenForgotPassword: () => void;
   products: Product[];
-}> = ({ onOpenRegister, products }) => {
+}> = ({ onOpenRegister, onOpenForgotPassword, products }) => {
   const location = useLocation();
 
   return (
@@ -89,7 +112,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/servicios" element={<AnimatedPage><ServicesPage /></AnimatedPage>} />
         <Route path="/rastreo" element={<AnimatedPage><TrackingPage /></AnimatedPage>} />
         <Route path="/tienda" element={<AnimatedPage><StorePage products={products} /></AnimatedPage>} />
-        <Route path="/acceso" element={<AnimatedPage><ClientPage /></AnimatedPage>} />
+        <Route path="/acceso" element={<AnimatedPage><ClientPage onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/money-transfer" element={<AnimatedPage><MoneyTransferPage /></AnimatedPage>} />
         <Route path="/dashboard" element={<AnimatedPage><DashboardPage /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
@@ -103,6 +126,7 @@ const AppContent: React.FC = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   // Dynamic State
   const [products, setProducts] = useState<Product[]>(() => {
@@ -125,6 +149,7 @@ const AppContent: React.FC = () => {
 
   // Admin Login Logic using AuthContext
   const { user } = useAuth();
+  const { appConfig } = useSettings();
 
   const handleAdminLogin = () => {
     if (user && user.role === 'admin') {
@@ -137,6 +162,7 @@ const AppContent: React.FC = () => {
   return (
     <>
       <ScrollToTop />
+      <FirstVisitRedirect />
       <div className="min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
         <Header
           onOpenRegister={() => setIsRegisterOpen(true)}
@@ -145,7 +171,11 @@ const AppContent: React.FC = () => {
         />
 
         <main className="flex-grow">
-          <AnimatedRoutes onOpenRegister={() => setIsRegisterOpen(true)} products={products} />
+          <AnimatedRoutes
+            onOpenRegister={() => setIsRegisterOpen(true)}
+            onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
+            products={products}
+          />
         </main>
 
         <footer className="bg-[#00151a] py-24 text-white">
@@ -184,7 +214,7 @@ const AppContent: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">España</p>
-                      <p className="text-sm font-bold">+34 641 992 110</p>
+                      <p className="text-sm font-bold">{appConfig?.contact?.phones?.es || '+34 641 992 110'}</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
@@ -193,7 +223,7 @@ const AppContent: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Camerún</p>
-                      <p className="text-sm font-bold">+237 658 497 349</p>
+                      <p className="text-sm font-bold">+237 6 87 52 88 54</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
@@ -202,7 +232,7 @@ const AppContent: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Guinea Ecuatorial</p>
-                      <p className="text-sm font-bold">+240 222 667 763</p>
+                      <p className="text-sm font-bold">{appConfig?.contact?.phones?.gq || '+240 222 667 763'}</p>
                     </div>
                   </div>
                 </div>
@@ -221,9 +251,9 @@ const AppContent: React.FC = () => {
               <div className="space-y-6">
                 <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Bodipo S.L.</p>
                 <ul className="space-y-3 text-sm font-medium text-gray-400">
-                  <li>Alcalá de Henares, Madrid 🇪🇸</li>
+                  <li>{appConfig?.contact?.addresses?.es || 'Alcalá de Henares, Madrid 🇪🇸'}</li>
                   <li>Universidad Católica, Yaoundé 🇨🇲</li>
-                  <li>Malabo & Bata, G.E. 🇬🇶</li>
+                  <li>{appConfig?.contact?.addresses?.gq || 'Malabo & Bata, G.E. 🇬🇶'}</li>
                 </ul>
                 <div className="pt-4">
                   <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.L.</p>
@@ -234,7 +264,15 @@ const AppContent: React.FC = () => {
         </footer>
 
         <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
-        <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+        <LoginModal
+          isOpen={isLoginOpen}
+          onClose={() => setIsLoginOpen(false)}
+          onOpenForgotPassword={() => {
+            setIsLoginOpen(false);
+            setIsForgotPasswordOpen(true);
+          }}
+        />
+        <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />
         <AdminPanel
           isOpen={isAdminOpen}
           onClose={() => setIsAdminOpen(false)}

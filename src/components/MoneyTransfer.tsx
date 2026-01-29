@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
 
 const MoneyTransfer: React.FC = () => {
-  const { t } = useSettings();
+  const { t, appConfig } = useSettings();
   const [direction, setDirection] = useState<'ES_GQ' | 'GQ_ES' | 'CM_GQ'>('ES_GQ');
   const [amount, setAmount] = useState<number>(0);
   const [formData, setFormData] = useState({
@@ -16,17 +16,52 @@ const MoneyTransfer: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Tasas actualizadas según la imagen
-  const rateEURO_CFA = 600; // 1€ = 600 CFA
-  const rateCFA_EURO = 0.00167; // 1 CFA = 0.00167€ (tasa real sin mostrar en pantalla)
+  // Tasas actualizadas desde configuración dinámica
+  const rateEURO_CFA = appConfig?.rates.exchange.eur_xaf || 600;
+  const rateCFA_EURO = appConfig?.rates.exchange.xaf_eur ? (1 / appConfig.rates.exchange.xaf_eur) : 0.00167; // Aprox fallback
   const feeCM_GQ = 0.04;    // 4% comisión para Camerún
 
   const calculateResult = () => {
     if (direction === 'ES_GQ') return amount * rateEURO_CFA;
-    if (direction === 'GQ_ES') return amount * rateCFA_EURO; // Ahora multiplica por la tasa correcta
-    if (direction === 'CM_GQ') return amount; // Mismo valor nominal pero con cargo del 4%
+    if (direction === 'GQ_ES') return amount * (appConfig?.rates.exchange.xaf_eur ? (1 / appConfig.rates.exchange.xaf_eur) : rateCFA_EURO);
+    if (direction === 'CM_GQ') return amount;
     return 0;
   };
+  // ... (rest of component logic identical until render)
+
+  // ...
+
+  {/* Cuenta Guinea */ }
+  <div className="space-y-4">
+    <div className="flex items-center space-x-3">
+      <span className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center text-[#00151a] font-black text-xs">🇬🇶</span>
+      <p className="text-xs font-black uppercase tracking-widest text-teal-400">🇬🇶 {t('transfer.accounts.guinea.bank')}</p>
+    </div>
+    <div className="bg-white/5 rounded-2xl p-6 space-y-3 border border-white/5">
+      <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.name_label')}</p>
+      <p className="text-sm font-black uppercase">{appConfig?.bank?.holder || 'SUSANA MBA MIKUE.'}</p>
+      <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.iban_label')}</p>
+      <p className="text-lg font-mono font-black text-teal-300">{appConfig?.bank?.accountNumber || '39360018962'}</p>
+      <div className="pt-2 border-t border-white/5">
+        <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.swift_label')}</p>
+        <p className="text-md font-mono font-black text-teal-500">ECOCGQGQ</p>
+      </div>
+    </div>
+  </div>
+
+  {/* Cuenta España */ }
+  <div className="space-y-4">
+    <div className="flex items-center space-x-3">
+      <span className="w-8 h-8 rounded-lg bg-yellow-500 flex items-center justify-center text-[#00151a] font-black text-xs">🇪🇸</span>
+      <p className="text-xs font-black uppercase tracking-widest text-yellow-400">🇪🇸 {t('transfer.accounts.spain.bank')}</p>
+    </div>
+    <div className="bg-white/5 rounded-2xl p-6 space-y-3 border border-white/5">
+      <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.name_label')}</p>
+      <p className="text-sm font-black uppercase">{appConfig?.bank?.holder || 'ANTONIO M. NDONG'}</p>
+      <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.iban_label')}</p>
+      <p className="text-xs font-mono font-black text-yellow-300 break-all">{appConfig?.bank?.iban || 'ES46 1583 0001 1590 4700 6648'}</p>
+    </div>
+  </div>
 
   const calculatedAmount = calculateResult();
 

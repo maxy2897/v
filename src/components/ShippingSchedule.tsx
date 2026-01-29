@@ -2,22 +2,27 @@ import React from 'react';
 import { useSettings } from '../context/SettingsContext';
 
 const ShippingSchedule: React.FC = () => {
-  const { t } = useSettings();
+  const { t, appConfig } = useSettings();
 
   // Lógica de fechas dinámica
   const today = new Date();
 
-  // Calendario completo 2026 (Fechas hardcodeadas para el año)
-  const fullSchedule = [
-    { date: new Date(2026, 0, 17), type: 'Aéreo', destination: 'Malabo / Bata' }, // Ene 17
-    { date: new Date(2026, 0, 30), type: 'Aéreo', destination: 'Malabo / Bata' }, // Ene 30
-    { date: new Date(2026, 1, 13), type: 'Aéreo', destination: 'Malabo / Bata' }, // Feb 13
-    { date: new Date(2026, 1, 27), type: 'Aéreo', destination: 'Malabo / Bata' }, // Feb 27
-    { date: new Date(2026, 2, 13), type: 'Aéreo', destination: 'Malabo / Bata' }, // Mar 13
-    { date: new Date(2026, 2, 27), type: 'Aéreo', destination: 'Malabo / Bata' }, // Mar 27
-    { date: new Date(2026, 3, 10), type: 'Aéreo', destination: 'Malabo / Bata' }, // Abr 10
-    { date: new Date(2026, 3, 24), type: 'Aéreo', destination: 'Malabo / Bata' }, // Abr 24
+  // Obtener fechas desde la configuración o usar defaults
+  const nextAir = appConfig?.dates.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture) : null;
+  const nextSea = appConfig?.dates.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture) : null;
+
+  // Construir lista dinámica
+  const dynamicSchedule = [];
+  if (nextAir) dynamicSchedule.push({ date: nextAir, type: 'Aéreo', destination: 'Malabo / Bata' });
+  if (nextSea) dynamicSchedule.push({ date: nextSea, type: 'Marítimo', destination: 'Malabo / Bata' });
+
+  // Fallback si no hay config (Fechas hardcodeadas de ejemplo)
+  const fallbackSchedule = [
+    { date: new Date(2026, 0, 17), type: 'Aéreo', destination: 'Malabo / Bata' },
+    { date: new Date(2026, 0, 30), type: 'Aéreo', destination: 'Malabo / Bata' }
   ];
+
+  const fullSchedule = dynamicSchedule.length > 0 ? dynamicSchedule : fallbackSchedule;
 
   // Filtrar salidas futuras (incluyendo hoy)
   const upcomingShipments = fullSchedule.filter(s => {
@@ -45,12 +50,25 @@ const ShippingSchedule: React.FC = () => {
     highlight: index === 0 // La primera de la lista es la próxima salida (destacada)
   }));
 
-  // Referencia anual completa del póster 2026
+  // Referencia anual dinámica con fallback
+  const schedule = appConfig?.content?.schedule;
   const yearlyOverview = [
-    { month: 'DICIEMBRE', days: '12 y 19' },
-    { month: 'ENERO', days: '2, 17 y 30' },
-    { month: 'FEBRERO', days: '13 y 27' },
-    { month: 'MARZO', days: '13 y 27' },
+    {
+      month: schedule?.block1?.month || 'DICIEMBRE',
+      days: schedule?.block1?.days || '12 y 19'
+    },
+    {
+      month: schedule?.block2?.month || 'ENERO',
+      days: schedule?.block2?.days || '2, 17 y 30'
+    },
+    {
+      month: schedule?.block3?.month || 'FEBRERO',
+      days: schedule?.block3?.days || '13 y 27'
+    },
+    {
+      month: schedule?.block4?.month || 'MARZO',
+      days: schedule?.block4?.days || '13 y 27'
+    },
   ];
 
   return (
