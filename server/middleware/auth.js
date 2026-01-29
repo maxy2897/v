@@ -18,6 +18,10 @@ export const protect = async (req, res, next) => {
             // Obtener usuario del token
             req.user = await User.findById(decoded.id).select('-password');
 
+            if (!req.user) {
+                return res.status(401).json({ message: 'Usuario no encontrado. Por favor inicie sesión nuevamente.' });
+            }
+
             next();
         } catch (error) {
             console.error(error);
