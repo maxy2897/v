@@ -61,6 +61,9 @@ router.put(
                 if (req.file) {
                     // Normalizar el path para usar barras diagonales (compatibilidad URL)
                     user.profileImage = req.file.path.replace(/\\/g, '/');
+                } else if (req.body.profileImage) {
+                    // Si se envía una imagen en Base64 (string)
+                    user.profileImage = req.body.profileImage;
                 }
 
                 const updatedUser = await user.save();

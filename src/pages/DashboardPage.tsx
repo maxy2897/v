@@ -32,8 +32,45 @@ const DashboardPage: React.FC = () => {
         phone: user?.phone || '',
         address: user?.address || '',
         username: user?.username || '',
-        profileImage: user?.profileImage || null as File | string | null
+        profileImage: user?.profileImage || ''
     });
+
+    const resizeImage = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500;
+                    const MAX_HEIGHT = 500;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // 0.8 quality JPEG
+                };
+            };
+            reader.onerror = (error) => reject(error);
+        });
+    };
 
     useEffect(() => {
         if (user) {
@@ -49,11 +86,17 @@ const DashboardPage: React.FC = () => {
         }
     }, [user]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            setFormData({ ...formData, profileImage: file });
-            setPreviewImage(URL.createObjectURL(file));
+            try {
+                const base64 = await resizeImage(file);
+                setFormData({ ...formData, profileImage: base64 });
+                setPreviewImage(base64);
+            } catch (error) {
+                console.error('Error resizing image:', error);
+                alert('Error al procesar la imagen');
+            }
         }
     };
 
@@ -88,20 +131,18 @@ const DashboardPage: React.FC = () => {
         console.log('📝 Form data:', formData);
 
         try {
-            const data = new FormData();
-            data.append('name', formData.name);
-            data.append('email', formData.email);
-            data.append('phone', formData.phone);
-            data.append('address', formData.address);
-            data.append('username', formData.username);
+            // Enviar como JSON plano con la imagen en base64
+            const updateData = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                address: formData.address,
+                username: formData.username,
+                profileImage: formData.profileImage
+            };
 
-            if (formData.profileImage instanceof File) {
-                console.log('📸 Adding profile image:', formData.profileImage.name);
-                data.append('profileImage', formData.profileImage);
-            }
-
-            console.log('🚀 Calling updateUser...');
-            await updateUser(data as any);
+            console.log('🚀 Calling updateUser with JSON...');
+            await updateUser(updateData);
             console.log('✅ Update successful!');
             setEditMode(false);
             alert(t('dash.alert.update_success'));
@@ -110,7 +151,6 @@ const DashboardPage: React.FC = () => {
             alert(error.message || t('dash.alert.update_error'));
         }
     };
-
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'Entregado':
