@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import Shipment from '../models/Shipment.js';
 import { protect } from '../middleware/auth.js';
+import upload from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -22,7 +23,6 @@ router.get('/profile', protect, async (req, res) => {
 // @route   PUT /api/users/profile
 // @desc    Actualizar perfil del usuario
 // @access  Private
-import upload from '../middleware/upload.js';
 
 router.put(
     '/profile',

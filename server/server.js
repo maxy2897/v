@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import fs from 'fs';
 import connectDB from './config/db.js';
 import userRoutes from './routes/users.js';
 import authRoutes from './routes/auth.js';
@@ -51,7 +52,11 @@ app.use('/api/reports', reportRoutes);     // Added reportRoutes
 app.use('/api/config', configRoutes);     // Added configRoutes
 
 // Servir carpeta de uploads estáticamente
-app.use('/uploads', express.static(join(__dirname, '../uploads')));
+const uploadsDir = join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
