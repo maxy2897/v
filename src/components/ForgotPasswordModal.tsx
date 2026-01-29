@@ -308,4 +308,4 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
 
 export default ForgotPasswordModal;
 
-export default ForgotPasswordModal;
+
