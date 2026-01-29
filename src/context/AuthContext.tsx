@@ -19,6 +19,7 @@ interface AuthContextType {
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (userData: any) => Promise<void>;
+    registerWithSocial: (userData: any) => Promise<void>;
     logout: () => void;
     updateUser: (userData: any) => Promise<void>;
     isAuthenticated: boolean;
@@ -67,6 +68,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const registerWithSocial = async (userData: any) => {
+        try {
+            const data = await api.socialLogin(userData);
+            setUser(data);
+        } catch (error: any) {
+            throw error;
+        }
+    };
+
     const logout = () => {
         api.logout();
         setUser(null);
@@ -86,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         login,
         register,
+        registerWithSocial, // Add this
         logout,
         updateUser,
         isAuthenticated: !!user,

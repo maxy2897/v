@@ -1,6 +1,6 @@
-// API URL - usa variable de entorno en producción, localhost en desarrollo
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-export const BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+// API URL - usa variable de entorno en producción, o la URL directa de Render
+const API_URL = import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com/api';
+export const BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://bodipo-business-api.onrender.com';
 
 // Obtener token del localStorage
 const getToken = () => {
@@ -36,6 +36,37 @@ export const register = async (userData: {
 
     if (!response.ok) {
         throw new Error(data.message || 'Error al registrar usuario');
+    }
+
+    // Guardar token
+    if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+    }
+
+    return data;
+};
+
+// Social Login (Google/Apple)
+export const socialLogin = async (userData: {
+    name: string;
+    email: string;
+    photoUrl?: string;
+    provider: 'google' | 'apple';
+    uid: string;
+}) => {
+    const response = await fetch(`${API_URL}/auth/social-login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error en inicio de sesión social');
     }
 
     // Guardar token

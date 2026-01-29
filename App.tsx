@@ -219,14 +219,14 @@ const AppContent: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Bodipo S.A.</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Bodipo S.L.</p>
                 <ul className="space-y-3 text-sm font-medium text-gray-400">
                   <li>Alcalá de Henares, Madrid 🇪🇸</li>
                   <li>Universidad Católica, Yaoundé 🇨🇲</li>
                   <li>Malabo & Bata, G.E. 🇬🇶</li>
                 </ul>
                 <div className="pt-4">
-                  <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.A.</p>
+                  <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.L.</p>
                 </div>
               </div>
             </div>

@@ -24,24 +24,8 @@ app.set('trust proxy', 1);
 
 // CORS Configuration
 const corsOptions = {
-    origin: function (origin, callback) {
-        // Permitir requests sin origin (como mobile apps o curl)
-        if (!origin) return callback(null, true);
-
-        // Lista de orígenes permitidos
-        const allowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:5174',
-            'http://localhost:4173',
-            process.env.FRONTEND_URL, // URL de producción de Vercel
-        ].filter(Boolean); // Eliminar valores undefined
-
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    // TEMPORAL: Permitir todo para solucionar el error de "Failed to fetch"
+    callback(null, true);
     credentials: true,
     optionsSuccessStatus: 200
 };

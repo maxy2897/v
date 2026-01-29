@@ -117,6 +117,59 @@ router.post(
     }
 );
 
+// @route   POST /api/auth/social-login
+// @desc    Login/Registro con Google/Apple
+// @access  Public
+router.post('/social-login', async (req, res) => {
+    const { name, email, photoUrl, provider, uid } = req.body;
+
+    try {
+        // Verificar si usuario existe
+        let user = await User.findOne({ email });
+
+        if (user) {
+            // Usuario existe, actualizar datos si es necesario
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                username: user.username,
+                profileImage: user.profileImage,
+                discountEligible: user.discountEligible,
+                role: user.role,
+                token: generateToken(user._id),
+            });
+        } else {
+            // Usuario no existe, crear nuevo
+            user = await User.create({
+                name,
+                email,
+                password: Math.random().toString(36).slice(-8), // Contraseña aleatoria
+                profileImage: photoUrl,
+                emailVerified: true // Asumimos verificado por Google/Apple
+            });
+
+            res.status(201).json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                username: user.username,
+                profileImage: user.profileImage,
+                discountEligible: user.discountEligible,
+                token: generateToken(user._id),
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error en login social' });
+    }
+});
+
 // @route   GET /api/auth/me
 // @desc    Obtener datos del usuario actual
 // @access  Private

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { AppConfig } from '../../types';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { BASE_URL } from '../../services/api';
@@ -18,6 +18,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme, language, setLanguage, t } = useSettings();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
     { path: '/calendario', label: t('nav.calendar') },
@@ -74,6 +75,27 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                 </div>
               </Link>
             </div>
+            {/* Mobile Menu Button - Visible on small screens */}
+            <div className="flex lg:hidden items-center gap-4">
+              {isAuthenticated && user && (
+                <Link to="/dashboard" className="w-8 h-8 rounded-full bg-teal-100 overflow-hidden border border-teal-200">
+                  {user.profileImage ? (
+                    <img src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-teal-700 font-bold text-xs">{user.name.charAt(0)}</div>
+                  )}
+                </Link>
+              )}
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#00151a]">
+                {mobileMenuOpen ? (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                )}
+              </button>
+            </div>
+
+            {/* Desktop Nav */}
             <nav
               className="hidden lg:flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400"
               onMouseLeave={() => setHoveredPath(location.pathname)}
@@ -182,6 +204,51 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl pt-24 px-6 lg:hidden overflow-y-auto"
+          >
+            <div className="flex flex-col space-y-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-2xl font-black text-[#00151a] hover:text-teal-600 transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              <hr className="border-gray-200" />
+
+              {/* Mobile Auth Buttons */}
+              {!isAuthenticated && (
+                <div className="flex flex-col gap-4">
+                  <button onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }} className="w-full py-4 bg-white border-2 border-[#00151a] rounded-xl font-black text-[#00151a] uppercase tracking-widest">
+                    {t('nav.login')}
+                  </button>
+                  <button onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }} className="w-full py-4 bg-[#00151a] text-white rounded-xl font-black uppercase tracking-widest shadow-xl">
+                    {t('nav.register')}
+                  </button>
+                </div>
+              )}
+
+              {isAuthenticated && (
+                <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="text-red-600 font-bold text-lg">
+                  {t('nav.logout')}
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
