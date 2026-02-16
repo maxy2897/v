@@ -5,6 +5,7 @@ import { useSettings } from '../context/SettingsContext';
 const Calculator: React.FC = () => {
   const { t, appConfig } = useSettings();
   const [calcMode, setCalcMode] = useState<'kg' | 'bulto' | 'documento'>('kg');
+  const [lastTransactionId, setLastTransactionId] = useState<string | null>(null);
   const [info, setInfo] = useState<PackageInfo>({
     weight: 0,
     length: 20,
@@ -70,7 +71,7 @@ const Calculator: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userData.fullName || !userData.phone || !userData.idNumber) {
       alert(t('calc.alert.params'));
@@ -78,16 +79,68 @@ const Calculator: React.FC = () => {
     }
 
     setIsRegistering(true);
-    setTimeout(() => {
+
+    try {
+      console.log('Initiating shipment creation...');
+      // Generate a tracking number locally or let backend handle it?
+      // Backend User.shipments route expects trackingNumber. 
+      // Let's generate one.
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let result = '';
       for (let i = 0; i < 5; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      setGeneratedCode(`BB-${result}`);
-      setIsRegistering(false);
+      const trackingNumber = `BB-${result}`;
+
+      const shipmentData = {
+        trackingNumber,
+        origin: info.origin,
+        destination: info.destination,
+        weight: info.weight || (calcMode === 'bulto' ? bultoType : 1), // Fallback
+        price: total?.value || 0,
+        description: `Envío ${calcMode} desde ${info.origin}`
+      };
+
+      const res = await import('../services/api').then(m => m.createShipment(shipmentData));
+      console.log('Shipment created response:', res);
+
+      setGeneratedCode(trackingNumber);
+      if (res.transactionId) {
+        console.log('Transaction ID found:', res.transactionId);
+        setLastTransactionId(res.transactionId);
+      } else {
+        console.warn('No transactionId in response!');
+      }
       setShowForm(false);
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      alert('Error al registrar el envío. Inténtelo de nuevo.');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  const downloadReceipt = async () => {
+    if (!lastTransactionId) return;
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions/${lastTransactionId}/receipt`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Error downloading');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `recibo-${lastTransactionId}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (e) {
+      alert('Error al descargar recibo');
+    }
   };
 
   const copyToClipboard = () => {
@@ -264,7 +317,7 @@ const Calculator: React.FC = () => {
 
         <div className="relative flex">
           {generatedCode ? (
-            <div className="bg-[#005f6b] p-8 md:p-12 rounded-[3rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative overflow-hidden text-white">
+            <div className="bg-[#005f6b] p-8 md:p-12 rounded-[3rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative text-white">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-300 to-transparent"></div>
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
@@ -279,6 +332,16 @@ const Calculator: React.FC = () => {
                   {t('calc.success.copy')}
                 </button>
               </div>
+
+              {/* Download Button moved here for visibility */}
+              <button
+                onClick={downloadReceipt}
+                disabled={!lastTransactionId}
+                className={`w-full bg-white text-[#005f6b] py-4 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-teal-50 transition-all shadow-xl mb-6 flex items-center justify-center gap-2 ${!lastTransactionId ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                {lastTransactionId ? 'Descargar Factura' : 'Generando Factura...'}
+              </button>
 
               <div className="text-[10px] font-bold text-teal-100/60 uppercase tracking-widest mb-6">
                 {t('calc.success.pay_location')}: {payLocation === 'Origen' ? info.origin : t('calc.origin.gq')}
@@ -403,8 +466,8 @@ const Calculator: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
-    </section>
+      </div >
+    </section >
   );
 };
 

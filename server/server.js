@@ -46,10 +46,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transfers', transferRoutes);
-app.use('/api/shipments', shipmentRoutes); // Added shipmentRoutes
-app.use('/api/admin', adminRoutes);       // Added adminRoutes
-app.use('/api/reports', reportRoutes);     // Added reportRoutes
-app.use('/api/config', configRoutes);     // Added configRoutes
+app.use('/api/shipments', shipmentRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/config', configRoutes);
+import transactionRoutes from './routes/transactions.js';
+app.use('/api/transactions', transactionRoutes);
 
 // Servir carpeta de uploads estáticamente
 const uploadsDir = join(__dirname, '../uploads');
@@ -62,6 +64,16 @@ app.use('/uploads', express.static(uploadsDir));
 app.get('/api/health', (req, res) => {
     res.json({ message: '✅ Server is running!' });
 });
+
+// Self-Ping para mantener activo en Render (aunque recomiendan cron externo)
+setInterval(() => {
+    // Solo si estamos en producción (podemos chequear VITE_API_URL o NODE_ENV)
+    // O simplemente hacer un fetch local si hay url
+    const apiUrl = process.env.VITE_API_URL || 'http://localhost:5000';
+    if (apiUrl) {
+        // fetch(`${apiUrl}/api/health`).catch(() => {});
+    }
+}, 14 * 60 * 1000); // Cada 14 minutos para evitar el sleep de 15 mins
 
 const PORT = process.env.PORT || 5000;
 

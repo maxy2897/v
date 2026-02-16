@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { body, validationResult } from 'express-validator';
 import Transfer from '../models/Transfer.js';
+import Transaction from '../models/Transaction.js';
 
 import User from '../models/User.js';
 
@@ -69,7 +70,27 @@ router.post('/', upload.single('proofImage'), [
             }
         }
 
-        res.status(201).json(transfer);
+        // Crear registro de transacción para recibo
+        const transaction = await Transaction.create({
+            type: 'TRANSFER',
+            referenceId: transfer._id,
+            userId: user || null,
+            onModel: 'Transfer',
+            amount: amount,
+            currency: currency,
+            user: {
+                name: senderObj.name,
+                phone: senderObj.phone,
+                email: senderObj.email // Si existe
+            },
+            details: {
+                beneficiary: beneficiaryObj.name,
+                direction,
+                proofImage: req.file.path
+            }
+        });
+
+        res.status(201).json({ ...transfer.toObject(), transactionId: transaction._id });
     } catch (error) {
         console.error('Error creando transferencia:', error);
         res.status(500).json({ message: 'Error al procesar la solicitud', error: error.message });

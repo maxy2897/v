@@ -2,6 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import Shipment from '../models/Shipment.js';
+import Transaction from '../models/Transaction.js';
 import { protect } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 
@@ -141,12 +142,33 @@ router.post(
                 description,
             });
 
+            // Crear registro de transacción para recibo
+            const transaction = await Transaction.create({
+                type: 'SHIPMENT',
+                referenceId: shipment._id,
+                userId: req.user._id,
+                onModel: 'Shipment',
+                amount: price,
+                user: {
+                    name: req.user.name,
+                    email: req.user.email,
+                    phone: req.user.phone
+                },
+                details: {
+                    trackingNumber,
+                    origin,
+                    destination,
+                    description,
+                    weight
+                }
+            });
+
             // Consumir descuento si es elegible
             if (req.user.discountEligible) {
                 await User.findByIdAndUpdate(req.user._id, { discountEligible: false });
             }
 
-            res.status(201).json(shipment);
+            res.status(201).json({ ...shipment.toObject(), transactionId: transaction._id });
         } catch (error) {
             console.error(error);
             if (error.code === 11000) {

@@ -15,7 +15,52 @@ import { useSettings } from '../context/SettingsContext';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig } = useSettings();
-  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational'>('products');
+  const { appConfig, updateConfig } = useSettings();
+  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions'>('products');
+  const [transactions, setTransactions] = useState<any[]>([]);
+
+  React.useEffect(() => {
+    if (activeTab === 'transactions') {
+      fetchTransactions();
+    }
+  }, [activeTab]);
+
+  const fetchTransactions = async () => {
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setTransactions(await res.json());
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const downloadReceipt = async (id: string) => {
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions/${id}/receipt`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Error downloading');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `recibo-${id}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (e) {
+      alert('Error al descargar recibo');
+    }
+  };
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     color: '',
@@ -164,6 +209,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 Config
               </button>
+              <button
+                onClick={() => setActiveTab('transactions')}
+                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'transactions' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                Transacciones
+              </button>
             </nav>
           </div>
 
@@ -183,7 +235,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
             <h3 className="text-xl font-black text-[#00151a] uppercase tracking-tighter">
               {activeTab === 'products' ? 'Gestión de Productos' :
                 activeTab === 'branding' ? 'Marca y Personalización' :
-                  activeTab === 'reports' ? 'Centro de Reportes' : 'Configuración Global'}
+                  activeTab === 'reports' ? 'Centro de Reportes' :
+                    activeTab === 'transactions' ? 'Historial de Transacciones' : 'Configuración Global'}
             </h3>
             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {new Date().toLocaleDateString()}
@@ -561,6 +614,68 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         </div>
                       </div>
                     </div>
+                  </div>
+                </section>
+              </div>
+            ) : activeTab === 'transactions' ? (
+              <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-gray-100">
+                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Fecha</th>
+                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Tipo</th>
+                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Usuario</th>
+                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Detalle</th>
+                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Monto</th>
+                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">Recibo</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {transactions.map(tx => (
+                          <tr key={tx._id} className="hover:bg-gray-50 transition-colors">
+                            <td className="p-4 text-xs font-bold text-gray-600">
+                              {new Date(tx.createdAt).toLocaleDateString()} <br />
+                              <span className="text-[10px] text-gray-400">{new Date(tx.createdAt).toLocaleTimeString()}</span>
+                            </td>
+                            <td className="p-4">
+                              <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${tx.type === 'SHIPMENT' ? 'bg-blue-100 text-blue-700' :
+                                  tx.type === 'TRANSFER' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'
+                                }`}>
+                                {tx.type === 'SHIPMENT' ? 'Envío' : tx.type === 'TRANSFER' ? 'Dinero' : 'Tienda'}
+                              </span>
+                            </td>
+                            <td className="p-4 text-xs font-medium text-gray-600">
+                              {tx.user?.name || "N/A"} <br />
+                              <span className="text-[10px] text-gray-400">{tx.user?.phone}</span>
+                            </td>
+                            <td className="p-4 text-xs text-gray-500 max-w-xs truncate">
+                              {tx.type === 'SHIPMENT' ? `Rastreo: ${tx.details?.trackingNumber}` :
+                                tx.type === 'TRANSFER' ? `Dest: ${tx.details?.beneficiary}` : 'Compra'}
+                            </td>
+                            <td className="p-4 text-sm font-black text-[#00151a] text-right">
+                              {tx.amount} {tx.currency || '€'}
+                            </td>
+                            <td className="p-4 text-center">
+                              <button
+                                onClick={() => downloadReceipt(tx._id)}
+                                className="text-teal-500 hover:text-teal-700 font-bold text-xs flex items-center justify-center gap-1 mx-auto"
+                                title="Descargar Word"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                DOCX
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {transactions.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="p-8 text-center text-gray-400 text-sm font-bold">No hay transacciones registradas aún.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </section>
               </div>
