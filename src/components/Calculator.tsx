@@ -126,7 +126,10 @@ const Calculator: React.FC = () => {
         weight: info.weight || (calcMode === 'bulto' ? bultoType : 1), // Fallback
         price: total?.value || 0,
         description: `Envío ${calcMode} desde ${info.origin}`,
-        recipient: isAuthenticated ? recipientData : undefined
+        recipient: isAuthenticated ? recipientData : {
+          name: userData.fullName,
+          phone: userData.phone
+        }
       };
 
       const res = await import('../services/api').then(m => m.createShipment(shipmentData));

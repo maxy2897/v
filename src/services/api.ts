@@ -138,6 +138,7 @@ export const updateProfile = async (userData: FormData | {
     phone?: string;
     address?: string;
     username?: string;
+    idNumber?: string;
 }) => {
     // Determinar headers: si es FormData (tiene archivo o imagen), dejar que browser setee Content-Type
     const isFormData = userData instanceof FormData;
@@ -172,7 +173,7 @@ export const updateProfile = async (userData: FormData | {
 
 // Obtener envíos del usuario
 export const getUserShipments = async () => {
-    const response = await fetch(`${API_URL}/users/shipments`, {
+    const response = await fetch(`${API_URL}/shipments`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -186,6 +187,22 @@ export const getUserShipments = async () => {
     return data;
 };
 
+// Obtener transacciones del usuario
+export const getUserTransactions = async () => {
+    const response = await fetch(`${API_URL}/transactions/mine`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al obtener transacciones');
+    }
+
+    return data;
+};
+
 // Crear nuevo envío
 export const createShipment = async (shipmentData: {
     trackingNumber: string;
@@ -194,8 +211,12 @@ export const createShipment = async (shipmentData: {
     weight: number;
     price: number;
     description?: string;
+    recipient?: {
+        name: string;
+        phone?: string;
+    };
 }) => {
-    const response = await fetch(`${API_URL}/users/shipments`, {
+    const response = await fetch(`${API_URL}/shipments`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(shipmentData),
