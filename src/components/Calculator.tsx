@@ -418,7 +418,7 @@ const Calculator: React.FC = () => {
                   <>
                     <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.name')} value={userData.fullName} onChange={e => setUserData({ ...userData, fullName: e.target.value })} />
                     <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.phone')} value={userData.phone} onChange={e => setUserData({ ...userData, phone: e.target.value })} />
-                    <input aria-label={t('calc.form.id')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.id')} value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
+                    <input aria-label="DNI, NIE o Pasaporte" required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder="DNI, NIE o Pasaporte" value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
                   </>
                 )}
 

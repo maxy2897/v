@@ -17,12 +17,25 @@ interface Shipment {
     createdAt: string;
 }
 
+interface Transaction {
+    _id: string;
+    type: string;
+    amount: number;
+    currency: string;
+    status: string;
+    createdAt: string;
+    details?: any;
+}
+
 const DashboardPage: React.FC = () => {
     const { user, logout, updateUser, isAuthenticated } = useAuth();
     const { t, language } = useSettings();
     const navigate = useNavigate();
     const [shipments, setShipments] = useState<Shipment[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loadingShipments, setLoadingShipments] = useState(true);
+    const [loadingTransactions, setLoadingTransactions] = useState(true);
+    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices'>('shipments');
     const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -32,6 +45,7 @@ const DashboardPage: React.FC = () => {
         phone: user?.phone || '',
         address: user?.address || '',
         username: user?.username || '',
+        idNumber: user?.idNumber || '',
         profileImage: user?.profileImage || ''
     });
 
@@ -80,6 +94,7 @@ const DashboardPage: React.FC = () => {
                 phone: user.phone || '',
                 address: user.address || '',
                 username: user.username || '',
+                idNumber: user.idNumber || '',
                 profileImage: user.profileImage || null
             });
             setPreviewImage(null);
@@ -106,18 +121,23 @@ const DashboardPage: React.FC = () => {
             return;
         }
 
-        const loadShipments = async () => {
+        const loadData = async () => {
             try {
-                const data = await api.getUserShipments();
-                setShipments(data);
+                const [shipmentsData, transactionsData] = await Promise.all([
+                    api.getUserShipments(),
+                    api.getUserTransactions()
+                ]);
+                setShipments(shipmentsData);
+                setTransactions(transactionsData);
             } catch (error) {
-                console.error('Error loading shipments:', error);
+                console.error('Error loading dashboard data:', error);
             } finally {
                 setLoadingShipments(false);
+                setLoadingTransactions(false);
             }
         };
 
-        loadShipments();
+        loadData();
     }, [isAuthenticated, navigate]);
 
     const handleLogout = () => {
@@ -138,6 +158,7 @@ const DashboardPage: React.FC = () => {
                 phone: formData.phone,
                 address: formData.address,
                 username: formData.username,
+                idNumber: formData.idNumber,
                 profileImage: formData.profileImage
             };
 
@@ -164,6 +185,28 @@ const DashboardPage: React.FC = () => {
                 return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             default:
                 return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
+
+    const downloadInvoice = async (transactionId: string) => {
+        try {
+            const userStr = localStorage.getItem('user');
+            const token = userStr ? JSON.parse(userStr).token : '';
+            const res = await fetch(`${BASE_URL}/transactions/${transactionId}/receipt`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Error downloading');
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `factura-${transactionId}.docx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (e) {
+            alert('Error al descargar factura');
         }
     };
 
@@ -196,7 +239,10 @@ const DashboardPage: React.FC = () => {
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-black text-[#00151a]">{t('dash.profile.title')}</h2>
                                 <button
-                                    onClick={() => setEditMode(!editMode)}
+                                    onClick={() => {
+                                        console.log('Edit button clicked! Current editMode:', editMode);
+                                        setEditMode(!editMode);
+                                    }}
                                     className="text-teal-600 hover:text-teal-700 font-bold text-sm"
                                 >
                                     {editMode ? t('dash.profile.cancel') : t('dash.profile.edit')}
@@ -289,6 +335,17 @@ const DashboardPage: React.FC = () => {
                                             className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
                                         />
                                     </div>
+                                    <div>
+                                        <label htmlFor="edit-idNumber" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">DNI, NIE o Pasaporte</label>
+                                        <input
+                                            id="edit-idNumber"
+                                            type="text"
+                                            value={formData.idNumber}
+                                            onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
+                                            placeholder="Ej: 12345678A o NIE o Pasaporte"
+                                        />
+                                    </div>
                                     <button
                                         type="submit"
                                         onClick={(e) => {
@@ -337,6 +394,10 @@ const DashboardPage: React.FC = () => {
                                         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.address')}</p>
                                         <p className="text-gray-800 font-medium">{user.address || t('dash.profile.not_specified')}</p>
                                     </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">DNI, NIE o Pasaporte</p>
+                                        <p className="text-gray-800 font-medium">{user.idNumber || t('dash.profile.not_specified')}</p>
+                                    </div>
                                 </div>
                             )}
 
@@ -357,107 +418,177 @@ const DashboardPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Shipments Section */}
+                    {/* Content Section */}
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-3xl shadow-xl p-8">
-                            <h2 className="text-2xl font-black text-[#00151a] mb-6">{t('dash.ship.title')}</h2>
+                            <div className="flex space-x-6 mb-6 border-b border-gray-100">
+                                <button
+                                    onClick={() => setActiveTab('shipments')}
+                                    className={`pb-4 text-lg font-black transition-all ${activeTab === 'shipments'
+                                        ? 'text-teal-600 border-b-4 border-teal-600'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                >
+                                    {t('dash.ship.title')}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('invoices')}
+                                    className={`pb-4 text-lg font-black transition-all ${activeTab === 'invoices'
+                                        ? 'text-teal-600 border-b-4 border-teal-600'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                >
+                                    {t('dash.invoices.title') || 'Mis Facturas'}
+                                </button>
+                            </div>
 
-                            {loadingShipments ? (
-                                <div className="text-center py-12">
-                                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-                                    <p className="mt-4 text-gray-500 font-medium">{t('dash.ship.loading')}</p>
-                                </div>
-                            ) : shipments.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <svg
-                                        className="w-16 h-16 mx-auto text-gray-300 mb-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                                        />
-                                    </svg>
-                                    <p className="text-gray-500 font-medium">{t('dash.ship.no_shipments')}</p>
-                                    <p className="text-gray-400 text-sm mt-2">
-                                        {t('dash.ship.empty_desc')}
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {shipments.map((shipment) => (
-                                        <div
-                                            key={shipment._id}
-                                            className="border-2 border-gray-100 rounded-2xl p-6 hover:border-teal-200 transition-all"
+                            {activeTab === 'shipments' ? (
+                                loadingShipments ? (
+                                    <div className="text-center py-12">
+                                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                                        <p className="mt-4 text-gray-500 font-medium">{t('dash.ship.loading')}</p>
+                                    </div>
+                                ) : shipments.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <svg
+                                            className="w-16 h-16 mx-auto text-gray-300 mb-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
                                         >
-                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                                            />
+                                        </svg>
+                                        <p className="text-gray-500 font-medium">{t('dash.ship.no_shipments')}</p>
+                                        <p className="text-gray-400 text-sm mt-2">
+                                            {t('dash.ship.empty_desc')}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {shipments.map((shipment) => (
+                                            <div
+                                                key={shipment._id}
+                                                className="border-2 border-gray-100 rounded-2xl p-6 hover:border-teal-200 transition-all"
+                                            >
+                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                                    <div>
+                                                        <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">
+                                                            {t('dash.ship.tracking_label')}
+                                                        </p>
+                                                        <p className="text-lg font-black text-[#00151a]">
+                                                            {shipment.trackingNumber}
+                                                        </p>
+                                                    </div>
+                                                    <span
+                                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 ${getStatusColor(
+                                                            shipment.status
+                                                        )}`}
+                                                    >
+                                                        {shipment.status}
+                                                    </span>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                    <div>
+                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                            {t('dash.ship.origin')}
+                                                        </p>
+                                                        <p className="text-gray-800 font-medium">{shipment.origin}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                            {t('dash.ship.dest')}
+                                                        </p>
+                                                        <p className="text-gray-800 font-medium">{shipment.destination}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                            {t('dash.ship.weight')}
+                                                        </p>
+                                                        <p className="text-gray-800 font-medium">{shipment.weight} kg</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                            {t('dash.ship.price')}
+                                                        </p>
+                                                        <p className="text-gray-800 font-medium">{shipment.price} FCFA</p>
+                                                    </div>
+                                                </div>
+
+                                                {shipment.description && (
+                                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                            {t('dash.ship.description')}
+                                                        </p>
+                                                        <p className="text-gray-700 text-sm">{shipment.description}</p>
+                                                    </div>
+                                                )}
+
+                                                <div className="mt-4 text-xs text-gray-400 font-medium">
+                                                    {t('dash.ship.created')}: {new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )
+                            ) : (
+                                loadingTransactions ? (
+                                    <div className="text-center py-12">
+                                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                                        <p className="mt-4 text-gray-500 font-medium">{t('dash.invoices.loading') || 'Cargando facturas...'}</p>
+                                    </div>
+                                ) : transactions.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <svg
+                                            className="w-16 h-16 mx-auto text-gray-300 mb-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p className="text-gray-500 font-medium">{t('dash.invoices.no_invoices') || 'No hay facturas disponibles'}</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {transactions.map((tx) => (
+                                            <div
+                                                key={tx._id}
+                                                className="border-2 border-gray-100 rounded-2xl p-6 hover:border-teal-200 transition-all flex flex-col md:flex-row justify-between items-center gap-4"
+                                            >
                                                 <div>
                                                     <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">
-                                                        {t('dash.ship.tracking_label')}
+                                                        {tx.type === 'SHIPMENT' ? (t('dash.invoices.shipmnet') || 'Envío') : (t('dash.invoices.transfer') || 'Transferencia')}
                                                     </p>
                                                     <p className="text-lg font-black text-[#00151a]">
-                                                        {shipment.trackingNumber}
+                                                        {tx.amount} {tx.currency || 'FCFA'}
+                                                    </p>
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        {new Date(tx.createdAt).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <span
-                                                    className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 ${getStatusColor(
-                                                        shipment.status
-                                                    )}`}
+                                                <button
+                                                    onClick={() => downloadInvoice(tx._id)}
+                                                    className="flex items-center gap-2 px-4 py-2 bg-teal-50 text-teal-600 rounded-lg hover:bg-teal-100 transition-colors font-bold text-sm"
                                                 >
-                                                    {shipment.status}
-                                                </span>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
+                                                    {t('dash.invoices.download') || 'Descargar Factura'}
+                                                </button>
                                             </div>
-
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                                <div>
-                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                        {t('dash.ship.origin')}
-                                                    </p>
-                                                    <p className="text-gray-800 font-medium">{shipment.origin}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                        {t('dash.ship.dest')}
-                                                    </p>
-                                                    <p className="text-gray-800 font-medium">{shipment.destination}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                        {t('dash.ship.weight')}
-                                                    </p>
-                                                    <p className="text-gray-800 font-medium">{shipment.weight} kg</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                        {t('dash.ship.price')}
-                                                    </p>
-                                                    <p className="text-gray-800 font-medium">{shipment.price} FCFA</p>
-                                                </div>
-                                            </div>
-
-                                            {shipment.description && (
-                                                <div className="mt-4 pt-4 border-t border-gray-100">
-                                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                        {t('dash.ship.description')}
-                                                    </p>
-                                                    <p className="text-gray-700 text-sm">{shipment.description}</p>
-                                                </div>
-                                            )}
-
-                                            <div className="mt-4 text-xs text-gray-400 font-medium">
-                                                {t('dash.ship.created')}: {new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                })}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                        ))}
+                                    </div>
+                                )
                             )}
                         </div>
                     </div>
