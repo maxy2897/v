@@ -74,6 +74,8 @@ const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, onClose, em
     };
 
     const handleResend = async () => {
+        if (!canResend) return;
+
         setLoading(true);
         setError('');
 
@@ -87,13 +89,18 @@ const VerifyEmailModal: React.FC<VerifyEmailModalProps> = ({ isOpen, onClose, em
             const data = await response.json();
 
             if (!response.ok) {
+                // Si el error es que el usuario no existe, probablemente es un error de estado
+                if (response.status === 404) {
+                    throw new Error('Usuario no encontrado. Por favor regístrate nuevamente.');
+                }
                 throw new Error(data.message || 'Error al reenviar código');
             }
 
             setTimeLeft(900);
             setCanResend(false);
-            alert('✅ Código reenviado');
+            alert('✅ Código reenviado. Por favor revisa tu bandeja de entrada y spam.');
         } catch (err: any) {
+            console.error('Error resending code:', err);
             setError(err.message || 'Error al reenviar código');
         } finally {
             setLoading(false);
