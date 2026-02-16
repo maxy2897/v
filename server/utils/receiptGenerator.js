@@ -7,9 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const generatePDFReceipt = async (transaction) => {
-    const { type, referenceId, amount, currency, user, date, details } = transaction;
+    const { type, referenceId, amount, currency, user, details, createdAt } = transaction;
 
-    const formattedDate = new Date(date).toLocaleDateString('es-ES', {
+    // Use createdAt from MongoDB (auto-generated timestamp)
+    const dateToUse = transaction.date || createdAt || new Date();
+
+    const formattedDate = new Date(dateToUse).toLocaleString('es-ES', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
