@@ -170,13 +170,13 @@ const Calculator: React.FC = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `factura-${txId}.docx`;
+      a.download = `factura-${txId}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (e) {
-      alert('Error al descargar recibo');
+      alert('Error al descargar factura');
     }
   };
 

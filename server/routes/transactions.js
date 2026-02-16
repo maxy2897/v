@@ -32,7 +32,7 @@ router.get('/mine', protect, async (req, res) => {
 });
 
 /**
- * @desc    Download receipt word doc
+ * @desc    Download receipt PDF
  * @route   GET /api/transactions/:id/receipt
  */
 router.get('/:id/receipt', async (req, res) => {
@@ -48,8 +48,8 @@ router.get('/:id/receipt', async (req, res) => {
 
         const buffer = await generateWordReceipt(transaction);
 
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        res.setHeader('Content-Disposition', `attachment; filename=recibo-${transaction._id}.docx`);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=factura-${transaction._id}.pdf`);
         res.send(buffer);
     } catch (error) {
         console.error('Receipt generation error:', error);

@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, ImageRun, VerticalAlign } from 'docx';
+import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const generateWordReceipt = async (transaction) => {
+export const generatePDFReceipt = async (transaction) => {
     const { type, referenceId, amount, currency, user, date, details } = transaction;
 
     const formattedDate = new Date(date).toLocaleDateString('es-ES', {
@@ -15,321 +15,159 @@ export const generateWordReceipt = async (transaction) => {
         year: 'numeric'
     });
 
-    // Load Logo
-    let logoBuffer;
-    try {
-        const logoPath = path.join(__dirname, '../assets/logo.png');
-        if (fs.existsSync(logoPath)) {
-            logoBuffer = fs.readFileSync(logoPath);
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new PDFDocument({
+                size: 'A4',
+                margins: { top: 50, bottom: 50, left: 50, right: 50 }
+            });
+
+            const buffers = [];
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfData = Buffer.concat(buffers);
+                resolve(pdfData);
+            });
+            doc.on('error', reject);
+
+            // Logo
+            const logoPath = path.join(__dirname, '../assets/logo.png');
+            if (fs.existsSync(logoPath)) {
+                doc.image(logoPath, 50, 50, { width: 80 });
+            }
+
+            // Company name below logo
+            doc.fontSize(12)
+                .text('BODIPO BUSINESS', 50, 140);
+
+            doc.moveDown(2);
+
+            // REMITENTE Section
+            doc.fontSize(12)
+                .font('Helvetica-Bold')
+                .text('REMITENTE:', 50);
+
+            doc.moveDown(0.5);
+
+            doc.fontSize(10)
+                .font('Helvetica')
+                .text(`NOMBRE: ${user?.name || ''}`, 50);
+
+            doc.moveDown(0.3);
+
+            // Contact, Location, Date in one line
+            const y1 = doc.y;
+            doc.text(`CONTACTO: ${user?.phone || ''}`, 50, y1);
+            doc.text(`UBICACION: ${details?.origin || ''}`, 220, y1);
+            doc.text(`FECHA: ${formattedDate}`, 420, y1);
+
+            doc.moveDown(2);
+
+            // DESTINATARIO Section
+            doc.fontSize(12)
+                .font('Helvetica-Bold')
+                .text('DESTINATARIO:', 50);
+
+            doc.moveDown(0.5);
+
+            doc.fontSize(10)
+                .font('Helvetica')
+                .text(`NOMBRE: ${details?.recipient?.name || ''}`, 50);
+
+            doc.moveDown(0.3);
+
+            // Contact and Location
+            const y2 = doc.y;
+            doc.text(`CONTACTO: ${details?.recipient?.phone || ''}`, 50, y2);
+            doc.text(`UBICACION: ${details?.destination || ''}`, 220, y2);
+
+            doc.moveDown(2);
+
+            // Build description
+            let description = '';
+            if (type === 'SHIPMENT') {
+                description = `Envío de paquetería desde ${details?.origin || 'N/A'} hasta ${details?.destination || 'N/A'}`;
+                if (details?.weight) {
+                    description += ` (${details.weight}kg)`;
+                }
+                if (details?.trackingNumber) {
+                    description += `\nNº Rastreo: ${details.trackingNumber}`;
+                }
+            } else if (type === 'TRANSFER') {
+                description = `Envío de dinero a ${details?.beneficiary || 'N/A'}`;
+            } else {
+                description = details?.description || 'Servicio';
+            }
+
+            // Table
+            const tableTop = doc.y;
+            const col1X = 50;
+            const col2X = 100;
+            const col3X = 330;
+            const col4X = 450;
+            const rowHeight = 60;
+
+            // Table Header
+            doc.rect(col1X, tableTop, 495, 25).fillAndStroke('#5F9EA0', '#5F9EA0');
+
+            doc.fillColor('white')
+                .fontSize(10)
+                .font('Helvetica-Bold')
+                .text('CANT.', col1X + 5, tableTop + 7, { width: 40, align: 'center' })
+                .text('DESCRIPCION', col2X + 5, tableTop + 7, { width: 220, align: 'center' })
+                .text('PRECIO UNIT.', col3X + 5, tableTop + 7, { width: 110, align: 'center' })
+                .text('IMPORTE', col4X + 5, tableTop + 7, { width: 90, align: 'center' });
+
+            // Row 1 - Data
+            const row1Y = tableTop + 25;
+            doc.rect(col1X, row1Y, 495, rowHeight).stroke();
+            doc.rect(col1X, row1Y, 50, rowHeight).stroke();
+            doc.rect(col2X, row1Y, 230, rowHeight).stroke();
+            doc.rect(col3X, row1Y, 120, rowHeight).stroke();
+            doc.rect(col4X, row1Y, 95, rowHeight).stroke();
+
+            doc.fillColor('black')
+                .fontSize(10)
+                .font('Helvetica')
+                .text('1', col1X + 5, row1Y + 20, { width: 40, align: 'center' })
+                .text(description, col2X + 5, row1Y + 10, { width: 220 })
+                .text(`${amount} ${currency || 'EUR'}`, col3X + 5, row1Y + 20, { width: 110, align: 'right' })
+                .text(`${amount} ${currency || 'EUR'}`, col4X + 5, row1Y + 20, { width: 85, align: 'right' });
+
+            // Row 2 - Empty
+            const row2Y = row1Y + rowHeight;
+            doc.rect(col1X, row2Y, 50, rowHeight).stroke();
+            doc.rect(col2X, row2Y, 230, rowHeight).stroke();
+            doc.rect(col3X, row2Y, 120, rowHeight).stroke();
+            doc.rect(col4X, row2Y, 95, rowHeight).stroke();
+
+            // Row 3 - Empty
+            const row3Y = row2Y + rowHeight;
+            doc.rect(col1X, row3Y, 50, rowHeight).stroke();
+            doc.rect(col2X, row3Y, 230, rowHeight).stroke();
+            doc.rect(col3X, row3Y, 120, rowHeight).stroke();
+            doc.rect(col4X, row3Y, 95, rowHeight).stroke();
+
+            // TOTAL
+            const totalY = row3Y + rowHeight + 20;
+            doc.moveTo(50, totalY).lineTo(545, totalY).stroke();
+
+            doc.fontSize(14)
+                .font('Helvetica-Bold')
+                .text(`TOTAL: ${amount} ${currency || 'EUR'}`, 50, totalY + 10, { width: 495, align: 'right' });
+
+            // Stamp/Seal (larger)
+            const stampPath = path.join(__dirname, '../assets/template.png');
+            if (fs.existsSync(stampPath)) {
+                doc.image(stampPath, 445, totalY + 50, { width: 150 }); // Increased from 100 to 150
+            }
+
+            doc.end();
+        } catch (error) {
+            reject(error);
         }
-    } catch (e) {
-        console.error("Error loading logo:", e);
-    }
-
-    // Load Stamp/Seal
-    let stampBuffer;
-    try {
-        const stampPath = path.join(__dirname, '../assets/template.png');
-        if (fs.existsSync(stampPath)) {
-            stampBuffer = fs.readFileSync(stampPath);
-        }
-    } catch (e) {
-        console.error("Error loading stamp:", e);
-    }
-
-    // Build description
-    let description = '';
-    if (type === 'SHIPMENT') {
-        description = `Envío de paquetería desde ${details?.origin || 'N/A'} hasta ${details?.destination || 'N/A'}`;
-        if (details?.weight) {
-            description += ` (${details.weight}kg)`;
-        }
-        if (details?.trackingNumber) {
-            description += `\nNº Rastreo: ${details.trackingNumber}`;
-        }
-    } else if (type === 'TRANSFER') {
-        description = `Envío de dinero a ${details?.beneficiary || 'N/A'}`;
-    } else {
-        description = details?.description || 'Servicio';
-    }
-
-    const doc = new Document({
-        sections: [{
-            properties: {
-                page: {
-                    margin: {
-                        top: 1000,
-                        right: 1200,
-                        bottom: 1000,
-                        left: 1200,
-                    },
-                },
-            },
-            children: [
-                // Logo
-                new Paragraph({
-                    children: [
-                        logoBuffer ? new ImageRun({
-                            data: logoBuffer,
-                            transformation: {
-                                width: 70,
-                                height: 70,
-                            },
-                        }) : new TextRun({ text: "bb", bold: true, size: 48, color: "0F766E" }),
-                    ],
-                    spacing: { after: 50 }
-                }),
-
-                // Company Name
-                new Paragraph({
-                    children: [new TextRun({ text: "BODIPO BUSINESS", size: 18 })],
-                    spacing: { after: 600 }
-                }),
-
-                // REMITENTE Section
-                new Paragraph({
-                    children: [new TextRun({ text: "REMITENTE:", bold: true, size: 20 })],
-                    spacing: { after: 150 }
-                }),
-
-                new Paragraph({
-                    children: [new TextRun({ text: `NOMBRE: ${user?.name || ''}`, size: 20 })],
-                    spacing: { after: 150 }
-                }),
-
-                // Contact, Location, Date
-                new Table({
-                    width: { size: 100, type: WidthType.PERCENTAGE },
-                    borders: {
-                        top: { style: BorderStyle.NONE },
-                        bottom: { style: BorderStyle.NONE },
-                        left: { style: BorderStyle.NONE },
-                        right: { style: BorderStyle.NONE },
-                        insideVertical: { style: BorderStyle.NONE },
-                        insideHorizontal: { style: BorderStyle.NONE },
-                    },
-                    rows: [
-                        new TableRow({
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: `CONTACTO: ${user?.phone || ''}`, size: 20 })]
-                                    })],
-                                    width: { size: 40, type: WidthType.PERCENTAGE },
-                                    borders: {
-                                        top: { style: BorderStyle.NONE },
-                                        bottom: { style: BorderStyle.NONE },
-                                        left: { style: BorderStyle.NONE },
-                                        right: { style: BorderStyle.NONE },
-                                    }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: `UBICACION: ${details?.origin || ''}`, size: 20 })]
-                                    })],
-                                    width: { size: 40, type: WidthType.PERCENTAGE },
-                                    borders: {
-                                        top: { style: BorderStyle.NONE },
-                                        bottom: { style: BorderStyle.NONE },
-                                        left: { style: BorderStyle.NONE },
-                                        right: { style: BorderStyle.NONE },
-                                    }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: `FECHA: ${formattedDate}`, size: 20 })]
-                                    })],
-                                    width: { size: 20, type: WidthType.PERCENTAGE },
-                                    borders: {
-                                        top: { style: BorderStyle.NONE },
-                                        bottom: { style: BorderStyle.NONE },
-                                        left: { style: BorderStyle.NONE },
-                                        right: { style: BorderStyle.NONE },
-                                    }
-                                }),
-                            ],
-                        }),
-                    ],
-                }),
-
-                new Paragraph({ text: "", spacing: { after: 400 } }),
-
-                // DESTINATARIO Section
-                new Paragraph({
-                    children: [new TextRun({ text: "DESTINATARIO:", bold: true, size: 20 })],
-                    spacing: { after: 150 }
-                }),
-
-                new Paragraph({
-                    children: [new TextRun({ text: `NOMBRE: ${details?.recipient?.name || ''}`, size: 20 })],
-                    spacing: { after: 150 }
-                }),
-
-                new Table({
-                    width: { size: 100, type: WidthType.PERCENTAGE },
-                    borders: {
-                        top: { style: BorderStyle.NONE },
-                        bottom: { style: BorderStyle.NONE },
-                        left: { style: BorderStyle.NONE },
-                        right: { style: BorderStyle.NONE },
-                        insideVertical: { style: BorderStyle.NONE },
-                        insideHorizontal: { style: BorderStyle.NONE },
-                    },
-                    rows: [
-                        new TableRow({
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: `CONTACTO: ${details?.recipient?.phone || ''}`, size: 20 })]
-                                    })],
-                                    width: { size: 40, type: WidthType.PERCENTAGE },
-                                    borders: {
-                                        top: { style: BorderStyle.NONE },
-                                        bottom: { style: BorderStyle.NONE },
-                                        left: { style: BorderStyle.NONE },
-                                        right: { style: BorderStyle.NONE },
-                                    }
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: `UBICACION: ${details?.destination || ''}`, size: 20 })]
-                                    })],
-                                    width: { size: 60, type: WidthType.PERCENTAGE },
-                                    borders: {
-                                        top: { style: BorderStyle.NONE },
-                                        bottom: { style: BorderStyle.NONE },
-                                        left: { style: BorderStyle.NONE },
-                                        right: { style: BorderStyle.NONE },
-                                    }
-                                }),
-                            ],
-                        }),
-                    ],
-                }),
-
-                new Paragraph({ text: "", spacing: { after: 400 } }),
-
-                // Items Table (con 3 filas exactamente como en el modelo)
-                new Table({
-                    width: { size: 100, type: WidthType.PERCENTAGE },
-                    rows: [
-                        // Header
-                        new TableRow({
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: "CANT.", bold: true, size: 20, color: "FFFFFF" })],
-                                        alignment: AlignmentType.CENTER
-                                    })],
-                                    shading: { fill: "5F9EA0" },
-                                    width: { size: 10, type: WidthType.PERCENTAGE },
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: "DESCRIPCION", bold: true, size: 20, color: "FFFFFF" })],
-                                        alignment: AlignmentType.CENTER
-                                    })],
-                                    shading: { fill: "5F9EA0" },
-                                    width: { size: 50, type: WidthType.PERCENTAGE },
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: "PRECIO UNIT.", bold: true, size: 20, color: "FFFFFF" })],
-                                        alignment: AlignmentType.CENTER
-                                    })],
-                                    shading: { fill: "5F9EA0" },
-                                    width: { size: 20, type: WidthType.PERCENTAGE },
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({
-                                        children: [new TextRun({ text: "IMPORTE", bold: true, size: 20, color: "FFFFFF" })],
-                                        alignment: AlignmentType.CENTER
-                                    })],
-                                    shading: { fill: "5F9EA0" },
-                                    width: { size: 20, type: WidthType.PERCENTAGE },
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                            ],
-                        }),
-                        // Fila 1 - con datos
-                        new TableRow({
-                            height: { value: 1000, rule: 'atLeast' },
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph({ text: "1", alignment: AlignmentType.CENTER, size: 20 })],
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: description, size: 20 })],
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: `${amount} ${currency || 'EUR'}`, alignment: AlignmentType.RIGHT, size: 20 })],
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph({ text: `${amount} ${currency || 'EUR'}`, alignment: AlignmentType.RIGHT, size: 20 })],
-                                    verticalAlign: VerticalAlign.CENTER
-                                }),
-                            ],
-                        }),
-                        // Fila 2 - vacía
-                        new TableRow({
-                            height: { value: 1000, rule: 'atLeast' },
-                            children: [
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                            ],
-                        }),
-                        // Fila 3 - vacía
-                        new TableRow({
-                            height: { value: 1000, rule: 'atLeast' },
-                            children: [
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                                new TableCell({ children: [new Paragraph({ text: "" })], verticalAlign: VerticalAlign.CENTER }),
-                            ],
-                        }),
-                    ],
-                }),
-
-                new Paragraph({ text: "", spacing: { after: 300 } }),
-
-                // TOTAL
-                new Paragraph({
-                    children: [
-                        new TextRun({ text: `TOTAL: ${amount} ${currency || 'EUR'}`, bold: true, size: 24 })
-                    ],
-                    alignment: AlignmentType.RIGHT,
-                    spacing: { before: 200, after: 800 },
-                    border: {
-                        top: { color: "000000", size: 6, style: BorderStyle.SINGLE },
-                    }
-                }),
-
-                // Sello circular
-                new Paragraph({
-                    children: [
-                        stampBuffer ? new ImageRun({
-                            data: stampBuffer,
-                            transformation: {
-                                width: 100,
-                                height: 100,
-                            },
-                        }) : new TextRun({ text: "" }),
-                    ],
-                    alignment: AlignmentType.RIGHT,
-                    spacing: { before: 400 }
-                }),
-            ],
-        }],
     });
-
-    return await Packer.toBuffer(doc);
 };
+
+// Keep old name for compatibility
+export const generateWordReceipt = generatePDFReceipt;
