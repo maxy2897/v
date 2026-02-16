@@ -19,6 +19,10 @@ const ShipmentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    recipient: {
+        name: { type: String, required: true },
+        phone: { type: String }
+    },
     weight: {
         type: Number,
         required: true,

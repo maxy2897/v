@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
+    idNumber: {
+        type: String,
+        trim: true,
+    },
     discountEligible: {
         type: Boolean,
         default: true,

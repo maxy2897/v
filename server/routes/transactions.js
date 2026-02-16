@@ -19,6 +19,19 @@ router.get('/', protect, admin, async (req, res) => {
 });
 
 /**
+ * @desc    Get logged in user transactions
+ * @route   GET /api/transactions/mine
+ */
+router.get('/mine', protect, async (req, res) => {
+    try {
+        const transactions = await Transaction.find({ userId: req.user._id }).sort({ createdAt: -1 });
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching transactions' });
+    }
+});
+
+/**
  * @desc    Download receipt word doc
  * @route   GET /api/transactions/:id/receipt
  */

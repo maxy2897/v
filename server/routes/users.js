@@ -35,6 +35,7 @@ router.put(
         body('phone').optional().trim(),
         body('address').optional().trim(),
         body('username').optional().trim(),
+        body('idNumber').optional().trim(),
     ],
     async (req, res) => {
         const errors = validationResult(req);
@@ -58,6 +59,7 @@ router.put(
                 if (req.body.username !== undefined) {
                     user.username = req.body.username.trim() === '' ? undefined : req.body.username;
                 }
+                if (req.body.idNumber !== undefined) user.idNumber = req.body.idNumber;
 
                 if (req.file) {
                     // Normalizar el path para usar barras diagonales (compatibilidad URL)
@@ -77,6 +79,7 @@ router.put(
                     address: updatedUser.address,
                     username: updatedUser.username,
                     profileImage: updatedUser.profileImage,
+                    idNumber: updatedUser.idNumber,
                     discountEligible: updatedUser.discountEligible,
                     role: updatedUser.role, // Asegurar que el rol siempre se devuelva
                 });
@@ -128,7 +131,7 @@ router.post(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { trackingNumber, origin, destination, weight, price, description } =
+        const { trackingNumber, origin, destination, weight, price, description, recipient } =
             req.body;
 
         try {
@@ -140,6 +143,7 @@ router.post(
                 weight,
                 price,
                 description,
+                recipient
             });
 
             // Crear registro de transacción para recibo
@@ -152,14 +156,16 @@ router.post(
                 user: {
                     name: req.user.name,
                     email: req.user.email,
-                    phone: req.user.phone
+                    phone: req.user.phone,
+                    idNumber: req.user.idNumber
                 },
                 details: {
                     trackingNumber,
                     origin,
                     destination,
                     description,
-                    weight
+                    weight,
+                    recipient
                 }
             });
 

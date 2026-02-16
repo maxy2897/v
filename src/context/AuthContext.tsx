@@ -9,6 +9,7 @@ interface User {
     address?: string;
     username?: string;
     profileImage?: string;
+    idNumber?: string;
     discountEligible: boolean;
     role?: string;
     token?: string;
