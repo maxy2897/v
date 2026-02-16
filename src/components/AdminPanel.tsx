@@ -60,6 +60,42 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       alert('Error al descargar recibo');
     }
   };
+
+  const exportToExcel = () => {
+    try {
+      // Create CSV content
+      const headers = ['Fecha', 'Hora', 'Tipo', 'Usuario', 'Teléfono', 'Detalle', 'Monto', 'Moneda'];
+      const rows = transactions.map(tx => [
+        new Date(tx.createdAt).toLocaleDateString(),
+        new Date(tx.createdAt).toLocaleTimeString(),
+        tx.type === 'SHIPMENT' ? 'Envío' : tx.type === 'TRANSFER' ? 'Dinero' : 'Tienda',
+        tx.user?.name || 'N/A',
+        tx.user?.phone || 'N/A',
+        tx.type === 'SHIPMENT' ? `Rastreo: ${tx.details?.trackingNumber}` :
+          tx.type === 'TRANSFER' ? `Dest: ${tx.details?.beneficiary}` : 'Compra',
+        tx.amount,
+        tx.currency || '€'
+      ]);
+
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `transacciones_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (e) {
+      alert('Error al exportar a Excel');
+    }
+  };
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     color: '',
@@ -619,6 +655,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
             ) : activeTab === 'transactions' ? (
               <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-black text-gray-800">📊 Transacciones</h3>
+                    <button
+                      onClick={exportToExcel}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                      Exportar Excel
+                    </button>
+                  </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
