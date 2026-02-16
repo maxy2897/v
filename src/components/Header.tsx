@@ -4,7 +4,7 @@ import { AppConfig } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
-import { BASE_URL } from '../../services/api';
+import { BASE_URL } from '../services/api';
 
 interface HeaderProps {
   onOpenRegister: () => void;

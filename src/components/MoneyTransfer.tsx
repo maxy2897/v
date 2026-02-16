@@ -106,7 +106,7 @@ const MoneyTransfer: React.FC = () => {
       data.append('direction', direction);
       data.append('proofImage', file);
 
-      await import('../../services/api').then(module => module.createTransfer(data));
+      await import('../services/api').then(module => module.createTransfer(data));
 
       alert(t('transfer.alert.success'));
 

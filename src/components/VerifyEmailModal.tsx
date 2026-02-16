@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
-import { BASE_URL } from '../../services/api';
+import { BASE_URL } from '../services/api';
 
 interface VerifyEmailModalProps {
     isOpen: boolean;

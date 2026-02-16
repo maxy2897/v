@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
-import * as api from '../../services/api';
-import { BASE_URL } from '../../services/api';
+import * as api from '../services/api';
+import { BASE_URL } from '../services/api';
 
 interface Shipment {
     _id: string;

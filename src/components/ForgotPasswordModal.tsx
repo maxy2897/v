@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
-import { BASE_URL } from '../../services/api';
+import { BASE_URL } from '../services/api';
 
 interface ForgotPasswordModalProps {
     isOpen: boolean;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getGeminiResponse } from '../../services/geminiService';
+import { getGeminiResponse } from '../services/geminiService';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { ChatMessage, AppConfig } from '../../types';
