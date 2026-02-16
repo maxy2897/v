@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import { signInWithGoogle } from '../firebase';
+
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -120,8 +122,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               type="button"
               onClick={async () => {
                 try {
-                  const { signInWithGoogle } = await import('../firebase');
+                  console.log('Initiating Google Register...');
                   const user = await signInWithGoogle();
+                  console.log('Google Register success, creating account...', user);
                   await registerWithSocial({
                     name: user.displayName,
                     email: user.email,
@@ -131,10 +134,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                   });
                   onClose();
                   alert(t('register.success'));
-                } catch (error) {
-                  alert('Error con Google: ' + error);
+                } catch (error: any) {
+                  console.error('Google Register Error:', error);
+                  alert('Error con Google: ' + (error.message || error));
                 }
               }}
+
               className="flex items-center justify-center gap-2 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors group"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">

@@ -46,7 +46,7 @@ export interface DynamicConfig {
         };
     };
     contact: {
-        phones: { es: string; gq: string };
+        phones: { es: string; gq: string; cm: string };
         addresses: { es: string; gq: string };
     };
     bank: {

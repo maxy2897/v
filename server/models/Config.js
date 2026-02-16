@@ -54,7 +54,8 @@ const ConfigSchema = new mongoose.Schema({
     contact: {
         phones: {
             es: { type: String, default: "+34 600 000 000" },
-            gq: { type: String, default: "+240 222 000 000" }
+            gq: { type: String, default: "+240 222 000 000" },
+            cm: { type: String, default: "+237 6 87 52 88 54" }
         },
         addresses: {
             es: { type: String, default: "Calle Ejemplo, 123, Madrid" },

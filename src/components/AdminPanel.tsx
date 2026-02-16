@@ -115,6 +115,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
               <button
                 onClick={onClose}
                 className="md:hidden text-white/50 hover:text-white"
+                aria-label="Cerrar menú"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
@@ -481,6 +482,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.contact?.phones?.gq || ''}
                             onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, gq: e.target.value } } } as any)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Teléfono Camerún 🇨🇲</label>
+                          <input
+                            aria-label="Teléfono Camerún"
+                            type="text"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
+                            value={appConfig?.contact?.phones?.cm || ''}
+                            onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, cm: e.target.value } } } as any)}
                           />
                         </div>
                         <div>

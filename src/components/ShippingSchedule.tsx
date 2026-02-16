@@ -7,9 +7,13 @@ const ShippingSchedule: React.FC = () => {
   // Lógica de fechas dinámica
   const today = new Date();
 
+  // Verify config state
+  console.log('ShippingSchedule: appConfig state:', appConfig);
+
   // Obtener fechas desde la configuración o usar defaults
-  const nextAir = appConfig?.dates.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture) : null;
-  const nextSea = appConfig?.dates.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture) : null;
+  const nextAir = appConfig?.dates?.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture) : null;
+  const nextSea = appConfig?.dates?.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture) : null;
+
 
   // Construir lista dinámica
   const dynamicSchedule = [];

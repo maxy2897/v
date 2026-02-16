@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import { signInWithGoogle } from '../firebase';
+
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -91,8 +93,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                             type="button"
                             onClick={async () => {
                                 try {
-                                    const { signInWithGoogle } = await import('../firebase');
+                                    console.log('Initiating Google Login...');
                                     const user = await signInWithGoogle();
+                                    console.log('Google Login success, registering with social...', user);
                                     await registerWithSocial({
                                         name: user.displayName,
                                         email: user.email,
@@ -100,10 +103,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                                         provider: 'google',
                                         uid: user.uid
                                     });
+                                    console.log('Social registration success, closing modal...');
                                     onClose();
                                     navigate('/dashboard');
-                                } catch (error) {
-                                    alert('Error con Google: ' + error);
+                                } catch (error: any) {
+                                    console.error('Google Login Error:', error);
+                                    alert('Error con Google: ' + (error.message || error));
                                 }
                             }}
                             className="flex items-center justify-center gap-3 py-4 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors group"

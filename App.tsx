@@ -223,7 +223,7 @@ const AppContent: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Camerún</p>
-                      <p className="text-sm font-bold">+237 6 87 52 88 54</p>
+                      <p className="text-sm font-bold">{appConfig?.contact?.phones?.cm || '+237 6 87 52 88 54'}</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
