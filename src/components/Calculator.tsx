@@ -139,11 +139,6 @@ const Calculator: React.FC = () => {
       if (res.transactionId) {
         console.log('Transaction ID found:', res.transactionId);
         setLastTransactionId(res.transactionId);
-
-        // Automatically download the receipt
-        setTimeout(() => {
-          downloadReceipt(res.transactionId);
-        }, 500); // Small delay to ensure state updates
       } else {
         console.warn('No transactionId in response!');
       }
