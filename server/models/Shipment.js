@@ -50,9 +50,8 @@ const ShipmentSchema = new mongoose.Schema({
 });
 
 // Actualizar updatedAt antes de guardar
-ShipmentSchema.pre('save', function (next) {
+ShipmentSchema.pre('save', function () {
     this.updatedAt = Date.now();
-    next();
 });
 
 export default mongoose.model('Shipment', ShipmentSchema);
