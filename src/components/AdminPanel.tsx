@@ -15,7 +15,6 @@ import { useSettings } from '../context/SettingsContext';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig } = useSettings();
-  const { appConfig, updateConfig } = useSettings();
   const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions'>('products');
   const [transactions, setTransactions] = useState<any[]>([]);
 
@@ -641,7 +640,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             </td>
                             <td className="p-4">
                               <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${tx.type === 'SHIPMENT' ? 'bg-blue-100 text-blue-700' :
-                                  tx.type === 'TRANSFER' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'
+                                tx.type === 'TRANSFER' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'
                                 }`}>
                                 {tx.type === 'SHIPMENT' ? 'Envío' : tx.type === 'TRANSFER' ? 'Dinero' : 'Tienda'}
                               </span>
