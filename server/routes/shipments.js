@@ -1,6 +1,7 @@
 import express from 'express';
 import { protect } from '../middleware/auth.js';
 import Shipment from '../models/Shipment.js';
+import Transaction from '../models/Transaction.js';
 
 const router = express.Router();
 
@@ -50,7 +51,33 @@ router.post('/', protect, async (req, res) => {
 
         await shipment.save();
 
-        res.status(201).json(shipment);
+        // Create transaction record for receipt generation
+        const transaction = await Transaction.create({
+            type: 'SHIPMENT',
+            referenceId: shipment._id,
+            userId: req.user._id,
+            onModel: 'Shipment',
+            amount: price,
+            user: {
+                name: req.user.name,
+                email: req.user.email,
+                phone: req.user.phone,
+                idNumber: req.user.idNumber
+            },
+            details: {
+                trackingNumber,
+                origin,
+                destination,
+                description,
+                weight,
+                recipient
+            }
+        });
+
+        res.status(201).json({
+            ...shipment.toObject(),
+            transactionId: transaction._id
+        });
     } catch (error) {
         console.error('Error creating shipment:', error);
         res.status(500).json({ message: 'Error creating shipment', error: error.message });

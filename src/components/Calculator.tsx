@@ -100,7 +100,7 @@ const Calculator: React.FC = () => {
       }
     } else {
       if (!userData.fullName || !userData.phone || !userData.idNumber) {
-        alert(t('calc.alert.params'));
+        alert('Por favor completa todos tus datos');
         return;
       }
     }
@@ -139,6 +139,11 @@ const Calculator: React.FC = () => {
       if (res.transactionId) {
         console.log('Transaction ID found:', res.transactionId);
         setLastTransactionId(res.transactionId);
+
+        // Automatically download the receipt
+        setTimeout(() => {
+          downloadReceipt(res.transactionId);
+        }, 500); // Small delay to ensure state updates
       } else {
         console.warn('No transactionId in response!');
       }
@@ -151,12 +156,13 @@ const Calculator: React.FC = () => {
     }
   };
 
-  const downloadReceipt = async () => {
-    if (!lastTransactionId) return;
+  const downloadReceipt = async (transactionId?: string) => {
+    const txId = transactionId || lastTransactionId;
+    if (!txId) return;
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions/${lastTransactionId}/receipt`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions/${txId}/receipt`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Error downloading');
@@ -164,7 +170,7 @@ const Calculator: React.FC = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `recibo-${lastTransactionId}.docx`;
+      a.download = `factura-${txId}.docx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -367,7 +373,7 @@ const Calculator: React.FC = () => {
 
               {/* Download Button moved here for visibility */}
               <button
-                onClick={downloadReceipt}
+                onClick={() => downloadReceipt()}
                 disabled={!lastTransactionId}
                 className={`w-full bg-white text-[#005f6b] py-4 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-teal-50 transition-all shadow-xl mb-6 flex items-center justify-center gap-2 ${!lastTransactionId ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
