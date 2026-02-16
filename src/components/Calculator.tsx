@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { PackageInfo } from '../../types';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 
 const Calculator: React.FC = () => {
   const { t, appConfig } = useSettings();
+  const { user, isAuthenticated } = useAuth();
   const [calcMode, setCalcMode] = useState<'kg' | 'bulto' | 'documento'>('kg');
   const [lastTransactionId, setLastTransactionId] = useState<string | null>(null);
   const [info, setInfo] = useState<PackageInfo>({
@@ -31,6 +33,22 @@ const Calculator: React.FC = () => {
     phone: '',
     idNumber: ''
   });
+
+  const [recipientData, setRecipientData] = useState({
+    name: '',
+    phone: ''
+  });
+
+  // Auto-fill sender data if logged in
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      setUserData({
+        fullName: user.name || '',
+        phone: user.phone || '',
+        idNumber: user.idNumber || ''
+      });
+    }
+  }, [isAuthenticated, user]);
 
   const calculateShipping = () => {
     setGeneratedCode(null);
@@ -73,9 +91,18 @@ const Calculator: React.FC = () => {
 
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userData.fullName || !userData.phone || !userData.idNumber) {
-      alert(t('calc.alert.params'));
-      return;
+
+    // Different validation for authenticated vs non-authenticated users
+    if (isAuthenticated) {
+      if (!recipientData.name || !recipientData.phone) {
+        alert('Por favor completa los datos del destinatario');
+        return;
+      }
+    } else {
+      if (!userData.fullName || !userData.phone || !userData.idNumber) {
+        alert(t('calc.alert.params'));
+        return;
+      }
     }
 
     setIsRegistering(true);
@@ -98,7 +125,8 @@ const Calculator: React.FC = () => {
         destination: info.destination,
         weight: info.weight || (calcMode === 'bulto' ? bultoType : 1), // Fallback
         price: total?.value || 0,
-        description: `Envío ${calcMode} desde ${info.origin}`
+        description: `Envío ${calcMode} desde ${info.origin}`,
+        recipient: isAuthenticated ? recipientData : undefined
       };
 
       const res = await import('../services/api').then(m => m.createShipment(shipmentData));
@@ -155,6 +183,7 @@ const Calculator: React.FC = () => {
     setGeneratedCode(null);
     setShowForm(false);
     setUserData({ fullName: '', phone: '', idNumber: '' });
+    setRecipientData({ name: '', phone: '' });
     setPayLocation('Origen');
     setPayMethod('Almacén');
   };
@@ -365,9 +394,30 @@ const Calculator: React.FC = () => {
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{t('calc.form.subtitle')}</p>
               </div>
               <form onSubmit={handleFinalSubmit} className="space-y-5">
-                <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.name')} value={userData.fullName} onChange={e => setUserData({ ...userData, fullName: e.target.value })} />
-                <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.phone')} value={userData.phone} onChange={e => setUserData({ ...userData, phone: e.target.value })} />
-                <input aria-label={t('calc.form.id')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.id')} value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
+                {isAuthenticated ? (
+                  <>
+                    <div className="bg-teal-50 p-4 rounded-2xl border border-teal-100 mb-4">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-teal-800 mb-2">{t('calc.sender_info') || 'Datos del Remitente'}</p>
+                      <div className="grid grid-cols-1 gap-2 text-sm text-gray-700">
+                        <p><span className="font-bold">Nombre:</span> {userData.fullName}</p>
+                        <p><span className="font-bold">Teléfono:</span> {userData.phone}</p>
+                        <p><span className="font-bold">DNI/ID:</span> {userData.idNumber}</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-bold text-gray-800 mb-3">{t('calc.recipient_info') || 'Datos del Destinatario (Quien recibe)'}</h4>
+                      <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all mb-3" placeholder="Nombre completo del destinatario" value={recipientData.name} onChange={e => setRecipientData({ ...recipientData, name: e.target.value })} />
+                      <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder="Teléfono del destinatario" value={recipientData.phone} onChange={e => setRecipientData({ ...recipientData, phone: e.target.value })} />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.name')} value={userData.fullName} onChange={e => setUserData({ ...userData, fullName: e.target.value })} />
+                    <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.phone')} value={userData.phone} onChange={e => setUserData({ ...userData, phone: e.target.value })} />
+                    <input aria-label={t('calc.form.id')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.id')} value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
+                  </>
+                )}
 
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-[10px] font-black uppercase tracking-widest text-[#007e85] mb-4">{t('calc.form.pay_confirm')}</p>
