@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { signInWithGoogle } from '../firebase';
+import { PhoneInput } from './PhoneInput';
 
 
 interface RegisterModalProps {
@@ -216,14 +217,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <label htmlFor="reg-phone" className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">{t('register.phone')}</label>
-                <input
-                  id="reg-phone"
-                  type="tel"
-                  name="phone"
+                <PhoneInput
                   value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-sm"
-                  placeholder="+34..."
+                  onChange={(value) => setFormData({ ...formData, phone: value })}
+                  placeholder="Número de teléfono"
                 />
               </div>
             </div>

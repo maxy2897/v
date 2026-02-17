@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { PackageInfo } from '../../types';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
+import { PhoneInput } from './PhoneInput';
+
 
 const Calculator: React.FC = () => {
   const { t, appConfig } = useSettings();
@@ -472,13 +474,23 @@ const Calculator: React.FC = () => {
                     <div>
                       <h4 className="font-bold text-gray-800 mb-3">{t('calc.recipient_info') || 'Datos del Destinatario (Quien recibe)'}</h4>
                       <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all mb-3" placeholder="Nombre completo del destinatario" value={recipientData.name} onChange={e => setRecipientData({ ...recipientData, name: e.target.value })} />
-                      <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder="Teléfono del destinatario" value={recipientData.phone} onChange={e => setRecipientData({ ...recipientData, phone: e.target.value })} />
+                      <PhoneInput
+                        value={recipientData.phone}
+                        onChange={(value) => setRecipientData({ ...recipientData, phone: value })}
+                        placeholder="Teléfono del destinatario"
+                        required
+                      />
                     </div>
                   </>
                 ) : (
                   <>
                     <input aria-label={t('calc.form.name')} required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.name')} value={userData.fullName} onChange={e => setUserData({ ...userData, fullName: e.target.value })} />
-                    <input aria-label={t('calc.form.phone')} required type="tel" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder={t('calc.form.phone')} value={userData.phone} onChange={e => setUserData({ ...userData, phone: e.target.value })} />
+                    <PhoneInput
+                      value={userData.phone}
+                      onChange={(value) => setUserData({ ...userData, phone: value })}
+                      placeholder={t('calc.form.phone')}
+                      required
+                    />
                     <input aria-label="DNI, NIE o Pasaporte" required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder="DNI, NIE o Pasaporte" value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
                   </>
                 )}
