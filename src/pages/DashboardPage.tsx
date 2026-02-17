@@ -444,11 +444,11 @@ const DashboardPage: React.FC = () => {
 
                             {activeTab === 'shipments' ? (
                                 <>
-                                    {/* Tarjeta Informativa Documentos (Movida desde Calendario) */}
-                                    {/* Tarjeta Informativa Documentos (Movida desde Calendario) */}
+                                    {/* Tarjeta Informativa Documentos */}
                                     <button
+                                        type="button"
                                         onClick={() => navigate('/tarifas?mode=documento&origin=Guinea Ecuatorial')}
-                                        className="w-full mb-8 p-6 md:p-8 rounded-[2rem] border-2 border-dashed border-teal-200 bg-teal-50/50 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left hover:bg-teal-50 hover:border-teal-300 hover:scale-[1.01] transition-all cursor-pointer group"
+                                        className="w-full mb-8 p-6 md:p-8 rounded-[2rem] border-2 border-dashed border-teal-200 bg-teal-50 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left hover:bg-teal-100 hover:border-teal-300 hover:scale-[1.01] transition-all cursor-pointer group"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-600 shadow-sm shrink-0 group-hover:scale-110 transition-transform">
