@@ -192,7 +192,7 @@ const DashboardPage: React.FC = () => {
         try {
             const userStr = localStorage.getItem('user');
             const token = userStr ? JSON.parse(userStr).token : '';
-            const res = await fetch(`${BASE_URL}/transactions/${transactionId}/receipt`, {
+            const res = await fetch(`${BASE_URL}/api/transactions/${transactionId}/receipt`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (!res.ok) throw new Error('Error downloading');
@@ -200,7 +200,7 @@ const DashboardPage: React.FC = () => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `factura-${transactionId}.docx`;
+            a.download = `factura-${transactionId}.pdf`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
