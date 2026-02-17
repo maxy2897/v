@@ -590,7 +590,7 @@ const DashboardPage: React.FC = () => {
                                             >
                                                 <div>
                                                     <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">
-                                                        {tx.type === 'SHIPMENT' ? (t('dash.invoices.shipmnet') || 'Envío') : (t('dash.invoices.transfer') || 'Transferencia')}
+                                                        {tx.type === 'SHIPMENT' ? (t('dash.invoices.shipment') || 'Envío') : (t('dash.invoices.transfer') || 'Transferencia')}
                                                     </p>
                                                     <p className="text-lg font-black text-[#00151a]">
                                                         {tx.amount} {tx.currency || 'FCFA'}
