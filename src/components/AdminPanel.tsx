@@ -218,8 +218,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     waLink: 'https://wa.me/34641992110'
   });
 
-  if (!isOpen) return null;
-
   // Prevent background scroll when modal is open
   React.useEffect(() => {
     if (isOpen) {
@@ -231,6 +229,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const resizeImage = (file: File): Promise<string> => {
     return new Promise((resolve) => {
