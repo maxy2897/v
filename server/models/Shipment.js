@@ -33,7 +33,7 @@ const ShipmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pendiente', 'En Tránsito', 'En Aduana', 'Entregado'],
+        enum: ['Pendiente', 'Recogido', 'En tránsito', 'En Aduanas', 'Llegado a destino', 'Entregado', 'Cancelado'],
         default: 'Pendiente',
     },
     description: {
