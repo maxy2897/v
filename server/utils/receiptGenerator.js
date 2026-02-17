@@ -132,7 +132,7 @@ export const generatePDFReceipt = async (transaction) => {
             if (type === 'SHIPMENT_BULK' && details?.shipments) {
                 items = details.shipments.map((s, index) => ({
                     index: index + 1,
-                    description: `Envío a ${s.destination} (${s.weight}kg) - ${s.trackingNumber}`,
+                    description: `Envío a ${s.destination} - ${s.recipient?.name || 'N/A'} (${s.weight}kg)\nNº: ${s.trackingNumber}`,
                     price: s.price,
                     currency: s.currency || currency || 'EUR' // Fallback
                 }));

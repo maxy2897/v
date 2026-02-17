@@ -525,6 +525,12 @@ const Calculator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      // Validate current shipment data
+                      if (!total || total.value === 0) {
+                        alert('Primero calcula el costo del envío actual');
+                        return;
+                      }
+
                       // Add current shipment to list
                       const currentShipment = {
                         origin: info.origin,
@@ -543,14 +549,13 @@ const Calculator: React.FC = () => {
 
                       setShipmentList([...shipmentList, currentShipment]);
 
-                      // Reset forms for next entry (mostly recipient and details)
+                      // Reset ONLY recipient data for next entry, keep form open
                       setRecipientData({ name: '', phone: '' });
-                      setShowForm(false); // Optionally keep form open but reset fields? 
-                      // Better to go back to calculator to add another package
+                      // Reset calculation to force new calculation
                       setTotal(null);
-                      setInfo({ ...info, weight: 0 });
-                      // User can now calculate another one
-                      alert('Envío añadido a la lista. Puedes calcular otro paquete o finalizar el registro.');
+                      setInfo({ ...info, weight: 0, destination: 'Malabo' });
+
+                      alert('✅ Envío añadido. Calcula el siguiente paquete y completa el destinatario.');
                     }}
                     className="bg-teal-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-700 transition"
                   >
