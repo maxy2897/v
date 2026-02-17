@@ -47,6 +47,9 @@ const ShipmentSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    deliveredAt: {
+        type: Date,
+    },
 });
 
 // Actualizar updatedAt antes de guardar

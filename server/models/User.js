@@ -64,6 +64,11 @@ const UserSchema = new mongoose.Schema({
     },
 });
 
+// Virtual for isAdmin
+UserSchema.virtual('isAdmin').get(function () {
+    return this.role === 'admin';
+});
+
 // Encriptar password antes de guardar
 UserSchema.pre('save', async function () {
     if (!this.isModified('password')) {
