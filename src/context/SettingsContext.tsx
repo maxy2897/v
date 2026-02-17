@@ -187,6 +187,9 @@ const translations: Record<Language, Record<string, string>> = {
         'calc.success.new_calc': 'Nuevo Envío',
         'calc.alert.params': 'Por favor, rellena todos los datos personales.',
         'calc.alert.copied': 'Código copiado al portapapeles',
+        'calc.sender_info': 'Datos del Remitente',
+        'calc.recipient_info': 'Datos del Destinatario',
+
 
         // Services
         'services.routes_badge': 'Rutas Disponibles 2026',
@@ -517,6 +520,9 @@ const translations: Record<Language, Record<string, string>> = {
         'calc.success.new_calc': 'New Shipment',
         'calc.alert.params': 'Please fill in all personal data.',
         'calc.alert.copied': 'Code copied to clipboard',
+        'calc.sender_info': 'Sender Information',
+        'calc.recipient_info': 'Recipient Information',
+
 
         // Services
         'services.routes_badge': 'Available Routes 2026',
@@ -846,6 +852,9 @@ const translations: Record<Language, Record<string, string>> = {
         'calc.success.new_calc': 'Nouvelle Expédition',
         'calc.alert.params': 'Veuillez remplir toutes les données personnelles.',
         'calc.alert.copied': 'Code copié dans le presse-papiers',
+        'calc.sender_info': 'Informations de l\'Expéditeur',
+        'calc.recipient_info': 'Informations du Destinataire',
+
 
         // Services
         'services.routes_badge': 'Routes Disponibles 2026',
