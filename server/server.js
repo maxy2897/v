@@ -12,6 +12,7 @@ import shipmentRoutes from './routes/shipments.js';
 import adminRoutes from './routes/admin.js';
 import reportRoutes from './routes/reports.js';
 import configRoutes from './routes/config.js';
+import notificationRoutes from './routes/notifications.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,6 +53,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/config', configRoutes);
 import transactionRoutes from './routes/transactions.js';
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Servir carpeta de uploads estáticamente
 const uploadsDir = join(__dirname, '../uploads');
