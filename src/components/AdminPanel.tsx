@@ -220,6 +220,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
   if (!isOpen) return null;
 
+  // Prevent background scroll when modal is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const resizeImage = (file: File): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -296,8 +308,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       <div className="relative bg-white w-full max-w-6xl h-full md:h-[85vh] rounded-none md:rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in duration-300">
 
         {/* Sidebar Navigation */}
-        <aside className="w-full md:w-64 bg-[#00151a] text-white flex flex-col justify-between p-6 shrink-0 overflow-x-auto md:overflow-visible">
-          <div>
+        <aside className="w-full md:w-64 bg-[#00151a] text-white flex flex-col justify-between p-6 shrink-0 overflow-y-auto md:h-full">
+          <div className="flex flex-col h-full">
             <div className="mb-6 md:mb-10 pl-2 flex justify-between items-center md:block">
               <div>
                 <h2 className="text-xl font-black tracking-tighter">Admin Panel</h2>

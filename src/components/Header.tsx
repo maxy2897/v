@@ -76,8 +76,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                 </div>
               </Link>
             </div>
-            {/* Mobile Menu Button - Visible on small screens */}
-            <div className="flex lg:hidden items-center gap-4">
+            {/* Mobile Actions - Visible on small screens */}
+            <div className="flex lg:hidden items-center gap-3">
+              {isAuthenticated && <NotificationBell />}
               {isAuthenticated && user && (
                 <Link to="/dashboard" className="w-8 h-8 rounded-full bg-teal-100 overflow-hidden border border-teal-200">
                   {user.profileImage ? (
