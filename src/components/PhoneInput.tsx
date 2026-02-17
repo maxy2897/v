@@ -123,7 +123,8 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
                 onChange={handlePhoneChange}
                 placeholder={placeholder}
                 required={required}
-                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                // Use text-[16px] to prevent mobile browsers from auto-zooming
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[16px] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
         </div>
     );

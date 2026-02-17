@@ -169,7 +169,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-sm"
+                className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-[16px]"
                 placeholder="Juan Bodipo"
                 required
               />
@@ -182,7 +182,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-sm"
+                className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-[16px]"
                 placeholder="email@ejemplo.com"
                 required
               />
@@ -197,7 +197,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-sm pr-10"
+                    className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-[16px] pr-10"
                     placeholder="••••••••"
                     required
                     minLength={6}
@@ -232,7 +232,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-sm"
+                className="w-full px-4 py-3 bg-gray-50 rounded-lg border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-[16px]"
                 placeholder="Calle, Ciudad, País"
               />
             </div>

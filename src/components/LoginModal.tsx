@@ -139,7 +139,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full px-6 py-4 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black"
+                                className="w-full px-6 py-4 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black text-[16px]"
                                 placeholder="email@example.com"
                                 required
                             />
@@ -153,7 +153,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full px-6 py-4 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black pr-14"
+                                    className="w-full px-6 py-4 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-black pr-14 text-[16px]"
                                     placeholder="••••••••"
                                     required
                                 />
