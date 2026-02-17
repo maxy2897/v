@@ -150,13 +150,13 @@ export const NotificationBell: React.FC = () => {
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="fixed md:absolute top-[80px] md:top-auto left-[7.5vw] right-[7.5vw] md:left-auto md:right-0 mt-2 w-[85vw] max-w-[340px] md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[9999] max-h-[60vh] md:max-h-[600px] flex flex-col">
+                <div className="fixed md:absolute top-[80px] md:top-auto left-[15vw] right-[15vw] md:left-auto md:right-0 mt-2 w-[70vw] max-w-[300px] md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[9999] max-h-[50vh] md:max-h-[600px] flex flex-col">
                     {/* Header */}
-                    <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-teal-50 to-blue-50 rounded-t-2xl">
+                    <div className="p-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-teal-50 to-blue-50 rounded-t-2xl">
                         <div>
-                            <h3 className="font-black text-gray-800 text-lg">Notificaciones</h3>
+                            <h3 className="font-bold text-gray-800 text-sm md:text-lg">Notificaciones</h3>
                             {unreadCount > 0 && (
-                                <p className="text-xs text-gray-500 font-medium">{unreadCount} sin leer</p>
+                                <p className="text-[10px] text-gray-500 font-medium">{unreadCount} sin leer</p>
                             )}
                         </div>
                         {notifications.length > 0 && (
@@ -173,10 +173,10 @@ export const NotificationBell: React.FC = () => {
                     {/* Notifications List */}
                     <div className="overflow-y-auto flex-1">
                         {notifications.length === 0 ? (
-                            <div className="p-8 text-center">
-                                <div className="text-6xl mb-3">🔔</div>
-                                <p className="text-gray-500 font-medium">No tienes notificaciones</p>
-                                <p className="text-xs text-gray-400 mt-1">Te avisaremos cuando haya novedades</p>
+                            <div className="p-4 md:p-8 text-center">
+                                <div className="text-4xl md:text-6xl mb-3">🔔</div>
+                                <p className="text-xs md:text-gray-500 font-medium">No tienes notificaciones</p>
+                                <p className="text-[10px] md:text-xs text-gray-400 mt-1">Te avisaremos cuando haya novedades</p>
                             </div>
                         ) : (
                             <div className="divide-y divide-gray-100">

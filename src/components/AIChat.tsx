@@ -75,10 +75,10 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
         </button>
       ) : (
         <div className="fixed bottom-0 right-0 left-0 md:bottom-10 md:right-10 md:left-auto z-[9999] flex justify-center md:block pointer-events-none pb-4 md:pb-0">
-          <div className="bg-white w-[85vw] max-w-[360px] md:w-[400px] h-[60vh] md:h-[600px] md:max-h-none rounded-[2rem] md:rounded-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] md:shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20 pointer-events-auto">
-            <div className="bg-[#00151a] p-6 md:p-8 text-white flex justify-between items-center shrink-0">
-              <div className="flex items-center gap-4 md:gap-5">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-2xl flex items-center justify-center border-[4px] border-white shadow-sm overflow-hidden p-1">
+          <div className="bg-white w-[70vw] max-w-[300px] md:w-[400px] h-[45vh] md:h-[600px] md:max-h-none rounded-[2rem] md:rounded-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] md:shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20 pointer-events-auto">
+            <div className="bg-[#00151a] p-4 md:p-8 text-white flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-3 md:gap-5">
+                <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-xl flex items-center justify-center border-[2px] border-white shadow-sm overflow-hidden p-0.5">
                   {config?.customLogoUrl ? (
                     <img src={config.customLogoUrl} alt="Logo" className="w-full h-full object-contain" />
                   ) : (
@@ -98,7 +98,7 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
               </button>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 bg-[#fcfdfd]">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 bg-[#fcfdfd]">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] px-5 py-3 md:px-6 md:py-4 rounded-3xl text-sm leading-relaxed font-medium ${msg.role === 'user'
@@ -120,7 +120,7 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
               )}
             </div>
 
-            <div className="p-6 md:p-8 border-t border-gray-50 bg-white shrink-0">
+            <div className="p-4 md:p-8 border-t border-gray-50 bg-white shrink-0">
               <div className="flex gap-2 md:gap-4">
                 <input
                   type="text"
