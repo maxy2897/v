@@ -145,15 +145,7 @@ const ShippingSchedule: React.FC = () => {
             </div>
           ))}
 
-          {/* Tarjeta Informativa Documentos */}
-          <div className="p-8 rounded-[2.5rem] border border-dashed border-teal-200 bg-white flex flex-col justify-center items-center text-center shadow-sm">
-            <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 mb-4">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-            </div>
-            <p className="text-xs font-black uppercase tracking-widest text-teal-800">{t('schedule.docs_title')}</p>
-            <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase italic">{t('schedule.docs_desc')}</p>
-            <span className="mt-4 bg-[#00151a] text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">{t('schedule.docs_rate')}</span>
-          </div>
+
         </div>
 
         {/* Notice moved here */}

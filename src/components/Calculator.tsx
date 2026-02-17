@@ -24,6 +24,21 @@ const Calculator: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
+  // Check URL params for initial state
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const modeParam = params.get('mode');
+    const originParam = params.get('origin');
+
+    if (modeParam === 'documento') {
+      setCalcMode('documento');
+    }
+
+    if (originParam && ['España', 'Camerún', 'Guinea Ecuatorial'].includes(originParam)) {
+      setInfo(prev => ({ ...prev, origin: originParam as any }));
+    }
+  }, []);
+
   // Payment preference states
   const [payLocation, setPayLocation] = useState<'Origen' | 'Guinea'>('Origen');
   const [payMethod, setPayMethod] = useState<'Almacén' | 'Ecobank'>('Almacén');
@@ -208,21 +223,21 @@ const Calculator: React.FC = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('calc.origin.label')}</label>
               <div className="grid grid-cols-3 gap-2">
                 <button
-                  onClick={() => { setInfo({ ...info, origin: 'España' }); setCalcMode('kg'); }}
+                  onClick={() => { setInfo({ ...info, origin: 'España' }); setCalcMode('kg'); window.history.replaceState({}, '', window.location.pathname); }}
                   className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter border transition-all flex flex-col items-center justify-center gap-1 ${info.origin === 'España' ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}
                 >
                   <span className="text-xl">🇪🇸</span>
                   {t('calc.origin.es')}
                 </button>
                 <button
-                  onClick={() => { setInfo({ ...info, origin: 'Camerún' }); setCalcMode('kg'); }}
+                  onClick={() => { setInfo({ ...info, origin: 'Camerún' }); setCalcMode('kg'); window.history.replaceState({}, '', window.location.pathname); }}
                   className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter border transition-all flex flex-col items-center justify-center gap-1 ${info.origin === 'Camerún' ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}
                 >
                   <span className="text-xl">🇨🇲</span>
                   {t('calc.origin.cm')}
                 </button>
                 <button
-                  onClick={() => { setInfo({ ...info, origin: 'Guinea Ecuatorial' }); setCalcMode('kg'); }}
+                  onClick={() => { setInfo({ ...info, origin: 'Guinea Ecuatorial' }); setCalcMode('kg'); window.history.replaceState({}, '', window.location.pathname); }}
                   className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter border transition-all flex flex-col items-center justify-center gap-1 ${info.origin === 'Guinea Ecuatorial' ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}
                 >
                   <span className="text-xl">🇬🇶</span>
@@ -233,14 +248,20 @@ const Calculator: React.FC = () => {
 
             <div className="flex bg-gray-50 p-1 rounded-2xl">
               <button
-                onClick={() => setCalcMode('kg')}
+                onClick={() => {
+                  setCalcMode('kg');
+                  window.history.replaceState({}, '', window.location.pathname);
+                }}
                 className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${calcMode === 'kg' ? 'bg-white text-[#00151a] shadow-sm' : 'text-gray-400'}`}
               >
                 {t('calc.mode.kg')}
               </button>
               {info.origin === 'España' && (
                 <button
-                  onClick={() => setCalcMode('bulto')}
+                  onClick={() => {
+                    setCalcMode('bulto');
+                    window.history.replaceState({}, '', window.location.pathname);
+                  }}
                   className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${calcMode === 'bulto' ? 'bg-white text-[#00151a] shadow-sm' : 'text-gray-400'}`}
                 >
                   {t('calc.mode.bulto')}
