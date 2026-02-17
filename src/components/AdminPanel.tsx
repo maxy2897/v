@@ -1,6 +1,38 @@
 
 import React, { useState } from 'react';
-import { Product, AppConfig } from '../../types';
+import { Product, AppConfig, ShippingStatus } from '../../types';
+
+interface Shipment {
+  _id: string;
+  trackingNumber: string;
+  origin: string;
+  destination: string;
+  description: string;
+  weight: number;
+  price: number;
+  status: string;
+  createdAt: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  recipient: {
+    name: string;
+    phone: string;
+  };
+}
+
+interface UserShipmentGroup {
+  userId: string;
+  user: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  shipments: Shipment[];
+}
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -15,14 +47,92 @@ import { useSettings } from '../context/SettingsContext';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig } = useSettings();
-  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments'>('products');
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
+  const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
 
   React.useEffect(() => {
     if (activeTab === 'transactions') {
       fetchTransactions();
+    } else if (activeTab === 'shipments') {
+      fetchShipments();
     }
   }, [activeTab]);
+
+  const fetchShipments = async () => {
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shipments?status=all`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data: Shipment[] = await res.json();
+
+        // Group by User
+        const groups: Record<string, UserShipmentGroup> = {};
+
+        data.forEach(shipment => {
+          if (!shipment.user) return; // Skip if no user (should rely on populate)
+          const userId = shipment.user._id;
+
+          if (!groups[userId]) {
+            groups[userId] = {
+              userId,
+              user: shipment.user,
+              shipments: []
+            };
+          }
+          groups[userId].shipments.push(shipment);
+        });
+
+        setShipmentGroups(Object.values(groups));
+      }
+    } catch (error) {
+      console.error('Error fetching shipments:', error);
+    }
+  };
+
+  const updateShipmentStatus = async (shipmentId: string, newStatus: string) => {
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shipments/${shipmentId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (res.ok) {
+        // Update local state
+        const updatedGroups = shipmentGroups.map(group => ({
+          ...group,
+          shipments: group.shipments.map(s =>
+            s._id === shipmentId ? { ...s, status: newStatus } : s
+          )
+        }));
+
+        setShipmentGroups(updatedGroups);
+
+        // Update selected group view if active
+        if (selectedUserGroup) {
+          const updatedSelected = updatedGroups.find(g => g.userId === selectedUserGroup.userId);
+          if (updatedSelected) setSelectedUserGroup(updatedSelected);
+        }
+
+        alert('Estado actualizado correctamente');
+      } else {
+        throw new Error('Failed to update');
+      }
+    } catch (error) {
+      alert('Error al actualizar estado');
+    }
+  };
 
   const fetchTransactions = async () => {
     try {
@@ -251,6 +361,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 Transacciones
               </button>
+              <button
+                onClick={() => setActiveTab('shipments')}
+                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'shipments' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                Envíos
+              </button>
             </nav>
           </div>
 
@@ -271,7 +388,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
               {activeTab === 'products' ? 'Gestión de Productos' :
                 activeTab === 'branding' ? 'Marca y Personalización' :
                   activeTab === 'reports' ? 'Centro de Reportes' :
-                    activeTab === 'transactions' ? 'Historial de Transacciones' : 'Configuración Global'}
+                    activeTab === 'transactions' ? 'Historial de Transacciones' :
+                      activeTab === 'shipments' ? 'Gestión de Envíos' : 'Configuración Global'}
             </h3>
             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {new Date().toLocaleDateString()}
@@ -723,6 +841,116 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     </table>
                   </div>
                 </section>
+              </div>
+            ) : activeTab === 'shipments' ? (
+              <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {!selectedUserGroup ? (
+                  /* Level 1: List of Users */
+                  <section className="space-y-8">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">Usuarios con Envíos</h3>
+                      <span className="text-xs font-bold text-gray-400">{shipmentGroups.length} Usuarios</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {shipmentGroups.map(group => (
+                        <div
+                          key={group.userId}
+                          onClick={() => setSelectedUserGroup(group)}
+                          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-lg">
+                              {group.user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-[#00151a]">{group.user.name}</h4>
+                              <p className="text-xs text-gray-400">{group.user.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center pt-4 border-t border-gray-50">
+                            <span className="text-xs font-medium text-gray-500">Tel: {group.user.phone}</span>
+                            <span className="bg-[#00151a] text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                              {group.shipments.length} Envíos
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {shipmentGroups.length === 0 && (
+                      <p className="text-center text-gray-400 font-bold py-10">No hay envíos registrados.</p>
+                    )}
+                  </section>
+                ) : (
+                  /* Level 2: User Shipments Detail */
+                  <section className="space-y-8">
+                    <div className="flex items-center gap-4 mb-8">
+                      <button
+                        onClick={() => setSelectedUserGroup(null)}
+                        className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                        aria-label="Volver a lista de usuarios"
+                      >
+                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                      </button>
+                      <div>
+                        <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">{selectedUserGroup.user.name}</h3>
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Historial de Envíos</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      {selectedUserGroup.shipments.map(shipment => (
+                        <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+
+                          {/* Info */}
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">
+                                {shipment.trackingNumber}
+                              </span>
+                              <span className="text-[10px] font-bold text-gray-400 uppercase">
+                                {new Date(shipment.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
+                              <span>{shipment.origin}</span>
+                              <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                              <span>{shipment.destination}</span>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              <span className="font-bold">Receptor:</span> {shipment.recipient.name} ({shipment.recipient.phone})
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {shipment.description} • {shipment.weight}Kg • {shipment.price} €
+                            </p>
+                          </div>
+
+                          {/* Status Control */}
+                          <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
+                            <div className="text-right">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado Actual</label>
+                              <select
+                                aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
+                                value={shipment.status}
+                                onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                                className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
+                              >
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Recogido">Recogido</option>
+                                <option value="En tránsito">En tránsito</option>
+                                <option value="En Aduanas">En Aduanas</option>
+                                <option value="Llegado a destino">Llegado a destino</option>
+                                <option value="Entregado">Entregado</option>
+                                <option value="Cancelado">Cancelado</option>
+                              </select>
+                            </div>
+                          </div>
+
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
               </div>
             ) : (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
