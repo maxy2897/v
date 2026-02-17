@@ -74,9 +74,9 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
           <span className="ml-4 font-black uppercase text-[10px] tracking-[0.3em] hidden md:inline">{t('chat.cta')}</span>
         </button>
       ) : (
-        <div className="bg-white w-[400px] h-[600px] rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20">
-          <div className="bg-[#00151a] p-8 text-white flex justify-between items-center">
-            <div className="flex items-center gap-5">
+        <div className="bg-white w-[calc(100vw-2rem)] md:w-[400px] h-[calc(100vh-6rem)] md:h-[600px] max-h-[85vh] md:max-h-none fixed inset-4 md:relative md:inset-auto rounded-[2rem] md:rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20">
+          <div className="bg-[#00151a] p-6 md:p-8 text-white flex justify-between items-center shrink-0">
+            <div className="flex items-center gap-4 md:gap-5">
               <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border-[4px] border-white shadow-sm overflow-hidden p-1">
                 {config?.customLogoUrl ? (
                   <img src={config.customLogoUrl} alt="Logo" className="w-full h-full object-contain" />
@@ -119,12 +119,12 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
             )}
           </div>
 
-          <div className="p-8 border-t border-gray-50 bg-white">
-            <div className="flex gap-4">
+          <div className="p-4 md:p-8 border-t border-gray-50 bg-white shrink-0">
+            <div className="flex gap-2 md:gap-4">
               <input
                 type="text"
                 placeholder={t('chat.placeholder')}
-                className="flex-1 px-6 py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#007e85] transition-all text-gray-900"
+                className="flex-1 px-4 md:px-6 py-3 md:py-4 bg-gray-50 border-none rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#007e85] transition-all text-gray-900"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
@@ -132,14 +132,14 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
               <button
                 onClick={handleSend}
                 disabled={isLoading}
-                className="bg-[#00151a] text-white p-4 rounded-2xl disabled:opacity-50 hover:bg-[#007e85] transition-colors shadow-xl"
+                className="bg-[#00151a] text-white p-3 md:p-4 rounded-2xl disabled:opacity-50 hover:bg-[#007e85] transition-colors shadow-xl"
                 title={t('chat.send')}
                 aria-label={t('chat.send')}
               >
                 <svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
               </button>
             </div>
-            <p className="text-[8px] text-gray-300 mt-6 text-center font-black uppercase tracking-[0.4em]">{t('chat.system')}</p>
+            <p className="text-[8px] text-gray-300 mt-4 md:mt-6 text-center font-black uppercase tracking-[0.4em]">{t('chat.system')}</p>
           </div>
         </div>
       )}
