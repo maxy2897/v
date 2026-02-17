@@ -249,13 +249,13 @@ const Calculator: React.FC = () => {
   };
 
   return (
-    <section id="calculadora" className="bg-white rounded-[3.5rem] border border-gray-100 p-1 md:p-12 relative overflow-hidden">
+    <section id="calculadora" className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 p-4 md:p-12 relative overflow-hidden">
       <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-stretch">
         <div className="p-8 md:p-0">
           <div className="inline-block px-4 py-1.5 bg-teal-50 rounded-full mb-6">
             <span className="text-[10px] font-black uppercase tracking-widest text-teal-700">{t('calc.badge')}</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-[#00151a] tracking-tighter mb-8">
+          <h2 className="text-2xl md:text-5xl font-black text-[#00151a] tracking-tighter mb-8">
             {t('calc.title')} <br /><span className="text-[#007e85]">{t('calc.title_highlight')}</span>
           </h2>
 

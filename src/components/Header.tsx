@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
     <div className="flex flex-col w-full sticky top-0 z-50">
       <header className="bg-teal-50/95 backdrop-blur-md border-b border-teal-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
               <div className="hidden md:flex items-center gap-1 mr-1 xl:mr-2">
                 <button
@@ -59,11 +59,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
               </div>
 
               <Link to="/" className="flex items-center space-x-2 group relative z-20">
-                <div className="flex items-center justify-center w-20 h-20 xl:w-28 xl:h-28 bg-transparent rounded-full group-hover:scale-110 transition-transform p-1">
+                <div className="flex items-center justify-center w-14 h-14 md:w-20 md:h-20 xl:w-28 xl:h-28 bg-transparent rounded-full group-hover:scale-110 transition-transform p-1">
                   {config.customLogoUrl ? (
                     <img src={config.customLogoUrl} className="h-full w-full object-contain filter drop-shadow-md" alt="Logo" />
                   ) : (
-                    <span className="logo-font text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1">{config.logoText}</span>
+                    <span className="logo-font text-2xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1">{config.logoText}</span>
                   )}
                 </div>
                 <div className="flex flex-col -space-y-0.5 xl:-space-y-1">
@@ -77,7 +77,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
               </Link>
             </div>
             {/* Mobile Actions - Visible on small screens */}
-            <div className="flex lg:hidden items-center gap-3">
+            <div className="flex lg:hidden items-center gap-2">
+              <div className="flex items-center text-[10px] font-black uppercase bg-white/50 backdrop-blur-sm px-2 py-1 rounded-full border border-teal-100 gap-1.5 mr-1">
+                <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-600' : 'text-gray-400'}`}>ES</button>
+                <span className="text-gray-200">|</span>
+                <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-600' : 'text-gray-400'}`}>EN</button>
+                <span className="text-gray-200">|</span>
+                <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-600' : 'text-gray-400'}`}>FR</button>
+              </div>
+
               {isAuthenticated && <NotificationBell />}
               {isAuthenticated && user && (
                 <Link to="/dashboard" className="w-8 h-8 rounded-full bg-teal-100 overflow-hidden border border-teal-200">
@@ -256,6 +264,44 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                   ))}
 
                   <div className="mt-auto pt-6 flex flex-col gap-4">
+                    {/* Mobile Settings (Theme & Language) */}
+                    <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={toggleTheme}
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-700"
+                        >
+                          {theme === 'dark' ? (
+                            <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                          )}
+                        </button>
+                        <span className="text-[10px] font-black uppercase text-gray-400">Tema</span>
+                      </div>
+
+                      <div className="flex items-center bg-gray-50 p-1 rounded-xl">
+                        <button
+                          onClick={() => setLanguage('es')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${language === 'es' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}
+                        >
+                          ES
+                        </button>
+                        <button
+                          onClick={() => setLanguage('en')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${language === 'en' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}
+                        >
+                          EN
+                        </button>
+                        <button
+                          onClick={() => setLanguage('fr')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${language === 'fr' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}
+                        >
+                          FR
+                        </button>
+                      </div>
+                    </div>
+
                     {/* Mobile Auth Buttons */}
                     {!isAuthenticated && (
                       <div className="flex flex-col gap-3">

@@ -71,9 +71,9 @@ const Tracking: React.FC = () => {
         <div className="bg-[#001a1a] rounded-[3rem] p-12 text-white shadow-[0_30px_60px_rgba(0,26,26,0.2)] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
-          <div className="text-center sm:text-left mb-10">
-            <h2 className="text-4xl font-black mb-2">{t('track.title')}</h2>
-            <p className="text-teal-400/60 text-xs font-bold uppercase tracking-widest">{t('track.subtitle')}</p>
+          <div className="text-center sm:text-left mb-6">
+            <h2 className="text-2xl md:text-4xl font-black mb-2">{t('track.title')}</h2>
+            <p className="text-teal-400/60 text-[10px] md:text-xs font-bold uppercase tracking-widest">{t('track.subtitle')}</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-5 mb-12 relative z-10">

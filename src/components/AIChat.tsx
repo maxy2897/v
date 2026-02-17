@@ -74,15 +74,15 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
           <span className="ml-4 font-black uppercase text-[10px] tracking-[0.3em] hidden md:inline">{t('chat.cta')}</span>
         </button>
       ) : (
-        <div className="fixed bottom-0 right-0 left-0 md:bottom-10 md:right-10 md:left-auto z-[9999] flex justify-center md:block pointer-events-none">
-          <div className="bg-white w-[90vw] max-w-[380px] md:w-[400px] h-[70vh] md:h-[600px] md:max-h-none rounded-t-[2.5rem] md:rounded-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] md:shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20 pointer-events-auto">
+        <div className="fixed bottom-0 right-0 left-0 md:bottom-10 md:right-10 md:left-auto z-[9999] flex justify-center md:block pointer-events-none pb-4 md:pb-0">
+          <div className="bg-white w-[85vw] max-w-[360px] md:w-[400px] h-[60vh] md:h-[600px] md:max-h-none rounded-[2rem] md:rounded-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] md:shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20 pointer-events-auto">
             <div className="bg-[#00151a] p-6 md:p-8 text-white flex justify-between items-center shrink-0">
               <div className="flex items-center gap-4 md:gap-5">
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-2xl flex items-center justify-center border-[4px] border-white shadow-sm overflow-hidden p-1">
                   {config?.customLogoUrl ? (
                     <img src={config.customLogoUrl} alt="Logo" className="w-full h-full object-contain" />
                   ) : (
-                    <span className="logo-font text-2xl md:text-3xl logo-color leading-none select-none pt-1">{config?.logoText || 'bb'}</span>
+                    <span className="logo-font text-xl md:text-3xl logo-color leading-none select-none pt-1">{config?.logoText || 'bb'}</span>
                   )}
                 </div>
                 <div>
