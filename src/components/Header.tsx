@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { BASE_URL } from '../services/api';
+import { NotificationBell } from './NotificationBell';
 
 interface HeaderProps {
   onOpenRegister: () => void;
@@ -141,6 +142,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                     <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-600' : 'text-gray-400'}`}>FR</button>
                   </div>
                 </div>
+
+                {isAuthenticated && <NotificationBell />}
 
                 {isAuthenticated && user ? (
                   <div className="relative">
