@@ -90,6 +90,11 @@ export const generatePDFReceipt = async (transaction) => {
             doc.moveDown(2);
 
             // DESTINATARIO Section
+            // If bulk, show 'Varios' or the first recipient
+            const firstRecipient = type === 'SHIPMENT_BULK' && details?.shipments?.length > 0
+                ? details.shipments[0].recipient
+                : (details?.recipient || {});
+
             doc.fontSize(12)
                 .font('Helvetica-Bold')
                 .text('DESTINATARIO:', 50, doc.y);
@@ -104,7 +109,7 @@ export const generatePDFReceipt = async (transaction) => {
             doc.moveDown(0.5);
 
             doc.fontSize(11)
-                .text(details?.recipient?.name || '', 50, doc.y);
+                .text(firstRecipient.name || (type === 'SHIPMENT_BULK' ? 'Múltiples Destinatarios' : ''), 50, doc.y);
 
             doc.moveDown(1);
 
@@ -117,29 +122,47 @@ export const generatePDFReceipt = async (transaction) => {
             doc.moveDown(0.5);
 
             const destDataRow = doc.y;
-            doc.text(details?.recipient?.phone || '', 50, destDataRow);
-            doc.text(details?.destination || '', 220, destDataRow);
+            doc.text(firstRecipient.phone || '', 50, destDataRow);
+            doc.text(details?.destination || (type === 'SHIPMENT_BULK' ? 'Varios' : ''), 220, destDataRow);
 
             doc.moveDown(2.5);
 
-            // Build description
-            let description = '';
-            if (type === 'SHIPMENT') {
-                description = `Envío de paquetería desde ${details?.origin || 'N/A'} hasta ${details?.destination || 'N/A'}`;
-                if (details?.weight) {
-                    description += ` (${details.weight}kg)`;
-                }
-                if (details?.trackingNumber) {
-                    description += `\nNº Rastreo: ${details.trackingNumber}`;
-                }
-            } else if (type === 'TRANSFER') {
-                description = `Envío de dinero a ${details?.beneficiary || 'N/A'}`;
+            // Prepare items for table
+            let items = [];
+            if (type === 'SHIPMENT_BULK' && details?.shipments) {
+                items = details.shipments.map((s, index) => ({
+                    index: index + 1,
+                    description: `Envío a ${s.destination} (${s.weight}kg) - ${s.trackingNumber}`,
+                    price: s.price,
+                    currency: s.currency || currency || 'EUR' // Fallback
+                }));
             } else {
-                description = details?.description || 'Servicio';
+                // Build description for single item
+                let description = '';
+                if (type === 'SHIPMENT') {
+                    description = `Envío de paquetería desde ${details?.origin || 'N/A'} hasta ${details?.destination || 'N/A'}`;
+                    if (details?.weight) {
+                        description += ` (${details.weight}kg)`;
+                    }
+                    if (details?.trackingNumber) {
+                        description += `\nNº Rastreo: ${details.trackingNumber}`;
+                    }
+                } else if (type === 'TRANSFER') {
+                    description = `Envío de dinero a ${details?.beneficiary || 'N/A'}`;
+                } else {
+                    description = details?.description || 'Servicio';
+                }
+
+                items.push({
+                    index: 1,
+                    description: description,
+                    price: amount,
+                    currency: currency || 'EUR'
+                });
             }
 
             // Table
-            const tableTop = doc.y;
+            let currentY = doc.y;
             const col1X = 50;
             const col2X = 110;
             const col3X = 340;
@@ -147,47 +170,44 @@ export const generatePDFReceipt = async (transaction) => {
             const rowHeight = 50;
 
             // Table Header with teal/green color
-            doc.rect(col1X, tableTop, 495, 30).fillAndStroke('#5F9EA0', '#5F9EA0');
+            doc.rect(col1X, currentY, 495, 30).fillAndStroke('#5F9EA0', '#5F9EA0');
 
             doc.fillColor('white')
                 .fontSize(11)
                 .font('Helvetica-Bold')
-                .text('CANT.', col1X + 10, tableTop + 10, { width: 50 })
-                .text('DESCRIPCION', col2X + 10, tableTop + 10, { width: 220 })
-                .text('PRECIO UNIT.', col3X + 5, tableTop + 10, { width: 100 })
-                .text('IMPORTE', col4X + 5, tableTop + 10, { width: 90 });
+                .text('CANT.', col1X + 10, currentY + 10, { width: 50 })
+                .text('DESCRIPCION', col2X + 10, currentY + 10, { width: 220 })
+                .text('PRECIO UNIT.', col3X + 5, currentY + 10, { width: 100 })
+                .text('IMPORTE', col4X + 5, currentY + 10, { width: 90 });
 
-            // Row 1 - Data
-            const row1Y = tableTop + 30;
-            doc.rect(col1X, row1Y, 60, rowHeight).stroke();
-            doc.rect(col2X, row1Y, 230, rowHeight).stroke();
-            doc.rect(col3X, row1Y, 110, rowHeight).stroke();
-            doc.rect(col4X, row1Y, 95, rowHeight).stroke();
+            currentY += 30;
 
-            doc.fillColor('black')
-                .fontSize(10)
-                .font('Helvetica')
-                .text('1', col1X + 20, row1Y + 15, { width: 30 })
-                .text(description, col2X + 5, row1Y + 10, { width: 220 })
-                .text(`${amount} ${currency || 'EUR'}`, col3X + 10, row1Y + 15, { width: 90, align: 'right' })
-                .text(`${amount} ${currency || 'EUR'}`, col4X + 5, row1Y + 15, { width: 85, align: 'right' });
+            // Draw Rows
+            doc.fillColor('black');
 
-            // Row 2 - Empty
-            const row2Y = row1Y + rowHeight;
-            doc.rect(col1X, row2Y, 60, rowHeight).stroke();
-            doc.rect(col2X, row2Y, 230, rowHeight).stroke();
-            doc.rect(col3X, row2Y, 110, rowHeight).stroke();
-            doc.rect(col4X, row2Y, 95, rowHeight).stroke();
+            items.forEach((item) => {
+                // Check for page break if needed (omitted for brevity, assume receipt fits on 1 page for now)
 
-            // Row 3 - Empty  
-            const row3Y = row2Y + rowHeight;
-            doc.rect(col1X, row3Y, 60, rowHeight).stroke();
-            doc.rect(col2X, row3Y, 230, rowHeight).stroke();
-            doc.rect(col3X, row3Y, 110, rowHeight).stroke();
-            doc.rect(col4X, row3Y, 95, rowHeight).stroke();
+                doc.rect(col1X, currentY, 60, rowHeight).stroke();
+                doc.rect(col2X, currentY, 230, rowHeight).stroke();
+                doc.rect(col3X, currentY, 110, rowHeight).stroke();
+                doc.rect(col4X, currentY, 95, rowHeight).stroke();
+
+                doc.fontSize(10)
+                    .font('Helvetica')
+                    .text(item.index.toString(), col1X + 20, currentY + 15, { width: 30 })
+                    .text(item.description, col2X + 5, currentY + 10, { width: 220 })
+                    .text(`${item.price} ${item.currency}`, col3X + 10, currentY + 15, { width: 90, align: 'right' })
+                    .text(`${item.price} ${item.currency}`, col4X + 5, currentY + 15, { width: 85, align: 'right' });
+
+                currentY += rowHeight;
+            });
+
+            // Fill remaining empty rows if less than 3 items to maintain look?
+            // Optional, but let's just leave it dynamic.
 
             // TOTAL
-            const totalY = row3Y + rowHeight + 25;
+            const totalY = currentY + 25;
 
             // Line above total
             doc.moveTo(50, totalY - 5).lineTo(545, totalY - 5).stroke();

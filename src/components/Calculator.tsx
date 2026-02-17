@@ -104,13 +104,30 @@ const Calculator: React.FC = () => {
     setShowForm(true);
   };
 
+  // New state for multiple shipments
+  const [shipmentList, setShipmentList] = useState<any[]>([]);
+
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Prepare current shipment data (from form)
+    const currentShipment = {
+      origin: info.origin,
+      destination: info.destination,
+      weight: info.weight || (calcMode === 'bulto' ? bultoType : 1), // Fallback
+      price: total?.value || 0,
+      description: `Envío ${calcMode} desde ${info.origin}`,
+      recipient: isAuthenticated ? recipientData : {
+        name: userData.fullName,
+        phone: userData.phone
+      },
+      // Important: currency should probably be stored or handled
+    };
+
     // Different validation for authenticated vs non-authenticated users
     if (isAuthenticated) {
-      if (!recipientData.name || !recipientData.phone) {
-        alert('Por favor completa los datos del destinatario');
+      if (!currentShipment.recipient.name || !currentShipment.recipient.phone) {
+        alert('Por favor completa los datos del destinatario actual');
         return;
       }
     } else {
@@ -124,40 +141,53 @@ const Calculator: React.FC = () => {
 
     try {
       console.log('Initiating shipment creation...');
-      // Generate a tracking number locally or let backend handle it?
-      // Backend User.shipments route expects trackingNumber. 
-      // Let's generate one.
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let result = '';
-      for (let i = 0; i < 5; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      const trackingNumber = `BB-${result}`;
 
-      const shipmentData = {
-        trackingNumber,
-        origin: info.origin,
-        destination: info.destination,
-        weight: info.weight || (calcMode === 'bulto' ? bultoType : 1), // Fallback
-        price: total?.value || 0,
-        description: `Envío ${calcMode} desde ${info.origin}`,
-        recipient: isAuthenticated ? recipientData : {
-          name: userData.fullName,
-          phone: userData.phone
+      // Combine list + current form
+      const allShipments = [...shipmentList, currentShipment];
+
+      if (allShipments.length === 1) {
+        // Single shipment flow (old)
+        // Generate tracking number locally? No, let's keep it consistent
+        // Actually, let's just use the bulk endpoint even for one? Or keep separation?
+        // Let's use createShipment for single for backward compat if needed, 
+        // but wait, createShipment does one. 
+
+        // Let's stick to the single route if only one, ensuring we have tracking number if needed by backend?
+        // The previous code generated tracking number on frontend.
+
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let result = '';
+        for (let i = 0; i < 5; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-      };
+        const trackingNumber = `BB-${result}`;
 
-      const res = await import('../services/api').then(m => m.createShipment(shipmentData));
-      console.log('Shipment created response:', res);
+        const shipmentData = { ...currentShipment, trackingNumber };
 
-      setGeneratedCode(trackingNumber);
-      if (res.transactionId) {
-        console.log('Transaction ID found:', res.transactionId);
-        setLastTransactionId(res.transactionId);
+        const res = await import('../services/api').then(m => m.createShipment(shipmentData));
+        console.log('Shipment created response:', res);
+
+        setGeneratedCode(trackingNumber);
+        if (res.transactionId) {
+          setLastTransactionId(res.transactionId);
+        }
       } else {
-        console.warn('No transactionId in response!');
+        // Bulk flow
+        const res = await import('../services/api').then(m => m.createBulkShipment(allShipments));
+        console.log('Bulk Shipment created response:', res);
+
+        // For bulk, generatedCode might be the first one or a summary?
+        // Let's just show the first tracking number and success
+        if (res.shipments && res.shipments.length > 0) {
+          setGeneratedCode(res.shipments[0].trackingNumber); // Show first one or "Multiple"
+        }
+        if (res.transactionId) {
+          setLastTransactionId(res.transactionId);
+        }
       }
+
       setShowForm(false);
+      setShipmentList([]); // Clear list after success
     } catch (error) {
       console.error(error);
       alert('Error al registrar el envío. Inténtelo de nuevo.');
@@ -483,8 +513,71 @@ const Calculator: React.FC = () => {
                   )}
                 </div>
 
+                <div className="bg-teal-50 border-2 border-teal-100 p-6 rounded-3xl mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-black text-teal-800">
+                      {shipmentList.reduce((acc, curr) => acc + curr.price, 0) + (total?.value || 0)} €
+                    </h3>
+                    <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mt-1">
+                      Total ({shipmentList.length + 1} envíos)
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Add current shipment to list
+                      const currentShipment = {
+                        origin: info.origin,
+                        destination: info.destination,
+                        weight: info.weight || (calcMode === 'bulto' ? bultoType : 1),
+                        price: total?.value || 0,
+                        description: `Envío ${calcMode} desde ${info.origin}`,
+                        recipient: isAuthenticated ? { ...recipientData } : { name: userData.fullName, phone: userData.phone },
+                        currency: total?.currency || 'EUR'
+                      };
+
+                      if (!currentShipment.recipient.name || !currentShipment.recipient.phone) {
+                        alert('Completa los datos del destinatario para este envío');
+                        return;
+                      }
+
+                      setShipmentList([...shipmentList, currentShipment]);
+
+                      // Reset forms for next entry (mostly recipient and details)
+                      setRecipientData({ name: '', phone: '' });
+                      setShowForm(false); // Optionally keep form open but reset fields? 
+                      // Better to go back to calculator to add another package
+                      setTotal(null);
+                      setInfo({ ...info, weight: 0 });
+                      // User can now calculate another one
+                      alert('Envío añadido a la lista. Puedes calcular otro paquete o finalizar el registro.');
+                    }}
+                    className="bg-teal-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-700 transition"
+                  >
+                    + Añadir otro paquete
+                  </button>
+                </div>
+
+                {shipmentList.length > 0 && (
+                  <div className="mb-8 space-y-3">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Envíos en tu lista:</p>
+                    {shipmentList.map((s, idx) => (
+                      <div key={idx} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg text-xs">
+                        <div>
+                          <span className="font-bold text-gray-700">{idx + 1}. {s.origin} {'->'} {s.destination}</span>
+                          <span className="text-gray-400 mx-2">|</span>
+                          <span className="text-gray-500">{s.weight}kg</span>
+                          <span className="text-gray-400 mx-2">|</span>
+                          <span className="text-gray-500">Dest: {s.recipient.name}</span>
+                        </div>
+                        <span className="font-black text-teal-600">{s.price} {s.currency}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <button type="submit" disabled={isRegistering} className="w-full bg-[#007e85] text-white py-5 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-[#00151a] transition-all shadow-lg flex items-center justify-center space-x-3 mt-6">
-                  {isRegistering ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <span>{t('calc.form.cta_finish')}</span>}
+                  {isRegistering ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <span>{t('calc.form.cta_finish')} (Finalizar Todos)</span>}
                 </button>
               </form>
             </div>

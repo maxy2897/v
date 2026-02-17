@@ -231,6 +231,23 @@ export const createShipment = async (shipmentData: {
     return data;
 };
 
+// Crear múltiples envíos
+export const createBulkShipment = async (shipments: any[]) => {
+    const response = await fetch(`${API_URL}/shipments/bulk`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ shipments }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al crear envíos masivos');
+    }
+
+    return data;
+};
+
 // Verificar si hay token
 export const isAuthenticated = () => {
     return !!getToken();
