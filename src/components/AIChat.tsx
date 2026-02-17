@@ -74,7 +74,14 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
           <span className="ml-4 font-black uppercase text-[10px] tracking-[0.3em] hidden md:inline">{t('chat.cta')}</span>
         </button>
       ) : (
-        <div className="bg-white w-[calc(100vw-2rem)] md:w-[400px] h-[calc(100vh-6rem)] md:h-[600px] max-h-[85vh] md:max-h-none fixed inset-4 md:relative md:inset-auto rounded-[2rem] md:rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20">
+        <div
+          className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-gray-100 transition-all animate-in slide-in-from-bottom-20 z-[9999] fixed md:absolute bottom-4 right-4 left-4 md:left-auto md:bottom-0 md:right-0 w-auto md:w-[400px] h-auto max-h-[80vh] md:h-[600px]"
+          style={{
+            left: window.innerWidth < 768 ? '1rem' : '',
+            right: window.innerWidth < 768 ? '1rem' : '',
+            bottom: window.innerWidth < 768 ? '1rem' : ''
+          }}
+        >
           <div className="bg-[#00151a] p-6 md:p-8 text-white flex justify-between items-center shrink-0">
             <div className="flex items-center gap-4 md:gap-5">
               <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border-[4px] border-white shadow-sm overflow-hidden p-1">
@@ -142,8 +149,9 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
             <p className="text-[8px] text-gray-300 mt-4 md:mt-6 text-center font-black uppercase tracking-[0.4em]">{t('chat.system')}</p>
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

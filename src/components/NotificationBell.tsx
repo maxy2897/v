@@ -150,7 +150,7 @@ export const NotificationBell: React.FC = () => {
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="fixed md:absolute top-20 md:top-auto right-4 md:right-0 mt-2 w-[calc(100vw-2rem)] md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 max-h-[70vh] md:max-h-[600px] flex flex-col">
+                <div className="fixed md:absolute top-[80px] md:top-auto left-4 right-4 md:left-auto md:right-0 mt-2 w-auto md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[9999] max-h-[80vh] md:max-h-[600px] flex flex-col" style={{ width: window.innerWidth < 768 ? 'calc(100vw - 2rem)' : '' }}>
                     {/* Header */}
                     <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-teal-50 to-blue-50 rounded-t-2xl">
                         <div>
