@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Product, AppConfig, ShippingStatus } from '../../types';
+import { AdminNotifications } from './AdminNotifications';
 
 interface Shipment {
   _id: string;
@@ -47,7 +48,7 @@ import { useSettings } from '../context/SettingsContext';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig } = useSettings();
-  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications'>('products');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
@@ -368,6 +369,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
                 Envíos
               </button>
+              <button
+                onClick={() => setActiveTab('notifications')}
+                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'notifications' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                Notificaciones
+              </button>
             </nav>
           </div>
 
@@ -389,7 +397,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 activeTab === 'branding' ? 'Marca y Personalización' :
                   activeTab === 'reports' ? 'Centro de Reportes' :
                     activeTab === 'transactions' ? 'Historial de Transacciones' :
-                      activeTab === 'shipments' ? 'Gestión de Envíos' : 'Configuración Global'}
+                      activeTab === 'shipments' ? 'Gestión de Envíos' :
+                        activeTab === 'notifications' ? 'Sistema de Notificaciones' : 'Configuración Global'}
             </h3>
             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {new Date().toLocaleDateString()}
@@ -952,6 +961,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </section>
                 )}
               </div>
+            ) : activeTab === 'notifications' ? (
+              <AdminNotifications />
             ) : (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">

@@ -23,6 +23,7 @@ import ClientPage from './src/pages/ClientPage';
 import MoneyTransferPage from './src/pages/MoneyTransferPage';
 import DashboardPage from './src/pages/DashboardPage';
 import PrivacyPage from './src/pages/PrivacyPage';
+import NotificationsPage from './src/pages/NotificationsPage';
 
 const INITIAL_PRODUCTS: Product[] = [
   {
@@ -116,6 +117,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/money-transfer" element={<AnimatedPage><MoneyTransferPage /></AnimatedPage>} />
         <Route path="/dashboard" element={<AnimatedPage><DashboardPage /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
+        <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
   );

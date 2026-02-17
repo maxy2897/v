@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from '../services/notificationsApi';
 
 interface Notification {
@@ -21,6 +22,7 @@ export const NotificationBell: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     // Fetch notifications and count
     const fetchNotifications = async () => {
@@ -228,7 +230,7 @@ export const NotificationBell: React.FC = () => {
                             <button
                                 onClick={() => {
                                     setIsOpen(false);
-                                    // Navigate to notifications page if exists
+                                    navigate('/notificaciones');
                                 }}
                                 className="w-full text-center text-xs font-bold text-teal-600 hover:text-teal-700 py-2"
                             >
