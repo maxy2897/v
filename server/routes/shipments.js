@@ -46,7 +46,12 @@ router.post('/', protect, async (req, res) => {
             weight,
             price,
             description,
-            status: 'Pendiente'
+            status: 'Pendiente',
+            history: [{
+                status: 'Pendiente',
+                location: origin,
+                date: new Date()
+            }]
         });
 
         await shipment.save();
@@ -145,7 +150,12 @@ router.post('/bulk', protect, async (req, res) => {
                 weight,
                 price,
                 description,
-                status: 'Pendiente'
+                status: 'Pendiente',
+                history: [{
+                    status: 'Pendiente',
+                    location: origin,
+                    date: new Date()
+                }]
             });
 
             await shipment.save();
@@ -205,15 +215,47 @@ router.patch('/:id/status', protect, async (req, res) => {
         }
 
         shipment.status = status;
+
+        let location = shipment.origin; // Default location logic
+        if (status === 'Recogido') location = shipment.origin;
+        if (status === 'En tránsito') location = 'En Ruta';
+        if (status === 'En Aduanas') location = 'Aduanas';
+        if (status === 'Llegado a destino') location = shipment.destination;
         if (status === 'Entregado') {
             shipment.deliveredAt = new Date();
+            location = shipment.destination;
         }
+
+        shipment.history.push({
+            status,
+            location,
+            date: new Date()
+        });
 
         await shipment.save();
         res.json(shipment);
     } catch (error) {
         console.error('Error updating shipment status:', error);
         res.status(500).json({ message: 'Error updating status', error: error.message });
+    }
+});
+
+// @route   GET /api/shipments/track/:trackingNumber
+// @desc    Get public tracking info
+// @access  Public
+router.get('/track/:trackingNumber', async (req, res) => {
+    try {
+        const shipment = await Shipment.findOne({ trackingNumber: req.params.trackingNumber })
+            .select('trackingNumber status origin destination history createdAt weight price description recipient');
+
+        if (!shipment) {
+            return res.status(404).json({ message: 'Shipment not found' });
+        }
+
+        res.json(shipment);
+    } catch (error) {
+        console.error('Tracking error:', error);
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 

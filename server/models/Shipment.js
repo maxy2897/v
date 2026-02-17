@@ -50,6 +50,11 @@ const ShipmentSchema = new mongoose.Schema({
     deliveredAt: {
         type: Date,
     },
+    history: [{
+        status: String,
+        location: String,
+        date: { type: Date, default: Date.now }
+    }]
 });
 
 // Actualizar updatedAt antes de guardar
