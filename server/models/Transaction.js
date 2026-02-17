@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 const TransactionSchema = new mongoose.Schema({
     type: {
         type: String,
-        enum: ['SHIPMENT', 'TRANSFER', 'STORE_PURCHASE'],
+        enum: ['SHIPMENT', 'SHIPMENT_BULK', 'TRANSFER', 'STORE_PURCHASE'],
         required: true
     },
     referenceId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
         refPath: 'onModel'
     },
     userId: {
@@ -17,7 +17,7 @@ const TransactionSchema = new mongoose.Schema({
     },
     onModel: {
         type: String,
-        required: true,
+        required: false,
         enum: ['Shipment', 'Transfer', 'Order']
     },
     amount: {
