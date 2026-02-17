@@ -588,16 +588,23 @@ const DashboardPage: React.FC = () => {
                                                 key={tx._id}
                                                 className="border-2 border-gray-100 rounded-2xl p-6 hover:border-teal-200 transition-all flex flex-col md:flex-row justify-between items-center gap-4"
                                             >
-                                                <div>
-                                                    <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">
-                                                        {tx.type === 'SHIPMENT' ? (t('dash.invoices.shipment') || 'Envío') : (t('dash.invoices.transfer') || 'Transferencia')}
+                                                <div className="text-left w-full md:w-auto">
+                                                    <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-2">
+                                                        {tx.type === 'SHIPMENT'
+                                                            ? `${t('dash.invoices.ship_to') || 'Envío a'}: ${tx.details?.recipient?.name || '---'}`
+                                                            : `${t('dash.invoices.transfer_to') || 'Transf. a'}: ${tx.details?.beneficiary?.name || '---'}`
+                                                        }
                                                     </p>
-                                                    <p className="text-lg font-black text-[#00151a]">
-                                                        {tx.amount} {tx.currency || 'FCFA'}
-                                                    </p>
-                                                    <p className="text-xs text-gray-400 mt-1">
-                                                        {new Date(tx.createdAt).toLocaleDateString()}
-                                                    </p>
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <p className="text-lg font-black text-[#00151a] tracking-tight">
+                                                            {new Date(tx.createdAt).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                                            <span className="text-gray-300 mx-2">|</span>
+                                                            <span className="text-teal-600">{new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                        </p>
+                                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                                            {tx.amount.toLocaleString()} {tx.currency || 'FCFA'}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                                 <button
                                                     onClick={() => downloadInvoice(tx._id)}
