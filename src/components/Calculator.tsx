@@ -110,31 +110,10 @@ const Calculator: React.FC = () => {
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Prepare current shipment data (from form)
-    const currentShipment = {
-      origin: info.origin,
-      destination: info.destination,
-      weight: info.weight || (calcMode === 'bulto' ? bultoType : 1), // Fallback
-      price: total?.value || 0,
-      description: `Envío ${calcMode} desde ${info.origin}`,
-      recipient: isAuthenticated ? recipientData : {
-        name: userData.fullName,
-        phone: userData.phone
-      },
-      // Important: currency should probably be stored or handled
-    };
-
-    // Different validation for authenticated vs non-authenticated users
-    if (isAuthenticated) {
-      if (!currentShipment.recipient.name || !currentShipment.recipient.phone) {
-        alert('Por favor completa los datos del destinatario actual');
-        return;
-      }
-    } else {
-      if (!userData.fullName || !userData.phone || !userData.idNumber) {
-        alert('Por favor completa todos tus datos');
-        return;
-      }
+    // Check if we have shipments in the list
+    if (shipmentList.length === 0 && (!total || total.value === 0)) {
+      alert('Debes calcular y añadir al menos un envío antes de finalizar');
+      return;
     }
 
     setIsRegistering(true);
@@ -142,19 +121,51 @@ const Calculator: React.FC = () => {
     try {
       console.log('Initiating shipment creation...');
 
-      // Combine list + current form
-      const allShipments = [...shipmentList, currentShipment];
+      let allShipments = [...shipmentList];
+
+      // Only add current form data if there's a calculated total
+      if (total && total.value > 0) {
+        // Prepare current shipment data (from form)
+        const currentShipment = {
+          origin: info.origin,
+          destination: info.destination,
+          weight: info.weight || (calcMode === 'bulto' ? bultoType : 1),
+          price: total?.value || 0,
+          description: `Envío ${calcMode} desde ${info.origin}`,
+          recipient: isAuthenticated ? recipientData : {
+            name: userData.fullName,
+            phone: userData.phone
+          },
+          currency: total?.currency || 'EUR'
+        };
+
+        // Validate current shipment
+        if (isAuthenticated) {
+          if (!currentShipment.recipient.name || !currentShipment.recipient.phone) {
+            alert('Por favor completa los datos del destinatario actual');
+            setIsRegistering(false);
+            return;
+          }
+        } else {
+          if (!userData.fullName || !userData.phone || !userData.idNumber) {
+            alert('Por favor completa todos tus datos');
+            setIsRegistering(false);
+            return;
+          }
+        }
+
+        allShipments.push(currentShipment);
+      }
+
+      // Final validation
+      if (allShipments.length === 0) {
+        alert('No hay envíos para registrar');
+        setIsRegistering(false);
+        return;
+      }
 
       if (allShipments.length === 1) {
-        // Single shipment flow (old)
-        // Generate tracking number locally? No, let's keep it consistent
-        // Actually, let's just use the bulk endpoint even for one? Or keep separation?
-        // Let's use createShipment for single for backward compat if needed, 
-        // but wait, createShipment does one. 
-
-        // Let's stick to the single route if only one, ensuring we have tracking number if needed by backend?
-        // The previous code generated tracking number on frontend.
-
+        // Single shipment flow
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let result = '';
         for (let i = 0; i < 5; i++) {
@@ -162,7 +173,7 @@ const Calculator: React.FC = () => {
         }
         const trackingNumber = `BB-${result}`;
 
-        const shipmentData = { ...currentShipment, trackingNumber };
+        const shipmentData = { ...allShipments[0], trackingNumber };
 
         const res = await import('../services/api').then(m => m.createShipment(shipmentData));
         console.log('Shipment created response:', res);
@@ -176,10 +187,8 @@ const Calculator: React.FC = () => {
         const res = await import('../services/api').then(m => m.createBulkShipment(allShipments));
         console.log('Bulk Shipment created response:', res);
 
-        // For bulk, generatedCode might be the first one or a summary?
-        // Let's just show the first tracking number and success
         if (res.shipments && res.shipments.length > 0) {
-          setGeneratedCode(res.shipments[0].trackingNumber); // Show first one or "Multiple"
+          setGeneratedCode(res.shipments[0].trackingNumber);
         }
         if (res.transactionId) {
           setLastTransactionId(res.transactionId);
