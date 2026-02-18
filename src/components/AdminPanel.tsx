@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
 import { createNotification } from '../services/notificationsApi';
+import { createProduct as apiCreateProduct, deleteProduct as apiDeleteProduct, getProducts } from '../services/productsApi';
 
 interface Shipment {
   _id: string;
@@ -309,26 +310,37 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     }
   };
 
-  const addProduct = (e: React.FormEvent) => {
+  const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    const id = Date.now().toString();
-    setProducts([...products, { ...newProduct, id }]);
-    setNewProduct({
-      name: '',
-      color: '',
-      price: '',
-      description: '',
-      image: '',
-      tag: 'NOVEDAD',
-      slogan: '',
-      waLink: 'https://wa.me/34641992110'
-    });
-    alert('Producto añadido con éxito');
+    try {
+      const created = await apiCreateProduct(newProduct);
+      setProducts([...products, created]);
+      setNewProduct({
+        name: '',
+        color: '',
+        price: '',
+        description: '',
+        image: '',
+        tag: 'NOVEDAD',
+        slogan: '',
+        waLink: 'https://wa.me/34641992110'
+      });
+      alert('✅ Producto añadido con éxito a la base de datos');
+    } catch (error: any) {
+      alert('Error al añadir producto: ' + error.message);
+    }
   };
 
-  const deleteProduct = (id: string) => {
-    if (confirm('¿Seguro que quieres eliminar este producto?')) {
-      setProducts(products.filter(p => p.id !== id));
+  const deleteProduct = async (id: string) => {
+    if (confirm('¿Seguro que quieres eliminar este producto de forma permanente?')) {
+      try {
+        await apiDeleteProduct(id);
+        const updated = await getProducts();
+        setProducts(updated);
+        alert('Producto eliminado correctamente');
+      } catch (error: any) {
+        alert('Error al eliminar producto: ' + error.message);
+      }
     }
   };
 

@@ -11,6 +11,7 @@ import { Product, AppConfig } from './types';
 import AnimatedPage from './src/components/AnimatedPage';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
+import { getProducts } from './src/services/productsApi';
 
 // Pages
 import HomePage from './src/pages/HomePage';
@@ -131,10 +132,7 @@ const AppContent: React.FC = () => {
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   // Dynamic State
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('bb_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
 
   const [config, setConfig] = useState<AppConfig>(() => {
     const saved = localStorage.getItem('bb_config');
@@ -142,8 +140,18 @@ const AppContent: React.FC = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem('bb_products', JSON.stringify(products));
-  }, [products]);
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        if (data && data.length > 0) {
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('bb_config', JSON.stringify(config));
