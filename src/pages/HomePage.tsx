@@ -3,9 +3,10 @@ import { useSettings } from '../context/SettingsContext';
 
 interface HomePageProps {
     onOpenRegister: () => void;
+    onOpenContact: () => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
+const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) => {
     const { t, appConfig } = useSettings();
     return (
         <>
@@ -29,12 +30,12 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister }) => {
                                 <a href="/tarifas" className="px-10 py-5 bg-[#00151a] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#007e85] transition-all shadow-2xl shadow-teal-900/40">
                                     {appConfig?.content?.hero?.ctaPrimary || t('home.hero.cta_ship')}
                                 </a>
-                                <a
-                                    href="/acceso"
+                                <button
+                                    onClick={onOpenContact}
                                     className="px-10 py-5 bg-teal-500 text-[#00151a] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20"
                                 >
                                     {appConfig?.content?.hero?.ctaSecondary || t('home.hero.cta_register')}
-                                </a>
+                                </button>
                             </div>
                         </div>
 

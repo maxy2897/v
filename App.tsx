@@ -6,6 +6,7 @@ import AIChat from './src/components/AIChat';
 import RegisterModal from './src/components/RegisterModal';
 import LoginModal from './src/components/LoginModal';
 import ForgotPasswordModal from './src/components/ForgotPasswordModal';
+import ContactModal from './src/components/ContactModal';
 import AdminPanel from './src/components/AdminPanel';
 import { Product, AppConfig } from './types';
 import AnimatedPage from './src/components/AnimatedPage';
@@ -100,15 +101,16 @@ const FirstVisitRedirect = () => {
 
 const AnimatedRoutes: React.FC<{
   onOpenRegister: () => void;
+  onOpenContact: () => void;
   onOpenForgotPassword: () => void;
   products: Product[];
-}> = ({ onOpenRegister, onOpenForgotPassword, products }) => {
+}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, products }) => {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location}>
-        <Route path="/" element={<AnimatedPage><HomePage onOpenRegister={onOpenRegister} /></AnimatedPage>} />
+        <Route path="/" element={<AnimatedPage><HomePage onOpenRegister={onOpenRegister} onOpenContact={onOpenContact} /></AnimatedPage>} />
         <Route path="/calendario" element={<AnimatedPage><CalendarPage /></AnimatedPage>} />
         <Route path="/tarifas" element={<AnimatedPage><RatesPage /></AnimatedPage>} />
         <Route path="/servicios" element={<AnimatedPage><ServicesPage /></AnimatedPage>} />
@@ -130,6 +132,7 @@ const AppContent: React.FC = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   // Dynamic State
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -183,6 +186,7 @@ const AppContent: React.FC = () => {
         <main className="flex-grow">
           <AnimatedRoutes
             onOpenRegister={() => setIsRegisterOpen(true)}
+            onOpenContact={() => setIsContactOpen(true)}
             onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
             products={products}
           />
@@ -283,6 +287,7 @@ const AppContent: React.FC = () => {
           }}
         />
         <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />
+        <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
         <AdminPanel
           isOpen={isAdminOpen}
           onClose={() => setIsAdminOpen(false)}

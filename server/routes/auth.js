@@ -60,6 +60,7 @@ router.post(
                     address: user.address,
                     username: user.username,
                     profileImage: user.profileImage,
+                    idNumber: user.idNumber,
                     discountEligible: user.discountEligible,
                     token: generateToken(user._id),
                 });
@@ -103,6 +104,7 @@ router.post(
                     address: user.address,
                     username: user.username,
                     profileImage: user.profileImage,
+                    idNumber: user.idNumber,
                     discountEligible: user.discountEligible,
                     role: user.role,
                     token: generateToken(user._id),
@@ -137,6 +139,7 @@ router.post('/social-login', async (req, res) => {
                 address: user.address,
                 username: user.username,
                 profileImage: user.profileImage,
+                idNumber: user.idNumber,
                 discountEligible: user.discountEligible,
                 role: user.role,
                 token: generateToken(user._id),
@@ -159,6 +162,7 @@ router.post('/social-login', async (req, res) => {
                 address: user.address,
                 username: user.username,
                 profileImage: user.profileImage,
+                idNumber: user.idNumber,
                 discountEligible: user.discountEligible,
                 token: generateToken(user._id),
             });
@@ -184,6 +188,7 @@ router.get('/me', protect, async (req, res) => {
             address: user.address,
             username: user.username,
             profileImage: user.profileImage,
+            idNumber: user.idNumber,
             discountEligible: user.discountEligible,
         });
     } catch (error) {
