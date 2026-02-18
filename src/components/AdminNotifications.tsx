@@ -136,6 +136,7 @@ export const AdminNotifications: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Tipo</label>
                                 <select
+                                    title="Tipo de notificación"
                                     value={formData.type}
                                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
@@ -153,6 +154,8 @@ export const AdminNotifications: React.FC = () => {
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Expira (opcional)</label>
                                 <input
                                     type="datetime-local"
+                                    title="Fecha de expiración"
+                                    placeholder="Seleccionar fecha y hora"
                                     value={formData.expiresAt}
                                     onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
