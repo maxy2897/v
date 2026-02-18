@@ -59,6 +59,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [directNotifModal, setDirectNotifModal] = useState<{ userId: string, name: string } | null>(null);
   const [directNotifData, setDirectNotifData] = useState({ title: '', message: '', type: 'info' });
   const [sendingNotif, setSendingNotif] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
@@ -349,6 +350,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
   const deleteProduct = async (id: string) => {
     if (confirm('¿Seguro que quieres eliminar este producto de forma permanente?')) {
+      setIsDeletingId(id);
       try {
         await apiDeleteProduct(id);
         const updated = await getProducts(); // Refresh list from server
@@ -356,6 +358,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
         alert('Producto eliminado correctamente');
       } catch (error: any) {
         alert('Error al eliminar producto: ' + error.message);
+      } finally {
+        setIsDeletingId(null);
       }
     }
   };
@@ -519,7 +523,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     {products.map(product => (
                       <div key={product.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 group hover:border-teal-200 transition-all">
                         <div className="flex items-center gap-4">
-                          <img src={product.image} className="w-12 h-12 object-cover rounded-lg" alt={product.name} />
+                          <img
+                            src={product.image}
+                            className="w-12 h-12 object-cover rounded-lg bg-gray-200"
+                            alt={product.name}
+                            onError={(e) => {
+                              // Fallback si la imagen no carga (ej: borrada de Cloudinary)
+                              e.currentTarget.src = 'https://placehold.co/100x100?text=IMG';
+                            }}
+                          />
                           <div>
                             <p className="text-sm font-black text-[#00151a] leading-none">{product.name}</p>
                             <p className="text-[10px] font-bold text-teal-600 mt-1 uppercase tracking-widest">{product.price}</p>
@@ -527,11 +539,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         </div>
                         <button
                           onClick={() => deleteProduct(product.id)}
-                          className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                          disabled={isDeletingId === product.id}
+                          className={`p-2 transition-colors ${isDeletingId === product.id
+                              ? 'text-teal-500 cursor-wait'
+                              : 'text-gray-300 hover:text-red-500'
+                            }`}
                           title={`Eliminar ${product.name}`}
-                          aria-label={`Eliminar ${product.name}`}
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          {isDeletingId === product.id ? (
+                            <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          )}
                         </button>
                       </div>
                     ))}
