@@ -35,15 +35,24 @@ router.post('/', protect, admin, async (req, res) => {
         // Subir imagen a Cloudinary si es base64
         if (image && image.startsWith('data:image')) {
             try {
-                console.log('Subiendo imagen a Cloudinary...');
-                const result = await cloudinary.uploader.upload(image, {
+                // Configurar opciones de subida
+                const uploadOptions = {
                     folder: 'bodipo_products',
-                });
+                    resource_type: 'auto',
+                    timeout: 60000 // 60 segundos
+                };
+
+                console.log('Iniciando subida a Cloudinary...');
+                const result = await cloudinary.uploader.upload(image, uploadOptions);
+
                 image = result.secure_url;
-                console.log('Imagen subida con éxito:', image);
+                console.log('✅ Imagen subida con éxito:', image);
             } catch (uploadError) {
-                console.error('Error subiendo imagen:', uploadError);
-                return res.status(500).json({ message: 'Error al subir la imagen del producto' });
+                console.error('❌ Error detallado Cloudinary:', JSON.stringify(uploadError, null, 2));
+                return res.status(500).json({
+                    message: 'Error al subir la imagen a la nube',
+                    error: uploadError.message
+                });
             }
         }
 
