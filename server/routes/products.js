@@ -1,6 +1,14 @@
 import express from 'express';
 import { protect, admin } from '../middleware/auth.js';
 import Product from '../models/Product.js';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dbrig81ou',
+    api_key: process.env.CLOUDINARY_API_KEY || '856675229911861',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'vzvSGxUz_seTZceaQzU6nXaC7Io'
+});
 
 const router = express.Router();
 
@@ -22,7 +30,34 @@ router.get('/', async (req, res) => {
 // @access  Private/Admin
 router.post('/', protect, admin, async (req, res) => {
     try {
-        const product = await Product.create(req.body);
+        let { name, color, price, description, image, tag, slogan, waLink } = req.body;
+
+        // Subir imagen a Cloudinary si es base64
+        if (image && image.startsWith('data:image')) {
+            try {
+                console.log('Subiendo imagen a Cloudinary...');
+                const result = await cloudinary.uploader.upload(image, {
+                    folder: 'bodipo_products',
+                });
+                image = result.secure_url;
+                console.log('Imagen subida con éxito:', image);
+            } catch (uploadError) {
+                console.error('Error subiendo imagen:', uploadError);
+                return res.status(500).json({ message: 'Error al subir la imagen del producto' });
+            }
+        }
+
+        const product = await Product.create({
+            name,
+            color,
+            price,
+            description,
+            image,
+            tag,
+            slogan,
+            waLink
+        });
+
         res.status(201).json(product);
     } catch (error) {
         console.error('Error creating product:', error);
