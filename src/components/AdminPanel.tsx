@@ -59,6 +59,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [directNotifModal, setDirectNotifModal] = useState<{ userId: string, name: string } | null>(null);
   const [directNotifData, setDirectNotifData] = useState({ title: '', message: '', type: 'info' });
   const [sendingNotif, setSendingNotif] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
+    name: '',
+    color: '',
+    price: '',
+    description: '',
+    image: '',
+    tag: 'NOVEDAD',
+    slogan: '',
+    waLink: 'https://wa.me/34641992110'
+  });
 
   React.useEffect(() => {
     if (activeTab === 'transactions') {
@@ -238,16 +249,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       setSendingNotif(false);
     }
   };
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
-    name: '',
-    color: '',
-    price: '',
-    description: '',
-    image: '',
-    tag: 'NOVEDAD',
-    slogan: '',
-    waLink: 'https://wa.me/34641992110'
-  });
 
   // Prevent background scroll when modal is open
   React.useEffect(() => {
@@ -298,10 +299,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     });
   };
 
-  /* 
-   * NEW: Better image handling and loading state
-   */
-  const [isUploading, setIsUploading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'logo') => {
     const file = e.target.files?.[0];
@@ -507,8 +504,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       type="submit"
                       disabled={isUploading}
                       className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl ${isUploading
-                          ? 'bg-gray-400 cursor-not-allowed'
-                          : 'bg-[#00151a] text-white hover:bg-teal-500'
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-[#00151a] text-white hover:bg-teal-500'
                         }`}
                     >
                       {isUploading ? '⏳ Publicando...' : 'Publicar Producto'}
