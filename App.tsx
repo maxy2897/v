@@ -146,9 +146,11 @@ const AppContent: React.FC = () => {
     const fetchProducts = async () => {
       try {
         const data = await getProducts();
-        if (data) {
+        if (data && data.length > 0) {
           console.log('📦 Productos cargados:', data.length);
           setProducts(data);
+        } else {
+          console.log('📦 No hay productos en BD, manteniendo ejemplos.');
         }
       } catch (error) {
         console.error('Error fetching products:', error);
