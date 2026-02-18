@@ -146,7 +146,7 @@ const AppContent: React.FC = () => {
     const fetchProducts = async () => {
       try {
         const data = await getProducts();
-        if (data && data.length > 0) {
+        if (data) {
           console.log('📦 Productos cargados:', data.length);
           setProducts(data);
         }

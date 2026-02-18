@@ -480,7 +480,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       <label className="text-[10px] font-black uppercase text-gray-400">Imagen del Producto</label>
                       <div className="flex items-center gap-4">
                         {newProduct.image && <img src={newProduct.image} className="w-16 h-16 object-cover rounded-xl border" alt="Vista previa del producto" />}
-                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'product')} className="text-xs font-bold file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" title="Subir imagen de producto" />
+                        <input required type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'product')} className="text-xs font-bold file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" title="Subir imagen de producto" />
                       </div>
                     </div>
 
