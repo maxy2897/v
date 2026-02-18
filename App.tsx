@@ -34,7 +34,7 @@ const INITIAL_PRODUCTS: Product[] = [
     color: "Blanco Premium",
     price: "25.000 FCFA",
     description: "Diseño exclusivo 2026. Algodón de alta calidad con logotipo BB en el pecho y diseño artístico 'Somos tu mejor opción' en la espalda. Incluye el lema 'Recibe bultos desde Europa'. ¡Envío gratuito incluido a Malabo y Bata!",
-    image: "/images/camisa-bodipo.png",
+    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800",
     tag: "TOP VENTAS",
     slogan: "Recibe bultos desde Europa",
     waLink: "https://wa.me/34641992110?text=Hola!%20Quiero%20comprar%20la%20camiseta%20blanca%20oficial%20de%20Bodipo%20Business."
@@ -45,7 +45,7 @@ const INITIAL_PRODUCTS: Product[] = [
     color: "Negro Premium",
     price: "15.000 FCFA",
     description: "Edición especial en negro con el lema 'SOMOS TU MEJOR OPCIÓN' y 'KIENTEM' en la espalda. Algodón premium.",
-    image: "/images/camiseta-negra.jpg",
+    image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80&w=800",
     tag: "NUEVO",
     slogan: "Estilo y Pertenencia",
     waLink: "https://wa.me/34641992110?text=Hola!%20Quiero%20comprar%20la%20camiseta%20negra%20Edición%20Kientem."
@@ -56,7 +56,7 @@ const INITIAL_PRODUCTS: Product[] = [
     color: "Blanco Puro",
     price: "15.000 FCFA",
     description: "Diseño exclusivo blanco con detalles en vinilo dorado 'ECUATO'. Elegancia y orgullo nacional.",
-    image: "/images/camiseta-blanca.jpg",
+    image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&q=80&w=800",
     tag: "EXCLUSIVO",
     slogan: "Los negocios no tienen fronteras",
     waLink: "https://wa.me/34641992110?text=Hola!%20Quiero%20comprar%20la%20camiseta%20blanca%20Edición%20Ecuato."
@@ -147,6 +147,7 @@ const AppContent: React.FC = () => {
       try {
         const data = await getProducts();
         if (data && data.length > 0) {
+          console.log('📦 Productos cargados:', data.length);
           setProducts(data);
         }
       } catch (error) {

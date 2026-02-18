@@ -1,6 +1,8 @@
 import { Product } from '../../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : 'http://localhost:5000/api';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -15,7 +17,11 @@ export const getProducts = async (): Promise<Product[]> => {
     if (!response.ok) {
         throw new Error('Error al obtener productos');
     }
-    return response.json();
+    const data = await response.json();
+    return data.map((p: any) => ({
+        ...p,
+        id: p._id || p.id
+    }));
 };
 
 export const createProduct = async (productData: Omit<Product, 'id'>): Promise<Product> => {
@@ -28,7 +34,10 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<P
     if (!response.ok) {
         throw new Error(data.message || 'Error al crear producto');
     }
-    return data;
+    return {
+        ...data,
+        id: data._id || data.id
+    };
 };
 
 export const deleteProduct = async (id: string): Promise<void> => {
