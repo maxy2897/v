@@ -87,21 +87,21 @@ router.delete('/:id', protect, admin, async (req, res) => {
         // Borrar imagen de Cloudinary si existe
         if (product.image && product.image.includes('cloudinary')) {
             try {
-                // Ejemplo URL: https://res.cloudinary.com/dbrig81ou/image/upload/v1740007200/bodipo_products/wz2y...
-                // Queremos: bodipo_products/wz2y...
-                const parts = product.image.split('/upload/');
-                if (parts.length > 1) {
-                    const versionAndId = parts[1]; // v1740007200/bodipo_products/wz2y...
-                    const slashIndex = versionAndId.indexOf('/');
-                    if (slashIndex !== -1) {
-                        // Quitamos la versión (v12345/) y la extensión (.jpg)
-                        let publicId = versionAndId.substring(slashIndex + 1);
-                        publicId = publicId.split('.')[0];
+                console.log('🔍 Analizando imagen para borrar:', product.image);
 
-                        console.log('🗑️ Intentando borrar de Cloudinary:', publicId);
-                        const result = await cloudinary.uploader.destroy(publicId);
-                        console.log('✅ Resultado borrado nube:', result);
-                    }
+                // Regex para capturar el public_id:
+                // Busca "/upload/", opcionalmente una versión "v12345/", y captura todo hasta el punto de la extensión.
+                const regex = /\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/;
+                const match = product.image.match(regex);
+
+                if (match && match[1]) {
+                    const publicId = match[1];
+                    console.log('🗑️ Public ID detectado:', publicId);
+
+                    const result = await cloudinary.uploader.destroy(publicId, { invalidate: true });
+                    console.log('✅ Resultado Cloudinary:', result);
+                } else {
+                    console.log('⚠️ No se pudo extraer el public_id de la URL:', product.image);
                 }
             } catch (cloudError) {
                 console.error('⚠️ Error al borrar imagen de Cloudinary:', cloudError);
