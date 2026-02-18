@@ -298,20 +298,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     });
   };
 
+  /* 
+   * NEW: Better image handling and loading state
+   */
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'logo') => {
     const file = e.target.files?.[0];
     if (file) {
-      const resizedBase64 = await resizeImage(file);
-      if (target === 'product') {
-        setNewProduct({ ...newProduct, image: resizedBase64 });
-      } else {
-        setConfig({ ...config, customLogoUrl: resizedBase64 });
+      try {
+        const resizedBase64 = await resizeImage(file);
+        if (target === 'product') {
+          setNewProduct({ ...newProduct, image: resizedBase64 });
+        } else {
+          setConfig({ ...config, customLogoUrl: resizedBase64 });
+        }
+      } catch (err) {
+        alert('Error al procesar la imagen. Inténtalo de nuevo.');
+        console.error(err);
       }
     }
   };
 
   const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newProduct.image) {
+      alert('⚠️ Por favor selecciona una imagen para el producto.');
+      return;
+    }
+
+    setIsUploading(true); // Start loading
     try {
       const created = await apiCreateProduct(newProduct);
       setProducts([...products, created]);
@@ -327,7 +343,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       });
       alert('✅ Producto añadido con éxito a la base de datos');
     } catch (error: any) {
-      alert('Error al añadir producto: ' + error.message);
+      console.error('Error detallado:', error);
+      alert(`❌ Error al añadir producto: ${error.message || 'Error desconocido'}`);
+    } finally {
+      setIsUploading(false); // Stop loading regardless of outcome
     }
   };
 
@@ -335,7 +354,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     if (confirm('¿Seguro que quieres eliminar este producto de forma permanente?')) {
       try {
         await apiDeleteProduct(id);
-        const updated = await getProducts();
+        const updated = await getProducts(); // Refresh list from server
         setProducts(updated);
         alert('Producto eliminado correctamente');
       } catch (error: any) {
@@ -484,8 +503,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       </div>
                     </div>
 
-                    <button type="submit" className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-teal-500 transition-all shadow-xl">
-                      Publicar Producto
+                    <button
+                      type="submit"
+                      disabled={isUploading}
+                      className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl ${isUploading
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-[#00151a] text-white hover:bg-teal-500'
+                        }`}
+                    >
+                      {isUploading ? '⏳ Publicando...' : 'Publicar Producto'}
                     </button>
                   </form>
                 </section>
@@ -1170,69 +1196,71 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       </div>
 
       {/* Direct Notification Modal */}
-      {directNotifModal && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
-          <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
-            <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
-            <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
+      {
+        directNotifModal && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
+            <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
+              <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
+              <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
-                <input
-                  type="text"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
-                  placeholder="Ej: Aviso de recogida"
-                  value={directNotifData.title}
-                  onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
-                <textarea
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
-                  placeholder="Escribe el mensaje..."
-                  value={directNotifData.message}
-                  onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
-                <select
-                  aria-label="Tipo de notificación"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
-                  value={directNotifData.type}
-                  onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
-                >
-                  <option value="info">Información</option>
-                  <option value="success">Éxito</option>
-                  <option value="warning">Advertencia</option>
-                  <option value="shipment_update">Envío</option>
-                  <option value="delivery">Entrega</option>
-                </select>
-              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
+                  <input
+                    type="text"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
+                    placeholder="Ej: Aviso de recogida"
+                    value={directNotifData.title}
+                    onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
+                  <textarea
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
+                    placeholder="Escribe el mensaje..."
+                    value={directNotifData.message}
+                    onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
+                  <select
+                    aria-label="Tipo de notificación"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
+                    value={directNotifData.type}
+                    onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
+                  >
+                    <option value="info">Información</option>
+                    <option value="success">Éxito</option>
+                    <option value="warning">Advertencia</option>
+                    <option value="shipment_update">Envío</option>
+                    <option value="delivery">Entrega</option>
+                  </select>
+                </div>
 
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={handleSendDirectNotif}
-                  disabled={sendingNotif}
-                  className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
-                >
-                  {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
-                </button>
-                <button
-                  onClick={() => setDirectNotifModal(null)}
-                  className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
-                >
-                  Cancelar
-                </button>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={handleSendDirectNotif}
+                    disabled={sendingNotif}
+                    className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
+                  >
+                    {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
+                  </button>
+                  <button
+                    onClick={() => setDirectNotifModal(null)}
+                    className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
