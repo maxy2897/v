@@ -2,6 +2,7 @@ import express from 'express';
 import { protect } from '../middleware/auth.js';
 import Shipment from '../models/Shipment.js';
 import Transaction from '../models/Transaction.js';
+import Notification from '../models/Notification.js';
 
 const router = express.Router();
 
@@ -78,6 +79,19 @@ router.post('/', protect, async (req, res) => {
                 recipient
             }
         });
+
+        // Crear notificación de confirmación
+        try {
+            await Notification.create({
+                title: 'Envío Registrado',
+                message: `Tu envío con código ${trackingNumber} ha sido registrado correctamente.`,
+                type: 'success',
+                userId: req.user._id,
+                shipmentId: shipment._id
+            });
+        } catch (error) {
+            console.error('Error creating registration notification:', error);
+        }
 
         res.status(201).json({
             ...shipment.toObject(),
@@ -163,7 +177,6 @@ router.post('/bulk', protect, async (req, res) => {
             totalAmount += price;
         }
 
-        // Create consolidated transaction
         const transaction = await Transaction.create({
             type: 'SHIPMENT_BULK',
             userId: req.user._id,
@@ -186,6 +199,18 @@ router.post('/bulk', protect, async (req, res) => {
                 }))
             }
         });
+
+        // Crear notificación consolidada
+        try {
+            await Notification.create({
+                title: 'Envíos Masivos Registrados',
+                message: `Se han registrado ${createdShipments.length} envíos nuevos.`,
+                type: 'success',
+                userId: req.user._id
+            });
+        } catch (error) {
+            console.error('Error creating bulk registration notification:', error);
+        }
 
         res.status(201).json({
             shipments: createdShipments,
@@ -233,6 +258,21 @@ router.patch('/:id/status', protect, async (req, res) => {
         });
 
         await shipment.save();
+
+        // Crear notificación para el usuario
+        try {
+            await Notification.create({
+                title: 'Actualización de Envío',
+                message: `Tu envío con código ${shipment.trackingNumber} ha cambiado a: ${status}`,
+                type: status === 'Entregado' ? 'delivery' : 'shipment_update',
+                userId: shipment.user,
+                shipmentId: shipment._id
+            });
+        } catch (error) {
+            console.error('Error creating status notification:', error);
+            // No bloqueamos la respuesta principal si falla la notificación
+        }
+
         res.json(shipment);
     } catch (error) {
         console.error('Error updating shipment status:', error);

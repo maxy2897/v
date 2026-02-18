@@ -9,16 +9,29 @@ const router = express.Router();
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
-        const notifications = await Notification.find({
-            $or: [
-                { userId: req.user._id }, // Personal notifications
-                { userId: null, adminOnly: false } // Global notifications for all users
-            ],
-            $or: [
-                { expiresAt: null },
-                { expiresAt: { $gt: new Date() } }
+        const query = {
+            $and: [
+                {
+                    $or: [
+                        { userId: req.user._id }, // Personal
+                        { userId: null, adminOnly: false } // Global
+                    ]
+                },
+                {
+                    $or: [
+                        { expiresAt: null }, // Persistent
+                        { expiresAt: { $gt: new Date() } } // Not expired
+                    ]
+                }
             ]
-        })
+        };
+
+        // Admins can also see notifications flagged for them
+        if (req.user.isAdmin) {
+            query.$and[0].$or.push({ adminOnly: true });
+        }
+
+        const notifications = await Notification.find(query)
             .sort({ createdAt: -1 })
             .limit(50)
             .populate('shipmentId', 'trackingNumber destination status');
@@ -41,17 +54,29 @@ router.get('/', protect, async (req, res) => {
 // @access  Private
 router.get('/unread-count', protect, async (req, res) => {
     try {
-        const count = await Notification.countDocuments({
-            $or: [
-                { userId: req.user._id },
-                { userId: null, adminOnly: false }
-            ],
+        const query = {
             readBy: { $ne: req.user._id },
-            $or: [
-                { expiresAt: null },
-                { expiresAt: { $gt: new Date() } }
+            $and: [
+                {
+                    $or: [
+                        { userId: req.user._id },
+                        { userId: null, adminOnly: false }
+                    ]
+                },
+                {
+                    $or: [
+                        { expiresAt: null },
+                        { expiresAt: { $gt: new Date() } }
+                    ]
+                }
             ]
-        });
+        };
+
+        if (req.user.isAdmin) {
+            query.$and[0].$or.push({ adminOnly: true });
+        }
+
+        const count = await Notification.countDocuments(query);
 
         res.json({ count });
     } catch (error) {

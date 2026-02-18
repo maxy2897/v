@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
+import { createNotification } from '../services/notificationsApi';
 
 interface Shipment {
   _id: string;
@@ -52,6 +53,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
+
+  // Direct Notification State
+  const [directNotifModal, setDirectNotifModal] = useState<{ userId: string, name: string } | null>(null);
+  const [directNotifData, setDirectNotifData] = useState({ title: '', message: '', type: 'info' });
+  const [sendingNotif, setSendingNotif] = useState(false);
 
   React.useEffect(() => {
     if (activeTab === 'transactions') {
@@ -205,6 +211,30 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       document.body.removeChild(a);
     } catch (e) {
       alert('Error al exportar a Excel');
+    }
+  };
+
+  const handleSendDirectNotif = async () => {
+    if (!directNotifModal) return;
+    if (!directNotifData.title || !directNotifData.message) {
+      alert('Por favor, rellena todos los campos');
+      return;
+    }
+
+    setSendingNotif(true);
+    try {
+      await createNotification({
+        ...directNotifData,
+        userId: directNotifModal.userId
+      });
+      alert('✅ Notificación enviada correctamente');
+      setDirectNotifModal(null);
+      setDirectNotifData({ title: '', message: '', type: 'info' });
+    } catch (error) {
+      console.error(error);
+      alert('Error al enviar la notificación');
+    } finally {
+      setSendingNotif(false);
     }
   };
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
@@ -878,22 +908,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         <div
                           key={group.userId}
                           onClick={() => setSelectedUserGroup(group)}
-                          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all cursor-pointer group"
+                          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all cursor-pointer group flex flex-col justify-between"
                         >
-                          <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-lg">
-                              {group.user.name.charAt(0).toUpperCase()}
+                          <div>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-lg">
+                                  {group.user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <h4 className="font-bold text-[#00151a]">{group.user.name}</h4>
+                                  <p className="text-xs text-gray-400">{group.user.email}</p>
+                                </div>
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDirectNotifModal({ userId: group.userId, name: group.user.name });
+                                }}
+                                className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                title="Enviar notificación directa"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
+                              </button>
                             </div>
-                            <div>
-                              <h4 className="font-bold text-[#00151a]">{group.user.name}</h4>
-                              <p className="text-xs text-gray-400">{group.user.email}</p>
+                            <div className="flex justify-between items-center pt-4 border-t border-gray-50">
+                              <span className="text-xs font-medium text-gray-500">Tel: {group.user.phone}</span>
+                              <span className="bg-[#00151a] text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                                {group.shipments.length} Envíos
+                              </span>
                             </div>
-                          </div>
-                          <div className="flex justify-between items-center pt-4 border-t border-gray-50">
-                            <span className="text-xs font-medium text-gray-500">Tel: {group.user.phone}</span>
-                            <span className="bg-[#00151a] text-white px-3 py-1 rounded-full text-[10px] font-bold">
-                              {group.shipments.length} Envíos
-                            </span>
                           </div>
                         </div>
                       ))}
@@ -1112,6 +1156,70 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
           </div>
         </div>
       </div>
+
+      {/* Direct Notification Modal */}
+      {directNotifModal && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
+          <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
+            <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
+            <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
+                  placeholder="Ej: Aviso de recogida"
+                  value={directNotifData.title}
+                  onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
+                <textarea
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
+                  placeholder="Escribe el mensaje..."
+                  value={directNotifData.message}
+                  onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
+                <select
+                  aria-label="Tipo de notificación"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
+                  value={directNotifData.type}
+                  onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
+                >
+                  <option value="info">Información</option>
+                  <option value="success">Éxito</option>
+                  <option value="warning">Advertencia</option>
+                  <option value="shipment_update">Envío</option>
+                  <option value="delivery">Entrega</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={handleSendDirectNotif}
+                  disabled={sendingNotif}
+                  className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
+                >
+                  {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
+                </button>
+                <button
+                  onClick={() => setDirectNotifModal(null)}
+                  className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

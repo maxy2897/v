@@ -3,6 +3,7 @@ import multer from 'multer';
 import { body, validationResult } from 'express-validator';
 import Transfer from '../models/Transfer.js';
 import Transaction from '../models/Transaction.js';
+import Notification from '../models/Notification.js';
 
 import User from '../models/User.js';
 
@@ -89,6 +90,18 @@ router.post('/', upload.single('proofImage'), [
                 proofImage: req.file.path
             }
         });
+
+        // Notificación para el Admin
+        try {
+            await Notification.create({
+                title: 'Nueva Solicitud de Dinero',
+                message: `${senderObj.name} ha solicitado un envío de ${amount} ${currency}.`,
+                type: 'info',
+                adminOnly: true
+            });
+        } catch (error) {
+            console.error('Error creating transfer notification:', error);
+        }
 
         res.status(201).json({ ...transfer.toObject(), transactionId: transaction._id });
     } catch (error) {
