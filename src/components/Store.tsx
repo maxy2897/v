@@ -33,20 +33,6 @@ const Store: React.FC<StoreProps> = ({ products }) => {
             </p>
           </div>
 
-          <div className="bg-[#00151a] p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group text-center min-w-[280px]">
-            <div className="absolute inset-0 bg-teal-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-400 mb-2">{t('store.price_final')}</p>
-            <div className="flex flex-col items-center">
-              <div className="flex items-baseline space-x-2">
-                <span className="text-5xl font-black">25.000</span>
-                <span className="text-sm font-bold text-teal-500">FCFA</span>
-              </div>
-              <div className="mt-4 flex items-center space-x-2">
-                <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-white">{t('store.envio_incluido')}</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24">
