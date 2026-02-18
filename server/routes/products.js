@@ -83,7 +83,32 @@ router.delete('/:id', protect, admin, async (req, res) => {
         if (!product) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
-        await product.deleteOne();
+
+        // Borrar imagen de Cloudinary si existe
+        if (product.image && product.image.includes('cloudinary')) {
+            try {
+                // Ejemplo URL: https://res.cloudinary.com/dbrig81ou/image/upload/v1740007200/bodipo_products/wz2y...
+                // Queremos: bodipo_products/wz2y...
+                const parts = product.image.split('/upload/');
+                if (parts.length > 1) {
+                    const versionAndId = parts[1]; // v1740007200/bodipo_products/wz2y...
+                    const slashIndex = versionAndId.indexOf('/');
+                    if (slashIndex !== -1) {
+                        // Quitamos la versión (v12345/) y la extensión (.jpg)
+                        let publicId = versionAndId.substring(slashIndex + 1);
+                        publicId = publicId.split('.')[0];
+
+                        console.log('🗑️ Intentando borrar de Cloudinary:', publicId);
+                        const result = await cloudinary.uploader.destroy(publicId);
+                        console.log('✅ Resultado borrado nube:', result);
+                    }
+                }
+            } catch (cloudError) {
+                console.error('⚠️ Error al borrar imagen de Cloudinary:', cloudError);
+            }
+        }
+
+        await product.deleteOne(); // Borrar de BD
         res.json({ message: 'Producto eliminado' });
     } catch (error) {
         console.error('Error deleting product:', error);
