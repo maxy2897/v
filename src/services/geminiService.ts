@@ -80,8 +80,16 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
       systemInstruction: systemInstruction,
     });
 
+    // Validar el historial: Gemini requiere que el historial comience con un mensaje de 'user'
+    // y que los roles se alternen (user, model, user, model...).
+    // Si el primer mensaje es de 'model' (el saludo), lo eliminamos del historial del chat.
+    let validatedHistory = [...history];
+    if (validatedHistory.length > 0 && validatedHistory[0].role === 'model') {
+      validatedHistory.shift();
+    }
+
     const chat = model.startChat({
-      history: history,
+      history: validatedHistory,
       generationConfig: {
         temperature: 0.7,
       },
@@ -92,7 +100,7 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
 
     return response.text();
   } catch (error) {
-    console.error("Error calling Gemini:", error);
-    return "Lo siento, tengo problemas para conectar con mi base de datos. Por favor, inténtalo de nuevo más tarde.";
+    console.error("Error detallado de Gemini:", error);
+    return "Lo siento, tengo problemas para conectar con el servicio de IA. Por favor, asegúrate de tener conexión a internet o inténtalo de nuevo más tarde.";
   }
 };
