@@ -1098,7 +1098,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const refreshConfig = async () => {
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/config`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api'}/config`);
             if (res.ok) {
                 const data = await res.json();
                 setAppConfig(data);
@@ -1113,7 +1113,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
             const userStr = localStorage.getItem('user');
             const token = userStr ? JSON.parse(userStr).token : '';
 
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/config`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api'}/config`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
