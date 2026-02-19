@@ -288,7 +288,7 @@ const translations: Record<Language, Record<string, string>> = {
 
         // AIChat
         'chat.welcome': '¡Hola! Soy el chat inteligente de Bodipo. Pregúntame sobre tarifas, horarios, o servicios.',
-        'chat.error': 'Lo siento, no puedo responder en este momento. Por favor, contáctanos a través de nuestros teléfonos o redes sociales.',
+        'chat.error': 'Lo siento, no puedo conectar con la IA. Por favor, revisa que la clave VITE_GEMINI_API_KEY esté bien configurada en Vercel o contáctanos por teléfono.',
         'chat.cta': 'Chat de Ayuda',
         'chat.online': 'En Línea',
         'chat.close': 'Cerrar chat',
