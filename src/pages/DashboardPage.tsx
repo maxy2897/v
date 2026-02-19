@@ -47,6 +47,7 @@ const DashboardPage: React.FC = () => {
         address: user?.address || '',
         username: user?.username || '',
         idNumber: user?.idNumber || '',
+        gender: user?.gender || 'other',
         profileImage: user?.profileImage || ''
     });
 
@@ -96,7 +97,8 @@ const DashboardPage: React.FC = () => {
                 address: user.address || '',
                 username: user.username || '',
                 idNumber: user.idNumber || '',
-                profileImage: user.profileImage || null
+                profileImage: user.profileImage || null,
+                gender: user.gender || 'other'
             });
             setPreviewImage(null);
         }
@@ -160,6 +162,7 @@ const DashboardPage: React.FC = () => {
                 address: formData.address,
                 username: formData.username,
                 idNumber: formData.idNumber,
+                gender: formData.gender,
                 profileImage: formData.profileImage
             };
 
@@ -323,6 +326,25 @@ const DashboardPage: React.FC = () => {
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Sexo</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, gender: 'male' })}
+                                                className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${formData.gender === 'male' ? 'bg-teal-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                            >
+                                                Hombre
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, gender: 'female' })}
+                                                className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${formData.gender === 'female' ? 'bg-teal-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                            >
+                                                Mujer
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
                                         <label htmlFor="edit-email" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.email')}</label>

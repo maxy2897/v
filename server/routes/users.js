@@ -60,6 +60,7 @@ router.put(
                     user.username = req.body.username.trim() === '' ? undefined : req.body.username;
                 }
                 if (req.body.idNumber !== undefined) user.idNumber = req.body.idNumber;
+                if (req.body.gender !== undefined) user.gender = req.body.gender;
 
                 if (req.file) {
                     // Normalizar el path para usar barras diagonales (compatibilidad URL)
@@ -80,6 +81,7 @@ router.put(
                     username: updatedUser.username,
                     profileImage: updatedUser.profileImage,
                     idNumber: updatedUser.idNumber,
+                    gender: updatedUser.gender,
                     discountEligible: updatedUser.discountEligible,
                     role: updatedUser.role, // Asegurar que el rol siempre se devuelva
                 });

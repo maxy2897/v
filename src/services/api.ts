@@ -140,6 +140,8 @@ export const updateProfile = async (userData: FormData | {
     address?: string;
     username?: string;
     idNumber?: string;
+    gender?: string;
+    profileImage?: string | null;
 }) => {
     // Determinar headers: si es FormData (tiene archivo o imagen), dejar que browser setee Content-Type
     const isFormData = userData instanceof FormData;
