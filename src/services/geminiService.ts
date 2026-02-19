@@ -78,7 +78,10 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
   try {
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: systemInstruction,
+      systemInstruction: {
+        role: "system",
+        parts: [{ text: systemInstruction }]
+      }
     });
 
     // Validar el historial: Gemini requiere que los roles se alternen (user, model, user, model...).
@@ -104,7 +107,6 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
       },
     });
 
-    console.log("Enviando mensaje a Gemini con historial de tamaño:", finalHistory.length);
     const result = await chat.sendMessage(userPrompt);
     const response = await result.response;
 
@@ -112,14 +114,20 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
   } catch (error: any) {
     console.error("Error DETALLADO de Gemini:", error);
 
-    if (error.message?.includes("API_KEY_INVALID")) {
+    const errorMsg = error.message || "";
+    if (errorMsg.includes("API_KEY_INVALID")) {
       return "Error: La clave de API de Gemini parece no ser válida.";
     }
 
-    if (error.message?.includes("SAFETY")) {
+    if (errorMsg.includes("SAFETY")) {
       return "Lo siento, no puedo responder a eso por motivos de seguridad.";
     }
 
-    return "Lo siento, tengo problemas para conectar con el servicio de IA. Por favor, asegúrate de tener conexión a internet o inténtalo de nuevo más tarde.";
+    if (errorMsg.includes("quota") || errorMsg.includes("429")) {
+      return "Error: Se ha superado el límite de uso del servicio. Inténtalo más tarde.";
+    }
+
+    // Si llegamos aquí, devolvemos el error real para depuración (temporalmente)
+    return `Error técnico de IA: ${errorMsg.substring(0, 100)}... Por favor, contacta con soporte.`;
   }
 };
