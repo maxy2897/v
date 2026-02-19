@@ -76,13 +76,10 @@ router.post('/response', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(API_KEY);
-        // Volvemos a 'gemini-1.5-flash' que debería funcionar con la configuración correcta
+        // Intentamos con la versión específica '001' que suele ser más estable
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-            systemInstruction: {
-                role: "system",
-                parts: [{ text: systemInstruction }]
-            }
+            model: "gemini-1.5-flash-001",
+            systemInstruction: systemInstruction, // Volvemos a probar string simple para esta versión
         });
 
         // Validar y limpiar historial para Gemini
@@ -104,7 +101,7 @@ router.post('/response', async (req, res) => {
         console.log("🤖 Chat Backend: Procesando mensaje...", {
             hasApiKey: !!API_KEY,
             historySize: finalHistory.length,
-            model: "gemini-1.5-flash"
+            model: "gemini-1.5-flash-001"
         });
 
         const chat = model.startChat({
@@ -115,7 +112,6 @@ router.post('/response', async (req, res) => {
             },
         });
 
-        // Ya no concatenamos la instrucción, confiamos en el systemInstruction del modelo
         const result = await chat.sendMessage(userPrompt);
         const response = await result.response;
         const text = response.text();
@@ -126,7 +122,7 @@ router.post('/response', async (req, res) => {
 
         let errorMsg = error.message;
         if (errorMsg.includes("404") && errorMsg.includes("not found")) {
-            errorMsg = "El modelo de IA solicitado (Gemini 1.5 Flash) no está disponible o no se encuentra. Verifica la región de tu servidor.";
+            errorMsg = "El modelo de IA solicitado (Gemini 1.5 Flash 001) no está disponible o no se encuentra. Verifica la región de tu servidor.";
         }
 
         res.status(500).json({
