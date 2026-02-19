@@ -8,8 +8,9 @@ const API_KEY =
   "";
 
 export const getGeminiResponse = async (userPrompt: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
-  if (!API_KEY) {
-    throw new Error("API Key no configurada");
+  if (!API_KEY || API_KEY === "undefined") {
+    console.error("Gemini API Key is missing or undefined");
+    return "Error: La clave de API de Gemini no está configurada correctamente en el servidor.";
   }
 
   const genAI = new GoogleGenerativeAI(API_KEY);
@@ -80,27 +81,45 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
       systemInstruction: systemInstruction,
     });
 
-    // Validar el historial: Gemini requiere que el historial comience con un mensaje de 'user'
-    // y que los roles se alternen (user, model, user, model...).
-    // Si el primer mensaje es de 'model' (el saludo), lo eliminamos del historial del chat.
-    let validatedHistory = [...history];
+    // Validar el historial: Gemini requiere que los roles se alternen (user, model, user, model...).
+    // Y siempre debe comenzar con 'user'.
+    let validatedHistory = history.filter(h => h.parts && h.parts[0] && h.parts[0].text && h.parts[0].text.trim() !== "");
+
     if (validatedHistory.length > 0 && validatedHistory[0].role === 'model') {
       validatedHistory.shift();
     }
 
+    // Asegurarse de que no haya mensajes consecutivos con el mismo rol
+    const finalHistory: any[] = [];
+    validatedHistory.forEach((msg, idx) => {
+      if (idx === 0 || msg.role !== finalHistory[finalHistory.length - 1].role) {
+        finalHistory.push(msg);
+      }
+    });
+
     const chat = model.startChat({
-      history: validatedHistory,
+      history: finalHistory,
       generationConfig: {
         temperature: 0.7,
       },
     });
 
+    console.log("Enviando mensaje a Gemini con historial de tamaño:", finalHistory.length);
     const result = await chat.sendMessage(userPrompt);
     const response = await result.response;
 
     return response.text();
-  } catch (error) {
-    console.error("Error detallado de Gemini:", error);
+  } catch (error: any) {
+    console.error("Error DETALLADO de Gemini:", error);
+
+    if (error.message?.includes("API_KEY_INVALID")) {
+      return "Error: La clave de API de Gemini parece no ser válida.";
+    }
+
+    if (error.message?.includes("SAFETY")) {
+      return "Lo siento, no puedo responder a eso por motivos de seguridad.";
+    }
+
     return "Lo siento, tengo problemas para conectar con el servicio de IA. Por favor, asegúrate de tener conexión a internet o inténtalo de nuevo más tarde.";
   }
 };
