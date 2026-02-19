@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || "";
 
@@ -8,7 +8,7 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
     throw new Error("API Key no configurada");
   }
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  const genAI = new GoogleGenerativeAI(API_KEY);
 
   const systemInstruction = `
     Eres el asistente virtual oficial de 'BodipoBusiness' (o Bodipo).
@@ -71,17 +71,20 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
   `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: [
-        ...history.map(h => ({ role: h.role === 'model' ? 'assistant' : 'user', parts: h.parts })),
-        { role: 'user', parts: [{ text: userPrompt }] }
-      ],
-      config: {
-        systemInstruction,
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: systemInstruction,
+    });
+
+    const chat = model.startChat({
+      history: history,
+      generationConfig: {
         temperature: 0.7,
       },
     });
+
+    const result = await chat.sendMessage(userPrompt);
+    const response = await result.response;
 
     return response.text;
   } catch (error) {

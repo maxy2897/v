@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getOpenAIResponse } from '../services/openaiService';
+import { getGeminiResponse } from '../services/geminiService';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { ChatMessage, AppConfig } from '../../types';
@@ -42,11 +42,11 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
 
     try {
       const history = messages.map(m => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content
+        role: m.role === 'assistant' ? 'model' as const : 'user' as const,
+        parts: [{ text: m.content }]
       }));
 
-      const response = await getOpenAIResponse(userMsg, history);
+      const response = await getGeminiResponse(userMsg, history);
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'assistant', content: t('chat.error') }]);
