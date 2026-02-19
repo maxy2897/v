@@ -387,11 +387,11 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.calendar': 'Calendario Mensual',
         'footer.tracking': 'Rastreo en Tiempo Real',
         'footer.advisor': 'Asesor de Servicios',
-        'footer.locations': 'Ubicaciones',
+        'footer.locations': 'BODIPO BUSINESS S.L.',
         'footer.loc.madrid': 'Alcalá de Henares, Madrid 🇪🇸',
         'footer.loc.yaounde': 'Universidad Católica, Yaoundé 🇨🇲',
         'footer.loc.gq': 'Malabo & Bata, G.E. 🇬🇶',
-        'footer.copyright': '© 2026 BODIPOBUSINESS S.L.',
+        'footer.copyright': '© 2026 BODIPO BUSINESS S.L.',
     },
     en: {
         // Navigation
@@ -719,11 +719,11 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.calendar': 'Monthly Calendar',
         'footer.tracking': 'Real-Time Tracking',
         'footer.advisor': 'Service Advisor',
-        'footer.locations': 'Locations',
+        'footer.locations': 'BODIPO BUSINESS S.L.',
         'footer.loc.madrid': 'Alcalá de Henares, Madrid 🇪🇸',
         'footer.loc.yaounde': 'Catholic University, Yaoundé 🇨🇲',
         'footer.loc.gq': 'Malabo & Bata, E.G. 🇬🇶',
-        'footer.copyright': '© 2026 BODIPOBUSINESS S.L.',
+        'footer.copyright': '© 2026 BODIPO BUSINESS S.L.',
     },
     fr: {
         // Navigation
@@ -1051,11 +1051,11 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.calendar': 'Calendrier Mensuel',
         'footer.tracking': 'Suivi en Temps Réel',
         'footer.advisor': 'Conseiller de Services',
-        'footer.locations': 'Emplacements',
+        'footer.locations': 'BODIPO BUSINESS S.L.',
         'footer.loc.madrid': 'Alcalá de Henares, Madrid 🇪🇸',
         'footer.loc.yaounde': 'Université Catholique, Yaoundé 🇨🇲',
         'footer.loc.gq': 'Malabo & Bata, G.E. 🇬🇶',
-        'footer.copyright': '© 2026 BODIPOBUSINESS S.L.',
+        'footer.copyright': '© 2026 BODIPO BUSINESS S.L.',
     }
 };
 
