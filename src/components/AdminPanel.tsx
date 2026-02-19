@@ -56,6 +56,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [allShipments, setAllShipments] = useState<Shipment[]>([]);
   const [shipmentSearch, setShipmentSearch] = useState('');
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
+  const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
 
   // Direct Notification State
   const [directNotifModal, setDirectNotifModal] = useState<{ userId: string, name: string } | null>(null);
@@ -994,75 +995,146 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     return groups;
                   }, {} as Record<string, Shipment[]>);
 
-                  return (
-                    <div className="space-y-8">
-                      {Object.entries(groupedAdminShipments).map(([date, group]) => (
-                        <div key={date}>
-                          <h3 className="text-xs font-black text-teal-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            {date}
-                          </h3>
-                          <div className="space-y-4">
-                            {group.map(shipment => (
-                              <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
-
-                                {/* Info */}
-                                <div className="flex-1 space-y-2">
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">
-                                      {shipment.trackingNumber}
-                                    </span>
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase">
-                                      {new Date(shipment.createdAt).toLocaleTimeString()}
-                                    </span>
-                                    <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                                      {shipment.user?.name || 'Usuario desconocido'}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
-                                    <span>{shipment.origin}</span>
-                                    <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                                    <span>{shipment.destination}</span>
-                                  </div>
-                                  <p className="text-xs text-gray-500">
-                                    <span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})
-                                  </p>
-                                  <p className="text-xs text-gray-500">
-                                    {shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA
-                                  </p>
-                                </div>
-
-                                {/* Status Control */}
-                                <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
-                                  <div className="text-right">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
-                                    <select
-                                      aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
-                                      value={shipment.status}
-                                      onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
-                                      className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
-                                    >
-                                      <option value="Pendiente">Pendiente</option>
-                                      <option value="Recogido">Recogido</option>
-                                      <option value="En tránsito">En tránsito</option>
-                                      <option value="En Aduanas">En Aduanas</option>
-                                      <option value="Llegado a destino">Llegado a destino</option>
-                                      <option value="Entregado">Entregado</option>
-                                      <option value="Cancelado">Cancelado</option>
-                                    </select>
-                                  </div>
-                                </div>
-
-                              </div>
-                            ))}
+                  if (shipmentSearch) {
+                    return (
+                      <div className="space-y-4">
+                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Resultados de búsqueda</h3>
+                        {filteredAdminShipments.length === 0 ? (
+                          <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-200">
+                            <p className="text-gray-400 font-bold">No se encontraron envíos para "{shipmentSearch}"</p>
                           </div>
+                        ) : (
+                          filteredAdminShipments.map(shipment => (
+                            <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">{shipment.trackingNumber}</span>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(shipment.createdAt).toLocaleDateString()} {new Date(shipment.createdAt).toLocaleTimeString()}</span>
+                                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{shipment.user?.name || 'Usuario desconocido'}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
+                                  <span>{shipment.origin}</span>
+                                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                  <span>{shipment.destination}</span>
+                                </div>
+                                <p className="text-xs text-gray-500"><span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})</p>
+                                <p className="text-xs text-gray-500">{shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA</p>
+                              </div>
+                              <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
+                                <div className="text-right">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
+                                  <select
+                                    aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
+                                    value={shipment.status}
+                                    onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                                    className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
+                                  >
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Recogido">Recogido</option>
+                                    <option value="En tránsito">En tránsito</option>
+                                    <option value="En Aduanas">En Aduanas</option>
+                                    <option value="Llegado a destino">Llegado a destino</option>
+                                    <option value="Entregado">Entregado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    );
+                  }
+
+                  if (selectedDateFilter && groupedAdminShipments[selectedDateFilter]) {
+                    const group = groupedAdminShipments[selectedDateFilter];
+                    return (
+                      <div className="space-y-6">
+                        <button onClick={() => setSelectedDateFilter(null)} className="flex items-center gap-2 text-teal-600 font-black text-sm hover:underline bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 w-fit">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                          Volver a Carpetas
+                        </button>
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="bg-teal-50 p-3 rounded-xl">
+                            <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          </div>
+                          <h3 className="text-xl font-black text-[#00151a]">{selectedDateFilter}</h3>
+                          <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">{group.length} envíos</span>
                         </div>
-                      ))}
-                      {filteredAdminShipments.length === 0 && (
-                        <p className="text-center text-gray-400 font-bold py-10">
-                          {shipmentSearch ? 'No se encontraron envíos.' : 'No hay envíos registrados.'}
-                        </p>
-                      )}
+                        <div className="space-y-4">
+                          {group.map(shipment => (
+                            <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">{shipment.trackingNumber}</span>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(shipment.createdAt).toLocaleTimeString()}</span>
+                                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{shipment.user?.name || 'Usuario desconocido'}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
+                                  <span>{shipment.origin}</span>
+                                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                  <span>{shipment.destination}</span>
+                                </div>
+                                <p className="text-xs text-gray-500"><span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})</p>
+                                <p className="text-xs text-gray-500">{shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA</p>
+                              </div>
+                              <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
+                                <div className="text-right">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
+                                  <select
+                                    aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
+                                    value={shipment.status}
+                                    onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                                    className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
+                                  >
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Recogido">Recogido</option>
+                                    <option value="En tránsito">En tránsito</option>
+                                    <option value="En Aduanas">En Aduanas</option>
+                                    <option value="Llegado a destino">Llegado a destino</option>
+                                    <option value="Entregado">Entregado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {Object.entries(groupedAdminShipments).map(([date, group]) => (
+                          <button
+                            key={date}
+                            onClick={() => setSelectedDateFilter(date)}
+                            className="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
+                          >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="bg-teal-50 p-4 rounded-2xl group-hover:bg-teal-100 group-hover:scale-110 transition-all duration-300">
+                              <svg className="w-10 h-10 text-teal-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" /></svg>
+                            </div>
+                            <div className="text-center w-full">
+                              <h4 className="font-bold text-[#00151a] text-sm md:text-sm line-clamp-2 leading-tight mb-2 uppercase tracking-wide">{date}</h4>
+                              <span className="inline-block bg-gray-100 text-gray-500 text-xs font-black px-3 py-1 rounded-full group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                                {group.length} Envíos
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                        {Object.keys(groupedAdminShipments).length === 0 && (
+                          <div className="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-gray-200">
+                            <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                              <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
+                            </div>
+                            <p className="text-gray-400 font-bold text-lg">No hay envíos registrados.</p>
+                            <p className="text-gray-300 text-sm mt-2">Los envíos aparecerán aquí organizados por fecha.</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })()}
