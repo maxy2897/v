@@ -267,6 +267,7 @@ const translations: Record<Language, Record<string, string>> = {
         'dash.status.delivered': 'Entregado',
         'dash.status.transit': 'En Tránsito',
         'dash.status.customs': 'En Aduana',
+        'dash.search_placeholder': 'Buscar por código, origen, destino...',
 
         // Schedule
         'schedule.title': 'Calendario de',
@@ -600,6 +601,7 @@ const translations: Record<Language, Record<string, string>> = {
         'dash.status.delivered': 'Delivered',
         'dash.status.transit': 'In Transit',
         'dash.status.customs': 'In Customs',
+        'dash.search_placeholder': 'Search by code, origin, destination...',
 
         // Schedule
         'schedule.title': 'Shipping',
@@ -933,6 +935,7 @@ const translations: Record<Language, Record<string, string>> = {
         'dash.status.delivered': 'Livré',
         'dash.status.transit': 'En transit',
         'dash.status.customs': 'À la douane',
+        'dash.search_placeholder': 'Rechercher par code, origine, destination...',
 
         // Schedule
         'schedule.title': 'Calendrier des',

@@ -510,7 +510,7 @@ const DashboardPage: React.FC = () => {
                                     <div className="mb-8 relative">
                                         <input
                                             type="text"
-                                            placeholder={t('dash.search_placeholder') || "Buscar por código, origen, destino..."}
+                                            placeholder={t('dash.search_placeholder')}
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             className="w-full pl-12 pr-4 py-4 rounded-2xl border-none bg-white shadow-sm focus:ring-2 focus:ring-teal-500 transition-all font-medium text-gray-700 placeholder-gray-400"
