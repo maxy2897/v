@@ -69,6 +69,19 @@ app.get('/api/health', (req, res) => {
     res.json({ message: '✅ Server is running!' });
 });
 
+// Servir frontend en producción
+const distDir = join(__dirname, '../dist');
+app.use(express.static(distDir));
+
+// Catch-all para SPA (React Router)
+app.get(/^(?!\/api).*/, (req, res) => {
+    if (fs.existsSync(join(distDir, 'index.html'))) {
+        res.sendFile(join(distDir, 'index.html'));
+    } else {
+        res.status(404).send('Frontend no compilado. Ejecuta npm run build.');
+    }
+});
+
 // Self-Ping para mantener activo en Render (aunque recomiendan cron externo)
 setInterval(() => {
     // Solo si estamos en producción (podemos chequear VITE_API_URL o NODE_ENV)

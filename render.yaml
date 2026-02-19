@@ -6,7 +6,7 @@ services:
     env: node
     region: frankfurt  # Región más cercana a España
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: node server/server.js
     healthCheckPath: /api/health
     envVars:
