@@ -10,8 +10,11 @@ const API_URL = import.meta.env.VITE_API_URL
  * @param history - El historial de la conversación (opcional)
  */
 export const getGeminiResponse = async (userPrompt: string, history: any[] = []) => {
+  const fetchUrl = `${API_URL}/chat/response`;
+  console.log("🚀 Chat: Enviando petición a:", fetchUrl);
+
   try {
-    const response = await fetch(`${API_URL}/chat/response`, {
+    const response = await fetch(fetchUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -35,10 +38,12 @@ export const getGeminiResponse = async (userPrompt: string, history: any[] = [])
   } catch (error: any) {
     console.error("❌ Error llamando al chat backend:", error);
 
-    if (error.message?.includes("fetch") || error.toString().includes("TypeError")) {
-      return "Lo siento, no he podido conectar con el servidor. Por favor, comprueba tu conexión o vuelve a intentarlo en unos momentos.";
+    const errorMessage = error.message || 'desconocido';
+
+    if (errorMessage.includes("fetch") || error.toString().includes("TypeError")) {
+      return `Error de conexión: No se pudo conectar con ${fetchUrl}. Verifica el backend y CORS.`;
     }
 
-    return `Error de IA: ${error.message || 'Ocurrió un problema inesperado'}`;
+    return `Error de IA: ${errorMessage.substring(0, 100)}`;
   }
 };

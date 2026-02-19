@@ -20,7 +20,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Cargar variables de entorno
-dotenv.config({ path: join(__dirname, '../.env.local') });
+const envPath = join(__dirname, '../.env.local');
+const envRootPath = join(__dirname, '../.env');
+
+if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+} else if (fs.existsSync(envRootPath)) {
+    dotenv.config({ path: envRootPath });
+} else {
+    dotenv.config(); // Carga por defecto si existe .env en el CWD
+}
 
 // Conectar a la base de datos
 connectDB();
