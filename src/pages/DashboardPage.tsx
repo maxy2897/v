@@ -245,15 +245,9 @@ const DashboardPage: React.FC = () => {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <h1 className="text-2xl md:text-3xl font-black text-[#00151a] tracking-tight">
-                                {t('dash.welcome')}, <span className="text-teal-600">{user.name}</span>
+                                {user.gender === 'male' ? 'Bienvenido Sr.' : user.gender === 'female' ? 'Bienvenida Sra.' : t('dash.welcome')}, <span className="text-teal-600">{user.name}</span>
                             </h1>
                         </div>
-                        <button
-                            onClick={handleLogout}
-                            className="px-6 py-3 bg-red-500 text-white rounded-xl font-bold text-sm hover:bg-red-600 transition-all"
-                        >
-                            {t('dash.btn.logout')}
-                        </button>
                     </div>
                 </div>
 

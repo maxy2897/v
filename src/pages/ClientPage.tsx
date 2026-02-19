@@ -39,7 +39,8 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
         dni: '',
         address: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        gender: 'other'
     });
 
     const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +82,8 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                 password: registerData.password,
                 phone: registerData.phone,
                 address: registerData.address,
-                username: registerData.email.split('@')[0]
+                username: registerData.email.split('@')[0],
+                gender: registerData.gender
             });
             navigate('/dashboard');
         } catch (err: any) {
@@ -276,6 +278,25 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                             exit={{ opacity: 0, x: -20 }}
                         >
                             <form onSubmit={handleRegisterSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Sexo</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRegisterChange({ target: { name: 'gender', value: 'male' } } as React.ChangeEvent<HTMLInputElement>)}
+                                            className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'male' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                        >
+                                            Hombre
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRegisterChange({ target: { name: 'gender', value: 'female' } } as React.ChangeEvent<HTMLInputElement>)}
+                                            className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'female' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                        >
+                                            Mujer
+                                        </button>
+                                    </div>
+                                </div>
                                 <input
                                     type="text"
                                     name="name"

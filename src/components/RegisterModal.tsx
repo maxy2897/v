@@ -21,6 +21,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
     password: '',
     phone: '',
     address: '',
+    gender: 'other',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -161,6 +162,25 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <form className="space-y-3" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="reg-gender" className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">{t('register.gender') || 'Sexo'}</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, gender: 'male' })}
+                  className={`py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${formData.gender === 'male' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                >
+                  Hombre
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, gender: 'female' })}
+                  className={`py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${formData.gender === 'female' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                >
+                  Mujer
+                </button>
+              </div>
+            </div>
             <div>
               <label htmlFor="reg-name" className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">{t('register.name')} *</label>
               <input

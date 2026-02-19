@@ -32,7 +32,7 @@ router.post(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { name, email, password, phone, address } = req.body;
+        const { name, email, password, phone, address, gender } = req.body;
 
         try {
             // Verificar si el usuario ya existe
@@ -49,6 +49,7 @@ router.post(
                 password,
                 phone,
                 address,
+                gender,
             });
 
             if (user) {
@@ -58,6 +59,7 @@ router.post(
                     email: user.email,
                     phone: user.phone,
                     address: user.address,
+                    gender: user.gender,
                     username: user.username,
                     profileImage: user.profileImage,
                     idNumber: user.idNumber,
@@ -102,6 +104,7 @@ router.post(
                     email: user.email,
                     phone: user.phone,
                     address: user.address,
+                    gender: user.gender,
                     username: user.username,
                     profileImage: user.profileImage,
                     idNumber: user.idNumber,
@@ -137,6 +140,7 @@ router.post('/social-login', async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 address: user.address,
+                gender: user.gender,
                 username: user.username,
                 profileImage: user.profileImage,
                 idNumber: user.idNumber,
@@ -160,6 +164,7 @@ router.post('/social-login', async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 address: user.address,
+                gender: user.gender,
                 username: user.username,
                 profileImage: user.profileImage,
                 idNumber: user.idNumber,
@@ -186,6 +191,7 @@ router.get('/me', protect, async (req, res) => {
             email: user.email,
             phone: user.phone,
             address: user.address,
+            gender: user.gender,
             username: user.username,
             profileImage: user.profileImage,
             idNumber: user.idNumber,
