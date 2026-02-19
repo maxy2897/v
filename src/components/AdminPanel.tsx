@@ -141,6 +141,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
         }));
 
         setShipmentGroups(updatedGroups);
+        setAllShipments(prev => prev.map(s => s._id === shipmentId ? { ...s, status: newStatus } : s));
 
         // Update selected group view if active
         if (selectedUserGroup) {
