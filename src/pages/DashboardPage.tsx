@@ -36,6 +36,7 @@ const DashboardPage: React.FC = () => {
     const [loadingShipments, setLoadingShipments] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(true);
     const [activeTab, setActiveTab] = useState<'shipments' | 'invoices'>('shipments');
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -209,6 +210,30 @@ const DashboardPage: React.FC = () => {
             alert('Error al descargar factura');
         }
     };
+
+    const filteredShipments = shipments.filter(shipment => {
+        const term = searchTerm.toLowerCase();
+        return (
+            shipment.trackingNumber.toLowerCase().includes(term) ||
+            shipment.origin.toLowerCase().includes(term) ||
+            shipment.destination.toLowerCase().includes(term) ||
+            (shipment.description && shipment.description.toLowerCase().includes(term))
+        );
+    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    const groupedShipments = filteredShipments.reduce((groups, shipment) => {
+        const date = new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].push(shipment);
+        return groups;
+    }, {} as Record<string, Shipment[]>);
 
     if (!user) return null;
 
@@ -465,12 +490,26 @@ const DashboardPage: React.FC = () => {
                                         </div>
                                     </button>
 
+                                    {/* Search Input */}
+                                    <div className="mb-8 relative">
+                                        <input
+                                            type="text"
+                                            placeholder={t('dash.search_placeholder') || "Buscar por código, origen, destino..."}
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-none bg-white shadow-sm focus:ring-2 focus:ring-teal-500 transition-all font-medium text-gray-700 placeholder-gray-400"
+                                        />
+                                        <svg className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+
                                     {loadingShipments ? (
                                         <div className="text-center py-12">
                                             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
                                             <p className="mt-4 text-gray-500 font-medium">{t('dash.ship.loading')}</p>
                                         </div>
-                                    ) : shipments.length === 0 ? (
+                                    ) : Object.keys(groupedShipments).length === 0 ? (
                                         <div className="text-center py-12">
                                             <svg
                                                 className="w-16 h-16 mx-auto text-gray-300 mb-4"
@@ -485,78 +524,79 @@ const DashboardPage: React.FC = () => {
                                                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                                                 />
                                             </svg>
-                                            <p className="text-gray-500 font-medium">{t('dash.ship.no_shipments')}</p>
-                                            <p className="text-gray-400 text-sm mt-2">
-                                                {t('dash.ship.empty_desc')}
+                                            <p className="text-gray-500 font-medium whitespace-pre-line">
+                                                {searchTerm ? 'No se encontraron resultados para tu búsqueda.' : t('dash.ship.no_shipments')}
                                             </p>
                                         </div>
                                     ) : (
-                                        <div className="space-y-4">
-                                            {shipments.map((shipment) => (
-                                                <div
-                                                    key={shipment._id}
-                                                    className="border-2 border-gray-100 rounded-2xl p-6 hover:border-teal-200 transition-all"
-                                                >
-                                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                                                        <div>
-                                                            <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">
-                                                                {t('dash.ship.tracking_label')}
-                                                            </p>
-                                                            <p className="text-lg font-black text-[#00151a]">
-                                                                {shipment.trackingNumber}
-                                                            </p>
-                                                        </div>
-                                                        <span
-                                                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 ${getStatusColor(
-                                                                shipment.status
-                                                            )}`}
-                                                        >
-                                                            {shipment.status}
-                                                        </span>
-                                                    </div>
+                                        <div className="space-y-8">
+                                            {Object.entries(groupedShipments).map(([date, group]) => (
+                                                <div key={date}>
+                                                    <h3 className="text-xs font-black text-teal-600 uppercase tracking-widest mb-4 border-b border-teal-100 pb-2 flex items-center gap-2">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                        {date}
+                                                    </h3>
+                                                    <div className="space-y-4">
+                                                        {group.map((shipment) => (
+                                                            <div
+                                                                key={shipment._id}
+                                                                className="border-2 border-gray-100 rounded-2xl p-6 hover:border-teal-200 transition-all bg-white"
+                                                            >
+                                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                                                    <div>
+                                                                        <p className="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">
+                                                                            {t('dash.ship.tracking_label')}
+                                                                        </p>
+                                                                        <p className="text-lg font-black text-[#00151a]">
+                                                                            {shipment.trackingNumber}
+                                                                        </p>
+                                                                    </div>
+                                                                    <span
+                                                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 ${getStatusColor(
+                                                                            shipment.status
+                                                                        )}`}
+                                                                    >
+                                                                        {shipment.status}
+                                                                    </span>
+                                                                </div>
 
-                                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                                        <div>
-                                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                                {t('dash.ship.origin')}
-                                                            </p>
-                                                            <p className="text-gray-800 font-medium">{shipment.origin}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                                {t('dash.ship.dest')}
-                                                            </p>
-                                                            <p className="text-gray-800 font-medium">{shipment.destination}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                                {t('dash.ship.weight')}
-                                                            </p>
-                                                            <p className="text-gray-800 font-medium">{shipment.weight} kg</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                                {t('dash.ship.price')}
-                                                            </p>
-                                                            <p className="text-gray-800 font-medium">{shipment.price} FCFA</p>
-                                                        </div>
-                                                    </div>
+                                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                                            {t('dash.ship.origin')}
+                                                                        </p>
+                                                                        <p className="text-gray-800 font-medium">{shipment.origin}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                                            {t('dash.ship.dest')}
+                                                                        </p>
+                                                                        <p className="text-gray-800 font-medium">{shipment.destination}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                                            {t('dash.ship.weight')}
+                                                                        </p>
+                                                                        <p className="text-gray-800 font-medium">{shipment.weight} kg</p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                                            {t('dash.ship.price')}
+                                                                        </p>
+                                                                        <p className="text-gray-800 font-medium">{shipment.price} FCFA</p>
+                                                                    </div>
+                                                                </div>
 
-                                                    {shipment.description && (
-                                                        <div className="mt-4 pt-4 border-t border-gray-100">
-                                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                                                {t('dash.ship.description')}
-                                                            </p>
-                                                            <p className="text-gray-700 text-sm">{shipment.description}</p>
-                                                        </div>
-                                                    )}
-
-                                                    <div className="mt-4 text-xs text-gray-400 font-medium">
-                                                        {t('dash.ship.created')}: {new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric',
-                                                        })}
+                                                                {shipment.description && (
+                                                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                                                            {t('dash.ship.description')}
+                                                                        </p>
+                                                                        <p className="text-gray-700 text-sm">{shipment.description}</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             ))}

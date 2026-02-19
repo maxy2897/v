@@ -49,10 +49,12 @@ interface AdminPanelProps {
 import { useSettings } from '../context/SettingsContext';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
-  const { appConfig, updateConfig } = useSettings();
+  const { appConfig, updateConfig, language } = useSettings();
   const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications'>('products');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
+  const [allShipments, setAllShipments] = useState<Shipment[]>([]);
+  const [shipmentSearch, setShipmentSearch] = useState('');
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
 
   // Direct Notification State
@@ -89,6 +91,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       });
       if (res.ok) {
         const data: Shipment[] = await res.json();
+        setAllShipments(data);
 
         // Group by User
         const groups: Record<string, UserShipmentGroup> = {};
@@ -541,8 +544,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                           onClick={() => deleteProduct(product.id)}
                           disabled={isDeletingId === product.id}
                           className={`p-2 transition-colors ${isDeletingId === product.id
-                              ? 'text-teal-500 cursor-wait'
-                              : 'text-gray-300 hover:text-red-500'
+                            ? 'text-teal-500 cursor-wait'
+                            : 'text-gray-300 hover:text-red-500'
                             }`}
                           title={`Eliminar ${product.name}`}
                         >
@@ -952,127 +955,116 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
               </div>
             ) : activeTab === 'shipments' ? (
               <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {!selectedUserGroup ? (
-                  /* Level 1: List of Users */
-                  <section className="space-y-8">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">Usuarios con Envíos</h3>
-                      <span className="text-xs font-bold text-gray-400">{shipmentGroups.length} Usuarios</span>
-                    </div>
+                {/* Search Input */}
+                <div className="mb-8 relative">
+                  <input
+                    type="text"
+                    placeholder="Buscar por seguimiento, cliente, origen..."
+                    value={shipmentSearch}
+                    onChange={(e) => setShipmentSearch(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl border-none bg-gray-50 focus:ring-2 focus:ring-teal-500 transition-all font-medium text-gray-700 placeholder-gray-400"
+                  />
+                  <svg className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {shipmentGroups.map(group => (
-                        <div
-                          key={group.userId}
-                          onClick={() => setSelectedUserGroup(group)}
-                          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all cursor-pointer group flex flex-col justify-between"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-lg">
-                                  {group.user.name.charAt(0).toUpperCase()}
+                {(() => {
+                  const filteredAdminShipments = allShipments.filter(s => {
+                    const term = shipmentSearch.toLowerCase();
+                    return (
+                      s.trackingNumber.toLowerCase().includes(term) ||
+                      (s.user?.name || '').toLowerCase().includes(term) ||
+                      (s.recipient?.name || '').toLowerCase().includes(term) ||
+                      s.origin.toLowerCase().includes(term) ||
+                      s.destination.toLowerCase().includes(term)
+                    );
+                  }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+                  const groupedAdminShipments = filteredAdminShipments.reduce((groups, shipment) => {
+                    const date = new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    });
+                    if (!groups[date]) groups[date] = [];
+                    groups[date].push(shipment);
+                    return groups;
+                  }, {} as Record<string, Shipment[]>);
+
+                  return (
+                    <div className="space-y-8">
+                      {Object.entries(groupedAdminShipments).map(([date, group]) => (
+                        <div key={date}>
+                          <h3 className="text-xs font-black text-teal-600 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            {date}
+                          </h3>
+                          <div className="space-y-4">
+                            {group.map(shipment => (
+                              <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
+
+                                {/* Info */}
+                                <div className="flex-1 space-y-2">
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">
+                                      {shipment.trackingNumber}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase">
+                                      {new Date(shipment.createdAt).toLocaleTimeString()}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                                      {shipment.user?.name || 'Usuario desconocido'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
+                                    <span>{shipment.origin}</span>
+                                    <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                    <span>{shipment.destination}</span>
+                                  </div>
+                                  <p className="text-xs text-gray-500">
+                                    <span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA
+                                  </p>
                                 </div>
-                                <div>
-                                  <h4 className="font-bold text-[#00151a]">{group.user.name}</h4>
-                                  <p className="text-xs text-gray-400">{group.user.email}</p>
+
+                                {/* Status Control */}
+                                <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
+                                  <div className="text-right">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
+                                    <select
+                                      aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
+                                      value={shipment.status}
+                                      onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                                      className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
+                                    >
+                                      <option value="Pendiente">Pendiente</option>
+                                      <option value="Recogido">Recogido</option>
+                                      <option value="En tránsito">En tránsito</option>
+                                      <option value="En Aduanas">En Aduanas</option>
+                                      <option value="Llegado a destino">Llegado a destino</option>
+                                      <option value="Entregado">Entregado</option>
+                                      <option value="Cancelado">Cancelado</option>
+                                    </select>
+                                  </div>
                                 </div>
+
                               </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDirectNotifModal({ userId: group.userId, name: group.user.name });
-                                }}
-                                className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
-                                title="Enviar notificación directa"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
-                              </button>
-                            </div>
-                            <div className="flex justify-between items-center pt-4 border-t border-gray-50">
-                              <span className="text-xs font-medium text-gray-500">Tel: {group.user.phone}</span>
-                              <span className="bg-[#00151a] text-white px-3 py-1 rounded-full text-[10px] font-bold">
-                                {group.shipments.length} Envíos
-                              </span>
-                            </div>
+                            ))}
                           </div>
                         </div>
                       ))}
+                      {filteredAdminShipments.length === 0 && (
+                        <p className="text-center text-gray-400 font-bold py-10">
+                          {shipmentSearch ? 'No se encontraron envíos.' : 'No hay envíos registrados.'}
+                        </p>
+                      )}
                     </div>
-                    {shipmentGroups.length === 0 && (
-                      <p className="text-center text-gray-400 font-bold py-10">No hay envíos registrados.</p>
-                    )}
-                  </section>
-                ) : (
-                  /* Level 2: User Shipments Detail */
-                  <section className="space-y-8">
-                    <div className="flex items-center gap-4 mb-8">
-                      <button
-                        onClick={() => setSelectedUserGroup(null)}
-                        className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                        aria-label="Volver a lista de usuarios"
-                      >
-                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
-                      </button>
-                      <div>
-                        <h3 className="text-xl font-black text-[#00151a] uppercase tracking-widest">{selectedUserGroup.user.name}</h3>
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Historial de Envíos</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {selectedUserGroup.shipments.map(shipment => (
-                        <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-
-                          {/* Info */}
-                          <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-3">
-                              <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">
-                                {shipment.trackingNumber}
-                              </span>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">
-                                {new Date(shipment.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
-                              <span>{shipment.origin}</span>
-                              <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                              <span>{shipment.destination}</span>
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              <span className="font-bold">Receptor:</span> {shipment.recipient.name} ({shipment.recipient.phone})
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {shipment.description} • {shipment.weight}Kg • {shipment.price} €
-                            </p>
-                          </div>
-
-                          {/* Status Control */}
-                          <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
-                            <div className="text-right">
-                              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado Actual</label>
-                              <select
-                                aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
-                                value={shipment.status}
-                                onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
-                                className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
-                              >
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Recogido">Recogido</option>
-                                <option value="En tránsito">En tránsito</option>
-                                <option value="En Aduanas">En Aduanas</option>
-                                <option value="Llegado a destino">Llegado a destino</option>
-                                <option value="Entregado">Entregado</option>
-                                <option value="Cancelado">Cancelado</option>
-                              </select>
-                            </div>
-                          </div>
-
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
+                  );
+                })()}
               </div>
             ) : activeTab === 'notifications' ? (
               <AdminNotifications />
