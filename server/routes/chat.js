@@ -97,6 +97,11 @@ router.post('/response', async (req, res) => {
             }
         });
 
+        console.log("🤖 Chat Backend: Procesando mensaje...", {
+            hasApiKey: !!API_KEY,
+            historySize: finalHistory.length
+        });
+
         const chat = model.startChat({
             history: finalHistory,
             generationConfig: {
@@ -111,10 +116,10 @@ router.post('/response', async (req, res) => {
 
         res.json({ response: text });
     } catch (error) {
-        console.error("❌ Error en chat Gemini:", error);
+        console.error("❌ Error en servidor Gemini:", error);
         res.status(500).json({
-            error: "Error al procesar la respuesta de IA",
-            details: error.message
+            error: `Error en servidor: ${error.message}`,
+            details: error.stack
         });
     }
 });
