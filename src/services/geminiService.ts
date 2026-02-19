@@ -8,9 +8,16 @@ const API_KEY =
   "";
 
 export const getGeminiResponse = async (userPrompt: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
-  if (!API_KEY || API_KEY === "undefined") {
+  // Log debug (oculto por seguridad pero nos dice si existe)
+  console.log("Gemini: Intentando conectar...", {
+    hasKey: !!API_KEY,
+    keyLength: API_KEY?.length,
+    keyStart: API_KEY?.substring(0, 5)
+  });
+
+  if (!API_KEY || API_KEY === "undefined" || API_KEY === "") {
     console.error("Gemini API Key is missing or undefined");
-    return "Error: La clave de API de Gemini no está configurada correctamente en el servidor.";
+    return "Error: La clave de API de Gemini no está configurada o es inválida.";
   }
 
   const genAI = new GoogleGenerativeAI(API_KEY);
@@ -78,15 +85,12 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
   try {
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: {
-        role: "system",
-        parts: [{ text: systemInstruction }]
-      }
+      systemInstruction: systemInstruction,
     });
 
     // Validar el historial: Gemini requiere que los roles se alternen (user, model, user, model...).
     // Y siempre debe comenzar con 'user'.
-    let validatedHistory = history.filter(h => h.parts && h.parts[0] && h.parts[0].text && h.parts[0].text.trim() !== "");
+    const validatedHistory = history.filter(h => h.parts && h.parts[0] && h.parts[0].text && h.parts[0].text.trim() !== "");
 
     if (validatedHistory.length > 0 && validatedHistory[0].role === 'model') {
       validatedHistory.shift();
@@ -94,8 +98,8 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
 
     // Asegurarse de que no haya mensajes consecutivos con el mismo rol
     const finalHistory: any[] = [];
-    validatedHistory.forEach((msg, idx) => {
-      if (idx === 0 || msg.role !== finalHistory[finalHistory.length - 1].role) {
+    validatedHistory.forEach((msg) => {
+      if (finalHistory.length === 0 || msg.role !== finalHistory[finalHistory.length - 1].role) {
         finalHistory.push(msg);
       }
     });
@@ -109,25 +113,25 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
 
     const result = await chat.sendMessage(userPrompt);
     const response = await result.response;
-
     return response.text();
   } catch (error: any) {
     console.error("Error DETALLADO de Gemini:", error);
 
-    const errorMsg = error.message || "";
-    if (errorMsg.includes("API_KEY_INVALID")) {
-      return "Error: La clave de API de Gemini parece no ser válida.";
+    const errorMsg = error.toString();
+    const message = error.message || "";
+
+    if (message.includes("403") || errorMsg.includes("403")) {
+      return "Error 403: Acceso denegado. Verifica que la API Key sea válida y tenga permiso para Gemini.";
     }
 
-    if (errorMsg.includes("SAFETY")) {
-      return "Lo siento, no puedo responder a eso por motivos de seguridad.";
+    if (message.includes("429") || errorMsg.includes("quota")) {
+      return "Error: Se ha superado el límite de uso gratuito de la API.";
     }
 
-    if (errorMsg.includes("quota") || errorMsg.includes("429")) {
-      return "Error: Se ha superado el límite de uso del servicio. Inténtalo más tarde.";
+    if (message.includes("fetching") || errorMsg.includes("fetch")) {
+      return `Error de red: No se pudo conectar con la API de Google. Detalles: ${message.substring(0, 50)}`;
     }
 
-    // Si llegamos aquí, devolvemos el error real para depuración (temporalmente)
-    return `Error técnico de IA: ${errorMsg.substring(0, 100)}... Por favor, contacta con soporte.`;
+    return `Error técnico de IA: ${message.substring(0, 100)}...`;
   }
 };
