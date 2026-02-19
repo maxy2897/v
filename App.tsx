@@ -166,9 +166,14 @@ const AppContent: React.FC = () => {
               <div className="col-span-1 lg:col-span-1">
                 <div className="flex items-center space-x-4 mb-8">
                   <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
-                    {config.customLogoUrl ? (
-                      <img src={config.customLogoUrl} className="h-10 object-contain" alt="Logo" />
-                    ) : (
+                    {config.customLogoUrl && (
+                      <img
+                        src={config.customLogoUrl}
+                        className="h-10 object-contain"
+                        alt="Logo"
+                      />
+                    )}
+                    {!config.customLogoUrl && (
                       <span className="logo-font text-4xl logo-color leading-none select-none pt-1">{config.logoText}</span>
                     )}
                   </div>
