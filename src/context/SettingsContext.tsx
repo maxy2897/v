@@ -288,7 +288,7 @@ const translations: Record<Language, Record<string, string>> = {
 
         // AIChat
         'chat.welcome': '¡Hola! Soy el chat inteligente de Bodipo. Pregúntame sobre tarifas, horarios, o servicios.',
-        'chat.error': 'Nuestros sistemas están procesando envíos de alta prioridad. Por favor, reintenta en unos instantes.',
+        'chat.error': 'Lo siento, no puedo responder en este momento. Por favor, contáctanos a través de nuestros teléfonos o redes sociales.',
         'chat.cta': 'Chat de Ayuda',
         'chat.online': 'En Línea',
         'chat.close': 'Cerrar chat',
@@ -621,7 +621,7 @@ const translations: Record<Language, Record<string, string>> = {
 
         // AIChat
         'chat.welcome': 'Hi! I am the Bodipo intelligent chat. Ask me about rates, schedules, or services.',
-        'chat.error': 'Our systems are processing high-priority shipments. Please retry in a few moments.',
+        'chat.error': 'I am sorry, I cannot answer right now. Please contact us via our phone numbers or social media.',
         'chat.cta': 'Help Chat',
         'chat.online': 'Online',
         'chat.close': 'Close chat',
