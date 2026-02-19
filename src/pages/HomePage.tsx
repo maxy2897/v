@@ -11,7 +11,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
     return (
         <>
             {/* Hero Section */}
-            <section className="relative pt-20 pb-32 overflow-hidden bg-white">
+            <section className="relative pt-12 pb-16 overflow-hidden bg-white">
                 <div className="absolute top-0 left-0 w-full h-full bg-white -z-10"></div>
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-teal-50/20 to-transparent -z-10"></div>
 
@@ -62,7 +62,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
 
             {/* Money Transfer Section */}
-            <section className="py-24 bg-white relative overflow-hidden">
+            <section className="py-12 bg-white relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-[#00151a] rounded-[3rem] overflow-hidden relative shadow-2xl">
                         <div className="absolute top-0 right-0 w-1/2 h-full bg-teal-500/10 -z-0"></div>
@@ -102,7 +102,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </section>
 
             {/* Social Media Section */}
-            <section className="py-20 bg-white">
+            <section className="py-12 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <p className="text-[#00151a] font-bold text-xs uppercase tracking-[0.2em] mb-8">
                         {t('home.social.follow')}
@@ -175,7 +175,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </section>
 
             {/* Membership Banner */}
-            <section className="py-12 bg-[#00151a] relative overflow-hidden">
+            <section className="py-8 bg-[#00151a] relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="text-center md:text-left">

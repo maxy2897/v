@@ -157,7 +157,7 @@ const MoneyTransfer: React.FC = () => {
 
   if (successTxId) {
     return (
-      <section className="py-24 bg-white min-h-[60vh] flex items-center justify-center">
+      <section className="py-12 bg-white min-h-[60vh] flex items-center justify-center">
         <div className="max-w-2xl w-full mx-4 bg-[#00151a] p-12 rounded-[3rem] text-center shadow-2xl relative overflow-hidden animate-in zoom-in duration-500">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-transparent"></div>
           <div className="w-20 h-20 bg-teal-500 rounded-full flex items-center justify-center mx-auto mb-8 text-[#00151a]">
@@ -180,9 +180,9 @@ const MoneyTransfer: React.FC = () => {
   }
 
   return (
-    <section id="transferencias" className="py-24 bg-white">
+    <section id="transferencias" className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-full mb-6">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
