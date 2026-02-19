@@ -77,7 +77,7 @@ router.post('/response', async (req, res) => {
 
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-1.5-flash-latest",
             systemInstruction: systemInstruction,
         });
 
@@ -117,8 +117,14 @@ router.post('/response', async (req, res) => {
         res.json({ response: text });
     } catch (error) {
         console.error("❌ Error en servidor Gemini:", error);
+
+        let errorMsg = error.message;
+        if (errorMsg.includes("404") && errorMsg.includes("not found")) {
+            errorMsg = "El modelo de IA solicitado (Gemini 1.5 Flash) no está disponible para esta clave de API o región. Por favor verifica los permisos.";
+        }
+
         res.status(500).json({
-            error: `Error en servidor: ${error.message}`,
+            error: `Error en servidor: ${errorMsg}`,
             details: error.stack
         });
     }
