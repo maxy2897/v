@@ -27,41 +27,6 @@ import DashboardPage from './src/pages/DashboardPage';
 import PrivacyPage from './src/pages/PrivacyPage';
 import NotificationsPage from './src/pages/NotificationsPage';
 
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: "Camiseta Oficial Bodipo 'SOMOS TU MEJOR OPCIÓN'",
-    color: "Blanco Premium",
-    price: "25.000 FCFA",
-    description: "Diseño exclusivo 2026. Algodón de alta calidad con logotipo BB en el pecho y diseño artístico 'Somos tu mejor opción' en la espalda. Incluye el lema 'Recibe bultos desde Europa'. ¡Envío gratuito incluido a Malabo y Bata!",
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800",
-    tag: "TOP VENTAS",
-    slogan: "Recibe bultos desde Europa",
-    waLink: "https://wa.me/34641992110?text=Hola!%20Quiero%20comprar%20la%20camiseta%20blanca%20oficial%20de%20Bodipo%20Business."
-  },
-  {
-    id: '2',
-    name: "Camiseta Oficial Negra Edición 'KIENTEM'",
-    color: "Negro Premium",
-    price: "15.000 FCFA",
-    description: "Edición especial en negro con el lema 'SOMOS TU MEJOR OPCIÓN' y 'KIENTEM' en la espalda. Algodón premium.",
-    image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80&w=800",
-    tag: "NUEVO",
-    slogan: "Estilo y Pertenencia",
-    waLink: "https://wa.me/34641992110?text=Hola!%20Quiero%20comprar%20la%20camiseta%20negra%20Edición%20Kientem."
-  },
-  {
-    id: '3',
-    name: "Camiseta Oficial Blanca Edición 'ECUATO'",
-    color: "Blanco Puro",
-    price: "15.000 FCFA",
-    description: "Diseño exclusivo blanco con detalles en vinilo dorado 'ECUATO'. Elegancia y orgullo nacional.",
-    image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&q=80&w=800",
-    tag: "EXCLUSIVO",
-    slogan: "Los negocios no tienen fronteras",
-    waLink: "https://wa.me/34641992110?text=Hola!%20Quiero%20comprar%20la%20camiseta%20blanca%20Edición%20Ecuato."
-  }
-];
 
 const INITIAL_CONFIG: AppConfig = {
   logoText: 'bb',
@@ -135,7 +100,7 @@ const AppContent: React.FC = () => {
   const [isContactOpen, setIsContactOpen] = useState(false);
 
   // Dynamic State
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const [config, setConfig] = useState<AppConfig>(() => {
     const saved = localStorage.getItem('bb_config');
@@ -150,7 +115,7 @@ const AppContent: React.FC = () => {
           console.log('📦 Productos cargados:', data.length);
           setProducts(data);
         } else {
-          console.log('📦 No hay productos en BD, manteniendo ejemplos.');
+          console.log('📦 No hay productos en BD.');
         }
       } catch (error) {
         console.error('Error fetching products:', error);

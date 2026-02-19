@@ -34,7 +34,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     onClick={onOpenContact}
                                     className="px-10 py-5 bg-teal-500 text-[#00151a] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20"
                                 >
-                                    {appConfig?.content?.hero?.ctaSecondary || t('home.hero.cta_register')}
+                                    {appConfig?.content?.hero?.ctaSecondary || 'Contactar'}
                                 </button>
                             </div>
                         </div>
