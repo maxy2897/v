@@ -14,6 +14,7 @@ import reportRoutes from './routes/reports.js';
 import configRoutes from './routes/config.js';
 import notificationRoutes from './routes/notifications.js';
 import productRoutes from './routes/products.js';
+import chatRoutes from './routes/chat.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -56,6 +57,7 @@ import transactionRoutes from './routes/transactions.js';
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Servir carpeta de uploads estáticamente
 const uploadsDir = join(__dirname, '../uploads');
