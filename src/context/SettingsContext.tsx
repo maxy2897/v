@@ -733,10 +733,10 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.store': 'Boutique',
         'nav.tracking': 'Suivre Colis',
         'nav.services': 'Services',
-        'nav.login': 'Iniciar Sesión',
-        'nav.register': 'Registrarse',
-        'nav.dashboard': 'Perfil',
-        'nav.logout': 'Cerrar Sesión',
+        'nav.login': 'Connexion',
+        'nav.register': 'S\'inscrire',
+        'nav.dashboard': 'Profil',
+        'nav.logout': 'Déconnexion',
 
         // Home Hero
         'home.hero.title': 'Service International',
@@ -1038,6 +1038,24 @@ const translations: Record<Language, Record<string, string>> = {
         'theme.light': 'Mode Clair',
         'btn.back': 'Retour',
         'btn.forward': 'Suivant',
+
+        // New Footer Keys
+        'footer.logistics_desc': 'Logistique d\'excellence connectant l\'Espagne 🇪🇸, le Cameroun 🇨🇲 et la Guinée Équatoriale 🇬🇶. Opérations quotidiennes avec les normes de sécurité les plus élevées.',
+        'footer.admin_access': 'Accès Admin',
+        'footer.direct_contact': 'Contact Direct',
+        'footer.spain': 'Espagne',
+        'footer.cameroon': 'Cameroun',
+        'footer.guinea': 'Guinée Équatoriale',
+        'footer.logistics_services': 'Services Logistiques',
+        'footer.calc_rates': 'Calculateur de Tarifs',
+        'footer.calendar': 'Calendrier Mensuel',
+        'footer.tracking': 'Suivi en Temps Réel',
+        'footer.advisor': 'Conseiller de Services',
+        'footer.locations': 'Emplacements',
+        'footer.loc.madrid': 'Alcalá de Henares, Madrid 🇪🇸',
+        'footer.loc.yaounde': 'Université Catholique, Yaoundé 🇨🇲',
+        'footer.loc.gq': 'Malabo & Bata, G.E. 🇬🇶',
+        'footer.copyright': '© 2026 BODIPOBUSINESS S.L.',
     }
 };
 

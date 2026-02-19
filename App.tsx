@@ -130,7 +130,7 @@ const AppContent: React.FC = () => {
 
   // Admin Login Logic using AuthContext
   const { user } = useAuth();
-  const { appConfig } = useSettings();
+  const { appConfig, t } = useSettings();
 
   const handleAdminLogin = () => {
     if (user && user.role === 'admin') {
@@ -175,7 +175,7 @@ const AppContent: React.FC = () => {
                   <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
                 </div>
                 <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
-                  Logística de excelencia conectando España 🇪🇸, Camerún 🇨🇲 y Guinea Ecuatorial 🇬🇶. Operaciones diarias con los más altos estándares de seguridad.
+                  {t('footer.logistics_desc')}
                 </p>
 
                 <button
@@ -183,19 +183,19 @@ const AppContent: React.FC = () => {
                   className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 hover:opacity-100 hover:text-teal-400 transition-all flex items-center gap-2"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                  Acceso Admin
+                  {t('footer.admin_access')}
                 </button>
               </div>
 
               <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Contacto Directo</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.direct_contact')}</p>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-4">
                     <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
                       <span className="text-sm">🇪🇸</span>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">España</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.spain')}</p>
                       <p className="text-sm font-bold">{appConfig?.contact?.phones?.es || '+34 641 992 110'}</p>
                     </div>
                   </div>
@@ -204,7 +204,7 @@ const AppContent: React.FC = () => {
                       <span className="text-sm">🇨🇲</span>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Camerún</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.cameroon')}</p>
                       <p className="text-sm font-bold">{appConfig?.contact?.phones?.cm || '+237 687528854'}</p>
                     </div>
                   </div>
@@ -213,7 +213,7 @@ const AppContent: React.FC = () => {
                       <span className="text-sm">🇬🇶</span>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Guinea Ecuatorial</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.guinea')}</p>
                       <p className="text-sm font-bold">{appConfig?.contact?.phones?.gq || '+240 222 667 763'}</p>
                     </div>
                   </div>
@@ -221,24 +221,24 @@ const AppContent: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Servicios Logísticos</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.logistics_services')}</p>
                 <ul className="space-y-3 text-sm font-medium text-gray-400">
-                  <li><a href="/tarifas" className="hover:text-white transition-colors">Calculadora de Tarifas</a></li>
-                  <li><a href="/calendario" className="hover:text-white transition-colors">Calendario Mensual</a></li>
-                  <li><a href="/rastreo" className="hover:text-white transition-colors">Rastreo en Tiempo Real</a></li>
-                  <li><a href="/servicios" className="hover:text-white transition-colors">Asesor de Servicios</a></li>
+                  <li><a href="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</a></li>
+                  <li><a href="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</a></li>
+                  <li><a href="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</a></li>
+                  <li><a href="/servicios" className="hover:text-white transition-colors">{t('footer.advisor')}</a></li>
                 </ul>
               </div>
 
               <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Bodipo S.L.</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.locations')}</p>
                 <ul className="space-y-3 text-sm font-medium text-gray-400">
-                  <li>{appConfig?.contact?.addresses?.es || 'Alcalá de Henares, Madrid 🇪🇸'}</li>
-                  <li>Universidad Católica, Yaoundé 🇨🇲</li>
-                  <li>{appConfig?.contact?.addresses?.gq || 'Malabo & Bata, G.E. 🇬🇶'}</li>
+                  <li>{appConfig?.contact?.addresses?.es || t('footer.loc.madrid')}</li>
+                  <li>{t('footer.loc.yaounde')}</li>
+                  <li>{appConfig?.contact?.addresses?.gq || t('footer.loc.gq')}</li>
                 </ul>
                 <div className="pt-4">
-                  <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.L.</p>
+                  <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">{t('footer.copyright')}</p>
                 </div>
               </div>
             </div>
