@@ -1,7 +1,11 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || "";
+const API_KEY =
+  import.meta.env.VITE_GEMINI_API_KEY ||
+  (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '') ||
+  (typeof process !== 'undefined' ? process.env.API_KEY : '') ||
+  "";
 
 export const getGeminiResponse = async (userPrompt: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
   if (!API_KEY) {
