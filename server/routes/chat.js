@@ -76,9 +76,13 @@ router.post('/response', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(API_KEY);
-        // Usamos 'gemini-pro' que es el modelo más estable y disponible globalmente
+        // Volvemos a 'gemini-1.5-flash' que debería funcionar con la configuración correcta
         const model = genAI.getGenerativeModel({
-            model: "gemini-pro",
+            model: "gemini-1.5-flash",
+            systemInstruction: {
+                role: "system",
+                parts: [{ text: systemInstruction }]
+            }
         });
 
         // Validar y limpiar historial para Gemini
@@ -100,7 +104,7 @@ router.post('/response', async (req, res) => {
         console.log("🤖 Chat Backend: Procesando mensaje...", {
             hasApiKey: !!API_KEY,
             historySize: finalHistory.length,
-            model: "gemini-pro"
+            model: "gemini-1.5-flash"
         });
 
         const chat = model.startChat({
@@ -111,12 +115,8 @@ router.post('/response', async (req, res) => {
             },
         });
 
-        // Prepend system instruction to the user prompt if it's a new chat or just include it in context
-        // Para gemini-pro, la mejor forma es enviar el contexto en el prompt o como primer turno si es posible.
-        // Aquí lo concatenamos al prompt del usuario para asegurar que se tome en cuenta.
-        const fullPrompt = `${systemInstruction}\n\nPREGUNTA DEL USUARIO: ${userPrompt}`;
-
-        const result = await chat.sendMessage(fullPrompt);
+        // Ya no concatenamos la instrucción, confiamos en el systemInstruction del modelo
+        const result = await chat.sendMessage(userPrompt);
         const response = await result.response;
         const text = response.text();
 
@@ -126,7 +126,7 @@ router.post('/response', async (req, res) => {
 
         let errorMsg = error.message;
         if (errorMsg.includes("404") && errorMsg.includes("not found")) {
-            errorMsg = "El modelo de IA solicitado (Gemini Pro) no está disponible o no se encuentra. Verifica la región de tu servidor.";
+            errorMsg = "El modelo de IA solicitado (Gemini 1.5 Flash) no está disponible o no se encuentra. Verifica la región de tu servidor.";
         }
 
         res.status(500).json({
