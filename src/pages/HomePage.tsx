@@ -19,22 +19,22 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
                         <div className="lg:col-span-7 space-y-8">
                             <h1 className="text-5xl md:text-7xl font-black text-[#00151a] tracking-tighter leading-[0.9]">
-                                {appConfig?.content?.hero?.title || t('home.hero.title')}
+                                {t('home.hero.title')}
                             </h1>
 
                             <p className="text-xl text-gray-500 max-w-xl leading-relaxed font-medium">
-                                {appConfig?.content?.hero?.subtitle || t('home.hero.subtitle')}
+                                {t('home.hero.subtitle')}
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
                                 <a href="/tarifas" className="px-10 py-5 bg-[#00151a] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#007e85] transition-all shadow-2xl shadow-teal-900/40">
-                                    {appConfig?.content?.hero?.ctaPrimary || t('home.hero.cta_ship')}
+                                    {t('home.hero.cta_ship')}
                                 </a>
                                 <button
                                     onClick={onOpenContact}
                                     className="px-10 py-5 bg-teal-500 text-[#00151a] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20"
                                 >
-                                    {appConfig?.content?.hero?.ctaSecondary || 'Contactar'}
+                                    {t('home.hero.cta_contact')}
                                 </button>
                             </div>
                         </div>
