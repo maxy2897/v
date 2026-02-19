@@ -90,7 +90,7 @@ export const getGeminiResponse = async (userPrompt: string, history: { role: 'us
     const result = await chat.sendMessage(userPrompt);
     const response = await result.response;
 
-    return response.text;
+    return response.text();
   } catch (error) {
     console.error("Error calling Gemini:", error);
     return "Lo siento, tengo problemas para conectar con mi base de datos. Por favor, inténtalo de nuevo más tarde.";
