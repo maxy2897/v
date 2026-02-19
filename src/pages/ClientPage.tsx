@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
@@ -10,8 +10,14 @@ interface ClientPageProps {
 
 const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
     const { t } = useSettings();
-    const { login, register } = useAuth();
+    const { login, register, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
     const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
