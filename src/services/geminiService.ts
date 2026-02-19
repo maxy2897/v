@@ -4,6 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : '/api';
 
+
 /**
  * Llama al backend para obtener respuesta de la IA (Gemini)
  * @param userPrompt - El mensaje actual del usuario
