@@ -442,20 +442,7 @@ const DashboardPage: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* Discount Badge */}
-                            {user.discountEligible && (
-                                <div className="mt-6 p-4 bg-gradient-to-r from-teal-500 to-teal-600 rounded-2xl">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                                            <span className="text-2xl font-black text-teal-600">10%</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-white font-black text-sm">{t('dash.profile.discount_title')}</p>
-                                            <p className="text-teal-100 text-xs font-medium">{t('dash.profile.discount_desc')}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            {/* Removed Discount Badge per user request */}
                         </div>
                     </div>
 

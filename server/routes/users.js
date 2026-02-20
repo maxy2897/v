@@ -53,13 +53,17 @@ router.put(
 
                 // Update fields if they are provided (allows clearing text fields)
                 if (req.body.name !== undefined) user.name = req.body.name;
-                if (req.body.email !== undefined) user.email = req.body.email;
+                // Email is non-editable in profile
+                // if (req.body.email !== undefined) user.email = req.body.email;
                 if (req.body.phone !== undefined) user.phone = req.body.phone;
                 if (req.body.address !== undefined) user.address = req.body.address;
                 if (req.body.username !== undefined) {
                     user.username = req.body.username.trim() === '' ? undefined : req.body.username;
                 }
-                if (req.body.idNumber !== undefined) user.idNumber = req.body.idNumber;
+                // Only allow setting idNumber if it's currently empty
+                if (req.body.idNumber !== undefined && (!user.idNumber || user.idNumber.trim() === '')) {
+                    user.idNumber = req.body.idNumber;
+                }
                 if (req.body.gender !== undefined) user.gender = req.body.gender;
 
                 if (req.file) {

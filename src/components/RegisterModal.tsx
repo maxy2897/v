@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { signInWithGoogle } from '../firebase';
 import { PhoneInput } from './PhoneInput';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TERMS_AND_CONDITIONS } from '../constants/terms';
 
 
 interface RegisterModalProps {
@@ -26,6 +28,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Bloquear scroll del body cuando el modal está abierto
@@ -53,8 +57,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
     e.preventDefault();
     setError('');
 
-    if (!acceptedPrivacy) {
-      setError(t('register.error.privacy'));
+    if (!acceptedPrivacy || !acceptedTerms) {
+      setError('Debes aceptar las políticas de privacidad y los términos y condiciones');
       return;
     }
 
@@ -266,7 +270,20 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                 className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
               />
               <label htmlFor="privacy" className="text-xs text-gray-600 font-medium leading-relaxed cursor-pointer">
-                {t('register.privacy_accept')} <span className="text-teal-600 font-bold hover:underline">políticas de privacidad</span>
+                He leído y acepto la <a href="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">política de privacidad</a>
+              </label>
+            </div>
+
+            <div className="flex items-start space-x-3 pt-1">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
+              />
+              <label htmlFor="terms" className="text-xs text-gray-600 font-medium leading-relaxed cursor-pointer">
+                Acepto los <button type="button" onClick={() => setShowTermsModal(true)} className="text-teal-600 font-bold hover:underline">términos y condiciones</button> de envío de Bodipo Business
               </label>
             </div>
 
@@ -280,8 +297,54 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
           </form>
 
           <p className="mt-6 text-center text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-            Al registrarte aceptas nuestras <a href="/privacidad" target="_blank" className="text-teal-600 underline">políticas de privacidad</a>
+            Logística premium España - Guinea Ecuatorial
           </p>
+
+          <AnimatePresence>
+            {showTermsModal && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowTermsModal(false)}
+                  className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                />
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                  className="relative bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl p-8"
+                >
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-black text-[#00151a] tracking-tight">Términos y Condiciones</h3>
+                    <button onClick={() => setShowTermsModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors" title="Cerrar términos">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </div>
+
+                  <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-6 scrollbar-thin scrollbar-thumb-teal-500">
+                    {TERMS_AND_CONDITIONS.map((term, index) => (
+                      <div key={index}>
+                        <h4 className="font-black text-teal-700 uppercase text-[10px] tracking-widest mb-2">{term.title}</h4>
+                        <p className="text-sm text-gray-600 leading-relaxed">{term.content}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setAcceptedTerms(true);
+                      setShowTermsModal(false);
+                    }}
+                    className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs mt-8 hover:bg-[#007e85] transition-all"
+                  >
+                    Entendido y Aceptar
+                  </button>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

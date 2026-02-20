@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { PhoneInput } from './PhoneInput';
 import { BASE_URL } from '../services/api';
+import { TERMS_AND_CONDITIONS } from '../constants/terms';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 interface SettingsModalProps {
@@ -22,6 +23,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         username: user?.username || '',
         phone: user?.phone || '',
         address: user?.address || '',
+        idNumber: user?.idNumber || '',
         gender: user?.gender || 'other',
         profileImage: user?.profileImage || ''
     });
@@ -33,6 +35,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 username: user.username || '',
                 phone: user.phone || '',
                 address: user.address || '',
+                idNumber: user.idNumber || '',
                 gender: user.gender || 'other',
                 profileImage: user.profileImage || ''
             });
@@ -186,13 +189,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                     </button>
                                 </div>
                                 <div>
-                                    <label htmlFor="settings-nie" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">DNI / NIE (No editable)</label>
+                                    <label htmlFor="settings-nie" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">DNI / NIE {user.idNumber ? '(No editable)' : ''}</label>
                                     <input
                                         id="settings-nie"
                                         type="text"
-                                        value={user.idNumber || 'No especificado'}
-                                        readOnly
-                                        className="w-full bg-gray-100 px-6 py-4 rounded-2xl text-gray-500 font-medium border border-gray-200 cursor-not-allowed"
+                                        value={formData.idNumber}
+                                        onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                                        readOnly={!!user.idNumber && user.idNumber.trim() !== ''}
+                                        className={`w-full px-6 py-4 rounded-2xl font-medium border transition-all ${user.idNumber && user.idNumber.trim() !== '' ? 'bg-gray-100 text-gray-500 border-gray-200 cursor-not-allowed' : 'bg-white text-black ring-2 ring-gray-100 focus:ring-teal-500 border-none'}`}
+                                        placeholder="Ej: 12345678X"
                                     />
                                 </div>
 
@@ -268,24 +273,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     )}
 
                     {activeTab === 'terms' && (
-                        <div className="prose prose-sm max-w-none text-gray-600 font-medium">
-                            <h3 className="text-[#00151a] font-black uppercase tracking-tighter text-xl">Términos y Condiciones</h3>
-                            <p className="mt-4 leading-relaxed">
-                                Bienvenido a Bodipo Business. Al utilizar nuestros servicios, usted acepta nuestros términos de envío, logística y manejo de datos.
-                            </p>
-                            <div className="space-y-6 mt-8">
-                                <section>
-                                    <h4 className="font-bold text-teal-700 uppercase text-[10px] tracking-widest">1. Envíos y Logística</h4>
-                                    <p>Todos los paquetes están sujetos a inspección y deben cumplir con las normativas internacionales de transporte. Los tiempos de entrega son estimados.</p>
-                                </section>
-                                <section>
-                                    <h4 className="font-bold text-teal-700 uppercase text-[10px] tracking-widest">2. Responsabilidad</h4>
-                                    <p>Bodipo Business se responsabiliza de la integridad de los paquetes registrados bajo nuestras pólizas de seguro opcionales.</p>
-                                </section>
-                                <section>
-                                    <h4 className="font-bold text-teal-700 uppercase text-[10px] tracking-widest">3. Privacidad</h4>
-                                    <p>Tus datos son utilizados exclusivamente para la gestión de tus envíos y la comunicación directa sobre el estado de los mismos.</p>
-                                </section>
+                        <div className="prose prose-sm max-w-none text-gray-600 font-medium overflow-y-auto max-h-[60vh] pr-4 scrollbar-thin scrollbar-thumb-teal-500">
+                            <h3 className="text-[#00151a] font-black uppercase tracking-tighter text-xl mb-6">Términos y Condiciones</h3>
+                            <div className="space-y-6">
+                                {TERMS_AND_CONDITIONS.map((term, index) => (
+                                    <section key={index} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:border-teal-100 transition-all">
+                                        <h4 className="font-black text-[#005f6b] uppercase text-[10px] tracking-widest mb-2">{term.title}</h4>
+                                        <p className="text-sm leading-relaxed text-gray-500">{term.content}</p>
+                                    </section>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -337,6 +333,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 <ForgotPasswordModal
                     isOpen={isForgotOpen}
                     onClose={() => setIsForgotOpen(false)}
+                    initialEmail={user.email}
                 />
             )}
         </div>

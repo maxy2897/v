@@ -5,13 +5,14 @@ import { BASE_URL } from '../services/api';
 interface ForgotPasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
+    initialEmail?: string;
 }
 
-const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose }) => {
+const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose, initialEmail }) => {
     const { t } = useSettings();
     const [method, setMethod] = useState<'email' | 'phone'>('email');
     const [step, setStep] = useState<'input' | 'code' | 'password'>('input');
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(initialEmail || '');
     const [code, setCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
