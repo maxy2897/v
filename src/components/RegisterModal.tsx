@@ -107,14 +107,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="p-6">
-          <div className="bg-teal-50 p-4 rounded-xl mb-6 flex items-center space-x-3 border border-teal-100">
-            <div className="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center text-[#00151a] font-black text-sm">
-              10%
-            </div>
-            <p className="text-xs font-bold text-teal-900 leading-snug">
-              {t('register.promo')}
-            </p>
-          </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm font-medium">
