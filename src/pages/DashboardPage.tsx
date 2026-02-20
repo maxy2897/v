@@ -348,13 +348,13 @@ const DashboardPage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label htmlFor="edit-email" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.email')}</label>
+                                        <label htmlFor="edit-email" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.email')} (No editable)</label>
                                         <input
                                             id="edit-email"
                                             type="email"
                                             value={formData.email}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
+                                            readOnly
+                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl border-none focus:ring-0 text-gray-500 cursor-not-allowed"
                                         />
                                     </div>
                                     <div>
@@ -377,14 +377,14 @@ const DashboardPage: React.FC = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="edit-idNumber" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">DNI, NIE o Pasaporte</label>
+                                        <label htmlFor="edit-idNumber" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">DNI, NIE o Pasaporte (No editable)</label>
                                         <input
                                             id="edit-idNumber"
                                             type="text"
                                             value={formData.idNumber}
-                                            onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
-                                            placeholder="Ej: 12345678A o NIE o Pasaporte"
+                                            readOnly
+                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl border-none focus:ring-0 text-gray-500 cursor-not-allowed"
+                                            placeholder="Ej: 12345678A"
                                         />
                                     </div>
                                     <button

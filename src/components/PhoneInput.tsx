@@ -6,6 +6,7 @@ interface PhoneInputProps {
     placeholder?: string;
     required?: boolean;
     className?: string;
+    id?: string;
 }
 
 const countryCodes = [
@@ -24,7 +25,8 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
     onChange,
     placeholder = 'Número de teléfono',
     required = false,
-    className = ''
+    className = '',
+    id
 }) => {
     // Extract country code and number from value
     const getInitialCountryCode = () => {
@@ -118,6 +120,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
 
             {/* Phone Number Input */}
             <input
+                id={id}
                 type="tel"
                 value={phoneNumber}
                 onChange={handlePhoneChange}

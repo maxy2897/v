@@ -10,10 +10,11 @@ import { NotificationBell } from './NotificationBell';
 interface HeaderProps {
   onOpenRegister: () => void;
   onOpenLogin: () => void;
+  onOpenSettings: () => void;
   config: AppConfig;
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) => {
+const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSettings, config }) => {
   const location = useLocation();
   const [hoveredPath, setHoveredPath] = useState(location.pathname);
   const { user, isAuthenticated, logout } = useAuth();
@@ -168,6 +169,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                         </Link>
                         <button
                           onClick={() => {
+                            setShowUserMenu(false);
+                            onOpenSettings();
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700"
+                        >
+                          {t('nav.settings') || 'Ajustes'}
+                        </button>
+                        <button
+                          onClick={() => {
                             logout();
                             setShowUserMenu(false);
                           }}
@@ -269,9 +279,21 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                     )}
 
                     {isAuthenticated && (
-                      <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="w-full py-3 bg-red-50 text-red-600 rounded-xl font-bold text-sm">
-                        {t('nav.logout')}
-                      </button>
+                      <div className="flex flex-col gap-2 border-t border-gray-50 pt-4">
+                        <button
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            onOpenSettings();
+                          }}
+                          className="w-full py-4 px-6 bg-teal-50 text-teal-700 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center justify-between"
+                        >
+                          {t('nav.settings') || 'Ajustes'}
+                          <span>⚙️</span>
+                        </button>
+                        <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="w-full py-4 text-red-600 font-bold text-sm">
+                          {t('nav.logout')}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

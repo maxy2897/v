@@ -8,6 +8,7 @@ import LoginModal from './src/components/LoginModal';
 import ForgotPasswordModal from './src/components/ForgotPasswordModal';
 import ContactModal from './src/components/ContactModal';
 import AdminPanel from './src/components/AdminPanel';
+import SettingsModal from './src/components/SettingsModal';
 import { Product, AppConfig } from './types';
 import AnimatedPage from './src/components/AnimatedPage';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -98,6 +99,7 @@ const AppContent: React.FC = () => {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Dynamic State
   const [products, setProducts] = useState<Product[]>([]);
@@ -148,6 +150,7 @@ const AppContent: React.FC = () => {
         <Header
           onOpenRegister={() => setIsRegisterOpen(true)}
           onOpenLogin={() => setIsLoginOpen(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
           config={config}
         />
 
@@ -270,6 +273,7 @@ const AppContent: React.FC = () => {
           setConfig={setConfig}
         />
         <AIChat config={config} />
+        <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       </div>
     </>
   );

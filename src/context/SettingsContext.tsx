@@ -72,6 +72,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.register': 'Registrarse',
         'nav.dashboard': 'Perfil',
         'nav.logout': 'Cerrar Sesión',
+        'nav.settings': 'Ajustes',
 
         // Home Hero
         'home.hero.title': 'Servicio Internacional',
@@ -407,6 +408,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.register': 'Register',
         'nav.dashboard': 'Profile',
         'nav.logout': 'Logout',
+        'nav.settings': 'Settings',
 
         // Home Hero
         'home.hero.title': 'International Package',
@@ -741,6 +743,7 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.register': 'S\'inscrire',
         'nav.dashboard': 'Profil',
         'nav.logout': 'Déconnexion',
+        'nav.settings': 'Paramètres',
 
         // Home Hero
         'home.hero.title': 'Service International',
