@@ -87,7 +87,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shipments?status=all`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments?status=all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -123,7 +123,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shipments/${shipmentId}/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/${shipmentId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/transactions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -178,7 +178,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/transactions/${id}/receipt`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/transactions/${id}/receipt`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Error downloading');
@@ -648,7 +648,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         const userStr = localStorage.getItem('user');
                         const token = userStr ? JSON.parse(userStr).token : '';
 
-                        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reports/accounting`, {
+                        const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/reports/accounting`, {
                           headers: {
                             'Authorization': `Bearer ${token}`
                           }

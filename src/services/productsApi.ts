@@ -2,7 +2,7 @@ import { Product } from '../../types';
 
 const API_URL = import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/api`
-    : 'http://localhost:5000/api';
+    : 'https://bodipo-business-api.onrender.com/api';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

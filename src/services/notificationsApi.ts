@@ -1,9 +1,9 @@
 // API URL - Dinámico basado en entorno
 const API_URL = import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/api`
-    : 'http://localhost:5000/api';
+    : 'https://bodipo-business-api.onrender.com/api';
 
-export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export const BASE_URL = import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com';
 
 // Obtener token del localStorage
 const getToken = () => {

@@ -34,7 +34,7 @@ const Tracking: React.FC = () => {
     setShipmentData(null);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/shipments/track/${trackingId}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/track/${trackingId}`);
 
       if (res.ok) {
         const data = await res.json();
