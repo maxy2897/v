@@ -1,5 +1,6 @@
 import express from 'express';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Shipment from '../models/Shipment.js';
 
 const router = express.Router();
 
@@ -70,6 +71,25 @@ router.post('/response', async (req, res) => {
     try {
         const { userPrompt, history } = req.body;
 
+        // --- INTERCEPTAR CÓDIGOS DE RASTREO (Tracking) ---
+        let augmentedPrompt = userPrompt;
+        const trackingMatches = userPrompt.match(/BB-[a-zA-Z0-9]+/gi);
+
+        if (trackingMatches && trackingMatches.length > 0) {
+            const trackingNumber = trackingMatches[0].toUpperCase();
+            try {
+                const shipment = await Shipment.findOne({ trackingNumber });
+                if (shipment) {
+                    augmentedPrompt = `[Sistema interno: El cliente busca el código ${trackingNumber}. Según la Base de Datos el Estado es "${shipment.status}", Ruta: ${shipment.origin}->${shipment.destination}, Peso: ${shipment.weight}Kg]. Informa al cliente del estado actual de este paquete de forma amable. Su mensaje original era: "${userPrompt}"`;
+                } else {
+                    augmentedPrompt = `[Sistema interno: El cliente busca el código ${trackingNumber} pero NO se encuentra en la Base de Datos]. Pídele amablemente que verifique el código. Su mensaje original era: "${userPrompt}"`;
+                }
+            } catch (err) {
+                console.error("Error buscando shipment para el chat:", err);
+            }
+        }
+        // -------------------------------------------------
+
         if (!API_KEY || API_KEY === "") {
             console.error("❌ Gemini API Key no configurada en el servidor");
             return res.status(500).json({ error: "API Key no configurada en el servidor" });
@@ -125,9 +145,9 @@ router.post('/response', async (req, res) => {
                 });
 
                 // Si es gemini-pro, inyectamos el contexto en el prompt
-                let promptToSend = userPrompt;
+                let promptToSend = augmentedPrompt;
                 if (modelName === "gemini-pro") {
-                    promptToSend = `${systemInstruction}\n\nUser: ${userPrompt}`;
+                    promptToSend = `${systemInstruction}\n\nUser: ${augmentedPrompt}`;
                 }
 
                 const result = await chat.sendMessage(promptToSend);
