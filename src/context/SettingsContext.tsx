@@ -288,7 +288,7 @@ const translations: Record<Language, Record<string, string>> = {
         'schedule.programming_badge': 'Programación',
 
         // AIChat
-        'chat.welcome': '¡Hola! Bienvenido al asistente virtual de Bodipo. Estoy aquí para ayudarle con información sobre nuestras tarifas, horarios y servicios logísticos.',
+        'chat.welcome': '¡Hola! Bienvenido al asistente virtual de Bodipo. Estoy aquí para ayudarle.',
         'chat.error': 'Lo siento, no puedo conectar con la IA. Por favor, revisa que la clave VITE_GEMINI_API_KEY esté bien configurada en Vercel o contáctanos por teléfono.',
         'chat.cta': 'Chat de Ayuda',
         'chat.online': 'En Línea',
@@ -622,7 +622,7 @@ const translations: Record<Language, Record<string, string>> = {
         'schedule.programming_badge': 'Programming',
 
         // AIChat
-        'chat.welcome': 'Hello! Welcome to the Bodipo virtual assistant. I am here to help you with information about our rates, schedules, and logistics services.',
+        'chat.welcome': 'Hello! Welcome to the Bodipo virtual assistant. I am here to help you.',
         'chat.error': 'I am sorry, I cannot answer right now. Please contact us via our phone numbers or social media.',
         'chat.cta': 'Help Chat',
         'chat.online': 'Online',
@@ -956,7 +956,7 @@ const translations: Record<Language, Record<string, string>> = {
         'schedule.programming_badge': 'Programmation',
 
         // AIChat
-        'chat.welcome': 'Bonjour ! Bienvenue sur l\'assistant virtuel de Bodipo. Je suis là pour vous aider avec des informations sur nos tarifs, horaires et services logistiques.',
+        'chat.welcome': 'Bonjour ! Bienvenue sur l\'assistant virtuel de Bodipo. Je suis là pour vous aider.',
         'chat.error': 'Nos systèmes traitent des envois hautement prioritaires. Veuillez réessayer dans quelques instants.',
         'chat.cta': 'Chat d\'aide',
         'chat.online': 'En ligne',
