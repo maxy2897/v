@@ -73,10 +73,17 @@ router.post('/response', async (req, res) => {
 
         // --- INTERCEPTAR CÓDIGOS DE RASTREO (Tracking) ---
         let augmentedPrompt = userPrompt;
-        const trackingMatches = userPrompt.match(/BB-[a-zA-Z0-9]+/gi);
+
+        // Match BB-1234 or BB1234
+        const trackingMatches = userPrompt.match(/BB-?[a-zA-Z0-9]+/gi);
 
         if (trackingMatches && trackingMatches.length > 0) {
-            const trackingNumber = trackingMatches[0].toUpperCase();
+            // Aseguramos que siempre tenga el formato BB-XXXX para buscar en la base de datos si así lo generas, 
+            // o simplemente quitamos el guión si tus códigos se generan como BB1234. 
+            // En shipment.js generas: `BB${timestamp}${random}`, así que NO llevan guión.
+            const rawMatch = trackingMatches[0].toUpperCase();
+            const trackingNumber = rawMatch.replace('-', ''); // Quitamos el guión si lo puso el usuario para coincidir con la DB
+
             try {
                 const shipment = await Shipment.findOne({ trackingNumber });
                 if (shipment) {
