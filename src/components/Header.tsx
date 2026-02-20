@@ -249,53 +249,54 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                       key={item.path}
                       to={item.path}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="text-lg font-black text-[#00151a] py-2 border-b border-gray-50"
+                      className="text-lg font-black text-[#00151a] py-2 border-b border-gray-50 uppercase tracking-tighter"
                     >
                       {item.label}
                     </Link>
                   ))}
 
-                  <div className="mt-auto pt-6 flex flex-col gap-4">
-                    <div className="flex items-center justify-between py-4 border-b border-gray-50">
-                      <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50">
-                        {theme === 'dark' ? '🌙' : '☀️'}
-                      </button>
-                      <div className="flex items-center bg-gray-50 p-1 rounded-xl">
-                        <button onClick={() => setLanguage('es')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'es' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>ES</button>
-                        <button onClick={() => setLanguage('en')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'en' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>EN</button>
-                        <button onClick={() => setLanguage('fr')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'fr' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>FR</button>
-                      </div>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenSettings();
+                    }}
+                    className="flex items-center gap-3 text-lg font-black text-teal-600 py-4 border-b border-gray-50 group uppercase tracking-tighter"
+                  >
+                    <span className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition-colors">⚙️</span>
+                    {t('nav.settings') || 'Ajustes'}
+                  </button>
+                </div>
+
+                <div className="mt-auto pt-6 flex flex-col gap-4">
+                  <div className="flex items-center justify-between py-4 border-b border-gray-50">
+                    <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50">
+                      {theme === 'dark' ? '🌙' : '☀️'}
+                    </button>
+                    <div className="flex items-center bg-gray-50 p-1 rounded-xl">
+                      <button onClick={() => setLanguage('es')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'es' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>ES</button>
+                      <button onClick={() => setLanguage('en')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'en' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>EN</button>
+                      <button onClick={() => setLanguage('fr')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'fr' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>FR</button>
                     </div>
-
-                    {!isAuthenticated && (
-                      <div className="flex flex-col gap-3">
-                        <button onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }} className="w-full py-3 bg-white border-2 border-[#00151a] rounded-xl font-black text-[#00151a] uppercase text-xs">
-                          {t('nav.login')}
-                        </button>
-                        <button onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }} className="w-full py-3 bg-[#00151a] text-white rounded-xl font-black uppercase text-xs">
-                          {t('nav.register')}
-                        </button>
-                      </div>
-                    )}
-
-                    {isAuthenticated && (
-                      <div className="flex flex-col gap-2 border-t border-gray-50 pt-4">
-                        <button
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            onOpenSettings();
-                          }}
-                          className="w-full py-4 px-6 bg-teal-50 text-teal-700 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center justify-between"
-                        >
-                          {t('nav.settings') || 'Ajustes'}
-                          <span>⚙️</span>
-                        </button>
-                        <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="w-full py-4 text-red-600 font-bold text-sm">
-                          {t('nav.logout')}
-                        </button>
-                      </div>
-                    )}
                   </div>
+
+                  {!isAuthenticated && (
+                    <div className="flex flex-col gap-3">
+                      <button onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }} className="w-full py-3 bg-white border-2 border-[#00151a] rounded-xl font-black text-[#00151a] uppercase text-xs">
+                        {t('nav.login')}
+                      </button>
+                      <button onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }} className="w-full py-3 bg-[#00151a] text-white rounded-xl font-black uppercase text-xs">
+                        {t('nav.register')}
+                      </button>
+                    </div>
+                  )}
+
+                  {isAuthenticated && (
+                    <div className="flex flex-col gap-2 border-t border-gray-50 pt-4">
+                      <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="w-full py-4 text-red-600 font-bold text-xs uppercase tracking-widest bg-red-50 rounded-2xl">
+                        {t('nav.logout')}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

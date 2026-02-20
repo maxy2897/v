@@ -14,7 +14,7 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const { user, updateUser } = useAuth();
     const { t } = useSettings();
-    const [activeTab, setActiveTab] = useState<'profile' | 'terms' | 'help'>('profile');
+    const [activeTab, setActiveTab] = useState<'profile' | 'terms' | 'help'>(user ? 'profile' : 'terms');
     const [loading, setLoading] = useState(false);
     const [isForgotOpen, setIsForgotOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -132,10 +132,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 {/* Tabs */}
                 <div className="flex bg-gray-50 border-b border-gray-100 shrink-0 overflow-x-auto scrollbar-hide">
                     {[
-                        { id: 'profile', label: 'Perfil', icon: '👤' },
-                        { id: 'terms', label: 'Términos', icon: '📄' },
-                        { id: 'help', label: 'Ayuda', icon: '❓' }
-                    ].map(tab => (
+                        { id: 'profile', label: 'Perfil', icon: '👤', protected: true },
+                        { id: 'terms', label: 'Términos', icon: '📄', protected: false },
+                        { id: 'help', label: 'Ayuda', icon: '❓', protected: false }
+                    ].filter(tab => !tab.protected || !!user).map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
