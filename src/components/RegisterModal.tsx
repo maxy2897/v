@@ -282,7 +282,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#00151a] text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/20 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#00151a] text-white py-4 rounded-xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/20 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? t('register.loading') : t('register.btn')}
             </button>
@@ -306,10 +306,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                   initial={{ scale: 0.9, opacity: 0, y: 20 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                  className="relative bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl p-8"
+                  className="relative bg-white w-full max-w-lg rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl p-6 md:p-8"
                 >
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-black text-[#00151a] tracking-tight">Términos y Condiciones</h3>
+                    <h3 className="text-xl md:text-2xl font-black text-[#00151a] tracking-tight">Términos y Condiciones</h3>
                     <button onClick={() => setShowTermsModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors" title="Cerrar términos">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>

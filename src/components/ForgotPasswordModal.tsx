@@ -110,8 +110,8 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                 className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm"
                 onClick={onClose}
             />
-            <div className="relative bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-300">
-                <div className="bg-gradient-to-r from-teal-900 to-teal-700 p-8 text-center relative overflow-hidden">
+            <div className="relative bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
+                <div className="bg-gradient-to-r from-teal-900 to-teal-700 p-6 md:p-8 text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                     <div className="text-5xl mb-4">🔐</div>
                     <h2 className="text-2xl font-black text-white tracking-tighter mb-2">
@@ -124,10 +124,10 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                     </p>
                 </div>
 
-                <div className="p-8">
+                <div className="p-6 md:p-8">
                     {/* Method Tabs */}
                     {step === 'input' && (
-                        <div className="flex bg-gray-100 p-1 mb-8 rounded-xl">
+                        <div className="flex bg-gray-100 p-1 mb-6 md:mb-8 rounded-xl">
                             <button
                                 onClick={() => { setMethod('email'); setError(''); }}
                                 className={`flex-1 py-3 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${method === 'email' ? 'bg-white shadow-sm text-teal-800' : 'text-gray-400 hover:text-gray-600'}`}

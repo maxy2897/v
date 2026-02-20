@@ -114,15 +114,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm"
                 onClick={onClose}
             />
-            <div className="relative bg-white w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in duration-300 max-h-[90vh] flex flex-col">
-                <div className="bg-[#00151a] p-8 text-center relative overflow-hidden shrink-0">
+            <div className="relative bg-white w-full max-w-2xl rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in duration-300 h-[95vh] md:h-auto max-h-[95vh] md:max-h-[90vh] flex flex-col">
+                <div className="bg-[#00151a] p-6 md:p-8 text-center relative overflow-hidden shrink-0">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                    <h2 className="text-3xl font-black text-white tracking-tighter mb-2">Ajustes</h2>
-                    <p className="text-teal-400 text-[10px] font-black uppercase tracking-[0.3em]">Gestiona tu cuenta y preferencias</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter mb-1">Ajustes</h2>
+                    <p className="text-teal-400 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em]">Gestiona tu cuenta y preferencias</p>
 
                     <button
                         onClick={onClose}
-                        className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+                        className="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white transition-colors"
                         title="Cerrar ajustes"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -132,22 +132,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 {/* Tabs */}
                 <div className="flex bg-gray-50 border-b border-gray-100 shrink-0 overflow-x-auto scrollbar-hide">
                     {[
-                        { id: 'profile', label: 'Mi Perfil', icon: '👤' },
+                        { id: 'profile', label: 'Perfil', icon: '👤' },
                         { id: 'terms', label: 'Términos', icon: '📄' },
                         { id: 'help', label: 'Ayuda', icon: '❓' }
                     ].map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex-1 min-w-[120px] py-4 px-6 text-xs font-black uppercase tracking-widest transition-all gap-2 flex items-center justify-center ${activeTab === tab.id ? 'bg-white text-teal-600 border-b-2 border-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
+                            className={`flex-1 min-w-[100px] md:min-w-[120px] py-3 md:py-4 px-4 md:px-6 text-[10px] md:text-xs font-black uppercase tracking-widest transition-all gap-2 flex items-center justify-center ${activeTab === tab.id ? 'bg-white text-teal-600 border-b-2 border-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
                         >
                             <span>{tab.icon}</span>
-                            {tab.label}
+                            <span className="hidden xs:inline">{tab.label}</span>
+                            <span className="xs:hidden">{tab.label.split(' ')[0]}</span>
                         </button>
                     ))}
                 </div>
 
-                <div className="flex-grow overflow-y-auto p-8 scrollbar-hide bg-gray-50/30">
+                <div className="flex-grow overflow-y-auto p-6 md:p-8 scrollbar-hide bg-gray-50/30">
                     {activeTab === 'profile' && user && (
                         <form onSubmit={handleSubmit} className="space-y-6 max-w-xl mx-auto">
                             {/* Profile Image */}
@@ -277,7 +278,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                             <h3 className="text-[#00151a] font-black uppercase tracking-tighter text-xl mb-6">Términos y Condiciones</h3>
                             <div className="space-y-6">
                                 {TERMS_AND_CONDITIONS.map((term, index) => (
-                                    <section key={index} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:border-teal-100 transition-all">
+                                    <section key={index} className="bg-gray-50 p-5 md:p-6 rounded-2xl border border-gray-100 hover:border-teal-100 transition-all">
                                         <h4 className="font-black text-[#005f6b] uppercase text-[10px] tracking-widest mb-2">{term.title}</h4>
                                         <p className="text-sm leading-relaxed text-gray-500">{term.content}</p>
                                     </section>
@@ -287,9 +288,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     )}
 
                     {activeTab === 'help' && (
-                        <div className="space-y-6">
-                            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-                                <h3 className="text-xl font-black text-[#00151a] mb-6">Centro de Ayuda</h3>
+                        <div className="space-y-6 pb-6">
+                            <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-gray-100">
+                                <h3 className="text-lg md:text-xl font-black text-[#00151a] mb-6">Centro de Ayuda</h3>
                                 <div className="space-y-4">
                                     {[
                                         { q: '¿Cómo rastreo mi pedido?', a: 'Introduce tu código BB en la sección de "Rastreo" o pídelo a nuestro bot de IA.' },
@@ -309,15 +310,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            <div className="bg-teal-900 text-white p-8 rounded-[2rem] shadow-lg relative overflow-hidden">
+                            <div className="bg-teal-900 text-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-lg relative overflow-hidden">
                                 <div className="relative z-10 text-center">
                                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-teal-400 mb-2">Soporte Directo</p>
-                                    <h4 className="text-2xl font-black mb-6">¿Necesitas más ayuda?</h4>
+                                    <h4 className="text-xl md:text-2xl font-black mb-6">¿Necesitas más ayuda?</h4>
                                     <a
                                         href="https://wa.me/34643521042"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-block bg-white text-teal-900 px-8 py-3 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform"
+                                        className="inline-block bg-white text-teal-900 px-6 md:px-8 py-3 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform"
                                     >
                                         Chat WhatsApp
                                     </a>
