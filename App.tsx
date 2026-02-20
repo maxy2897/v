@@ -69,8 +69,9 @@ const AnimatedRoutes: React.FC<{
   onOpenRegister: () => void;
   onOpenContact: () => void;
   onOpenForgotPassword: () => void;
+  onOpenSettings: () => void;
   products: Product[];
-}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, products }) => {
+}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, onOpenSettings, products }) => {
   const location = useLocation();
 
   return (
@@ -84,7 +85,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/tienda" element={<AnimatedPage><StorePage products={products} /></AnimatedPage>} />
         <Route path="/acceso" element={<AnimatedPage><ClientPage onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/money-transfer" element={<AnimatedPage><MoneyTransferPage /></AnimatedPage>} />
-        <Route path="/dashboard" element={<AnimatedPage><DashboardPage /></AnimatedPage>} />
+        <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
       </Routes>
@@ -159,6 +160,7 @@ const AppContent: React.FC = () => {
             onOpenRegister={() => setIsRegisterOpen(true)}
             onOpenContact={() => setIsContactOpen(true)}
             onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
             products={products}
           />
         </main>

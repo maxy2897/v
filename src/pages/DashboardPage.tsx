@@ -28,7 +28,11 @@ interface Transaction {
     details?: any;
 }
 
-const DashboardPage: React.FC = () => {
+interface DashboardPageProps {
+    onOpenSettings?: () => void;
+}
+
+const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
     const { user, logout, updateUser, isAuthenticated } = useAuth();
     const { t, language } = useSettings();
     const navigate = useNavigate();
@@ -39,85 +43,7 @@ const DashboardPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'shipments' | 'invoices'>('shipments');
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
-    const [editMode, setEditMode] = useState(false);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [formData, setFormData] = useState({
-        name: user?.name || '',
-        email: user?.email || '',
-        phone: user?.phone || '',
-        address: user?.address || '',
-        username: user?.username || '',
-        idNumber: user?.idNumber || '',
-        gender: user?.gender || 'other',
-        profileImage: user?.profileImage || ''
-    });
-
-    const resizeImage = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target?.result as string;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500;
-                    const MAX_HEIGHT = 500;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // 0.8 quality JPEG
-                };
-            };
-            reader.onerror = (error) => reject(error);
-        });
-    };
-
-    useEffect(() => {
-        if (user) {
-            setFormData({
-                name: user.name || '',
-                email: user.email || '',
-                phone: user.phone || '',
-                address: user.address || '',
-                username: user.username || '',
-                idNumber: user.idNumber || '',
-                profileImage: user.profileImage || null,
-                gender: user.gender || 'other'
-            });
-            setPreviewImage(null);
-        }
-    }, [user]);
-
-    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            try {
-                const base64 = await resizeImage(file);
-                setFormData({ ...formData, profileImage: base64 });
-                setPreviewImage(base64);
-            } catch (error) {
-                console.error('Error resizing image:', error);
-                alert('Error al procesar la imagen');
-            }
-        }
-    };
+    // Unified handleUpdateProfile is now in SettingsModal
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -149,34 +75,6 @@ const DashboardPage: React.FC = () => {
         navigate('/');
     };
 
-    const handleUpdateProfile = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('🔵 handleUpdateProfile called');
-        console.log('📝 Form data:', formData);
-
-        try {
-            // Enviar como JSON plano con la imagen en base64
-            const updateData = {
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone,
-                address: formData.address,
-                username: formData.username,
-                idNumber: formData.idNumber,
-                gender: formData.gender,
-                profileImage: formData.profileImage
-            };
-
-            console.log('🚀 Calling updateUser with JSON...');
-            await updateUser(updateData);
-            console.log('✅ Update successful!');
-            setEditMode(false);
-            alert(t('dash.alert.update_success'));
-        } catch (error: any) {
-            console.error('❌ Error updating profile:', error);
-            alert(error.message || t('dash.alert.update_error'));
-        }
-    };
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'Entregado':
@@ -262,185 +160,55 @@ const DashboardPage: React.FC = () => {
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-black text-[#00151a]">{t('dash.profile.title')}</h2>
                                 <button
-                                    onClick={() => {
-                                        console.log('Edit button clicked! Current editMode:', editMode);
-                                        setEditMode(!editMode);
-                                    }}
-                                    className="text-teal-600 hover:text-teal-700 font-bold text-sm"
+                                    onClick={onOpenSettings}
+                                    className="text-teal-600 hover:text-teal-700 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 bg-teal-50 px-4 py-2 rounded-xl transition-all"
                                 >
-                                    {editMode ? t('dash.profile.cancel') : t('dash.profile.edit')}
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                    {t('dash.profile.edit')}
                                 </button>
                             </div>
 
-                            {editMode ? (
-                                <form onSubmit={handleUpdateProfile} className="space-y-4">
-                                    <div className="flex justify-center mb-6">
-                                        <div className="relative group">
-                                            <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-lg">
-                                                {previewImage ? (
-                                                    <img
-                                                        src={previewImage}
-                                                        alt="Preview"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : user.profileImage ? (
-                                                    <img
-                                                        src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`}
-                                                        alt="Profile"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <svg className="w-full h-full text-gray-400 p-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                                                )}
-                                            </div>
-                                            <label htmlFor="profileImage" className="absolute bottom-0 right-0 bg-teal-600 text-white p-2 rounded-full cursor-pointer hover:bg-teal-700 transition-colors shadow-md">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                                <input
-                                                    id="profileImage"
-                                                    type="file"
-                                                    className="hidden"
-                                                    accept="image/*"
-                                                    onChange={handleImageChange}
-                                                    aria-label={t('dash.profile.change_image') || "Cambiar imagen de perfil"}
-                                                />
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="edit-username" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.username')}</label>
-                                        <input
-                                            id="edit-username"
-                                            type="text"
-                                            value={formData.username}
-                                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
-                                            placeholder="@username"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="edit-name" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.name')}</label>
-                                        <input
-                                            id="edit-name"
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Sexo</label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, gender: 'male' })}
-                                                className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${formData.gender === 'male' ? 'bg-teal-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                                            >
-                                                Hombre
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, gender: 'female' })}
-                                                className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${formData.gender === 'female' ? 'bg-teal-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                                            >
-                                                Mujer
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label htmlFor="edit-email" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.email')} (No editable)</label>
-                                        <input
-                                            id="edit-email"
-                                            type="email"
-                                            value={formData.email}
-                                            readOnly
-                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl border-none focus:ring-0 text-gray-500 cursor-not-allowed"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="edit-phone" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.phone')}</label>
-                                        <PhoneInput
-                                            value={formData.phone}
-                                            onChange={(value) => setFormData({ ...formData, phone: value })}
-                                            placeholder="Número de teléfono"
-                                            className="w-full"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="edit-address" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.address')}</label>
-                                        <input
-                                            id="edit-address"
-                                            type="text"
-                                            value={formData.address}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="edit-idNumber" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">DNI, NIE o Pasaporte (No editable)</label>
-                                        <input
-                                            id="edit-idNumber"
-                                            type="text"
-                                            value={formData.idNumber}
-                                            readOnly
-                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl border-none focus:ring-0 text-gray-500 cursor-not-allowed"
-                                            placeholder="Ej: 12345678A"
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        onClick={(e) => {
-                                            console.log('🔴 Button clicked!');
-                                        }}
-                                        disabled={loading}
-                                        className="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 transition-all disabled:opacity-50"
-                                    >
-                                        {loading ? t('dash.profile.saving') : t('dash.profile.save')}
-                                    </button>
-                                </form>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="flex justify-center mb-6">
-                                        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-lg">
-                                            {user.profileImage ? (
-                                                <img
-                                                    src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`}
-                                                    alt="Profile"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <svg className="w-full h-full text-gray-400 p-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.username')}</p>
-                                        <p className="text-gray-800 font-bold text-teal-600 italic">
-                                            {user.username ? (user.username.startsWith('@') ? user.username : `@${user.username}`) : t('dash.profile.not_specified')}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.name')}</p>
-                                        <p className="text-gray-800 font-medium">{user.name}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.email')}</p>
-                                        <p className="text-gray-800 font-medium">{user.email}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.phone')}</p>
-                                        <p className="text-gray-800 font-medium">{user.phone || t('dash.profile.not_specified')}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.address')}</p>
-                                        <p className="text-gray-800 font-medium">{user.address || t('dash.profile.not_specified')}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">DNI, NIE o Pasaporte</p>
-                                        <p className="text-gray-800 font-medium">{user.idNumber || t('dash.profile.not_specified')}</p>
+                            <div className="space-y-4">
+                                <div className="flex justify-center mb-6">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-lg">
+                                        {user.profileImage ? (
+                                            <img
+                                                src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`}
+                                                alt="Profile"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <svg className="w-full h-full text-gray-400 p-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                        )}
                                     </div>
                                 </div>
-                            )}
+                                <div>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.username')}</p>
+                                    <p className="text-gray-800 font-bold text-teal-600 italic">
+                                        {user.username ? (user.username.startsWith('@') ? user.username : `@${user.username}`) : t('dash.profile.not_specified')}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.name')}</p>
+                                    <p className="text-gray-800 font-medium">{user.name}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.email')}</p>
+                                    <p className="text-gray-800 font-medium">{user.email}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.phone')}</p>
+                                    <p className="text-gray-800 font-medium">{user.phone || t('dash.profile.not_specified')}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('dash.profile.address')}</p>
+                                    <p className="text-gray-800 font-medium">{user.address || t('dash.profile.not_specified')}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">DNI, NIE o Pasaporte</p>
+                                    <p className="text-gray-800 font-medium">{user.idNumber || t('dash.profile.not_specified')}</p>
+                                </div>
+                            </div>
 
                             {/* Removed Discount Badge per user request */}
                         </div>
