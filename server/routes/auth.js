@@ -60,10 +60,10 @@ router.post(
                     phone: user.phone,
                     address: user.address,
                     gender: user.gender,
-                    username: user.username,
                     profileImage: user.profileImage,
                     idNumber: user.idNumber,
                     discountEligible: user.discountEligible,
+                    role: user.role,
                     token: generateToken(user._id),
                 });
             } else {
@@ -169,6 +169,7 @@ router.post('/social-login', async (req, res) => {
                 profileImage: user.profileImage,
                 idNumber: user.idNumber,
                 discountEligible: user.discountEligible,
+                role: user.role,
                 token: generateToken(user._id),
             });
         }
@@ -196,6 +197,7 @@ router.get('/me', protect, async (req, res) => {
             profileImage: user.profileImage,
             idNumber: user.idNumber,
             discountEligible: user.discountEligible,
+            role: user.role,
         });
     } catch (error) {
         console.error(error);

@@ -33,23 +33,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Cargar usuario al iniciar
+    // Cargar y sincronizar usuario al iniciar
     useEffect(() => {
-        const loadUser = async () => {
+        const syncUser = async () => {
             try {
                 if (api.isAuthenticated()) {
+                    // Primero cargamos lo que hay en local para respuesta rápida
                     const storedUser = api.getStoredUser();
-                    setUser(storedUser);
+                    if (storedUser) setUser(storedUser);
+
+                    // Luego sincronizamos con el servidor para tener datos frescos
+                    const freshUser = await api.getCurrentUser();
+                    // Importante: El token no viene en /me, pero lo necesitamos en el state
+                    const token = localStorage.getItem('token');
+                    const fullUserData = { ...freshUser, token };
+                    setUser(fullUserData);
+                    localStorage.setItem('user', JSON.stringify(fullUserData));
                 }
             } catch (error) {
-                console.error('Error loading user:', error);
+                console.error('Error syncing user:', error);
+                // Si el token es inválido o expiró, cerramos sesión
                 api.logout();
+                setUser(null);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadUser();
+        syncUser();
     }, []);
 
     const login = async (email: string, password: string) => {
