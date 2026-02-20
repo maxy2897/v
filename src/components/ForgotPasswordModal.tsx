@@ -192,7 +192,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                                 </p>
                             </div>
                             <a
-                                href="https://wa.me/237687528854?text=Hola,%20necesito%20recuperar%20el%20acceso%20a%20mi%20cuenta%20de%20Bodipo%20Business."
+                                href="https://wa.me/34643521042?text=Hola,%20necesito%20recuperar%20el%20acceso%20a%20mi%20cuenta%20de%20Bodipo%20Business."
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block w-full bg-[#25D366] text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:brightness-110 transition-all shadow-xl shadow-green-200"
