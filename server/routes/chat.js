@@ -76,11 +76,13 @@ router.post('/response', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(API_KEY);
-        // Intentamos con la versión específica '001' que suele ser más estable
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-001",
-            systemInstruction: systemInstruction, // Volvemos a probar string simple para esta versión
-        });
+
+        // Estrategia de Fallback de Modelos
+        // Intentamos secuencialmente con diferentes modelos por si alguno no está disponible en la región
+        const modelsToTry = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+        let lastError = null;
+        let successResponse = null;
+        let usedModel = "";
 
         // Validar y limpiar historial para Gemini
         let validatedHistory = (history || []).filter(h => h.parts && h.parts[0] && h.parts[0].text);
@@ -98,31 +100,65 @@ router.post('/response', async (req, res) => {
             }
         });
 
-        console.log("🤖 Chat Backend: Procesando mensaje...", {
-            hasApiKey: !!API_KEY,
-            historySize: finalHistory.length,
-            model: "gemini-1.5-flash-001"
-        });
+        // Bucle para intentar con cada modelo
+        for (const modelName of modelsToTry) {
+            try {
+                console.log(`🤖 Intentando con modelo: ${modelName}`);
 
-        const chat = model.startChat({
-            history: finalHistory,
-            generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 1000,
-            },
-        });
+                let modelConfig = { model: modelName };
+                // gemini-pro (v1.0) a veces prefiere no tener systemInstruction en config object
+                if (modelName !== "gemini-pro") {
+                    modelConfig.systemInstruction = {
+                        role: "system",
+                        parts: [{ text: systemInstruction }]
+                    };
+                }
 
-        const result = await chat.sendMessage(userPrompt);
-        const response = await result.response;
-        const text = response.text();
+                const model = genAI.getGenerativeModel(modelConfig);
 
-        res.json({ response: text });
+                const chat = model.startChat({
+                    history: finalHistory,
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 1000,
+                    },
+                });
+
+                // Si es gemini-pro, inyectamos el contexto en el prompt
+                let promptToSend = userPrompt;
+                if (modelName === "gemini-pro") {
+                    promptToSend = `${systemInstruction}\n\nUser: ${userPrompt}`;
+                }
+
+                const result = await chat.sendMessage(promptToSend);
+                const response = await result.response;
+                successResponse = response.text();
+                usedModel = modelName;
+
+                console.log(`✅ Éxito con modelo: ${modelName}`);
+                break; // Salimos del bucle si funciona
+            } catch (error) {
+                console.warn(`⚠️ Falló modelo ${modelName}: ${error.message}`);
+                lastError = error;
+                const errMsg = error.message.toLowerCase();
+                if (errMsg.includes("api key") || errMsg.includes("safety") || errMsg.includes("permission_denied")) {
+                    throw error;
+                }
+            }
+        }
+
+        if (!successResponse) {
+            throw lastError || new Error("Todos los modelos fallaron. Verifica tu API Key y acceso a Gemini.");
+        }
+
+        res.json({ response: successResponse, model: usedModel });
+
     } catch (error) {
         console.error("❌ Error en servidor Gemini:", error);
 
         let errorMsg = error.message;
         if (errorMsg.includes("404") && errorMsg.includes("not found")) {
-            errorMsg = "El modelo de IA solicitado (Gemini 1.5 Flash 001) no está disponible o no se encuentra. Verifica la región de tu servidor.";
+            errorMsg = "Los modelos de IA solicitados no están disponibles en tu región o cuenta. Verifica la configuración de Google Cloud.";
         }
 
         res.status(500).json({
