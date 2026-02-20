@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import * as api from '../services/api';
 import { BASE_URL } from '../services/api';
+import { PhoneInput } from '../components/PhoneInput';
 
 interface Shipment {
     _id: string;
@@ -358,12 +359,11 @@ const DashboardPage: React.FC = () => {
                                     </div>
                                     <div>
                                         <label htmlFor="edit-phone" className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('dash.profile.phone')}</label>
-                                        <input
-                                            id="edit-phone"
-                                            type="tel"
+                                        <PhoneInput
                                             value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-teal-500 text-black"
+                                            onChange={(value) => setFormData({ ...formData, phone: value })}
+                                            placeholder="Número de teléfono"
+                                            className="w-full"
                                         />
                                     </div>
                                     <div>
