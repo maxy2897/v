@@ -68,6 +68,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [isSearchingPickup, setIsSearchingPickup] = useState(false);
   const [txSearch, setTxSearch] = useState('');
   const [adminNotification, setAdminNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [manifestShipments, setManifestShipments] = useState<Shipment[]>([]);
+  const [isProcessingManifest, setIsProcessingManifest] = useState(false);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setAdminNotification({ message, type });
@@ -155,12 +157,60 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     }
   };
 
+  const confirmManifestArrival = async () => {
+    if (!manifestShipments.length) return;
+    if (!confirm(`¿Confirmar la llegada de ${manifestShipments.length} paquetes a su destino? Esto enviará notificaciones a todos los clientes.`)) return;
+
+    setIsProcessingManifest(true);
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/bulk-arrival`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ shipmentIds: manifestShipments.map(s => s._id) })
+      });
+
+      if (res.ok) {
+        showToast(`✅ ${manifestShipments.length} paquetes marcados como llegados a destino.`);
+        setManifestShipments([]);
+        setPickupSearch('');
+        fetchShipments(); // Refresh list
+      } else {
+        showToast('Error al procesar el manifiesto.', 'error');
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('Error de conexión.', 'error');
+    } finally {
+      setIsProcessingManifest(false);
+    }
+  };
+
   const handlePickupSearch = async (tracking?: string) => {
     const term = (tracking || pickupSearch).trim().toUpperCase();
     if (!term) return;
 
+    // Detect Manifest QR
+    if (term.startsWith('MANIFEST:')) {
+      const ids = term.replace('MANIFEST:', '').split(',');
+      const found = allShipments.filter(s => ids.includes(s._id));
+      if (found.length) {
+        setManifestShipments(found);
+        setPickupShipment(null);
+        return;
+      } else {
+        showToast('No se encontraron envíos asociados a este manifiesto.', 'error');
+        return;
+      }
+    }
+
     setIsSearchingPickup(true);
     setPickupShipment(null);
+    setManifestShipments([]);
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
@@ -1427,58 +1477,88 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         s.destination.toLowerCase().includes(term)
                       );
                     }
+
+                    // Group by destination within the folder
+                    const subGroups = group.reduce((acc, s) => {
+                      const dest = s.destination || 'Sin destino';
+                      if (!acc[dest]) acc[dest] = [];
+                      acc[dest].push(s);
+                      return acc;
+                    }, {} as Record<string, Shipment[]>);
+
                     return (
-                      <div className="space-y-6">
+                      <div className="space-y-12">
                         <button onClick={() => setSelectedDateFilter(null)} className="flex items-center gap-2 text-teal-600 font-black text-sm hover:underline bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 w-fit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                           Volver a Carpetas
                         </button>
+
                         <div className="flex items-center gap-3 mb-6">
                           <div className="bg-teal-50 p-3 rounded-xl">
                             <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                           </div>
-                          <h3 className="text-xl font-black text-[#00151a]">{selectedDateFilter}</h3>
-                          <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">{group.length} envíos</span>
+                          <h3 className="text-xl font-black text-[#00151a] uppercase">{selectedDateFilter}</h3>
                         </div>
-                        <div className="space-y-4">
-                          {group.map(shipment => (
-                            <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
-                              <div className="flex-1 space-y-2">
-                                <div className="flex items-center gap-3">
-                                  <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">{shipment.trackingNumber}</span>
-                                  <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(shipment.createdAt).toLocaleTimeString()}</span>
-                                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{shipment.user?.name || 'Usuario desconocido'}</span>
+
+                        {Object.entries(subGroups).sort().map(([dest, shipments]) => (
+                          <div key={dest} className="space-y-6 bg-gray-50/50 p-8 rounded-[3rem] border border-gray-100">
+                            <div className="flex items-center justify-between flex-wrap gap-4">
+                              <div className="flex items-center gap-4">
+                                <span className="text-2xl">📍</span>
+                                <div>
+                                  <h4 className="text-lg font-black text-[#00151a] uppercase tracking-tighter">Destino: {dest}</h4>
+                                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{shipments.length} paquetes en este grupo</p>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
-                                  <span>{shipment.origin}</span>
-                                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                                  <span>{shipment.destination}</span>
-                                </div>
-                                <p className="text-xs text-gray-500"><span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})</p>
-                                <p className="text-xs text-gray-500">{shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA</p>
                               </div>
-                              <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
-                                <div className="text-right">
-                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
-                                  <select
-                                    aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
-                                    value={shipment.status}
-                                    onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
-                                    className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
-                                  >
-                                    <option value="Pendiente">Pendiente</option>
-                                    <option value="Recogido">Recogido</option>
-                                    <option value="En tránsito">En tránsito</option>
-                                    <option value="En Aduanas">En Aduanas</option>
-                                    <option value="Llegado a destino">Llegado a destino</option>
-                                    <option value="Entregado">Entregado</option>
-                                    <option value="Cancelado">Cancelado</option>
-                                  </select>
-                                </div>
+
+                              {/* Group QR Code for Manifest */}
+                              <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center gap-2">
+                                <QRCodeCanvas value={`MANIFEST:${shipments.map(s => s._id).join(',')}`} size={80} level="L" />
+                                <span className="text-[8px] font-black text-teal-600 uppercase tracking-widest">QR Manifiesto</span>
                               </div>
                             </div>
-                          ))}
-                        </div>
+
+                            <div className="space-y-4">
+                              {shipments.map(shipment => (
+                                <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
+                                  <div className="flex-1 space-y-2">
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">{shipment.trackingNumber}</span>
+                                      <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(shipment.createdAt).toLocaleTimeString()}</span>
+                                      <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{shipment.user?.name || 'Usuario desconocido'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
+                                      <span>{shipment.origin}</span>
+                                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                      <span>{shipment.destination}</span>
+                                    </div>
+                                    <p className="text-xs text-gray-500"><span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})</p>
+                                    <p className="text-xs text-gray-500">{shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA</p>
+                                  </div>
+                                  <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
+                                    <div className="text-right">
+                                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
+                                      <select
+                                        aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
+                                        value={shipment.status}
+                                        onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                                        className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
+                                      >
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Recogido">Recogido</option>
+                                        <option value="En tránsito">En tránsito</option>
+                                        <option value="En Aduanas">En Aduanas</option>
+                                        <option value="Llegado a destino">Llegado a destino</option>
+                                        <option value="Entregado">Entregado</option>
+                                        <option value="Cancelado">Cancelado</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     );
                   }
@@ -1567,19 +1647,76 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     </button>
                   </div>
 
-                  {!pickupShipment && (
+                  {!pickupShipment && !manifestShipments.length && (
                     <div className="space-y-6">
                       <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100 flex items-center gap-4">
                         <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center shrink-0">
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                         </div>
-                        <p className="text-sm font-bold text-orange-900">Apunta con la cámara al código QR del cliente para buscar el paquete automáticamente.</p>
+                        <p className="text-sm font-bold text-orange-900">Escanea un código de paquete individual o el código QR de un Manifiesto de grupo.</p>
                       </div>
                       <div className="relative group">
                         <div id="qr-reader" className="overflow-hidden rounded-[2.5rem] border-4 border-gray-100 shadow-2xl bg-black aspect-square max-w-sm mx-auto"></div>
                         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
                           <div className="w-48 h-48 border-2 border-teal-500 rounded-3xl animate-pulse"></div>
                           <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] mt-4 drop-shadow-lg">Escaneando...</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {manifestShipments.length > 0 && (
+                    <div className="animate-in slide-in-from-bottom-8 duration-500 space-y-6">
+                      <div className="bg-teal-900 p-8 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6">
+                          <button
+                            onClick={() => setManifestShipments([])}
+                            className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+                            aria-label="Cerrar manifiesto"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-6 mb-8">
+                          <div className="w-20 h-20 bg-teal-500/20 rounded-3xl flex items-center justify-center text-4xl">📦</div>
+                          <div>
+                            <h4 className="text-3xl font-black tracking-tighter uppercase italic">Escaneo de Manifiesto</h4>
+                            <p className="text-teal-400 font-bold uppercase tracking-widest text-[10px]">{manifestShipments.length} Paquetes detectados</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                          {manifestShipments.map(s => (
+                            <div key={s._id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
+                              <div>
+                                <p className="text-xs font-black">{s.trackingNumber}</p>
+                                <p className="text-[10px] opacity-60 uppercase">{s.recipient?.name}</p>
+                              </div>
+                              <span className="text-[10px] font-bold text-teal-400">📍 {s.destination}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-8 pt-8 border-t border-white/10">
+                          <p className="text-xs font-medium text-gray-300 mb-6 text-center">
+                            Al confirmar, todos los paquetes se marcarán como **LLEGADO A DESTINO** y se enviará una notificación automática a cada cliente.
+                          </p>
+                          <button
+                            onClick={confirmManifestArrival}
+                            disabled={isProcessingManifest}
+                            className="w-full bg-teal-500 hover:bg-teal-400 text-[#00151a] py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-xl shadow-teal-500/30 flex items-center justify-center gap-3 disabled:opacity-50"
+                          >
+                            {isProcessingManifest ? (
+                              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            ) : (
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                            )}
+                            Confirmar Llegada y Notificar
+                          </button>
                         </div>
                       </div>
                     </div>

@@ -391,4 +391,49 @@ router.get('/tracking/:trackingNumber', protect, async (req, res) => {
 
 // @route   GET /api/shipments/track/:trackingNumber
 
+// @route   POST /api/shipments/bulk-arrival
+// @desc    Mark multiple shipments as arrived at destination
+// @access  Private/Admin
+router.post('/bulk-arrival', protect, async (req, res) => {
+    try {
+        const { shipmentIds } = req.body;
+
+        if (!shipmentIds || !Array.isArray(shipmentIds)) {
+            return res.status(400).json({ message: 'Invalid shipment IDs' });
+        }
+
+        const shipments = await Shipment.find({ _id: { $in: shipmentIds } });
+
+        const updatedShipments = [];
+        for (const shipment of shipments) {
+            shipment.status = 'Llegado a destino';
+            shipment.history.push({
+                status: 'Llegado a destino',
+                location: shipment.destination,
+                date: new Date()
+            });
+            await shipment.save();
+            updatedShipments.push(shipment);
+
+            // Notify user
+            try {
+                await Notification.create({
+                    title: '📦 ¡Paquete Llegado!',
+                    message: `Tu paquete con código ${shipment.trackingNumber} ya está en ${shipment.destination}. Puedes pasar a recogerlo.`,
+                    type: 'success',
+                    userId: shipment.user,
+                    shipmentId: shipment._id
+                });
+            } catch (error) {
+                console.error(`Error notifying user for shipment ${shipment._id}:`, error);
+            }
+        }
+
+        res.json({ message: `${updatedShipments.length} envíos actualizados y usuarios notificados.`, updatedCount: updatedShipments.length });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 export default router;
