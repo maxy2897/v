@@ -290,6 +290,65 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     }
   };
 
+  const getShippingDates = () => {
+    const dates: Date[] = [];
+    if (!appConfig) return dates;
+
+    // From appConfig.dates
+    if (appConfig.dates?.nextAirDeparture) dates.push(new Date(appConfig.dates.nextAirDeparture));
+    if (appConfig.dates?.nextSeaDeparture) dates.push(new Date(appConfig.dates.nextSeaDeparture));
+
+    // From appConfig.content.schedule
+    const schedule = appConfig.content?.schedule;
+    const blocks = schedule ? [schedule.block1, schedule.block2, schedule.block3, schedule.block4] : [
+      { month: 'DICIEMBRE 2025', days: '12, 19' },
+      { month: 'ENERO 2026', days: '2, 17, 30' },
+      { month: 'FEBRERO 2026', days: '13, 27' },
+      { month: 'MARZO 2026', days: '13, 27' }
+    ];
+
+    blocks.forEach((block: any) => {
+      if (block?.month && block?.days) {
+        const days = block.days.split(/[,y\s]+/).map((d: string) => d.trim()).filter((d: string) => d && !isNaN(Number(d)));
+        const monthMap: Record<string, number> = {
+          'ENERO': 0, 'FEBRERO': 1, 'MARZO': 2, 'ABRIL': 3, 'MAYO': 4, 'JUNIO': 5,
+          'JULIO': 6, 'AGOSTO': 7, 'SEPTIEMBRE': 8, 'OCTUBRE': 9, 'NOVIEMBRE': 10, 'DICIEMBRE': 11
+        };
+        const parts = block.month.toUpperCase().split(' ');
+        const monthName = parts[0];
+        const year = parseInt(parts[1]) || 2026;
+        const monthIndex = monthMap[monthName] ?? 0;
+
+        days.forEach((dayStr: string) => {
+          dates.push(new Date(year, monthIndex, parseInt(dayStr)));
+        });
+      }
+    });
+
+    return dates.sort((a, b) => a.getTime() - b.getTime());
+  };
+
+  const getAssignedFolder = (createdAt: string) => {
+    const createdDate = new Date(createdAt);
+    const shippingDates = getShippingDates();
+
+    // The folder date is the first shipping date >= createdDate
+    // We compare only dates (not times) to ensure same-day items go into today's ship folder if applicable
+    const targetDate = shippingDates.find(d => {
+      const cmpDate = new Date(d);
+      cmpDate.setHours(23, 59, 59, 999); // Until the end of that day
+      return cmpDate >= createdDate;
+    });
+
+    if (!targetDate) return "PRÓXIMOS ENVÍOS";
+
+    return `ENVÍO DEL ${targetDate.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).toUpperCase()}`;
+  };
+
   const downloadReceipt = async (id: string) => {
     try {
       const userStr = localStorage.getItem('user');
@@ -1096,11 +1155,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   const otherTransactions = transactions.filter(tx => tx.type !== 'TRANSFER');
 
                   const groupedOther = otherTransactions.reduce((groups, tx) => {
-                    const dateLabel = `ENVÍO DEL ${new Date(tx.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    }).toUpperCase()}`;
+                    const dateLabel = getAssignedFolder(tx.createdAt);
                     if (!groups[dateLabel]) groups[dateLabel] = [];
                     groups[dateLabel].push(tx);
                     return groups;
@@ -1259,11 +1314,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
                   const groupedAdminShipments = filteredAdminShipments.reduce((groups, shipment) => {
-                    const dateLabel = `ENVÍO DEL ${new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    }).toUpperCase()}`;
+                    const dateLabel = getAssignedFolder(shipment.createdAt);
                     if (!groups[dateLabel]) groups[dateLabel] = [];
                     groups[dateLabel].push(shipment);
                     return groups;
