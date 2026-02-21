@@ -1201,7 +1201,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       </button>
 
                       {/* Dynamic Date Folders */}
-                      {Object.entries(groupedOther).map(([dateLabel, txs]) => (
+                      {Object.entries(groupedOther).map(([dateLabel, txs]: [string, any[]]) => (
                         <button
                           key={dateLabel}
                           onClick={() => setSelectedTxFolder(dateLabel)}
@@ -1436,7 +1436,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                           </div>
                         </button>
 
-                        {Object.entries(groupedAdminShipments).map(([date, group]) => (
+                        {Object.entries(groupedAdminShipments).map(([date, group]: [string, any[]]) => (
                           <button
                             key={date}
                             onClick={() => setSelectedDateFilter(date)}
