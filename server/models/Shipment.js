@@ -4,7 +4,7 @@ const ShipmentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: false,
     },
     trackingNumber: {
         type: String,
@@ -22,6 +22,11 @@ const ShipmentSchema = new mongoose.Schema({
     recipient: {
         name: { type: String, required: true },
         phone: { type: String }
+    },
+    sender: {
+        name: { type: String },
+        phone: { type: String },
+        idNumber: { type: String }
     },
     weight: {
         type: Number,

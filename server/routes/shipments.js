@@ -223,6 +223,91 @@ router.post('/bulk', protect, async (req, res) => {
     }
 });
 
+// @route   POST /api/shipments/admin/create-guest
+// @desc    Create a shipment for a non-registered user (POS)
+// @access  Private/Admin
+router.post('/admin/create-guest', protect, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Not authorized as admin' });
+        }
+
+        const { trackingNumber, origin, destination, weight, price, description, sender, recipient, currency } = req.body;
+
+        if (!origin || !destination || !recipient?.name || !weight || !price) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        // Verify tracking uniqueness if provided, if not generate
+        let finalTracking = trackingNumber;
+        if (!finalTracking) {
+            let isUnique = false;
+            while (!isUnique) {
+                finalTracking = generateTrackingNumber();
+                const existing = await Shipment.findOne({ trackingNumber: finalTracking });
+                if (!existing) isUnique = true;
+            }
+        } else {
+            const existing = await Shipment.findOne({ trackingNumber: finalTracking });
+            if (existing) {
+                return res.status(400).json({ message: 'Tracking number already exists' });
+            }
+        }
+
+        const shipment = new Shipment({
+            user: req.user._id, // Tied to the admin who registered it
+            trackingNumber: finalTracking,
+            origin,
+            destination,
+            recipient,
+            sender, // Store sender info directly
+            weight,
+            price,
+            description,
+            status: 'Pendiente',
+            history: [{
+                status: 'Pendiente',
+                location: origin,
+                date: new Date()
+            }]
+        });
+
+        await shipment.save();
+
+        // Create transaction record
+        const transaction = await Transaction.create({
+            type: 'SHIPMENT',
+            referenceId: shipment._id,
+            userId: req.user._id,
+            onModel: 'Shipment',
+            amount: price,
+            currency: currency || 'EUR',
+            user: {
+                name: sender?.name || 'Ventanilla',
+                phone: sender?.phone || 'N/A'
+            },
+            details: {
+                trackingNumber: finalTracking,
+                origin,
+                destination,
+                description,
+                weight,
+                recipient,
+                sender: sender // Guest sender info
+            }
+        });
+
+        res.status(201).json({
+            ...shipment.toObject(),
+            transactionId: transaction._id
+        });
+
+    } catch (error) {
+        console.error('Error in create-guest:', error);
+        res.status(500).json({ message: 'Error processing guest shipment', error: error.message });
+    }
+});
+
 // @route   PATCH /api/shipments/:id/status
 // @desc    Update shipment status (Admin only)
 // @access  Private/Admin

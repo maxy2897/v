@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
@@ -49,11 +50,11 @@ interface AdminPanelProps {
   setConfig: (config: AppConfig) => void;
 }
 
-import { useSettings } from '../context/SettingsContext';
+
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig, language } = useSettings();
-  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications' | 'pickup'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications' | 'pickup' | 'pos'>('products');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
   const [allShipments, setAllShipments] = useState<Shipment[]>([]);
@@ -88,6 +89,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     tag: 'NOVEDAD',
     slogan: '',
     waLink: 'https://wa.me/34641992110'
+  });
+
+  const [posData, setPosData] = useState({
+    senderName: '',
+    senderPhone: '',
+    senderId: '',
+    recipientName: '',
+    recipientPhone: '',
+    origin: 'España' as 'España' | 'Camerún' | 'Guinea Ecuatorial',
+    destination: 'Malabo' as 'Malabo' | 'Bata',
+    type: 'Aéreo' as 'Aéreo' | 'Marítimo',
+    weight: 0,
+    calcMode: 'kg' as 'kg' | 'bulto' | 'documento',
+    description: '',
+    paymentMethod: 'Almacén',
+    paymentLocation: 'Origen'
   });
 
   React.useEffect(() => {
@@ -613,8 +630,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 onClick={() => setActiveTab('reports')}
                 className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'reports' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
               >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-1m-4-4l-4 4m0 0l-4-4m4 4V3" /></svg>
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                 Reportes
+              </button>
+              <button
+                onClick={() => setActiveTab('pos')}
+                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pos' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                Mostrador
               </button>
               <button
                 onClick={() => setActiveTab('config')}
@@ -1631,6 +1655,263 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   )}
                 </section>
               </div>
+            ) : activeTab === 'pos' ? (
+              <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="bg-orange-50 p-4 rounded-2xl text-orange-600">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-[#00151a] tracking-tight uppercase">Mostrador de Oficina</h3>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Registro de envíos para clientes presenciales</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Left: Client and Package Form */}
+                  <div className="space-y-6">
+                    <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-2">📦 Datos del Envío</h4>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">Origen</label>
+                          <select
+                            aria-label="Origen del envío"
+                            value={posData.origin}
+                            onChange={(e) => setPosData({ ...posData, origin: e.target.value as any })}
+                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 font-bold text-sm"
+                          >
+                            <option value="España">España 🇪🇸</option>
+                            <option value="Camerún">Camerún 🇨🇲</option>
+                            <option value="Guinea Ecuatorial">Guinea 🇬🇶</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">Destino</label>
+                          <select
+                            aria-label="Destino del envío"
+                            value={posData.destination}
+                            onChange={(e) => setPosData({ ...posData, destination: e.target.value as any })}
+                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 font-bold text-sm"
+                          >
+                            <option value="Malabo">Malabo 🇬🇶</option>
+                            <option value="Bata">Bata 🇬🇶</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {['kg', 'bulto', 'documento'].map((mode) => (
+                          <button
+                            key={mode}
+                            onClick={() => setPosData({ ...posData, calcMode: mode as any })}
+                            className={`py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${posData.calcMode === mode ? 'bg-[#00151a] text-white border-[#00151a]' : 'bg-white text-gray-400 border-gray-100'}`}
+                          >
+                            {mode}
+                          </button>
+                        ))}
+                      </div>
+
+                      {posData.calcMode === 'kg' && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <button
+                            onClick={() => setPosData({ ...posData, type: 'Aéreo' })}
+                            className={`py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border transition-all ${posData.type === 'Aéreo' ? 'bg-teal-50 text-teal-700 border-teal-500' : 'bg-gray-50 text-gray-400 border-gray-100'}`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                            Aéreo
+                          </button>
+                          <button
+                            onClick={() => setPosData({ ...posData, type: 'Marítimo' })}
+                            className={`py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border transition-all ${posData.type === 'Marítimo' ? 'bg-teal-50 text-teal-700 border-teal-500' : 'bg-gray-50 text-gray-400 border-gray-100'}`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                            Marítimo
+                          </button>
+                        </div>
+                      )}
+
+                      <div>
+                        <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">{posData.calcMode === 'kg' ? 'Peso (Kg)' : posData.calcMode === 'bulto' ? 'Tipo de bulto' : 'Precio Documento'}</label>
+                        {posData.calcMode === 'kg' ? (
+                          <input
+                            type="number"
+                            placeholder="0.00"
+                            value={posData.weight || ''}
+                            onChange={(e) => setPosData({ ...posData, weight: parseFloat(e.target.value) || 0 })}
+                            className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-2xl font-black text-[#00151a]"
+                          />
+                        ) : posData.calcMode === 'bulto' ? (
+                          <div className="grid grid-cols-2 gap-4">
+                            <button onClick={() => setPosData({ ...posData, weight: 23 })} className={`py-4 rounded-xl border font-black ${posData.weight === 23 ? 'bg-teal-50 border-teal-500 text-teal-700' : 'bg-gray-50'}`}>23 KG</button>
+                            <button onClick={() => setPosData({ ...posData, weight: 32 })} className={`py-4 rounded-xl border font-black ${posData.weight === 32 ? 'bg-teal-50 border-teal-500 text-teal-700' : 'bg-gray-50'}`}>32 KG</button>
+                          </div>
+                        ) : (
+                          <div className="bg-teal-50 p-4 rounded-xl text-center font-black text-teal-700">TARIFA PLANA 15€</div>
+                        )}
+                      </div>
+                    </section>
+
+                    <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-2">👤 Datos del Cliente (Remitente)</h4>
+                      <input
+                        type="text"
+                        placeholder="Nombre completo del cliente"
+                        value={posData.senderName}
+                        onChange={(e) => setPosData({ ...posData, senderName: e.target.value })}
+                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          placeholder="Teléfono"
+                          value={posData.senderPhone}
+                          onChange={(e) => setPosData({ ...posData, senderPhone: e.target.value })}
+                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                        />
+                        <input
+                          type="text"
+                          placeholder="DNI / NIE / Pasaporte"
+                          value={posData.senderId}
+                          onChange={(e) => setPosData({ ...posData, senderId: e.target.value })}
+                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                        />
+                      </div>
+                    </section>
+                  </div>
+
+                  {/* Right: Summary and Finalize */}
+                  <div className="space-y-6">
+                    <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-2">🎯 Destinatario</h4>
+                      <input
+                        type="text"
+                        placeholder="Nombre de quien recibe"
+                        value={posData.recipientName}
+                        onChange={(e) => setPosData({ ...posData, recipientName: e.target.value })}
+                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Teléfono del destinatario"
+                        value={posData.recipientPhone}
+                        onChange={(e) => setPosData({ ...posData, recipientPhone: e.target.value })}
+                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                      />
+                    </section>
+
+                    <section className="bg-[#00151a] p-10 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-400 mb-6">Resumen de Cobro</h4>
+
+                      <div className="space-y-4 mb-10">
+                        <div className="flex justify-between items-center text-xs font-bold text-gray-400">
+                          <span>Subtotal</span>
+                          <span className="text-white">
+                            {(() => {
+                              if (posData.calcMode === 'kg') {
+                                const rate = posData.type === 'Aéreo' ? (appConfig?.rates.air.es_gq || 11) : (appConfig?.rates.sea.es_gq || 4);
+                                return (posData.weight * rate).toLocaleString();
+                              } else if (posData.calcMode === 'bulto') {
+                                return (posData.weight === 23 ? 220 : 310).toLocaleString();
+                              } else {
+                                return "15";
+                              }
+                            })()} €
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs font-bold text-gray-400 border-t border-white/10 pt-4">
+                          <span>IVA / Tasas</span>
+                          <span className="text-white italic">Incluido</span>
+                        </div>
+                        <div className="flex justify-between items-end border-t border-white/10 pt-6">
+                          <span className="text-xs font-black uppercase tracking-widest text-teal-400">Total a Pagar</span>
+                          <span className="text-5xl font-black tracking-tighter text-white">
+                            {(() => {
+                              if (posData.calcMode === 'kg') {
+                                const rate = posData.type === 'Aéreo' ? (appConfig?.rates.air.es_gq || 11) : (appConfig?.rates.sea.es_gq || 4);
+                                return (posData.weight * rate).toLocaleString();
+                              } else if (posData.calcMode === 'bulto') {
+                                return (posData.weight === 23 ? 220 : 310).toLocaleString();
+                              } else {
+                                return "15";
+                              }
+                            })()}€
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={async () => {
+                          if (!posData.senderName || !posData.recipientName) {
+                            showToast('Faltan datos de cliente o destinatario', 'error');
+                            return;
+                          }
+                          setIsUploading(true);
+                          try {
+                            const price = posData.calcMode === 'kg'
+                              ? posData.weight * (posData.type === 'Aéreo' ? (appConfig?.rates.air.es_gq || 11) : (appConfig?.rates.sea.es_gq || 4))
+                              : posData.calcMode === 'bulto' ? (posData.weight === 23 ? 220 : 310) : 15;
+
+                            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                            let code = '';
+                            for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+
+                            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/admin/create-guest`, {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                              },
+                              body: JSON.stringify({
+                                trackingNumber: `BB-${code}`,
+                                origin: posData.origin,
+                                destination: posData.destination,
+                                weight: posData.calcMode === 'kg' ? posData.weight : posData.weight || 1,
+                                price,
+                                description: `Envío Mostrador: ${posData.calcMode.toUpperCase()} ${posData.type.toUpperCase()}`,
+                                sender: {
+                                  name: posData.senderName,
+                                  phone: posData.senderPhone,
+                                  idNumber: posData.senderId
+                                },
+                                recipient: {
+                                  name: posData.recipientName,
+                                  phone: posData.recipientPhone
+                                },
+                                currency: 'EUR'
+                              })
+                            });
+
+                            if (!res.ok) throw new Error('Failed');
+                            const data = await res.json();
+
+                            showToast('✅ Registro completado con éxito');
+                            if (data.transactionId) await downloadReceipt(data.transactionId);
+
+                            setPosData({
+                              senderName: '', senderPhone: '', senderId: '',
+                              recipientName: '', recipientPhone: '',
+                              origin: 'España', destination: 'Malabo', type: 'Aéreo',
+                              weight: 0, calcMode: 'kg', description: '',
+                              paymentMethod: 'Almacén', paymentLocation: 'Origen'
+                            });
+                          } catch (e) {
+                            showToast('Error al registrar envío presencial', 'error');
+                          } finally {
+                            setIsUploading(false);
+                          }
+                        }}
+                        disabled={isUploading}
+                        className="w-full bg-teal-500 hover:bg-teal-400 text-[#00151a] py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-xl shadow-teal-500/20 disabled:opacity-50"
+                      >
+                        {isUploading ? 'Procesando...' : 'Finalizar y Generar Factura'}
+                      </button>
+                    </section>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
@@ -1767,74 +2048,75 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
             )}
           </div>
         </div>
-      </div>
 
-      {/* Direct Notification Modal */}
-      {
-        directNotifModal && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
-            <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
-              <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
-              <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
-                  <input
-                    type="text"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
-                    placeholder="Ej: Aviso de recogida"
-                    value={directNotifData.title}
-                    onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
-                  <textarea
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
-                    placeholder="Escribe el mensaje..."
-                    value={directNotifData.message}
-                    onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
-                  <select
-                    aria-label="Tipo de notificación"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
-                    value={directNotifData.type}
-                    onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
-                  >
-                    <option value="info">Información</option>
-                    <option value="success">Éxito</option>
-                    <option value="warning">Advertencia</option>
-                    <option value="shipment_update">Envío</option>
-                    <option value="delivery">Entrega</option>
-                  </select>
-                </div>
+        {/* Direct Notification Modal */}
+        {
+          directNotifModal && (
+            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
+              <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
+                <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
+                <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={handleSendDirectNotif}
-                    disabled={sendingNotif}
-                    className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
-                  >
-                    {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
-                  </button>
-                  <button
-                    onClick={() => setDirectNotifModal(null)}
-                    className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
-                  >
-                    Cancelar
-                  </button>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
+                      placeholder="Ej: Aviso de recogida"
+                      value={directNotifData.title}
+                      onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
+                    <textarea
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
+                      placeholder="Escribe el mensaje..."
+                      value={directNotifData.message}
+                      onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
+                    <select
+                      aria-label="Tipo de notificación"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
+                      value={directNotifData.type}
+                      onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
+                    >
+                      <option value="info">Información</option>
+                      <option value="success">Éxito</option>
+                      <option value="warning">Advertencia</option>
+                      <option value="shipment_update">Envío</option>
+                      <option value="delivery">Entrega</option>
+                    </select>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={handleSendDirectNotif}
+                      disabled={sendingNotif}
+                      className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
+                    >
+                      {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
+                    </button>
+                    <button
+                      onClick={() => setDirectNotifModal(null)}
+                      className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )
-      }
-    </div >
+          )
+        }
+      </div>
+    </div>
   );
 };
 
