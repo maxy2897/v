@@ -31,6 +31,8 @@ export interface DynamicConfig {
             subtitle: string;
             ctaPrimary: string;
             ctaSecondary: string;
+            heroImage?: string;
+            moneyTransferImage?: string;
         };
         social: {
             tiktok: string;

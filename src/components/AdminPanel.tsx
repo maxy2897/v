@@ -60,6 +60,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [shipmentSearch, setShipmentSearch] = useState('');
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
+  const [selectedTxFolder, setSelectedTxFolder] = useState<string | null>(null);
   const [pickupSearch, setPickupSearch] = useState('');
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [pickupShipment, setPickupShipment] = useState<Shipment | null>(null);
@@ -421,15 +422,29 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   };
 
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'logo') => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'product' | 'logo' | 'hero' | 'money') => {
     const file = e.target.files?.[0];
     if (file) {
       try {
         const resizedBase64 = await resizeImage(file);
         if (target === 'product') {
           setNewProduct({ ...newProduct, image: resizedBase64 });
-        } else {
+        } else if (target === 'logo') {
           setConfig({ ...config, customLogoUrl: resizedBase64 });
+        } else if (target === 'hero' && appConfig) {
+          updateConfig && updateConfig({
+            content: {
+              ...appConfig.content,
+              hero: { ...appConfig.content.hero, heroImage: resizedBase64 }
+            }
+          } as any);
+        } else if (target === 'money' && appConfig) {
+          updateConfig && updateConfig({
+            content: {
+              ...appConfig.content,
+              hero: { ...appConfig.content.hero, moneyTransferImage: resizedBase64 }
+            }
+          } as any);
         }
       } catch (err) {
         showToast('Error al procesar la imagen. Inténtalo de nuevo.', 'error');
@@ -880,6 +895,42 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             />
                           </div>
                         </div>
+
+                        {/* Image Uploaders */}
+                        <div className="grid grid-cols-2 gap-6 pt-4">
+                          <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-[#007e85] block">Imagen Principal (Hero)</label>
+                            <div className="flex flex-col items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                              {appConfig?.content?.hero?.heroImage && (
+                                <img src={appConfig.content.hero.heroImage} className="w-full h-32 object-cover rounded-xl shadow-sm" alt="Hero Preview" />
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleImageUpload(e, 'hero')}
+                                className="text-[10px] font-bold file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-teal-100 file:text-teal-700 w-full"
+                                title="Subir imagen de portada"
+                                aria-label="Subir imagen de portada"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-[#007e85] block">Imagen Money Transfer</label>
+                            <div className="flex flex-col items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                              {appConfig?.content?.hero?.moneyTransferImage && (
+                                <img src={appConfig.content.hero.moneyTransferImage} className="w-full h-32 object-cover rounded-xl shadow-sm" alt="Money Preview" />
+                              )}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleImageUpload(e, 'money')}
+                                className="text-[10px] font-bold file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-teal-100 file:text-teal-700 w-full"
+                                title="Subir imagen de money transfer"
+                                aria-label="Subir imagen de money transfer"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -1029,75 +1080,154 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
               </div>
             ) : activeTab === 'transactions' ? (
               <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-black text-gray-800">📊 Transacciones</h3>
-                    <button
-                      onClick={exportToExcel}
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                      Exportar Excel
-                    </button>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-gray-100">
-                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Fecha</th>
-                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Tipo</th>
-                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Usuario</th>
-                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Detalle</th>
-                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Monto</th>
-                          <th className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">Recibo</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-50">
-                        {transactions.map(tx => (
-                          <tr key={tx._id} className="hover:bg-gray-50 transition-colors">
-                            <td className="p-4 text-xs font-bold text-gray-600">
-                              {new Date(tx.createdAt).toLocaleDateString()} <br />
-                              <span className="text-[10px] text-gray-400">{new Date(tx.createdAt).toLocaleTimeString()}</span>
-                            </td>
-                            <td className="p-4">
-                              <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${tx.type === 'SHIPMENT' ? 'bg-blue-100 text-blue-700' :
-                                tx.type === 'TRANSFER' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'
-                                }`}>
-                                {tx.type === 'SHIPMENT' ? 'Envío' : tx.type === 'TRANSFER' ? 'Dinero' : 'Tienda'}
-                              </span>
-                            </td>
-                            <td className="p-4 text-xs font-medium text-gray-600">
-                              {tx.user?.name || "N/A"} <br />
-                              <span className="text-[10px] text-gray-400">{tx.user?.phone}</span>
-                            </td>
-                            <td className="p-4 text-xs text-gray-500 max-w-xs truncate">
-                              {tx.type === 'SHIPMENT' ? `Rastreo: ${tx.details?.trackingNumber}` :
-                                tx.type === 'TRANSFER' ? `Dest: ${tx.details?.beneficiary}` : 'Compra'}
-                            </td>
-                            <td className="p-4 text-sm font-black text-[#00151a] text-right">
-                              {tx.amount} {tx.currency || '€'}
-                            </td>
-                            <td className="p-4 text-center">
-                              <button
-                                onClick={() => downloadReceipt(tx._id)}
-                                className="text-teal-500 hover:text-teal-700 font-bold text-xs flex items-center justify-center gap-1 mx-auto"
-                                title="Descargar Word"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                DOCX
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                        {transactions.length === 0 && (
-                          <tr>
-                            <td colSpan={6} className="p-8 text-center text-gray-400 text-sm font-bold">No hay transacciones registradas aún.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-black text-gray-800 uppercase tracking-tighter">💼 Registro Contable</h3>
+                  <button
+                    onClick={exportToExcel}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-xl shadow-green-500/20"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    Exportar Registros
+                  </button>
+                </div>
+
+                {(() => {
+                  const moneyTransfers = transactions.filter(tx => tx.type === 'TRANSFER');
+                  const otherTransactions = transactions.filter(tx => tx.type !== 'TRANSFER');
+
+                  const groupedOther = otherTransactions.reduce((groups, tx) => {
+                    const month = new Date(tx.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+                      month: 'long',
+                      year: 'numeric'
+                    }).toUpperCase();
+                    if (!groups[month]) groups[month] = [];
+                    groups[month].push(tx);
+                    return groups;
+                  }, {} as Record<string, any[]>);
+
+                  if (selectedTxFolder) {
+                    const currentTxs = selectedTxFolder === 'MONEY_TRANSFER' ? moneyTransfers : groupedOther[selectedTxFolder];
+                    return (
+                      <div className="space-y-6">
+                        <button onClick={() => setSelectedTxFolder(null)} className="flex items-center gap-2 text-[#007e85] font-black text-sm hover:underline bg-white px-5 py-3 rounded-2xl shadow-sm border border-gray-100 w-fit">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                          Volver a Carpetas
+                        </button>
+
+                        <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                          <div className="flex items-center gap-4 mb-8">
+                            <div className={`p-4 rounded-2xl ${selectedTxFolder === 'MONEY_TRANSFER' ? 'bg-orange-50 text-orange-600' : 'bg-teal-50 text-teal-600'}`}>
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" /></svg>
+                            </div>
+                            <div>
+                              <h4 className="text-xl font-black text-[#00151a]">{selectedTxFolder === 'MONEY_TRANSFER' ? 'Money Transfers' : selectedTxFolder}</h4>
+                              <p className="text-xs font-bold text-gray-400">{currentTxs.length} transacciones registradas</p>
+                            </div>
+                          </div>
+
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                              <thead>
+                                <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                  <th className="pb-4 pt-2 px-2">Fecha</th>
+                                  <th className="pb-4 pt-2 px-2">Usuario</th>
+                                  <th className="pb-4 pt-2 px-2">Detalle</th>
+                                  <th className="pb-4 pt-2 px-2 text-right">Monto</th>
+                                  <th className="pb-4 pt-2 px-2 text-center">Acciones</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-50">
+                                {currentTxs.map(tx => (
+                                  <tr key={tx._id} className="group hover:bg-gray-50 transition-colors">
+                                    <td className="py-4 px-2">
+                                      <p className="text-xs font-black text-[#00151a]">{new Date(tx.createdAt).toLocaleDateString()}</p>
+                                      <p className="text-[10px] font-bold text-gray-400">{new Date(tx.createdAt).toLocaleTimeString()}</p>
+                                    </td>
+                                    <td className="py-4 px-2">
+                                      <p className="text-xs font-black text-gray-700">{tx.user?.name || 'Sistema'}</p>
+                                      <p className="text-[10px] font-bold text-gray-400">{tx.user?.phone || 'N/A'}</p>
+                                    </td>
+                                    <td className="py-4 px-2">
+                                      {tx.type === 'TRANSFER' ? (
+                                        <div className="space-y-0.5">
+                                          <p className="text-[10px] font-black text-orange-600 uppercase">Beneficiario</p>
+                                          <p className="text-xs font-bold text-gray-600">{tx.details?.beneficiary || 'N/A'}</p>
+                                        </div>
+                                      ) : (
+                                        <div className="space-y-0.5">
+                                          <p className="text-[10px] font-black text-teal-600 uppercase">{tx.type === 'SHIPMENT' ? 'Envío' : 'Tienda'}</p>
+                                          <p className="text-xs font-bold text-gray-600 truncate max-w-[150px]">{tx.details?.trackingNumber || tx.details?.description || 'Ref: ' + tx._id.slice(-6)}</p>
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td className="py-4 px-2 text-right">
+                                      <p className="text-sm font-black text-[#00151a]">{tx.amount.toLocaleString()} {tx.currency || '€'}</p>
+                                    </td>
+                                    <td className="py-4 px-2 text-center">
+                                      <button
+                                        onClick={() => downloadReceipt(tx._id)}
+                                        className="inline-flex items-center gap-2 bg-gray-100 hover:bg-[#00151a] hover:text-white transition-all px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest"
+                                      >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                        Word
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {/* Special Folder: Money Transfer */}
+                      <button
+                        onClick={() => setSelectedTxFolder('MONEY_TRANSFER')}
+                        className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
+                      >
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600" />
+                        <div className="bg-orange-50 p-6 rounded-[2rem] group-hover:scale-110 transition-transform duration-500">
+                          <svg className="w-12 h-12 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
+                        </div>
+                        <div className="text-center">
+                          <h4 className="font-black text-[#00151a] text-sm uppercase tracking-tighter mb-1">Money Transfer</h4>
+                          <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-3 py-1 rounded-full">{moneyTransfers.length} Reg.</span>
+                        </div>
+                      </button>
+
+                      {/* Dynamic Date Folders */}
+                      {Object.entries(groupedOther).map(([month, txs]) => (
+                        <button
+                          key={month}
+                          onClick={() => setSelectedTxFolder(month)}
+                          className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#007e85] to-[#00151a]" />
+                          <div className="bg-teal-50 p-6 rounded-[2rem] group-hover:bg-teal-100 transition-all duration-500">
+                            <svg className="w-12 h-12 text-[#007e85]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" /></svg>
+                          </div>
+                          <div className="text-center">
+                            <h4 className="font-black text-[#00151a] text-sm uppercase tracking-tighter mb-1">{month}</h4>
+                            <span className="bg-gray-100 text-gray-500 text-[10px] font-black px-3 py-1 rounded-full group-hover:bg-[#007e85] group-hover:text-white transition-colors">
+                              {txs.length} Operaciones
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+
+                      {transactions.length === 0 && (
+                        <div className="col-span-full py-20 text-center bg-gray-50 rounded-[3rem] border-4 border-dashed border-gray-100">
+                          <p className="text-gray-400 font-black text-xl">Sin actividad reciente</p>
+                          <p className="text-gray-300 text-xs mt-2 uppercase tracking-widest font-bold">Las transacciones aparecerán aquí organizadas</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             ) : activeTab === 'shipments' ? (
               <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -1129,15 +1259,51 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
                   const groupedAdminShipments = filteredAdminShipments.reduce((groups, shipment) => {
                     const date = new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
                       month: 'long',
-                      day: 'numeric'
-                    });
+                      year: 'numeric'
+                    }).toUpperCase();
                     if (!groups[date]) groups[date] = [];
                     groups[date].push(shipment);
                     return groups;
                   }, {} as Record<string, Shipment[]>);
+
+                  if (selectedDateFilter === 'MONEY_TRANSFER') {
+                    const moneyTx = transactions.filter(tx => tx.type === 'TRANSFER');
+                    return (
+                      <div className="space-y-6">
+                        <button onClick={() => setSelectedDateFilter(null)} className="flex items-center gap-2 text-teal-600 font-black text-sm hover:underline bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 w-fit">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                          Volver a Carpetas
+                        </button>
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="bg-orange-50 p-3 rounded-xl">
+                            <svg className="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
+                          </div>
+                          <h3 className="text-xl font-black text-[#00151a]">Money Transfers</h3>
+                          <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">{moneyTx.length} registros</span>
+                        </div>
+                        <div className="space-y-4">
+                          {moneyTx.map(tx => (
+                            <div key={tx._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-orange-200 transition-all">
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xs font-black text-orange-600 bg-orange-50 px-2 py-1 rounded">TRANSFER</span>
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(tx.createdAt).toLocaleDateString()}</span>
+                                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{tx.user?.name || 'Sistema'}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
+                                  <span>{tx.details?.beneficiary || 'N/A'}</span>
+                                  <span className="text-gray-300">•</span>
+                                  <span className="text-orange-600">{tx.amount.toLocaleString()} {tx.currency || '€'}</span>
+                                </div>
+                                <p className="text-xs text-gray-500">Destino: {tx.details?.destination || 'N/A'} • IBAN: {tx.details?.iban || 'N/A'}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
 
                   if (shipmentSearch) {
                     return (
@@ -1251,6 +1417,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   return (
                     <div className="space-y-6">
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {/* Money Transfer Special Folder */}
+                        <button
+                          onClick={() => setSelectedDateFilter('MONEY_TRANSFER')}
+                          className="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600" />
+                          <div className="bg-orange-50 p-4 rounded-2xl group-hover:scale-110 transition-all duration-300">
+                            <svg className="w-10 h-10 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
+                          </div>
+                          <div className="text-center w-full">
+                            <h4 className="font-bold text-[#00151a] text-sm uppercase tracking-wide mb-2">Money Transfers</h4>
+                            <span className="inline-block bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">
+                              {transactions.filter(tx => tx.type === 'TRANSFER').length} Reg.
+                            </span>
+                          </div>
+                        </button>
+
                         {Object.entries(groupedAdminShipments).map(([date, group]) => (
                           <button
                             key={date}

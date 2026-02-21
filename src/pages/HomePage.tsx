@@ -43,7 +43,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-[#00151a]">
                                 <img
                                     className="w-full h-[500px] object-cover scale-110 transition-transform duration-700 hover:scale-125"
-                                    src="/images/hero-home.jpg"
+                                    src={appConfig?.content?.hero?.heroImage || "/images/hero-home.jpg"}
                                     alt="Carga BodipoBusiness"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#00151a] via-transparent to-transparent"></div>
@@ -91,7 +91,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             <div className="relative h-[400px] lg:h-auto overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] to-transparent z-10 lg:block hidden"></div>
                                 <img
-                                    src="https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"
+                                    src={appConfig?.content?.hero?.moneyTransferImage || "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"}
                                     alt="Money Transfer"
                                     className="w-full h-full object-cover lg:scale-110"
                                 />
