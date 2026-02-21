@@ -31,9 +31,10 @@ interface Transaction {
 
 interface DashboardPageProps {
     onOpenSettings?: () => void;
+    onOpenAdmin?: () => void;
 }
 
-const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
+const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdmin }) => {
     const { user, logout, updateUser, isAuthenticated } = useAuth();
     const { t, language } = useSettings();
     const navigate = useNavigate();
@@ -206,11 +207,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
                             </div>
                             <div>
                                 <h3 className="font-black text-[#00151a] text-lg tracking-tight leading-tight">{user.name}</h3>
-                                <div className="flex text-yellow-400 text-[10px] mt-1 space-x-0.5">
-                                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                                    <span className="text-gray-400 ml-1">(5)</span>
-                                </div>
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">En Bodipo desde {user.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
+                                <p className="text-[10px] font-bold text-[#007e85] uppercase tracking-widest mt-1">Perfil de Cliente</p>
                             </div>
                         </div>
                     </div>
@@ -221,12 +218,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
                             { id: 'shipments', label: 'Mis Compras / Envíos', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg> },
                             { id: 'invoices', label: 'Mis Facturas', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> },
                             { id: 'notifications', label: 'Buzón / Notificaciones', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg> },
-                            { id: 'settings', label: 'Configuración', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
+                            ...(user.role === 'admin' ? [{ id: 'admin', label: 'Panel Administrativo', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }] : []),
+                            { id: 'settings', label: 'Configuración', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg> },
                         ].map(item => (
                             <button
                                 key={item.id}
                                 onClick={() => {
                                     if (item.id === 'notifications') navigate('/notificaciones');
+                                    else if (item.id === 'admin') onOpenAdmin?.();
                                     else setActiveTab(item.id as any);
                                 }}
                                 className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all ${activeTab === item.id ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
@@ -267,7 +266,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
                             </div>
 
                             {activeTab === 'settings' && (
-                                <button className="text-[10px] font-black uppercase tracking-widest text-[#007e85] hover:underline">Ver perfil público</button>
+                                <div className="text-[10px] font-black uppercase tracking-widest text-[#007e85] bg-[#f0fcfc] px-3 py-1 rounded-full">Perfil Verificado</div>
                             )}
                         </div>
 

@@ -70,8 +70,9 @@ const AnimatedRoutes: React.FC<{
   onOpenContact: () => void;
   onOpenForgotPassword: () => void;
   onOpenSettings: () => void;
+  onOpenAdmin: () => void;
   products: Product[];
-}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, onOpenSettings, products }) => {
+}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, onOpenSettings, onOpenAdmin, products }) => {
   const location = useLocation();
 
   return (
@@ -85,7 +86,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/tienda" element={<AnimatedPage><StorePage products={products} /></AnimatedPage>} />
         <Route path="/acceso" element={<AnimatedPage><ClientPage onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/money-transfer" element={<AnimatedPage><MoneyTransferPage /></AnimatedPage>} />
-        <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} /></AnimatedPage>} />
+        <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
       </Routes>
@@ -161,6 +162,7 @@ const AppContent: React.FC = () => {
             onOpenContact={() => setIsContactOpen(true)}
             onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
             onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenAdmin={handleAdminLogin}
             products={products}
           />
         </main>
