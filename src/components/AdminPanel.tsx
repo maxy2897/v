@@ -65,6 +65,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [pickupShipment, setPickupShipment] = useState<Shipment | null>(null);
   const [isSearchingPickup, setIsSearchingPickup] = useState(false);
+  const [txSearch, setTxSearch] = useState('');
   const [adminNotification, setAdminNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
@@ -1150,6 +1151,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </button>
                 </div>
 
+                {/* Transaction Search */}
+                <div className="mb-8 relative">
+                  <input
+                    type="text"
+                    placeholder={selectedTxFolder ? "Buscar en esta carpeta..." : "Buscar carpeta por nombre o fecha..."}
+                    value={txSearch}
+                    onChange={(e) => setTxSearch(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl border-none bg-gray-50 focus:ring-2 focus:ring-orange-500 transition-all font-medium text-gray-700 placeholder-gray-400"
+                  />
+                  <svg className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
                 {(() => {
                   const moneyTransfers = transactions.filter(tx => tx.type === 'TRANSFER');
                   const otherTransactions = transactions.filter(tx => tx.type !== 'TRANSFER');
@@ -1162,7 +1177,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   }, {} as Record<string, any[]>);
 
                   if (selectedTxFolder) {
-                    const currentTxs = selectedTxFolder === 'MONEY_TRANSFER' ? moneyTransfers : groupedOther[selectedTxFolder];
+                    let currentTxs = selectedTxFolder === 'MONEY_TRANSFER' ? moneyTransfers : groupedOther[selectedTxFolder];
+
+                    // Filter within folder
+                    if (txSearch) {
+                      const term = txSearch.toLowerCase();
+                      currentTxs = currentTxs.filter(tx =>
+                        (tx.user?.name || '').toLowerCase().includes(term) ||
+                        (tx.details?.beneficiary || '').toLowerCase().includes(term) ||
+                        (tx.details?.trackingNumber || '').toLowerCase().includes(term) ||
+                        (tx.details?.description || '').toLowerCase().includes(term) ||
+                        tx._id.toLowerCase().includes(term)
+                      );
+                    }
+
                     return (
                       <div className="space-y-6">
                         <button onClick={() => setSelectedTxFolder(null)} className="flex items-center gap-2 text-[#007e85] font-black text-sm hover:underline bg-white px-5 py-3 rounded-2xl shadow-sm border border-gray-100 w-fit">
@@ -1238,25 +1266,31 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     );
                   }
 
+                  const filteredFolders = Object.entries(groupedOther).filter(([label]) =>
+                    !txSearch || label.toLowerCase().includes(txSearch.toLowerCase())
+                  );
+
                   return (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {/* Special Folder: Money Transfer */}
-                      <button
-                        onClick={() => setSelectedTxFolder('MONEY_TRANSFER')}
-                        className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
-                      >
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600" />
-                        <div className="bg-orange-50 p-6 rounded-[2rem] group-hover:scale-110 transition-transform duration-500">
-                          <svg className="w-12 h-12 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
-                        </div>
-                        <div className="text-center">
-                          <h4 className="font-black text-[#00151a] text-sm uppercase tracking-tighter mb-1">Money Transfer</h4>
-                          <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-3 py-1 rounded-full">{moneyTransfers.length} Reg.</span>
-                        </div>
-                      </button>
+                      {(!txSearch || 'money transfer'.includes(txSearch.toLowerCase())) && (
+                        <button
+                          onClick={() => setSelectedTxFolder('MONEY_TRANSFER')}
+                          className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600" />
+                          <div className="bg-orange-50 p-6 rounded-[2rem] group-hover:scale-110 transition-transform duration-500">
+                            <svg className="w-12 h-12 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
+                          </div>
+                          <div className="text-center">
+                            <h4 className="font-black text-[#00151a] text-sm uppercase tracking-tighter mb-1">Money Transfer</h4>
+                            <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-3 py-1 rounded-full">{moneyTransfers.length} Reg.</span>
+                          </div>
+                        </button>
+                      )}
 
                       {/* Dynamic Date Folders */}
-                      {Object.entries(groupedOther).map(([dateLabel, txs]: [string, any[]]) => (
+                      {filteredFolders.map(([dateLabel, txs]: [string, any[]]) => (
                         <button
                           key={dateLabel}
                           onClick={() => setSelectedTxFolder(dateLabel)}
@@ -1302,18 +1336,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 </div>
 
                 {(() => {
-                  const filteredAdminShipments = allShipments.filter(s => {
-                    const term = shipmentSearch.toLowerCase();
-                    return (
-                      s.trackingNumber.toLowerCase().includes(term) ||
-                      (s.user?.name || '').toLowerCase().includes(term) ||
-                      (s.recipient?.name || '').toLowerCase().includes(term) ||
-                      s.origin.toLowerCase().includes(term) ||
-                      s.destination.toLowerCase().includes(term)
-                    );
-                  }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                  const sortedAll = [...allShipments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-                  const groupedAdminShipments = filteredAdminShipments.reduce((groups, shipment) => {
+                  const groupedAdminShipments = sortedAll.reduce((groups, shipment) => {
                     const dateLabel = getAssignedFolder(shipment.createdAt);
                     if (!groups[dateLabel]) groups[dateLabel] = [];
                     groups[dateLabel].push(shipment);
@@ -1358,59 +1383,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     );
                   }
 
-                  if (shipmentSearch) {
-                    return (
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Resultados de búsqueda</h3>
-                        {filteredAdminShipments.length === 0 ? (
-                          <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-200">
-                            <p className="text-gray-400 font-bold">No se encontraron envíos para "{shipmentSearch}"</p>
-                          </div>
-                        ) : (
-                          filteredAdminShipments.map(shipment => (
-                            <div key={shipment._id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-teal-200 transition-all">
-                              <div className="flex-1 space-y-2">
-                                <div className="flex items-center gap-3">
-                                  <span className="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded">{shipment.trackingNumber}</span>
-                                  <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(shipment.createdAt).toLocaleDateString()} {new Date(shipment.createdAt).toLocaleTimeString()}</span>
-                                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{shipment.user?.name || 'Usuario desconocido'}</span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm font-bold text-[#00151a]">
-                                  <span>{shipment.origin}</span>
-                                  <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                                  <span>{shipment.destination}</span>
-                                </div>
-                                <p className="text-xs text-gray-500"><span className="font-bold">Receptor:</span> {shipment.recipient?.name} ({shipment.recipient?.phone})</p>
-                                <p className="text-xs text-gray-500">{shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA</p>
-                              </div>
-                              <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
-                                <div className="text-right">
-                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
-                                  <select
-                                    aria-label={`Cambiar estado del envío ${shipment.trackingNumber}`}
-                                    value={shipment.status}
-                                    onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
-                                    className="bg-white border border-gray-200 text-[#00151a] text-xs font-bold rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500"
-                                  >
-                                    <option value="Pendiente">Pendiente</option>
-                                    <option value="Recogido">Recogido</option>
-                                    <option value="En tránsito">En tránsito</option>
-                                    <option value="En Aduanas">En Aduanas</option>
-                                    <option value="Llegado a destino">Llegado a destino</option>
-                                    <option value="Entregado">Entregado</option>
-                                    <option value="Cancelado">Cancelado</option>
-                                  </select>
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    );
-                  }
-
                   if (selectedDateFilter && groupedAdminShipments[selectedDateFilter]) {
-                    const group = groupedAdminShipments[selectedDateFilter];
+                    let group = groupedAdminShipments[selectedDateFilter];
+
+                    // Search within folder
+                    if (shipmentSearch) {
+                      const term = shipmentSearch.toLowerCase();
+                      group = group.filter(s =>
+                        s.trackingNumber.toLowerCase().includes(term) ||
+                        (s.user?.name || '').toLowerCase().includes(term) ||
+                        (s.recipient?.name || '').toLowerCase().includes(term) ||
+                        s.origin.toLowerCase().includes(term) ||
+                        s.destination.toLowerCase().includes(term)
+                      );
+                    }
                     return (
                       <div className="space-y-6">
                         <button onClick={() => setSelectedDateFilter(null)} className="flex items-center gap-2 text-teal-600 font-black text-sm hover:underline bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 w-fit">
@@ -1471,40 +1457,44 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     <div className="space-y-6">
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {/* Money Transfer Special Folder */}
-                        <button
-                          onClick={() => setSelectedDateFilter('MONEY_TRANSFER')}
-                          className="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
-                        >
-                          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600" />
-                          <div className="bg-orange-50 p-4 rounded-2xl group-hover:scale-110 transition-all duration-300">
-                            <svg className="w-10 h-10 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
-                          </div>
-                          <div className="text-center w-full">
-                            <h4 className="font-bold text-[#00151a] text-sm uppercase tracking-wide mb-2">Money Transfers</h4>
-                            <span className="inline-block bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">
-                              {transactions.filter(tx => tx.type === 'TRANSFER').length} Reg.
-                            </span>
-                          </div>
-                        </button>
-
-                        {Object.entries(groupedAdminShipments).map(([date, group]: [string, any[]]) => (
+                        {(!shipmentSearch || 'money transfers'.includes(shipmentSearch.toLowerCase())) && (
                           <button
-                            key={date}
-                            onClick={() => setSelectedDateFilter(date)}
+                            onClick={() => setSelectedDateFilter('MONEY_TRANSFER')}
                             className="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
                           >
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="bg-teal-50 p-4 rounded-2xl group-hover:bg-teal-100 group-hover:scale-110 transition-all duration-300">
-                              <svg className="w-10 h-10 text-teal-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" /></svg>
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600" />
+                            <div className="bg-orange-50 p-4 rounded-2xl group-hover:scale-110 transition-all duration-300">
+                              <svg className="w-10 h-10 text-orange-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>
                             </div>
                             <div className="text-center w-full">
-                              <h4 className="font-bold text-[#00151a] text-sm md:text-sm line-clamp-2 leading-tight mb-2 uppercase tracking-wide">{date}</h4>
-                              <span className="inline-block bg-gray-100 text-gray-500 text-xs font-black px-3 py-1 rounded-full group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                                {group.length} Envíos
+                              <h4 className="font-bold text-[#00151a] text-sm uppercase tracking-wide mb-2">Money Transfers</h4>
+                              <span className="inline-block bg-orange-100 text-orange-700 text-xs font-black px-3 py-1 rounded-full">
+                                {transactions.filter(tx => tx.type === 'TRANSFER').length} Reg.
                               </span>
                             </div>
                           </button>
-                        ))}
+                        )}
+
+                        {Object.entries(groupedAdminShipments)
+                          .filter(([label]) => !shipmentSearch || label.toLowerCase().includes(shipmentSearch.toLowerCase()))
+                          .map(([date, group]: [string, any[]]) => (
+                            <button
+                              key={date}
+                              onClick={() => setSelectedDateFilter(date)}
+                              className="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
+                            >
+                              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-400 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <div className="bg-teal-50 p-4 rounded-2xl group-hover:bg-teal-100 group-hover:scale-110 transition-all duration-300">
+                                <svg className="w-10 h-10 text-teal-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" /></svg>
+                              </div>
+                              <div className="text-center w-full">
+                                <h4 className="font-bold text-[#00151a] text-sm md:text-sm line-clamp-2 leading-tight mb-2 uppercase tracking-wide">{date}</h4>
+                                <span className="inline-block bg-gray-100 text-gray-500 text-xs font-black px-3 py-1 rounded-full group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                                  {group.length} Envíos
+                                </span>
+                              </div>
+                            </button>
+                          ))}
                         {Object.keys(groupedAdminShipments).length === 0 && (
                           <div className="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-gray-200">
                             <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
