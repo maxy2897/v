@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
 import { createNotification } from '../services/notificationsApi';
@@ -63,6 +64,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [pickupShipment, setPickupShipment] = useState<Shipment | null>(null);
   const [isSearchingPickup, setIsSearchingPickup] = useState(false);
+  const [adminNotification, setAdminNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setAdminNotification({ message, type });
+    setTimeout(() => setAdminNotification(null), 3000);
+  };
 
   // Direct Notification State
   const [directNotifModal, setDirectNotifModal] = useState<{ userId: string, name: string } | null>(null);
@@ -141,26 +148,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
         const data = await res.json();
         setPickupShipment(data);
       } else {
-        alert('No se encontró ningún paquete con ese código.');
+        showToast('No se encontró ningún paquete con ese código.', 'error');
       }
     } catch (error) {
       console.error(error);
-      alert('Error al buscar el paquete.');
+      showToast('Error al buscar el paquete.', 'error');
     } finally {
       setIsSearchingPickup(false);
     }
   };
 
   const deliverShipment = async (id: string) => {
+    // Keep confirmation for safety on delivery
     if (!confirm('¿Confirmar entrega del paquete al cliente?')) return;
     try {
-      await updateShipmentStatus(id, 'Entregado');
+      await updateShipmentStatus(id, 'Entregado', true);
       if (pickupShipment && pickupShipment._id === id) {
         setPickupShipment({ ...pickupShipment, status: 'Entregado' });
       }
-      alert('✅ Paquete marcado como ENTREGADO');
+      showToast('✅ Paquete marcado como ENTREGADO');
     } catch (error) {
       console.error(error);
+      showToast('Error al procesar la entrega', 'error');
     }
   };
 
@@ -169,7 +178,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     if (activeTab === 'pickup' && !pickupShipment) {
       scanner = new Html5QrcodeScanner(
         "qr-reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          // Prioritize back camera
+          videoConstraints: { facingMode: "environment" }
+        },
         /* verbose= */ false
       );
 
@@ -207,7 +221,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     }
   };
 
-  const updateShipmentStatus = async (shipmentId: string, newStatus: string) => {
+  const updateShipmentStatus = async (shipmentId: string, newStatus: string, silent: boolean = false) => {
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
@@ -239,12 +253,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
           if (updatedSelected) setSelectedUserGroup(updatedSelected);
         }
 
-        alert('Estado actualizado correctamente');
+        if (!silent) showToast('Estado actualizado correctamente');
       } else {
         throw new Error('Failed to update');
       }
     } catch (error) {
-      alert('Error al actualizar estado');
+      showToast('Error al actualizar estado', 'error');
     }
   };
 
@@ -334,12 +348,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
         ...directNotifData,
         userId: directNotifModal.userId
       });
-      alert('✅ Notificación enviada correctamente');
+      showToast('✅ Notificación enviada correctamente');
       setDirectNotifModal(null);
       setDirectNotifData({ title: '', message: '', type: 'info' });
     } catch (error) {
       console.error(error);
-      alert('Error al enviar la notificación');
+      showToast('Error al enviar la notificación', 'error');
     } finally {
       setSendingNotif(false);
     }
@@ -406,7 +420,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
           setConfig({ ...config, customLogoUrl: resizedBase64 });
         }
       } catch (err) {
-        alert('Error al procesar la imagen. Inténtalo de nuevo.');
+        showToast('Error al procesar la imagen. Inténtalo de nuevo.', 'error');
         console.error(err);
       }
     }
@@ -415,7 +429,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProduct.image) {
-      alert('⚠️ Por favor selecciona una imagen para el producto.');
+      showToast('⚠️ Por favor selecciona una imagen para el producto.', 'error');
       return;
     }
 
@@ -433,28 +447,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
         slogan: '',
         waLink: 'https://wa.me/34641992110'
       });
-      alert('✅ Producto añadido con éxito a la base de datos');
+      showToast('✅ Producto añadido con éxito');
     } catch (error: any) {
       console.error('Error detallado:', error);
-      alert(`❌ Error al añadir producto: ${error.message || 'Error desconocido'}`);
+      showToast('Error al añadir el producto', 'error');
     } finally {
       setIsUploading(false); // Stop loading regardless of outcome
     }
   };
 
   const deleteProduct = async (id: string) => {
-    if (confirm('¿Seguro que quieres eliminar este producto de forma permanente?')) {
-      setIsDeletingId(id);
-      try {
-        await apiDeleteProduct(id);
-        const updated = await getProducts(); // Refresh list from server
-        setProducts(updated);
-        alert('Producto eliminado correctamente');
-      } catch (error: any) {
-        alert('Error al eliminar producto: ' + error.message);
-      } finally {
-        setIsDeletingId(null);
-      }
+    if (!confirm('¿Seguro que quieres eliminar este producto de forma permanente?')) return;
+    setIsDeletingId(id);
+    try {
+      await apiDeleteProduct(id);
+      const updated = await getProducts(); // Refresh list from server
+      setProducts(updated);
+      showToast('✅ Producto eliminado correctamente');
+    } catch (error: any) {
+      showToast('Error al eliminar producto: ' + error.message, 'error');
+    } finally {
+      setIsDeletingId(null);
     }
   };
 
@@ -580,6 +593,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
               {new Date().toLocaleDateString()}
             </div>
           </div>
+
+          {/* Toast Notification */}
+          <AnimatePresence>
+            {adminNotification && (
+              <motion.div
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                className={`fixed bottom-8 right-8 z-[500] px-6 py-4 rounded-2xl shadow-2xl font-black uppercase text-[10px] tracking-widest flex items-center gap-3 border-2 ${adminNotification.type === 'success'
+                  ? 'bg-teal-500 text-white border-teal-400'
+                  : 'bg-red-500 text-white border-red-400'
+                  }`}
+              >
+                {adminNotification.type === 'success' ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                )}
+                {adminNotification.message}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="p-8">
             {activeTab === 'products' ? (

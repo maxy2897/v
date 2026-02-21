@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PackageInfo } from '../../types';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useSettings } from '../context/SettingsContext';
@@ -26,6 +27,12 @@ const Calculator: React.FC = () => {
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   // Check URL params for initial state
   React.useEffect(() => {
@@ -115,7 +122,7 @@ const Calculator: React.FC = () => {
 
     // Check if we have shipments in the list
     if (shipmentList.length === 0 && (!total || total.value === 0)) {
-      alert('Debes calcular y añadir al menos un envío antes de finalizar');
+      showToast('Debes calcular y añadir al menos un envío antes de finalizar', 'error');
       return;
     }
 
@@ -145,13 +152,13 @@ const Calculator: React.FC = () => {
         // Validate current shipment
         if (isAuthenticated) {
           if (!currentShipment.recipient.name || !currentShipment.recipient.phone) {
-            alert('Por favor completa los datos del destinatario actual');
+            showToast('Por favor completa los datos del destinatario actual', 'error');
             setIsRegistering(false);
             return;
           }
         } else {
           if (!userData.fullName || !userData.phone || !userData.idNumber) {
-            alert('Por favor completa todos tus datos');
+            showToast('Por favor completa todos tus datos', 'error');
             setIsRegistering(false);
             return;
           }
@@ -162,7 +169,7 @@ const Calculator: React.FC = () => {
 
       // Final validation
       if (allShipments.length === 0) {
-        alert('No hay envíos para registrar');
+        showToast('No hay envíos para registrar', 'error');
         setIsRegistering(false);
         return;
       }
@@ -202,7 +209,7 @@ const Calculator: React.FC = () => {
       setShipmentList([]); // Clear list after success
     } catch (error) {
       console.error(error);
-      alert('Error al registrar el envío. Inténtelo de nuevo.');
+      showToast('Error al registrar el envío. Inténtelo de nuevo.', 'error');
     } finally {
       setIsRegistering(false);
     }
@@ -228,14 +235,14 @@ const Calculator: React.FC = () => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (e) {
-      alert('Error al descargar factura');
+      showToast('Error al descargar factura', 'error');
     }
   };
 
   const copyToClipboard = () => {
     if (generatedCode) {
       navigator.clipboard.writeText(generatedCode);
-      alert(t('calc.alert.copied'));
+      showToast(t('calc.alert.copied'));
     }
   };
 
@@ -251,6 +258,26 @@ const Calculator: React.FC = () => {
 
   return (
     <section id="calculadora" className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 p-4 md:p-12 relative overflow-hidden">
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className={`fixed bottom-8 right-8 z-[500] px-6 py-4 rounded-2xl shadow-2xl font-black uppercase text-[10px] tracking-widest flex items-center gap-3 border-2 ${notification.type === 'success'
+              ? 'bg-[#007e85] text-white border-teal-400'
+              : 'bg-red-500 text-white border-red-400'
+              }`}
+          >
+            {notification.type === 'success' ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            )}
+            {notification.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-stretch">
         <div className="p-8 md:p-0">
           <div className="inline-block px-4 py-1.5 bg-teal-50 rounded-full mb-6">
@@ -558,7 +585,7 @@ const Calculator: React.FC = () => {
                     onClick={() => {
                       // Validate current shipment data
                       if (!total || total.value === 0) {
-                        alert('Primero calcula el costo del envío actual');
+                        showToast('Primero calcula el costo del envío actual', 'error');
                         return;
                       }
 
@@ -574,7 +601,7 @@ const Calculator: React.FC = () => {
                       };
 
                       if (!currentShipment.recipient.name || !currentShipment.recipient.phone) {
-                        alert('Completa los datos del destinatario para este envío');
+                        showToast('Completa los datos del destinatario para este envío', 'error');
                         return;
                       }
 
@@ -586,7 +613,7 @@ const Calculator: React.FC = () => {
                       setTotal(null);
                       setInfo({ ...info, weight: 0, destination: 'Malabo' });
 
-                      alert('✅ Envío añadido. Calcula el siguiente paquete y completa el destinatario.');
+                      showToast('✅ Envío añadido. Calcula el siguiente paquete.');
                     }}
                     className="bg-teal-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-700 transition"
                   >
