@@ -157,15 +157,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
                     {/* Profile Section */}
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-3xl shadow-xl p-8">
-                            <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-2xl font-black text-[#00151a]">{t('dash.profile.title')}</h2>
-                                <button
-                                    onClick={onOpenSettings}
-                                    className="text-teal-600 hover:text-teal-700 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 bg-teal-50 px-4 py-2 rounded-xl transition-all"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                    {t('dash.profile.edit')}
-                                </button>
                             </div>
 
                             <div className="space-y-4">
