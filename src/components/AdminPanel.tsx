@@ -1096,12 +1096,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   const otherTransactions = transactions.filter(tx => tx.type !== 'TRANSFER');
 
                   const groupedOther = otherTransactions.reduce((groups, tx) => {
-                    const month = new Date(tx.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+                    const dateLabel = `ENVÍO DEL ${new Date(tx.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+                      day: 'numeric',
                       month: 'long',
                       year: 'numeric'
-                    }).toUpperCase();
-                    if (!groups[month]) groups[month] = [];
-                    groups[month].push(tx);
+                    }).toUpperCase()}`;
+                    if (!groups[dateLabel]) groups[dateLabel] = [];
+                    groups[dateLabel].push(tx);
                     return groups;
                   }, {} as Record<string, any[]>);
 
@@ -1200,10 +1201,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       </button>
 
                       {/* Dynamic Date Folders */}
-                      {Object.entries(groupedOther).map(([month, txs]) => (
+                      {Object.entries(groupedOther).map(([dateLabel, txs]) => (
                         <button
-                          key={month}
-                          onClick={() => setSelectedTxFolder(month)}
+                          key={dateLabel}
+                          onClick={() => setSelectedTxFolder(dateLabel)}
                           className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all flex flex-col items-center justify-center gap-4 aspect-square relative overflow-hidden"
                         >
                           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#007e85] to-[#00151a]" />
@@ -1211,7 +1212,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             <svg className="w-12 h-12 text-[#007e85]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" /></svg>
                           </div>
                           <div className="text-center">
-                            <h4 className="font-black text-[#00151a] text-sm uppercase tracking-tighter mb-1">{month}</h4>
+                            <h4 className="font-black text-[#00151a] text-[10px] uppercase tracking-tighter mb-1 line-clamp-2 leading-tight">{dateLabel}</h4>
                             <span className="bg-gray-100 text-gray-500 text-[10px] font-black px-3 py-1 rounded-full group-hover:bg-[#007e85] group-hover:text-white transition-colors">
                               {txs.length} Operaciones
                             </span>
@@ -1258,12 +1259,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
                   const groupedAdminShipments = filteredAdminShipments.reduce((groups, shipment) => {
-                    const date = new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
+                    const dateLabel = `ENVÍO DEL ${new Date(shipment.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', {
+                      day: 'numeric',
                       month: 'long',
                       year: 'numeric'
-                    }).toUpperCase();
-                    if (!groups[date]) groups[date] = [];
-                    groups[date].push(shipment);
+                    }).toUpperCase()}`;
+                    if (!groups[dateLabel]) groups[dateLabel] = [];
+                    groups[dateLabel].push(shipment);
                     return groups;
                   }, {} as Record<string, Shipment[]>);
 
