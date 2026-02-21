@@ -5,7 +5,7 @@ import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
 import { createNotification } from '../services/notificationsApi';
 import { createProduct as apiCreateProduct, deleteProduct as apiDeleteProduct, getProducts } from '../services/productsApi';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { QRCodeCanvas } from 'qrcode.react';
 
 interface Shipment {
@@ -174,34 +174,46 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   };
 
   React.useEffect(() => {
-    let scanner: Html5QrcodeScanner | null = null;
+    let html5QrCode: Html5Qrcode | null = null;
+    const scannerId = "qr-reader";
+
     if (activeTab === 'pickup' && !pickupShipment) {
-      scanner = new Html5QrcodeScanner(
-        "qr-reader",
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-          // Prioritize back camera
-          videoConstraints: { facingMode: "environment" }
-        },
-        /* verbose= */ false
-      );
+      const timer = setTimeout(() => {
+        const element = document.getElementById(scannerId);
+        if (!element) return;
 
-      scanner.render((decodedText) => {
-        setPickupSearch(decodedText);
-        setScannedResult(decodedText);
-        handlePickupSearch(decodedText);
-        if (scanner) scanner.clear();
-      }, (error) => {
-        // console.warn(error);
-      });
+        html5QrCode = new Html5Qrcode(scannerId);
+
+        html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            setPickupSearch(decodedText);
+            setScannedResult(decodedText);
+            handlePickupSearch(decodedText);
+            if (html5QrCode && html5QrCode.isScanning) {
+              html5QrCode.stop().catch(err => console.error(err));
+            }
+          },
+          () => { } // silent scan errors
+        ).catch(err => {
+          console.error("No se pudo iniciar el escáner:", err);
+        });
+      }, 400);
+
+      return () => {
+        clearTimeout(timer);
+        if (html5QrCode) {
+          if (html5QrCode.isScanning) {
+            html5QrCode.stop()
+              .then(() => html5QrCode?.clear())
+              .catch(err => console.error(err));
+          } else {
+            html5QrCode.clear();
+          }
+        }
+      };
     }
-
-    return () => {
-      if (scanner) {
-        scanner.clear().catch(error => console.error("Failed to clear scanner", error));
-      }
-    };
   }, [activeTab, pickupShipment]);
 
   const getStatusColor = (status: string) => {
@@ -1305,9 +1317,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center shrink-0">
                           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
                         </div>
-                        <p className="text-sm font-bold text-orange-900">Usa la cámara para escanear el código QR del cliente o introduce el número de rastreo manualmente.</p>
+                        <p className="text-sm font-bold text-orange-900">Apunta con la cámara al código QR del cliente para buscar el paquete automáticamente.</p>
                       </div>
-                      <div id="qr-reader" className="overflow-hidden rounded-3xl border-4 border-gray-100 shadow-lg"></div>
+                      <div className="relative group">
+                        <div id="qr-reader" className="overflow-hidden rounded-[2.5rem] border-4 border-gray-100 shadow-2xl bg-black aspect-square max-w-sm mx-auto"></div>
+                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
+                          <div className="w-48 h-48 border-2 border-teal-500 rounded-3xl animate-pulse"></div>
+                          <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] mt-4 drop-shadow-lg">Escaneando...</p>
+                        </div>
+                      </div>
                     </div>
                   )}
 

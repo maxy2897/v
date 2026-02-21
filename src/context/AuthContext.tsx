@@ -14,6 +14,7 @@ interface User {
     gender?: string;
     role?: string;
     token?: string;
+    createdAt?: string;
 }
 
 interface AuthContextType {
