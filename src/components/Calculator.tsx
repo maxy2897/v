@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PackageInfo } from '../../types';
+import { QRCodeCanvas } from 'qrcode.react';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { PhoneInput } from './PhoneInput';
@@ -423,9 +424,18 @@ const Calculator: React.FC = () => {
               <div className="bg-white/10 border border-white/20 p-8 rounded-[2rem] w-full mb-8">
                 <p className="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-2">{t('calc.success.tracking_label')}</p>
                 <p className="text-5xl font-black tracking-tighter mb-4">{generatedCode}</p>
-                <button onClick={copyToClipboard} className="bg-white text-[#005f6b] px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-teal-50 transition-colors">
+                <button onClick={copyToClipboard} className="bg-white text-[#005f6b] px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-teal-50 transition-colors mb-6">
                   {t('calc.success.copy')}
                 </button>
+                <div className="bg-white p-3 rounded-2xl inline-block mx-auto shadow-lg">
+                  <QRCodeCanvas
+                    value={generatedCode}
+                    size={120}
+                    level="H"
+                    includeMargin={false}
+                  />
+                  <p className="text-[10px] font-black text-[#005f6b] mt-2 uppercase tracking-widest">Código QR BB</p>
+                </div>
               </div>
 
               {/* Download Button moved here for visibility */}

@@ -1,4 +1,5 @@
 import PDFDocument from 'pdfkit';
+import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -229,7 +230,22 @@ export const generatePDFReceipt = async (transaction) => {
                 }
             }
 
-            doc.end();
+            // Generate QR Code as Data URL
+            const trackingCode = type === 'SHIPMENT_BULK'
+                ? (details?.shipments?.[0]?.trackingNumber || referenceId)
+                : (details?.trackingNumber || referenceId);
+
+            QRCode.toDataURL(trackingCode, { margin: 1, scale: 4 }, (err, url) => {
+                if (!err) {
+                    try {
+                        doc.image(url, 240, totalY + 30, { width: 100, height: 100 });
+                        doc.fontSize(8).font('Helvetica-Bold').text('CODIGO QR DE RASTREO', 240, totalY + 135, { width: 100, align: 'center' });
+                    } catch (qrErr) {
+                        console.error('QR placement error:', qrErr);
+                    }
+                }
+                doc.end();
+            });
         } catch (error) {
             reject(error);
         }

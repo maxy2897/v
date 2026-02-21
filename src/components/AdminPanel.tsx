@@ -4,6 +4,8 @@ import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
 import { createNotification } from '../services/notificationsApi';
 import { createProduct as apiCreateProduct, deleteProduct as apiDeleteProduct, getProducts } from '../services/productsApi';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+import { QRCodeCanvas } from 'qrcode.react';
 
 interface Shipment {
   _id: string;
@@ -50,13 +52,17 @@ import { useSettings } from '../context/SettingsContext';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig, language } = useSettings();
-  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications' | 'pickup'>('products');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
   const [allShipments, setAllShipments] = useState<Shipment[]>([]);
   const [shipmentSearch, setShipmentSearch] = useState('');
   const [selectedUserGroup, setSelectedUserGroup] = useState<UserShipmentGroup | null>(null);
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
+  const [pickupSearch, setPickupSearch] = useState('');
+  const [scannedResult, setScannedResult] = useState<string | null>(null);
+  const [pickupShipment, setPickupShipment] = useState<Shipment | null>(null);
+  const [isSearchingPickup, setIsSearchingPickup] = useState(false);
 
   // Direct Notification State
   const [directNotifModal, setDirectNotifModal] = useState<{ userId: string, name: string } | null>(null);
@@ -115,6 +121,89 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       }
     } catch (error) {
       console.error('Error fetching shipments:', error);
+    }
+  };
+
+  const handlePickupSearch = async (tracking?: string) => {
+    const term = (tracking || pickupSearch).trim().toUpperCase();
+    if (!term) return;
+
+    setIsSearchingPickup(true);
+    setPickupShipment(null);
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/tracking/${term}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPickupShipment(data);
+      } else {
+        alert('No se encontró ningún paquete con ese código.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Error al buscar el paquete.');
+    } finally {
+      setIsSearchingPickup(false);
+    }
+  };
+
+  const deliverShipment = async (id: string) => {
+    if (!confirm('¿Confirmar entrega del paquete al cliente?')) return;
+    try {
+      await updateShipmentStatus(id, 'Entregado');
+      if (pickupShipment && pickupShipment._id === id) {
+        setPickupShipment({ ...pickupShipment, status: 'Entregado' });
+      }
+      alert('✅ Paquete marcado como ENTREGADO');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  React.useEffect(() => {
+    let scanner: Html5QrcodeScanner | null = null;
+    if (activeTab === 'pickup' && !pickupShipment) {
+      scanner = new Html5QrcodeScanner(
+        "qr-reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false
+      );
+
+      scanner.render((decodedText) => {
+        setPickupSearch(decodedText);
+        setScannedResult(decodedText);
+        handlePickupSearch(decodedText);
+        if (scanner) scanner.clear();
+      }, (error) => {
+        // console.warn(error);
+      });
+    }
+
+    return () => {
+      if (scanner) {
+        scanner.clear().catch(error => console.error("Failed to clear scanner", error));
+      }
+    };
+  }, [activeTab, pickupShipment]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Entregado':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'En tránsito':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'En Aduanas':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Recogido':
+        return 'bg-teal-100 text-teal-800 border-teal-200';
+      case 'Cancelado':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -455,6 +544,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                 Notificaciones
               </button>
+              <button
+                onClick={() => setActiveTab('pickup')}
+                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pickup' ? 'bg-orange-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
+                Recogida 📦
+              </button>
             </nav>
           </div>
 
@@ -477,7 +573,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   activeTab === 'reports' ? 'Centro de Reportes' :
                     activeTab === 'transactions' ? 'Historial de Transacciones' :
                       activeTab === 'shipments' ? 'Gestión de Envíos' :
-                        activeTab === 'notifications' ? 'Sistema de Notificaciones' : 'Configuración Global'}
+                        activeTab === 'notifications' ? 'Sistema de Notificaciones' :
+                          activeTab === 'pickup' ? 'Centro de Recogida y Entrega' : 'Configuración Global'}
             </h3>
             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {new Date().toLocaleDateString()}
@@ -1141,6 +1238,120 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
               </div>
             ) : activeTab === 'notifications' ? (
               <AdminNotifications />
+            ) : activeTab === 'pickup' ? (
+              <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                  <h3 className="text-xl font-black text-[#00151a] mb-6 uppercase tracking-tighter">Gestión de Entrega</h3>
+
+                  <div className="flex flex-col md:flex-row gap-6 mb-8">
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        placeholder="Introduce o escanea código de envío..."
+                        className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-orange-500 font-bold text-[#00151a] shadow-inner"
+                        value={pickupSearch}
+                        onChange={(e) => setPickupSearch(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handlePickupSearch()}
+                      />
+                      <svg className="w-6 h-6 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                    <button
+                      onClick={() => handlePickupSearch()}
+                      disabled={isSearchingPickup}
+                      className="px-8 py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all flex items-center justify-center gap-2"
+                    >
+                      {isSearchingPickup ? 'Buscando...' : 'Buscar Paquete'}
+                    </button>
+                  </div>
+
+                  {!pickupShipment && (
+                    <div className="space-y-6">
+                      <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100 flex items-center gap-4">
+                        <div className="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center shrink-0">
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
+                        </div>
+                        <p className="text-sm font-bold text-orange-900">Usa la cámara para escanear el código QR del cliente o introduce el número de rastreo manualmente.</p>
+                      </div>
+                      <div id="qr-reader" className="overflow-hidden rounded-3xl border-4 border-gray-100 shadow-lg"></div>
+                    </div>
+                  )}
+
+                  {pickupShipment && (
+                    <div className="animate-in zoom-in duration-300">
+                      <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-[3rem] border-2 border-orange-100 shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4">
+                          <button
+                            onClick={() => setPickupShipment(null)}
+                            className="bg-gray-100 text-gray-400 hover:text-red-500 p-2 rounded-full transition-colors"
+                            aria-label="Cerrar vista de paquete"
+                          >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                          </button>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                          <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 shrink-0">
+                            <QRCodeCanvas value={pickupShipment.trackingNumber} size={120} level="H" />
+                            <p className="text-[10px] font-black text-center mt-3 text-gray-400 tracking-widest">{pickupShipment.trackingNumber}</p>
+                          </div>
+
+                          <div className="flex-1 space-y-6 w-full">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="text-3xl font-black text-[#00151a] tracking-tight">{pickupShipment.recipient?.name}</h4>
+                                <p className="text-orange-600 font-bold text-sm">📍 {pickupShipment.destination}</p>
+                              </div>
+                              <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest border-2 ${getStatusColor(pickupShipment.status)}`}>
+                                {pickupShipment.status}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-white/50 p-4 rounded-2xl border border-gray-100">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Remitente</p>
+                                <p className="text-sm font-bold text-[#00151a]">{pickupShipment.user?.name || 'N/A'}</p>
+                                <p className="text-xs text-gray-500">{pickupShipment.user?.phone || 'Sin teléfono'}</p>
+                              </div>
+                              <div className="bg-white/50 p-4 rounded-2xl border border-gray-100">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contacto de Entrega</p>
+                                <p className="text-sm font-bold text-[#00151a]">{pickupShipment.recipient?.phone || 'Sin teléfono'}</p>
+                                <p className="text-xs text-gray-500">Número de contacto para entrega rápida</p>
+                              </div>
+                            </div>
+
+                            <div className="bg-[#00151a] text-white p-6 rounded-3xl flex justify-between items-center shadow-2xl shadow-teal-900/20">
+                              <div>
+                                <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Detalle del Paquete</p>
+                                <p className="text-sm font-medium opacity-80">{pickupShipment.description || 'Sin descripción'}</p>
+                                <p className="text-xs font-bold mt-2">Peso: {pickupShipment.weight} Kg • Valor: {pickupShipment.price} FCFA</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Registrado el</p>
+                                <p className="text-sm font-black">{new Date(pickupShipment.createdAt).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+
+                            {pickupShipment.status !== 'Entregado' ? (
+                              <button
+                                onClick={() => deliverShipment(pickupShipment._id)}
+                                className="w-full bg-orange-500 text-white py-5 rounded-[2rem] font-black uppercase tracking-widest text-sm hover:bg-orange-600 transition-all shadow-xl shadow-orange-900/20 flex items-center justify-center gap-3 active:scale-95"
+                              >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Confirmar Entrega al Cliente
+                              </button>
+                            ) : (
+                              <div className="w-full bg-green-50 text-green-700 py-5 rounded-[2rem] border-2 border-green-100 font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                                Paquete ya entregado
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </section>
+              </div>
             ) : (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">

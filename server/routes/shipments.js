@@ -280,13 +280,17 @@ router.patch('/:id/status', protect, async (req, res) => {
     }
 });
 
-// @route   GET /api/shipments/track/:trackingNumber
-// @desc    Get public tracking info
-// @access  Public
-router.get('/track/:trackingNumber', async (req, res) => {
+// @route   GET /api/shipments/tracking/:trackingNumber
+// @desc    Get full shipment info for admin (pickup)
+// @access  Private/Admin
+router.get('/tracking/:trackingNumber', protect, async (req, res) => {
     try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ message: 'Not authorized as admin' });
+        }
+
         const shipment = await Shipment.findOne({ trackingNumber: req.params.trackingNumber })
-            .select('trackingNumber status origin destination history createdAt weight price description recipient');
+            .populate('user', 'name email phone idNumber address');
 
         if (!shipment) {
             return res.status(404).json({ message: 'Shipment not found' });
@@ -294,9 +298,11 @@ router.get('/track/:trackingNumber', async (req, res) => {
 
         res.json(shipment);
     } catch (error) {
-        console.error('Tracking error:', error);
+        console.error('Admin tracking error:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
+// @route   GET /api/shipments/track/:trackingNumber
 
 export default router;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
@@ -315,13 +316,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings }) => {
                                                                             {shipment.trackingNumber}
                                                                         </p>
                                                                     </div>
-                                                                    <span
-                                                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 ${getStatusColor(
-                                                                            shipment.status
-                                                                        )}`}
-                                                                    >
-                                                                        {shipment.status}
-                                                                    </span>
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="bg-gray-50 p-2 rounded-xl border border-gray-100 hidden sm:block">
+                                                                            <QRCodeCanvas
+                                                                                value={shipment.trackingNumber}
+                                                                                size={60}
+                                                                                level="H"
+                                                                                includeMargin={false}
+                                                                            />
+                                                                        </div>
+                                                                        <span
+                                                                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 ${getStatusColor(
+                                                                                shipment.status
+                                                                            )}`}
+                                                                        >
+                                                                            {shipment.status}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
 
                                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
