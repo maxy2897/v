@@ -95,10 +95,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     senderName: '',
     senderEmail: '',
     senderPhone: '',
+    senderCountryCode: '+34',
     senderId: '',
     recipientName: '',
     recipientEmail: '',
     recipientPhone: '',
+    recipientCountryCode: '+240',
     origin: 'España' as 'España' | 'Camerún' | 'Guinea Ecuatorial',
     destination: 'Malabo' as 'Malabo' | 'Bata',
     type: 'Aéreo' as 'Aéreo' | 'Marítimo',
@@ -106,7 +108,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     calcMode: 'kg' as 'kg' | 'bulto' | 'documento',
     description: '',
     paymentMethod: 'Almacén',
-    paymentLocation: 'Origen'
+    paymentLocation: 'Origen',
+    receiptMethod: 'print' as 'print' | 'email' | 'whatsapp'
   });
 
   React.useEffect(() => {
@@ -1765,14 +1768,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         onChange={(e) => setPosData({ ...posData, senderName: e.target.value })}
                         className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
                       />
-                      <div className="grid grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          placeholder="Teléfono"
-                          value={posData.senderPhone}
-                          onChange={(e) => setPosData({ ...posData, senderPhone: e.target.value })}
-                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex gap-2">
+                          <select
+                            aria-label="Código de país remitente"
+                            value={posData.senderCountryCode}
+                            onChange={(e) => setPosData({ ...posData, senderCountryCode: e.target.value })}
+                            className="bg-gray-100 border-none rounded-xl px-2 py-3 text-xs font-black w-24"
+                          >
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+240">🇬🇶 +240</option>
+                            <option value="+237">🇨🇲 +237</option>
+                          </select>
+                          <input
+                            type="text"
+                            placeholder="Teléfono"
+                            value={posData.senderPhone}
+                            onChange={(e) => setPosData({ ...posData, senderPhone: e.target.value })}
+                            className="flex-grow bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                          />
+                        </div>
                         <input
                           type="email"
                           placeholder="Email (Opcional)"
@@ -1802,14 +1817,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         onChange={(e) => setPosData({ ...posData, recipientName: e.target.value })}
                         className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
                       />
-                      <div className="grid grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          placeholder="Teléfono destinatario"
-                          value={posData.recipientPhone}
-                          onChange={(e) => setPosData({ ...posData, recipientPhone: e.target.value })}
-                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex gap-2">
+                          <select
+                            aria-label="Código de país receptor"
+                            value={posData.recipientCountryCode}
+                            onChange={(e) => setPosData({ ...posData, recipientCountryCode: e.target.value })}
+                            className="bg-gray-100 border-none rounded-xl px-2 py-3 text-xs font-black w-24"
+                          >
+                            <option value="+240">🇬🇶 +240</option>
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+237">🇨🇲 +237</option>
+                          </select>
+                          <input
+                            type="text"
+                            placeholder="Teléfono destinatario"
+                            value={posData.recipientPhone}
+                            onChange={(e) => setPosData({ ...posData, recipientPhone: e.target.value })}
+                            className="flex-grow bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                          />
+                        </div>
                         <input
                           type="email"
                           placeholder="Email Receptor (Opcional)"
@@ -1861,6 +1888,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         </div>
                       </div>
 
+                      {/* Receipt Delivery Method */}
+                      <div className="space-y-3 mb-10 p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-teal-400 mb-2">Método de Recibo</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            onClick={() => setPosData({ ...posData, receiptMethod: 'print' })}
+                            className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all border ${posData.receiptMethod === 'print' ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
+                          >
+                            <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                            <span className="text-[8px] font-black uppercase">Imprimir</span>
+                          </button>
+                          <button
+                            onClick={() => setPosData({ ...posData, receiptMethod: 'email' })}
+                            className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all border ${posData.receiptMethod === 'email' ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
+                          >
+                            <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            <span className="text-[8px] font-black uppercase">Email</span>
+                          </button>
+                          <button
+                            onClick={() => setPosData({ ...posData, receiptMethod: 'whatsapp' })}
+                            className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all border ${posData.receiptMethod === 'whatsapp' ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
+                          >
+                            <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+                            <span className="text-[8px] font-black uppercase">WhatsApp</span>
+                          </button>
+                        </div>
+                      </div>
+
                       <button
                         onClick={async () => {
                           if (!posData.senderName || !posData.recipientName) {
@@ -1892,13 +1947,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                                 description: `Envío Mostrador: ${posData.calcMode.toUpperCase()} ${posData.type.toUpperCase()}`,
                                 sender: {
                                   name: posData.senderName,
-                                  phone: posData.senderPhone,
+                                  phone: `${posData.senderCountryCode} ${posData.senderPhone}`,
                                   email: posData.senderEmail,
                                   idNumber: posData.senderId
                                 },
                                 recipient: {
                                   name: posData.recipientName,
-                                  phone: posData.recipientPhone,
+                                  phone: `${posData.recipientCountryCode} ${posData.recipientPhone}`,
                                   email: posData.recipientEmail
                                 },
                                 currency: 'EUR'
@@ -1909,14 +1964,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             const data = await res.json();
 
                             showToast('✅ Registro completado con éxito');
-                            if (data.transactionId) await downloadReceipt(data.transactionId);
+                            if (data.transactionId) {
+                              if (posData.receiptMethod === 'print') {
+                                await downloadReceipt(data.transactionId);
+                              } else if (posData.receiptMethod === 'whatsapp') {
+                                const waMsg = `Hola ${posData.senderName}, aquí tienes tu recibo de Bodipo Business: https://bodipo-business.onrender.com/recibo/${data.transactionId}`;
+                                window.open(`https://wa.me/${posData.senderCountryCode.replace('+', '')}${posData.senderPhone.replace(/\s/g, '')}?text=${encodeURIComponent(waMsg)}`, '_blank');
+                              } else if (posData.receiptMethod === 'email' && posData.senderEmail) {
+                                showToast(`📧 El recibo ha sido enviado por email a ${posData.senderEmail}`);
+                              }
+                            }
 
                             setPosData({
-                              senderName: '', senderEmail: '', senderPhone: '', senderId: '',
-                              recipientName: '', recipientEmail: '', recipientPhone: '',
+                              senderName: '', senderEmail: '', senderPhone: '', senderCountryCode: '+34', senderId: '',
+                              recipientName: '', recipientEmail: '', recipientPhone: '', recipientCountryCode: '+240',
                               origin: 'España', destination: 'Malabo', type: 'Aéreo',
                               weight: 0, calcMode: 'kg', description: '',
-                              paymentMethod: 'Almacén', paymentLocation: 'Origen'
+                              paymentMethod: 'Almacén', paymentLocation: 'Origen', receiptMethod: 'print'
                             });
                           } catch (e) {
                             showToast('Error al registrar envío presencial', 'error');
