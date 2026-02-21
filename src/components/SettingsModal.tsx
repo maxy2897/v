@@ -126,12 +126,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 </button>
 
                 {/* Sidebar (Left) */}
-                <div className="w-full md:w-72 bg-white border-r border-gray-100 flex flex-col shrink-0 overflow-y-auto overflow-x-hidden md:h-full">
+                <div className="w-full md:w-72 bg-white border-r border-gray-100 flex flex-col shrink-0 overflow-y-auto md:overflow-y-auto overflow-x-hidden md:h-full">
 
                     {/* User Summary Header */}
-                    <div className="p-8 pt-10 border-b border-gray-50 mb-4">
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-teal-50 shadow-sm relative shrink-0">
+                    <div className="p-4 md:p-8 pt-6 md:pt-10 border-b border-gray-50 mb-2 md:mb-4 shrink-0">
+                        <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-4">
+                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-teal-50 shadow-sm relative shrink-0">
                                 {user?.profileImage ? (
                                     <img
                                         src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`}
@@ -139,32 +139,32 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-teal-600 font-black text-2xl bg-teal-50">
+                                    <div className="w-full h-full flex items-center justify-center text-teal-600 font-black text-xl md:text-2xl bg-teal-50">
                                         {user?.name?.charAt(0) || '?'}
                                     </div>
                                 )}
                             </div>
                             <div>
-                                <h3 className="font-black text-[#00151a] text-lg tracking-tight leading-tight">{user?.name || 'Usuario'}</h3>
-                                <div className="flex text-yellow-400 text-[10px] mt-1">
+                                <h3 className="font-black text-[#00151a] text-base md:text-lg tracking-tight leading-tight">{user?.name || 'Usuario'}</h3>
+                                <div className="flex text-yellow-400 text-[8px] md:text-[10px] mt-0.5 md:mt-1">
                                     ★ ★ ★ ★ ★
                                 </div>
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Miembro desde {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
+                                <p className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5 md:mt-1">Desde {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Navigation Items */}
-                    <nav className="flex-grow px-4 pb-8 space-y-1">
+                    <nav className="flex md:flex-col flex-row overflow-x-auto md:overflow-x-hidden px-4 md:px-4 pb-4 md:pb-8 space-x-2 md:space-x-0 md:space-y-1 scrollbar-hide shrink-0">
                         {[
                             { id: 'profile', label: 'Mi Perfil', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>, protected: true },
                             { id: 'terms', label: 'Condiciones', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, protected: false },
-                            { id: 'help', label: 'Ayuda/Soporte', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>, protected: false }
+                            { id: 'help', label: 'Ayuda', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>, protected: false }
                         ].filter(tab => !tab.protected || !!user).map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-[#f0fcfc] text-[#007e85] shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
+                                className={`flex items-center gap-3 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl text-[10px] md:text-sm font-bold transition-all shrink-0 whitespace-nowrap ${activeTab === tab.id ? 'bg-[#f0fcfc] text-[#007e85] shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
                             >
                                 <span className={activeTab === tab.id ? 'text-[#007e85]' : 'text-gray-400'}>{tab.icon}</span>
                                 {tab.label}
