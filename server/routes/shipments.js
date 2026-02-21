@@ -284,7 +284,8 @@ router.post('/admin/create-guest', protect, async (req, res) => {
             currency: currency || 'EUR',
             user: {
                 name: sender?.name || 'Ventanilla',
-                phone: sender?.phone || 'N/A'
+                phone: sender?.phone || 'N/A',
+                email: sender?.email || ''
             },
             details: {
                 trackingNumber: finalTracking,
