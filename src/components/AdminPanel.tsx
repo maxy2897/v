@@ -1912,8 +1912,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             if (data.transactionId) await downloadReceipt(data.transactionId);
 
                             setPosData({
-                              senderName: '', senderPhone: '', senderId: '',
-                              recipientName: '', recipientPhone: '',
+                              senderName: '', senderEmail: '', senderPhone: '', senderId: '',
+                              recipientName: '', recipientEmail: '', recipientPhone: '',
                               origin: 'España', destination: 'Malabo', type: 'Aéreo',
                               weight: 0, calcMode: 'kg', description: '',
                               paymentMethod: 'Almacén', paymentLocation: 'Origen'
