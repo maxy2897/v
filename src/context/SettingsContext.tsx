@@ -1102,10 +1102,17 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const refreshConfig = async () => {
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api'}/config`);
+            const apiUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : 'https://bodipo-business-api.onrender.com/api';
+            const res = await fetch(`${apiUrl}/config`);
             if (res.ok) {
                 const data = await res.json();
-                setAppConfig(data);
+                // Normalize paths for Electron if they are absolute
+                const normalizedData = { ...data };
+                if (normalizedData.content?.hero) {
+                    if (normalizedData.content.hero.heroImage?.startsWith('/')) normalizedData.content.hero.heroImage = `.${normalizedData.content.hero.heroImage}`;
+                    if (normalizedData.content.hero.moneyTransferImage?.startsWith('/')) normalizedData.content.hero.moneyTransferImage = `.${normalizedData.content.hero.moneyTransferImage}`;
+                }
+                setAppConfig(normalizedData);
             }
         } catch (error) {
             console.error('Failed to fetch config', error);
@@ -1117,7 +1124,8 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
             const userStr = localStorage.getItem('user');
             const token = userStr ? JSON.parse(userStr).token : '';
 
-            const res = await fetch(`${import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api'}/config`, {
+            const apiUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : 'https://bodipo-business-api.onrender.com/api';
+            const res = await fetch(`${apiUrl}/config`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

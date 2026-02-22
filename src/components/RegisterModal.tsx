@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { signInWithGoogle } from '../firebase';
@@ -262,7 +262,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                 className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
               />
               <label htmlFor="privacy" className="text-xs text-gray-600 font-medium leading-relaxed cursor-pointer">
-                He leído y acepto la <a href="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">política de privacidad</a>
+                He leído y acepto la <Link to="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">política de privacidad</Link>
               </label>
             </div>
 

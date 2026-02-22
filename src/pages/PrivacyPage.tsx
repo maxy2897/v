@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { Link } from 'react-router-dom';
 
 const PrivacyPage: React.FC = () => {
     const { t } = useSettings();
@@ -77,12 +78,12 @@ const PrivacyPage: React.FC = () => {
                             {t('privacy.last_update')}
                         </p>
                         <div className="mt-6 text-center">
-                            <a
-                                href="/"
+                            <Link
+                                to="/"
                                 className="inline-block bg-[#00151a] text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-teal-600 transition-all"
                             >
                                 {t('privacy.back')}
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

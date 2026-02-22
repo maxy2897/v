@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './src/components/Header';
 import AIChat from './src/components/AIChat';
@@ -31,7 +31,7 @@ import NotificationsPage from './src/pages/NotificationsPage';
 
 const INITIAL_CONFIG: AppConfig = {
   logoText: 'bb',
-  customLogoUrl: '/images/logo-n.png'
+  customLogoUrl: './images/logo-n.png'
 };
 
 const ScrollToTop = () => {
@@ -46,22 +46,9 @@ const ScrollToTop = () => {
 
 // Component to handle "First Visit" logic
 const FirstVisitRedirect = () => {
-  const location = useLocation();
-  const [isFirstVisit, setIsFirstVisit] = useState(true);
-
   useEffect(() => {
-    const hasVisited = sessionStorage.getItem('has_visited_session');
-    if (!hasVisited && location.pathname !== '/') {
-      // Only redirect if it's the very first load and not already on home
-      // But wait... actually if they refresh, session storage persists.
-      // If they close tab and open again, session storage clears.
-      // That matches "First access -> Home", "Refresh -> Stay".
-      window.location.replace('/');
-    }
-    sessionStorage.setItem('has_visited_session', 'true');
-    setIsFirstVisit(false);
+    console.log('🚀 App Mounting');
   }, []);
-
   return null;
 };
 
@@ -107,8 +94,12 @@ const AppContent: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
   const [config, setConfig] = useState<AppConfig>(() => {
-    const saved = localStorage.getItem('bb_config');
-    return saved ? JSON.parse(saved) : INITIAL_CONFIG;
+    try {
+      const saved = localStorage.getItem('bb_config');
+      return saved ? JSON.parse(saved) : INITIAL_CONFIG;
+    } catch (e) {
+      return INITIAL_CONFIG;
+    }
   });
 
   useEffect(() => {
@@ -147,7 +138,6 @@ const AppContent: React.FC = () => {
   return (
     <>
       <ScrollToTop />
-      <FirstVisitRedirect />
       <div className="min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
         <Header
           onOpenRegister={() => setIsRegisterOpen(true)}
@@ -227,10 +217,10 @@ const AppContent: React.FC = () => {
               <div className="space-y-6">
                 <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.logistics_services')}</p>
                 <ul className="space-y-3 text-sm font-medium text-gray-400">
-                  <li><a href="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</a></li>
-                  <li><a href="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</a></li>
-                  <li><a href="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</a></li>
-                  <li><a href="/servicios" className="hover:text-white transition-colors">{t('footer.advisor')}</a></li>
+                  <li><Link to="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</Link></li>
+                  <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</Link></li>
+                  <li><Link to="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</Link></li>
+                  <li><Link to="/servicios" className="hover:text-white transition-colors">{t('footer.advisor')}</Link></li>
                 </ul>
               </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { TERMS_AND_CONDITIONS } from '../constants/terms';
 
@@ -126,7 +126,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                         </button>
 
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-3xl mb-6 shadow-xl shadow-teal-900/10 p-4 border border-teal-50">
-                            <img src="/images/logo-n.png" alt="Bodipo Logo" className="w-full h-full object-contain" />
+                            <img src="./images/logo-n.png" alt="Bodipo Logo" className="w-full h-full object-contain" />
                         </div>
                         <h1 className="text-3xl font-black text-[#00151a] mb-2 tracking-tight">
                             {t('client.welcome')}
@@ -415,7 +415,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                             className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
                                         />
                                         <label htmlFor="privacy" className="text-xs text-gray-600 font-medium leading-relaxed cursor-pointer">
-                                            He leído y acepto la <a href="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">política de privacidad</a>
+                                            He leído y acepto la <Link to="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">política de privacidad</Link>
                                         </label>
                                     </div>
 

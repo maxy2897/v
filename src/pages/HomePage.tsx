@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 
 interface HomePageProps {
@@ -27,9 +28,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
-                                <a href="/tarifas" className="px-10 py-5 bg-[#00151a] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#007e85] transition-all shadow-2xl shadow-teal-900/40">
+                                <Link to="/tarifas" className="px-10 py-5 bg-[#00151a] text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#007e85] transition-all shadow-2xl shadow-teal-900/40">
                                     {t('home.hero.cta_ship')}
-                                </a>
+                                </Link>
                                 <button
                                     onClick={onOpenContact}
                                     className="px-10 py-5 bg-teal-500 text-[#00151a] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20"
@@ -43,7 +44,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-[#00151a]">
                                 <img
                                     className="w-full h-[500px] object-cover scale-110 transition-transform duration-700 hover:scale-125"
-                                    src={appConfig?.content?.hero?.heroImage || "/images/hero-home.jpg"}
+                                    src={appConfig?.content?.hero?.heroImage || "./images/hero-home.jpg"}
                                     alt="Carga BodipoBusiness"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#00151a] via-transparent to-transparent"></div>
@@ -78,15 +79,15 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 <p className="text-gray-400 text-lg font-medium leading-relaxed mb-12 max-w-md">
                                     {t('home.money.desc')}
                                 </p>
-                                <a
-                                    href="/money-transfer"
+                                <Link
+                                    to="/money-transfer"
                                     className="inline-flex items-center justify-center px-10 py-5 bg-teal-500 text-[#00151a] rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20 w-fit"
                                 >
                                     {t('home.money.cta')}
                                     <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                     </svg>
-                                </a>
+                                </Link>
                             </div>
                             <div className="relative h-[400px] lg:h-auto overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] to-transparent z-10 lg:block hidden"></div>
@@ -186,12 +187,12 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 {t('home.member.subtitle')}
                             </p>
                         </div>
-                        <a
-                            href="/acceso"
+                        <Link
+                            to="/acceso"
                             className="bg-white text-[#00151a] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-50 transition-all"
                         >
                             {t('home.member.cta')}
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-teal-900/20 to-transparent"></div>

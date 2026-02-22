@@ -1,8 +1,9 @@
 
 // API URL - Dinámico basado en entorno
+const FALLBACK_URL = 'https://bodipo-business-api.onrender.com';
 const API_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
-  : '/api';
+  : `${FALLBACK_URL}/api`;
 
 
 /**

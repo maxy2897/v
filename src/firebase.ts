@@ -19,7 +19,12 @@ export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const appleProvider = new OAuthProvider('apple.com');
 
+export const isElectron = () => typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes(' electron/');
+
 export const signInWithGoogle = async () => {
+    if (isElectron()) {
+        throw new Error("El inicio de sesión social (Google/Apple) no está disponible en la versión de escritorio por razones de seguridad de los proveedores. Por favor, usa tu correo y contraseña.");
+    }
     try {
         const result = await signInWithPopup(auth, googleProvider);
         return result.user;
@@ -30,6 +35,9 @@ export const signInWithGoogle = async () => {
 };
 
 export const signInWithApple = async () => {
+    if (isElectron()) {
+        throw new Error("El inicio de sesión social (Google/Apple) no está disponible en la versión de escritorio por razones de seguridad de los proveedores. Por favor, usa tu correo y contraseña.");
+    }
     try {
         const result = await signInWithPopup(auth, appleProvider);
         return result.user;

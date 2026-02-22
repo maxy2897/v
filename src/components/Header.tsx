@@ -37,27 +37,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
-              <div className="hidden md:flex items-center gap-1 mr-1 xl:mr-2">
-                <button
-                  onClick={() => window.history.back()}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-teal-100 text-teal-700 hover:bg-teal-50 hover:scale-110 transition-all shadow-sm"
-                  title={t('btn.back') || 'Volver atrás'}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m15 18-6-6 6-6" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => window.history.forward()}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-teal-100 text-teal-700 hover:bg-teal-50 hover:scale-110 transition-all shadow-sm"
-                  title={t('btn.forward') || 'Ir adelante'}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m9 18 6-6-6-6" />
-                  </svg>
-                </button>
-                <div className="w-px h-6 bg-gray-200 mx-1"></div>
-              </div>
 
               <Link to="/" className="flex items-center space-x-2 group relative z-20">
                 <div className="flex items-center justify-center w-12 h-12 md:w-20 md:h-20 xl:w-28 xl:h-28 bg-transparent rounded-full group-hover:scale-110 transition-transform p-1">

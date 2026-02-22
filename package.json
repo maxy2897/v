@@ -2,7 +2,7 @@
   "name": "bodipo_busines.es",
   "private": true,
   "version": "1.0.1",
-  "description": "Bodipo Business - Cleaned Up Dependencies",
+  "description": "Bodipo Business - Web Application",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -42,6 +42,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.24",
+    "cross-env": "^10.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.8.2",

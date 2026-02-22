@@ -672,18 +672,18 @@ const Calculator: React.FC = () => {
             <div className="bg-white border-2 border-dashed border-gray-100 rounded-[3rem] w-full min-h-[400px] flex flex-col justify-center items-center text-center p-6 relative overflow-hidden group">
               <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
                 {info.type === 'Marítimo' ? (
-                  <img src="/images/service-ship.png" className="w-full h-full object-cover scale-150" alt="" />
+                  <img src="./images/service-ship.png" className="w-full h-full object-cover scale-150" alt="" />
                 ) : (
-                  <img src="/images/service-plane.png" className="w-full h-full object-cover scale-150" alt="" />
+                  <img src="./images/service-plane.png" className="w-full h-full object-cover scale-150" alt="" />
                 )}
               </div>
 
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-full max-w-[280px] aspect-square rounded-[2rem] overflow-hidden mb-8 shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
                   {info.type === 'Marítimo' ? (
-                    <img src="/images/service-ship.png" className="w-full h-full object-cover animate-in fade-in zoom-in duration-700" alt="Transporte Marítimo" />
+                    <img src="./images/service-ship.png" className="w-full h-full object-cover animate-in fade-in zoom-in duration-700" alt="Transporte Marítimo" />
                   ) : (
-                    <img src="/images/service-plane.png" className="w-full h-full object-cover animate-in fade-in zoom-in duration-700" alt="Transporte Aéreo" />
+                    <img src="./images/service-plane.png" className="w-full h-full object-cover animate-in fade-in zoom-in duration-700" alt="Transporte Aéreo" />
                   )}
                 </div>
 
