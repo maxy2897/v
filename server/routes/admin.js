@@ -9,8 +9,8 @@ const router = express.Router();
 // @access  Private/SuperAdmin
 router.get('/users', protect, admin, async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal' });
+        if (!['admin', 'admin_tech'].includes(req.user.role)) {
+            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
         }
         const users = await User.find({}).select('-password');
         res.json({ users });
@@ -24,9 +24,9 @@ router.get('/users', protect, admin, async (req, res) => {
 // @access  Private/SuperAdmin
 router.put('/users/:id/role', protect, async (req, res) => {
     try {
-        // Solo el administrador principal puede asignar roles a otros
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal' });
+        // Solo el administrador principal o técnico puede asignar roles a otros
+        if (!['admin', 'admin_tech'].includes(req.user.role)) {
+            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
         }
 
         const { role } = req.body;
@@ -42,9 +42,9 @@ router.put('/users/:id/role', protect, async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        // Evitar que el admin principal se quite el rol a sí mismo
-        if (user._id.toString() === req.user._id.toString() && role !== 'admin') {
-            return res.status(400).json({ message: 'No puedes quitarte el rol de Administrador Principal a ti mismo' });
+        // Evitar que el admin se quite su propio rol por accidente
+        if (user._id.toString() === req.user._id.toString() && role !== req.user.role) {
+            return res.status(400).json({ message: 'No puedes cambiarte tu propio rol administrativo' });
         }
 
         user.role = role;

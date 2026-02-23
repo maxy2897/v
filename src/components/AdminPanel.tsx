@@ -69,7 +69,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       return ['shipments', 'transactions', 'reports', 'notifications', 'pos'];
     }
     // admin_tech y admin (superadmin) ven todo
-    return ['products', 'branding', 'reports', 'config', 'content', 'operational', 'transactions', 'shipments', 'notifications', 'pickup', 'pos', ...(role === 'admin' ? ['users'] : [])];
+    return ['products', 'branding', 'reports', 'config', 'content', 'operational', 'transactions', 'shipments', 'notifications', 'pickup', 'pos', ...(['admin', 'admin_tech'].includes(role as string) ? ['users'] : [])];
   };
 
   const allowedTabs = getTabs();
