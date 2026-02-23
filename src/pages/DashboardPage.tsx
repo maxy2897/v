@@ -35,7 +35,7 @@ interface DashboardPageProps {
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdmin }) => {
-    const { user, logout, updateUser, isAuthenticated } = useAuth();
+    const { user, logout, updateUser, isAuthenticated, loading: authLoading } = useAuth();
     const { t, language } = useSettings();
     const navigate = useNavigate();
     const location = useLocation();
@@ -95,29 +95,33 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     });
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!authLoading && !isAuthenticated) {
             navigate('/');
             return;
         }
 
-        const loadData = async () => {
-            try {
-                const [shipmentsData, transactionsData] = await Promise.all([
-                    api.getUserShipments(),
-                    api.getUserTransactions()
-                ]);
-                setShipments(shipmentsData);
-                setTransactions(transactionsData);
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-            } finally {
-                setLoadingShipments(false);
-                setLoadingTransactions(false);
-            }
-        };
+        if (!authLoading && isAuthenticated) {
+            const loadData = async () => {
+                try {
+                    const [shipmentsData, transactionsData] = await Promise.all([
+                        api.getUserShipments(),
+                        api.getUserTransactions()
+                    ]);
+                    setShipments(shipmentsData);
+                    setTransactions(transactionsData);
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                } finally {
+                    setLoadingShipments(false);
+                    setLoadingTransactions(false);
+                }
+            };
 
-        loadData();
-    }, [isAuthenticated, navigate]);
+            if (isAuthenticated) {
+                loadData();
+            }
+        }
+    }, [isAuthenticated, authLoading, navigate]);
 
     // Sync formData with user when user changes
     useEffect(() => {
@@ -306,8 +310,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
 
                             {activeTab === 'settings' && (
                                 <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#007e85] bg-[#f0fcfc] px-3 py-1 rounded-full border border-teal-100">
-                                    <svg className="w-3.5 h-3.5 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                    <svg width="16" height="16" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill="#0095F6" />
                                     </svg>
                                     Perfil Verificado
                                 </div>
