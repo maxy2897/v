@@ -48,6 +48,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings'>('shipments');
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isMobileMenu, setIsMobileMenu] = useState(true);
 
     // Read query param for tab
     useEffect(() => {
@@ -55,6 +56,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
         const tab = params.get('tab');
         if (tab === 'settings' || tab === 'invoices' || tab === 'shipments') {
             setActiveTab(tab as any);
+            setIsMobileMenu(false);
         }
     }, [location.search]);
 
@@ -188,7 +190,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             <div className="flex flex-col md:flex-row min-h-screen">
 
                 {/* Wallapop Sidebar */}
-                <aside className="w-full md:w-[320px] bg-white border-r border-gray-100 flex flex-col pt-24 shrink-0">
+                <aside className={`w-full md:w-[320px] bg-white border-r border-gray-100 flex-col pt-24 shrink-0 ${!isMobileMenu ? 'hidden md:flex' : 'flex'}`}>
                     {/* User Card */}
                     <div className="px-8 mb-10">
                         <div className="flex items-center gap-4 mb-4">
@@ -226,7 +228,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                 onClick={() => {
                                     if (item.id === 'notifications') navigate('/notificaciones');
                                     else if (item.id === 'admin') onOpenAdmin?.();
-                                    else setActiveTab(item.id as any);
+                                    else {
+                                        setActiveTab(item.id as any);
+                                        setIsMobileMenu(false);
+                                    }
                                 }}
                                 className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all ${activeTab === item.id ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
                             >
@@ -249,8 +254,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                 </aside>
 
                 {/* Main Content Area */}
-                <main className="flex-grow bg-[#f9fafb] pt-24 pb-12 px-6 md:px-12 overflow-y-auto">
+                <main className={`flex-grow bg-[#f9fafb] pt-24 pb-12 px-6 md:px-12 overflow-y-auto ${isMobileMenu ? 'hidden md:block' : 'block'}`}>
                     <div className="max-w-4xl">
+
+                        {/* Mobile Back Button */}
+                        <button
+                            onClick={() => setIsMobileMenu(true)}
+                            className="md:hidden flex items-center gap-2 text-gray-500 hover:text-[#00151a] font-black uppercase tracking-widest text-[10px] mb-8 bg-white px-5 py-3 rounded-2xl shadow-sm border border-gray-100 transition-all"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+                            Volver al Menú
+                        </button>
 
                         {/* Dynamic Header */}
                         <div className="mb-10 flex justify-between items-end border-b border-gray-100 pb-8">
