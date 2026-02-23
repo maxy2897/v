@@ -69,6 +69,34 @@ export const AdminUsers: React.FC = () => {
         }
     };
 
+    const handleDeleteUser = async (userId: string, userName: string) => {
+        if (!confirm(`¿Estás seguro de que quieres eliminar a ${userName} y TODOS sus datos asociados (envíos, transacciones, etc.)? Esta acción es irreversible.`)) {
+            return;
+        }
+
+        try {
+            const userStr = localStorage.getItem('user');
+            const token = userStr ? JSON.parse(userStr).token : '';
+
+            const res = await fetch(`${BASE_URL}/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || 'Error al eliminar el usuario');
+            }
+
+            alert('Usuario y datos asociados eliminados exitosamente');
+            fetchUsers();
+        } catch (err: any) {
+            alert(err.message || 'Error al eliminar el usuario');
+        }
+    };
+
     const rolesList = [
         { value: 'user', label: 'Cliente (User)' },
         { value: 'admin_local', label: 'Admin Local (Tienda)' },
@@ -98,6 +126,7 @@ export const AdminUsers: React.FC = () => {
                                 <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Contacto</th>
                                 <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Rol Actual</th>
                                 <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Cambiar Rol</th>
+                                <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -128,6 +157,15 @@ export const AdminUsers: React.FC = () => {
                                                 <option key={r.value} value={r.value}>{r.label}</option>
                                             ))}
                                         </select>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button
+                                            onClick={() => handleDeleteUser(user._id, user.name)}
+                                            className="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition-colors"
+                                            title="Eliminar usuario y todos sus datos"
+                                        >
+                                            Eliminar
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
