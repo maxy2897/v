@@ -59,14 +59,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
             {/* Language Switcher and Actions */}
             <div className="flex items-center gap-1.5 md:gap-4">
-              {/* Mobile Language Switcher */}
-              <div className="flex lg:hidden items-center text-[10px] font-bold uppercase bg-teal-600 text-white px-2 py-1.5 rounded-xl gap-2 shadow-sm">
-                <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'opacity-100' : 'opacity-50'}`}>ES</button>
-                <span className="opacity-30">|</span>
-                <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'opacity-100' : 'opacity-50'}`}>EN</button>
-                <span className="opacity-30">|</span>
-                <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'opacity-100' : 'opacity-50'}`}>FR</button>
-              </div>
+              {/* Mobile Language Switcher removed per user request */}
 
               {/* Desktop Nav */}
               <nav
