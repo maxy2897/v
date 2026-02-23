@@ -14,6 +14,8 @@ export const AdminUsers: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [userToDelete, setUserToDelete] = useState<{ id: string, name: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -69,16 +71,19 @@ export const AdminUsers: React.FC = () => {
         }
     };
 
-    const handleDeleteUser = async (userId: string, userName: string) => {
-        if (!confirm(`¿Estás seguro de que quieres eliminar a ${userName} y TODOS sus datos asociados (envíos, transacciones, etc.)? Esta acción es irreversible.`)) {
-            return;
-        }
+    const handleDeleteUser = (userId: string, userName: string) => {
+        setUserToDelete({ id: userId, name: userName });
+    };
+
+    const confirmDeleteUser = async () => {
+        if (!userToDelete) return;
 
         try {
+            setIsDeleting(true);
             const userStr = localStorage.getItem('user');
             const token = userStr ? JSON.parse(userStr).token : '';
 
-            const res = await fetch(`${BASE_URL}/api/admin/users/${userId}`, {
+            const res = await fetch(`${BASE_URL}/api/admin/users/${userToDelete.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -90,10 +95,13 @@ export const AdminUsers: React.FC = () => {
                 throw new Error(data.message || 'Error al eliminar el usuario');
             }
 
-            alert('Usuario y datos asociados eliminados exitosamente');
+            // Successfully deleted
             fetchUsers();
+            setUserToDelete(null); // format fixes
         } catch (err: any) {
             alert(err.message || 'Error al eliminar el usuario');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -171,6 +179,39 @@ export const AdminUsers: React.FC = () => {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* Modal de Confirmación de Eliminación */}
+            {userToDelete && (
+                <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => !isDeleting && setUserToDelete(null)}></div>
+                    <div className="relative bg-white p-8 rounded-[2rem] shadow-2xl max-w-sm w-full animate-in zoom-in duration-200">
+                        <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        </div>
+                        <h3 className="text-xl font-black text-center text-[#00151a] mb-2">Eliminar Usuario</h3>
+                        <p className="text-gray-500 text-sm text-center font-medium mb-8">
+                            ¿Estás seguro de eliminar a <span className="font-bold text-gray-900">{userToDelete.name}</span>? Se borrarán sus transacciones, notificaciones y envíos vinculados de manera definitiva.
+                        </p>
+
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setUserToDelete(null)}
+                                disabled={isDeleting}
+                                className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmDeleteUser}
+                                disabled={isDeleting}
+                                className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-600 transition-colors disabled:opacity-50"
+                            >
+                                {isDeleting ? 'Borrando...' : 'Sí, Eliminar'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
