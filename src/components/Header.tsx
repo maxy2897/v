@@ -46,11 +46,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1">{config.logoText}</span>
                   )}
                 </div>
-                <div className="hidden sm:flex flex-col -space-y-0.5 xl:-space-y-1">
-                  <span className="text-lg xl:text-2xl font-black tracking-tighter text-[#00151a] uppercase group-hover:text-[#007e85] transition-colors shadow-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                <div className="flex flex-col -space-y-0.5 xl:-space-y-1">
+                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter text-[#00151a] uppercase group-hover:text-[#007e85] transition-colors shadow-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
                     Bodipo
                   </span>
-                  <span className="text-xs xl:text-sm font-bold tracking-[0.2em] text-[#007e85] uppercase">
+                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] text-[#007e85] uppercase">
                     Business
                   </span>
                 </div>
