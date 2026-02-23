@@ -35,9 +35,25 @@ export const protect = async (req, res, next) => {
 };
 
 export const admin = (req, res, next) => {
-    if (req.user && req.user.role === 'admin') {
+    if (req.user && ['admin', 'admin_local', 'admin_finance', 'admin_tech'].includes(req.user.role)) {
         next();
     } else {
         res.status(403).json({ message: 'No autorizado, requiere rol de administrador' });
+    }
+};
+
+export const finance = (req, res, next) => {
+    if (req.user && ['admin', 'admin_finance', 'admin_tech'].includes(req.user.role)) {
+        next();
+    } else {
+        res.status(403).json({ message: 'No autorizado, requiere acceso a finanzas' });
+    }
+};
+
+export const tech = (req, res, next) => {
+    if (req.user && ['admin', 'admin_tech'].includes(req.user.role)) {
+        next();
+    } else {
+        res.status(403).json({ message: 'No autorizado, requiere nivel técnico' });
     }
 };

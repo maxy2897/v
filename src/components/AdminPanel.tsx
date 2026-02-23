@@ -1,13 +1,15 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product, AppConfig, ShippingStatus } from '../../types';
 import { AdminNotifications } from './AdminNotifications';
+import { AdminUsers } from './AdminUsers';
 import { createNotification } from '../services/notificationsApi';
 import { createProduct as apiCreateProduct, deleteProduct as apiDeleteProduct, getProducts } from '../services/productsApi';
 import { Html5Qrcode } from 'html5-qrcode';
 import { QRCodeCanvas } from 'qrcode.react';
+import { useAuth } from '../context/AuthContext';
 
 interface Shipment {
   _id: string;
@@ -54,7 +56,34 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setProducts, config, setConfig }) => {
   const { appConfig, updateConfig, language } = useSettings();
-  const [activeTab, setActiveTab] = useState<'products' | 'branding' | 'reports' | 'config' | 'content' | 'operational' | 'transactions' | 'shipments' | 'notifications' | 'pickup' | 'pos'>('products');
+  const { user } = useAuth();
+  const role = user?.role || 'user';
+
+  // Define allowed tabs per role
+  const getTabs = () => {
+    // Definición precisa de permisos por rol
+    if (role === 'admin_local') {
+      return ['shipments', 'pos', 'notifications', 'pickup'];
+    }
+    if (role === 'admin_finance') {
+      return ['shipments', 'transactions', 'reports', 'notifications', 'pos'];
+    }
+    // admin_tech y admin (superadmin) ven todo
+    return ['products', 'branding', 'reports', 'config', 'content', 'operational', 'transactions', 'shipments', 'notifications', 'pickup', 'pos', ...(role === 'admin' ? ['users'] : [])];
+  };
+
+  const allowedTabs = getTabs();
+
+  const [activeTab, setActiveTab] = useState(allowedTabs[0] as any);
+
+  // Si por alguna razón el activeTab actual no está permitido para el nuevo rol (ej: al cambiar de usuario),
+  // forzamos el cambio a la primera pestaña permitida.
+  useEffect(() => {
+    if (!allowedTabs.includes(activeTab)) {
+      setActiveTab(allowedTabs[0] as any);
+    }
+  }, [role, allowedTabs, activeTab]);
+
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
   const [allShipments, setAllShipments] = useState<Shipment[]>([]);
@@ -194,9 +223,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     const term = (tracking || pickupSearch).trim().toUpperCase();
     if (!term) return;
 
+    // Proprietary Security Check
+    if (!term.startsWith('BODIPO_')) {
+      showToast('Código QR no válido para este sistema.', 'error');
+      return;
+    }
+
+    const secureData = term.replace('BODIPO_', '');
+
     // Detect Manifest QR
-    if (term.startsWith('MANIFEST:')) {
-      const ids = term.replace('MANIFEST:', '').split(',');
+    if (secureData.startsWith('MANIFEST:')) {
+      const ids = secureData.replace('MANIFEST:', '').split(',');
       const found = allShipments.filter(s => ids.includes(s._id));
       if (found.length) {
         setManifestShipments(found);
@@ -208,13 +245,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       }
     }
 
+    const trackingCode = secureData.startsWith('TRACK:') ? secureData.replace('TRACK:', '') : secureData;
     setIsSearchingPickup(true);
     setPickupShipment(null);
     setManifestShipments([]);
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/tracking/${term}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/tracking/${trackingCode}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -653,84 +691,114 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
             </div>
 
             <nav className="flex md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 hide-scrollbar">
-              <button
-                onClick={() => setActiveTab('products')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'products' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                Productos
-              </button>
-              <button
-                onClick={() => setActiveTab('content')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'content' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                Contenido
-              </button>
-              <button
-                onClick={() => setActiveTab('operational')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'operational' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                Operativo
-              </button>
-              <button
-                onClick={() => setActiveTab('branding')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'branding' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                Marca
-              </button>
-              <button
-                onClick={() => setActiveTab('reports')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'reports' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                Reportes
-              </button>
-              <button
-                onClick={() => setActiveTab('pos')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pos' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                Registro Envío (POS)
-              </button>
-              <button
-                onClick={() => setActiveTab('shipments')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'shipments' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                Envíos
-              </button>
-              <button
-                onClick={() => setActiveTab('transactions')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'transactions' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                Contabilidad
-              </button>
-              <button
-                onClick={() => setActiveTab('config')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'config' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                Config
-              </button>
-
-              <button
-                onClick={() => setActiveTab('notifications')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'notifications' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                Notificaciones
-              </button>
-              <button
-                onClick={() => setActiveTab('pickup')}
-                className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pickup' ? 'bg-orange-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-              >
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
-                Recogida 📦
-              </button>
+              {allowedTabs.includes('products') && (
+                <button
+                  onClick={() => setActiveTab('products')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'products' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                  Productos
+                </button>
+              )}
+              {allowedTabs.includes('content') && (
+                <button
+                  onClick={() => setActiveTab('content')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'content' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  Contenido
+                </button>
+              )}
+              {allowedTabs.includes('operational') && (
+                <button
+                  onClick={() => setActiveTab('operational')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'operational' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                  Operativo
+                </button>
+              )}
+              {allowedTabs.includes('branding') && (
+                <button
+                  onClick={() => setActiveTab('branding')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'branding' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  Marca
+                </button>
+              )}
+              {allowedTabs.includes('reports') && (
+                <button
+                  onClick={() => setActiveTab('reports')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'reports' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                  Reportes
+                </button>
+              )}
+              {allowedTabs.includes('pos') && (
+                <button
+                  onClick={() => setActiveTab('pos')}
+                  className={`w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pos' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                  Registro Envío (POS)
+                </button>
+              )}
+              {allowedTabs.includes('shipments') && (
+                <button
+                  onClick={() => setActiveTab('shipments')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'shipments' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                  Envíos
+                </button>
+              )}
+              {allowedTabs.includes('transactions') && (
+                <button
+                  onClick={() => setActiveTab('transactions')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'transactions' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Contabilidad
+                </button>
+              )}
+              {allowedTabs.includes('config') && (
+                <button
+                  onClick={() => setActiveTab('config')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'config' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  Config
+                </button>
+              )}
+              {allowedTabs.includes('notifications') && (
+                <button
+                  onClick={() => setActiveTab('notifications')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'notifications' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                  Notificaciones
+                </button>
+              )}
+              {allowedTabs.includes('pickup') && (
+                <button
+                  onClick={() => setActiveTab('pickup')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pickup' ? 'bg-orange-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
+                  Recogida 📦
+                </button>
+              )}
+              {allowedTabs.includes('users') && (
+                <button
+                  onClick={() => setActiveTab('users')}
+                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'users' ? 'bg-orange-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  Usuarios
+                </button>
+              )}
             </nav>
           </div>
 
@@ -748,13 +816,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
           {/* Top Bar Mobile/Desc */}
           <div className="sticky top-0 bg-white/90 backdrop-blur-sm z-10 px-8 py-6 border-b border-gray-50 flex justify-between items-center">
             <h3 className="text-xl font-black text-[#00151a] uppercase tracking-tighter">
-              {activeTab === 'products' ? 'Gestión de Productos' :
-                activeTab === 'branding' ? 'Marca y Personalización' :
-                  activeTab === 'reports' ? 'Centro de Reportes' :
-                    activeTab === 'transactions' ? 'Historial de Transacciones' :
-                      activeTab === 'shipments' ? 'Gestión de Envíos' :
-                        activeTab === 'notifications' ? 'Sistema de Notificaciones' :
-                          activeTab === 'pickup' ? 'Centro de Recogida y Entrega' : 'Configuración Global'}
+              {activeTab === 'products' && 'Gestión de Productos'}
+              {activeTab === 'branding' && 'Marca y Personalización'}
+              {activeTab === 'reports' && 'Centro de Reportes'}
+              {activeTab === 'transactions' && 'Historial de Transacciones'}
+              {activeTab === 'shipments' && 'Gestión de Envíos'}
+              {activeTab === 'notifications' && 'Sistema de Notificaciones'}
+              {activeTab === 'pickup' && 'Centro de Recogida y Entrega'}
+              {activeTab === 'pos' && 'Terminal Punto de Venta (POS)'}
+              {activeTab === 'config' && 'Configuración Global'}
+              {activeTab === 'content' && 'Gestión de Contenido'}
+              {activeTab === 'operational' && 'Datos Operativos'}
             </h3>
             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {new Date().toLocaleDateString()}
@@ -784,7 +856,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
           </AnimatePresence>
 
           <div className="p-8">
-            {activeTab === 'products' ? (
+            {activeTab === 'products' && allowedTabs.includes('products') && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section>
                   <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">Añadir Nuevo Producto</h3>
@@ -865,7 +937,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </div>
                 </section>
               </div>
-            ) : activeTab === 'branding' ? (
+            )}
+
+            {activeTab === 'branding' && allowedTabs.includes('branding') && (
               <div className="max-w-xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100">
                   <h3 className="text-sm font-black text-gray-400 mb-8 uppercase tracking-widest text-center">Configuración de Marca</h3>
@@ -915,68 +989,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </p>
                 </div>
               </div>
-            ) : activeTab === 'reports' ? (
-              <div className="max-w-xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <section className="bg-gradient-to-br from-[#00151a] to-[#002f3a] p-10 rounded-[2.5rem] shadow-2xl text-white relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            )}
 
-                  <h3 className="text-2xl font-black mb-2 tracking-tighter">Contabilidad Mensual</h3>
-                  <p className="text-gray-400 text-sm font-medium mb-8 max-w-sm">
-                    Genera un reporte detallado en Excel (.csv) con todas las transacciones, envíos y registros de usuarios para tu control financiero.
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                      <p className="text-[10px] font-black uppercase text-teal-400 tracking-widest mb-1">Incluye</p>
-                      <ul className="text-xs space-y-1 text-gray-300">
-                        <li>• Envíos de Paquetes</li>
-                        <li>• Transferencias</li>
-                        <li>• Registros Nuevos</li>
-                      </ul>
-                    </div>
-                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                      <p className="text-[10px] font-black uppercase text-teal-400 tracking-widest mb-1">Formato</p>
-                      <p className="text-xs text-gray-300">Archivo .CSV compatible con Excel, Numbers y Google Sheets.</p>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={async () => {
-                      if (!confirm('¿Descargar reporte de contabilidad completo?')) return;
-                      try {
-                        const userStr = localStorage.getItem('user');
-                        const token = userStr ? JSON.parse(userStr).token : '';
-
-                        const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/reports/accounting`, {
-                          headers: {
-                            'Authorization': `Bearer ${token}`
-                          }
-                        });
-
-                        if (!response.ok) throw new Error('Error en la descarga');
-
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `Reporte_Bodipo_${new Date().toISOString().split('T')[0]}.csv`;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-                      } catch (error) {
-                        alert('Error al descargar el reporte. Verifica que tengas permisos de administrador.');
-                        console.error(error);
-                      }
-                    }}
-                    className="w-full bg-teal-500 text-[#00151a] py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-teal-400 transition-all shadow-xl shadow-teal-900/50 flex items-center justify-center gap-3"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    Descargar Excel (.CSV)
-                  </button>
-                </section>
-              </div>
-            ) : activeTab === 'content' ? (
+            {activeTab === 'content' && allowedTabs.includes('content') && (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
                   <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
@@ -1100,7 +1115,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </div>
                 </section>
               </div>
-            ) : activeTab === 'operational' ? (
+            )}
+
+            {activeTab === 'operational' && allowedTabs.includes('operational') && (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
                   <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
@@ -1126,6 +1143,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.contact?.phones?.es || ''}
                             onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, es: e.target.value } } } as any)}
+                            title="Teléfono España"
+                            placeholder="+34 000 000 000"
                           />
                         </div>
                         <div>
@@ -1136,6 +1155,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.contact?.phones?.gq || ''}
                             onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, gq: e.target.value } } } as any)}
+                            title="Teléfono Guinea Ecuatorial"
+                            placeholder="+240 000 000 000"
                           />
                         </div>
                         <div>
@@ -1146,6 +1167,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.contact?.phones?.cm || ''}
                             onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, cm: e.target.value } } } as any)}
+                            title="Teléfono Camerún"
+                            placeholder="+237 000 000 000"
                           />
                         </div>
                         <div>
@@ -1155,6 +1178,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm h-20 resize-none"
                             value={appConfig?.contact?.addresses?.es || ''}
                             onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, addresses: { ...appConfig?.contact?.addresses, es: e.target.value } } } as any)}
+                            title="Dirección Madrid"
+                            placeholder="Introduce la dirección en Madrid"
                           />
                         </div>
                         <div>
@@ -1164,6 +1189,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm h-20 resize-none"
                             value={appConfig?.contact?.addresses?.gq || ''}
                             onChange={(e) => updateConfig && updateConfig({ contact: { ...appConfig?.contact, addresses: { ...appConfig?.contact?.addresses, gq: e.target.value } } } as any)}
+                            title="Dirección Malabo / Bata"
+                            placeholder="Introduce la dirección en Guinea Ecuatorial"
                           />
                         </div>
                       </div>
@@ -1181,6 +1208,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.bank?.holder || ''}
                             onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, holder: e.target.value } } as any)}
+                            title="Titular de la Cuenta"
+                            placeholder="Nombre del titular"
                           />
                         </div>
                         <div>
@@ -1191,6 +1220,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.bank?.accountNumber || ''}
                             onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, accountNumber: e.target.value } } as any)}
+                            title="Número de Cuenta"
+                            placeholder="0000 0000 0000 0000"
                           />
                         </div>
                         <div>
@@ -1201,6 +1232,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.bank?.iban || ''}
                             onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, iban: e.target.value } } as any)}
+                            title="IBAN"
+                            placeholder="ES00 0000 0000..."
                           />
                         </div>
                         <div>
@@ -1211,6 +1244,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm"
                             value={appConfig?.bank?.bizum || ''}
                             onChange={(e) => updateConfig && updateConfig({ bank: { ...appConfig?.bank, bizum: e.target.value } } as any)}
+                            title="Bizum"
+                            placeholder="Número Bizum"
                           />
                         </div>
                       </div>
@@ -1218,7 +1253,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </div>
                 </section>
               </div>
-            ) : activeTab === 'transactions' ? (
+            )}
+
+            {activeTab === 'transactions' && allowedTabs.includes('transactions') && (
               <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="flex justify-between items-center mb-8">
                   <h3 className="text-xl font-black text-gray-800 uppercase tracking-tighter">💼 Registro Contable</h3>
@@ -1399,7 +1436,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   );
                 })()}
               </div>
-            ) : activeTab === 'shipments' ? (
+            )}
+
+            {activeTab === 'shipments' && allowedTabs.includes('shipments') && (
               <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Search Input */}
                 <div className="mb-8 relative">
@@ -1513,7 +1552,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
                               {/* Group QR Code for Manifest */}
                               <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center gap-2">
-                                <QRCodeCanvas value={`MANIFEST:${shipments.map(s => s._id).join(',')}`} size={80} level="L" />
+                                <QRCodeCanvas value={`BODIPO_MANIFEST:${shipments.map(s => s._id).join(',')}`} size={80} level="L" />
                                 <span className="text-[8px] font-black text-teal-600 uppercase tracking-widest">QR Manifiesto</span>
                               </div>
                             </div>
@@ -1619,9 +1658,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   );
                 })()}
               </div>
-            ) : activeTab === 'notifications' ? (
+            )}
+
+            {activeTab === 'notifications' && allowedTabs.includes('notifications') && (
               <AdminNotifications />
-            ) : activeTab === 'pickup' ? (
+            )}
+
+            {activeTab === 'users' && allowedTabs.includes('users') && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <AdminUsers />
+              </div>
+            )}
+
+            {activeTab === 'pickup' && allowedTabs.includes('pickup') && (
               <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
                   <h3 className="text-xl font-black text-[#00151a] mb-6 uppercase tracking-tighter">Gestión de Entrega</h3>
@@ -1737,7 +1786,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
                         <div className="flex flex-col md:flex-row gap-8 items-start">
                           <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 shrink-0">
-                            <QRCodeCanvas value={pickupShipment.trackingNumber} size={120} level="H" />
+                            <QRCodeCanvas value={`BODIPO_TRACK:${pickupShipment.trackingNumber}`} size={120} level="H" />
                             <p className="text-[10px] font-black text-center mt-3 text-gray-400 tracking-widest">{pickupShipment.trackingNumber}</p>
                           </div>
 
@@ -1798,195 +1847,262 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   )}
                 </section>
               </div>
-            ) : activeTab === 'pos' ? (
-              <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="bg-orange-50 p-4 rounded-2xl text-orange-600">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-black text-[#00151a] tracking-tight uppercase">Mostrador de Oficina</h3>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Registro de envíos para clientes presenciales</p>
-                  </div>
-                </div>
+            )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Left: Client and Package Form */}
-                  <div className="space-y-6">
-                    <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-2">📦 Datos del Envío</h4>
+            {activeTab === 'reports' && allowedTabs.includes('reports') && (
+              <div className="max-w-xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <section className="bg-gradient-to-br from-[#00151a] to-[#002f3a] p-10 rounded-[2.5rem] shadow-2xl text-white relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">Origen</label>
-                          <select
-                            aria-label="Origen del envío"
-                            value={posData.origin}
-                            onChange={(e) => setPosData({ ...posData, origin: e.target.value as any })}
-                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 font-bold text-sm"
+                  <h3 className="text-2xl font-black mb-2 tracking-tighter">Contabilidad Mensual</h3>
+                  <p className="text-gray-400 text-sm font-medium mb-8 max-w-sm">
+                    Genera un reporte detallado en Excel (.csv) con todas las transacciones, envíos y registros de usuarios para tu control financiero.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                      <p className="text-[10px] font-black uppercase text-teal-400 tracking-widest mb-1">Incluye</p>
+                      <ul className="text-xs space-y-1 text-gray-300">
+                        <li>• Envíos de Paquetes</li>
+                        <li>• Transferencias</li>
+                        <li>• Registros Nuevos</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                      <p className="text-[10px] font-black uppercase text-teal-400 tracking-widest mb-1">Formato</p>
+                      <p className="text-xs text-gray-300">Archivo .CSV compatible con Excel, Numbers y Google Sheets.</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      if (!confirm('¿Descargar reporte de contabilidad completo?')) return;
+                      try {
+                        const userStr = localStorage.getItem('user');
+                        const token = userStr ? JSON.parse(userStr).token : '';
+
+                        const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/reports/accounting`, {
+                          headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                        });
+
+                        if (!response.ok) throw new Error('Error en la descarga');
+
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `reporte_bodipo_${new Date().toISOString().split('T')[0]}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        showToast('✅ Reporte generado y descargado');
+                      } catch (error) {
+                        showToast('❌ Error al generar el reporte', 'error');
+                      }
+                    }}
+                    className="w-full bg-teal-500 text-[#00151a] py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20"
+                  >
+                    Generar y Descargar CSV
+                  </button>
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'pos' && allowedTabs.includes('pos') && (
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* POS Content - Left Column (Fields) */}
+                <div className="xl:col-span-8 space-y-8">
+                  <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-12">
+                    {/* Origin & Type Selection */}
+                    <header className="flex flex-wrap gap-4 items-center justify-between">
+                      <div className="flex bg-gray-100 p-1.5 rounded-2xl">
+                        {['España', 'Malabo', 'Bata'].map((loc) => (
+                          <button
+                            key={loc}
+                            onClick={() => setPosData({ ...posData, origin: loc as any })}
+                            className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${posData.origin === loc ? 'bg-white text-[#00151a] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
                           >
-                            <option value="España">España 🇪🇸</option>
-                            <option value="Camerún">Camerún 🇨🇲</option>
-                            <option value="Guinea Ecuatorial">Guinea 🇬🇶</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">Destino</label>
-                          <select
-                            aria-label="Destino del envío"
-                            value={posData.destination}
-                            onChange={(e) => setPosData({ ...posData, destination: e.target.value as any })}
-                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 font-bold text-sm"
-                          >
-                            <option value="Malabo">Malabo 🇬🇶</option>
-                            <option value="Bata">Bata 🇬🇶</option>
-                          </select>
-                        </div>
+                            {loc}
+                          </button>
+                        ))}
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2">
-                        {['kg', 'bulto', 'documento'].map((mode) => (
+                      <div className="flex bg-[#00151a] p-1.5 rounded-2xl">
+                        {['Aéreo', 'Marítimo'].map((mode) => (
                           <button
                             key={mode}
-                            onClick={() => setPosData({ ...posData, calcMode: mode as any })}
-                            className={`py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${posData.calcMode === mode ? 'bg-[#00151a] text-white border-[#00151a]' : 'bg-white text-gray-400 border-gray-100'}`}
+                            onClick={() => setPosData({ ...posData, type: mode as any })}
+                            className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${posData.type === mode ? 'bg-teal-500 text-[#00151a]' : 'text-gray-400 hover:text-white'}`}
                           >
                             {mode}
                           </button>
                         ))}
                       </div>
+                    </header>
 
-                      {posData.calcMode === 'kg' && (
-                        <div className="grid grid-cols-2 gap-4">
-                          <button
-                            onClick={() => setPosData({ ...posData, type: 'Aéreo' })}
-                            className={`py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border transition-all ${posData.type === 'Aéreo' ? 'bg-teal-50 text-teal-700 border-teal-500' : 'bg-gray-50 text-gray-400 border-gray-100'}`}
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                            Aéreo
-                          </button>
-                          <button
-                            onClick={() => setPosData({ ...posData, type: 'Marítimo' })}
-                            className={`py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border transition-all ${posData.type === 'Marítimo' ? 'bg-teal-50 text-teal-700 border-teal-500' : 'bg-gray-50 text-gray-400 border-gray-100'}`}
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                            Marítimo
-                          </button>
+                    {/* Weight & Calc Mode */}
+                    <section className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100">
+                      <div className="flex justify-between items-center mb-6">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Dimensiones y Peso</label>
+                        <div className="flex gap-2">
+                          {['kg', 'bulto', 'otro'].map(m => (
+                            <button
+                              key={m}
+                              onClick={() => setPosData({ ...posData, calcMode: m as any, weight: 0 })}
+                              className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase border-2 transition-all ${posData.calcMode === m ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-200 text-gray-400'}`}
+                            >
+                              {m}
+                            </button>
+                          ))}
                         </div>
-                      )}
+                      </div>
 
-                      <div>
-                        <label className="text-[9px] font-black text-gray-400 uppercase mb-2 block">{posData.calcMode === 'kg' ? 'Peso (Kg)' : posData.calcMode === 'bulto' ? 'Tipo de bulto' : 'Precio Documento'}</label>
-                        {posData.calcMode === 'kg' ? (
-                          <input
-                            type="number"
-                            placeholder="0.00"
-                            value={posData.weight || ''}
-                            onChange={(e) => setPosData({ ...posData, weight: parseFloat(e.target.value) || 0 })}
-                            className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-2xl font-black text-[#00151a]"
-                          />
-                        ) : posData.calcMode === 'bulto' ? (
-                          <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setPosData({ ...posData, weight: 23 })} className={`py-4 rounded-xl border font-black ${posData.weight === 23 ? 'bg-teal-50 border-teal-500 text-teal-700' : 'bg-gray-50'}`}>23 KG</button>
-                            <button onClick={() => setPosData({ ...posData, weight: 32 })} className={`py-4 rounded-xl border font-black ${posData.weight === 32 ? 'bg-teal-50 border-teal-500 text-teal-700' : 'bg-gray-50'}`}>32 KG</button>
+                      {posData.calcMode === 'kg' ? (
+                        <div className="flex items-end gap-4">
+                          <div className="flex-grow">
+                            <input
+                              type="number"
+                              placeholder="0.00"
+                              value={posData.weight || ''}
+                              onChange={e => setPosData({ ...posData, weight: parseFloat(e.target.value) })}
+                              className="w-full bg-transparent border-none text-6xl font-black tracking-tighter text-[#00151a] p-0 focus:ring-0 placeholder:text-gray-200"
+                            />
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mt-2">Peso exacto en Kilogramos</p>
                           </div>
-                        ) : (
-                          <div className="bg-teal-50 p-4 rounded-xl text-center font-black text-teal-700">TARIFA PLANA 15€</div>
-                        )}
-                      </div>
+                          <span className="text-4xl font-black text-teal-500 pb-1">KG</span>
+                        </div>
+                      ) : posData.calcMode === 'bulto' ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          {[23, 30].map(w => (
+                            <button
+                              key={w}
+                              onClick={() => setPosData({ ...posData, weight: w })}
+                              className={`p-6 rounded-2xl border-2 transition-all text-left ${posData.weight === w ? 'border-teal-500 bg-teal-50' : 'border-gray-100 bg-white hover:border-teal-200'}`}
+                            >
+                              <span className="block text-2xl font-black text-[#00151a]">{w}kg</span>
+                              <span className="text-[10px] font-bold text-gray-400 uppercase">{w === 23 ? 'Maleta Estándar' : 'Bulto Grande'}</span>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          placeholder="Descripción breve (Ej: Sobre Documentos)"
+                          className="w-full bg-transparent border-b-2 border-gray-100 py-4 text-xl font-bold focus:border-teal-500 transition-all outline-none"
+                        />
+                      )}
                     </section>
 
-                    <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
-                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-2">👤 Datos del Cliente (Remitente)</h4>
-                      <input
-                        type="text"
-                        placeholder="Nombre completo del cliente"
-                        value={posData.senderName}
-                        onChange={(e) => setPosData({ ...posData, senderName: e.target.value })}
-                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                      />
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex gap-2">
-                          <select
-                            aria-label="Código de país remitente"
-                            value={posData.senderCountryCode}
-                            onChange={(e) => setPosData({ ...posData, senderCountryCode: e.target.value })}
-                            className="bg-gray-100 border-none rounded-xl px-2 py-3 text-xs font-black w-24"
-                          >
-                            <option value="+34">🇪🇸 +34</option>
-                            <option value="+240">🇬🇶 +240</option>
-                            <option value="+237">🇨🇲 +237</option>
-                          </select>
+                    {/* User Data Sections */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                      <div className="space-y-6">
+                        <h4 className="flex items-center gap-2 text-[11px] font-black uppercase text-[#00151a]">
+                          <span className="w-6 h-6 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center text-[10px]">1</span>
+                          Datos del Remitente
+                        </h4>
+                        <div className="space-y-3">
                           <input
+                            aria-label="Nombre del remitente"
                             type="text"
-                            placeholder="Teléfono"
-                            value={posData.senderPhone}
-                            onChange={(e) => setPosData({ ...posData, senderPhone: e.target.value })}
-                            className="flex-grow bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                            placeholder="Nombre Completo"
+                            value={posData.senderName}
+                            onChange={(e) => setPosData({ ...posData, senderName: e.target.value })}
+                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-teal-500"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              aria-label="Identificación del remitente"
+                              type="text"
+                              placeholder="DNI / NIE / Pasaporte"
+                              value={posData.senderId}
+                              onChange={(e) => setPosData({ ...posData, senderId: e.target.value })}
+                              className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-xs font-bold"
+                            />
+                            <div className="flex gap-2">
+                              <select
+                                aria-label="Código de país"
+                                value={posData.senderCountryCode}
+                                onChange={(e) => setPosData({ ...posData, senderCountryCode: e.target.value })}
+                                className="bg-gray-100 border-none rounded-xl px-2 py-3 text-xs font-black w-14"
+                              >
+                                <option value="+34">🇪🇸</option>
+                                <option value="+240">🇬🇶</option>
+                              </select>
+                              <input
+                                aria-label="Teléfono del remitente"
+                                type="text"
+                                placeholder="Teléfono"
+                                value={posData.senderPhone}
+                                onChange={(e) => setPosData({ ...posData, senderPhone: e.target.value })}
+                                className="flex-grow bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                              />
+                            </div>
+                          </div>
+                          <input
+                            aria-label="Email del remitente"
+                            type="email"
+                            placeholder="Email (Para factura digital)"
+                            value={posData.senderEmail}
+                            onChange={(e) => setPosData({ ...posData, senderEmail: e.target.value })}
+                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
                           />
                         </div>
-                        <input
-                          type="email"
-                          placeholder="Email (Opcional)"
-                          value={posData.senderEmail}
-                          onChange={(e) => setPosData({ ...posData, senderEmail: e.target.value })}
-                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                        />
                       </div>
-                      <input
-                        type="text"
-                        placeholder="DNI / NIE / Pasaporte"
-                        value={posData.senderId}
-                        onChange={(e) => setPosData({ ...posData, senderId: e.target.value })}
-                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                      />
-                    </section>
+
+                      <div className="space-y-6">
+                        <h4 className="flex items-center gap-2 text-[11px] font-black uppercase text-[#00151a]">
+                          <span className="w-6 h-6 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center text-[10px]">2</span>
+                          Datos del Destinatario
+                        </h4>
+                        <div className="space-y-3">
+                          <input
+                            aria-label="Nombre del destinatario"
+                            type="text"
+                            placeholder="Nombre Receptor"
+                            value={posData.recipientName}
+                            onChange={(e) => setPosData({ ...posData, recipientName: e.target.value })}
+                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                          />
+                          <div className="grid grid-cols-1 gap-2">
+                            <div className="flex gap-2">
+                              <select
+                                aria-label="Código país receptor"
+                                value={posData.recipientCountryCode}
+                                onChange={(e) => setPosData({ ...posData, recipientCountryCode: e.target.value })}
+                                className="bg-gray-100 border-none rounded-xl px-2 py-3 text-xs font-black w-24"
+                              >
+                                <option value="+240">🇬🇶 +240</option>
+                                <option value="+34">🇪🇸 +34</option>
+                              </select>
+                              <input
+                                aria-label="Teléfono del destinatario"
+                                type="text"
+                                placeholder="Teléfono"
+                                value={posData.recipientPhone}
+                                onChange={(e) => setPosData({ ...posData, recipientPhone: e.target.value })}
+                                className="flex-grow bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                              />
+                            </div>
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Barrio / Ciudad"
+                            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                </div>
 
-                  {/* Right: Summary and Finalize */}
-                  <div className="space-y-6">
-                    <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
-                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b pb-2">🎯 Destinatario</h4>
-                      <input
-                        type="text"
-                        placeholder="Nombre de quien recibe"
-                        value={posData.recipientName}
-                        onChange={(e) => setPosData({ ...posData, recipientName: e.target.value })}
-                        className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                      />
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex gap-2">
-                          <select
-                            aria-label="Código de país receptor"
-                            value={posData.recipientCountryCode}
-                            onChange={(e) => setPosData({ ...posData, recipientCountryCode: e.target.value })}
-                            className="bg-gray-100 border-none rounded-xl px-2 py-3 text-xs font-black w-24"
-                          >
-                            <option value="+240">🇬🇶 +240</option>
-                            <option value="+34">🇪🇸 +34</option>
-                            <option value="+237">🇨🇲 +237</option>
-                          </select>
-                          <input
-                            type="text"
-                            placeholder="Teléfono destinatario"
-                            value={posData.recipientPhone}
-                            onChange={(e) => setPosData({ ...posData, recipientPhone: e.target.value })}
-                            className="flex-grow bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                          />
-                        </div>
-                        <input
-                          type="email"
-                          placeholder="Email Receptor (Opcional)"
-                          value={posData.recipientEmail}
-                          onChange={(e) => setPosData({ ...posData, recipientEmail: e.target.value })}
-                          className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-bold"
-                        />
-                      </div>
-                    </section>
-
-                    <section className="bg-[#00151a] p-10 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+                {/* POS Totals - Right Column */}
+                <div className="xl:col-span-4">
+                  <div className="sticky top-8 space-y-6">
+                    <section className="bg-[#00151a] p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-400 mb-6">Resumen de Cobro</h4>
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-400 mb-10">Resumen de Cobro</h4>
 
                       <div className="space-y-4 mb-10">
                         <div className="flex justify-between items-center text-xs font-bold text-gray-400">
@@ -2005,12 +2121,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-xs font-bold text-gray-400 border-t border-white/10 pt-4">
-                          <span>IVA / Tasas</span>
-                          <span className="text-white italic">Incluido</span>
+                          <span>Tarifa aplicada</span>
+                          <span className="text-white italic">{posData.type}</span>
                         </div>
-                        <div className="flex justify-between items-end border-t border-white/10 pt-6">
-                          <span className="text-xs font-black uppercase tracking-widest text-teal-400">Total a Pagar</span>
-                          <span className="text-5xl font-black tracking-tighter text-white">
+                        <div className="flex justify-between items-end border-t border-white/10 pt-10">
+                          <span className="text-xs font-black uppercase tracking-widest text-teal-400">Total</span>
+                          <span className="text-6xl font-black tracking-tighter text-white">
                             {(() => {
                               if (posData.calcMode === 'kg') {
                                 const rate = posData.type === 'Aéreo' ? (appConfig?.rates.air.es_gq || 11) : (appConfig?.rates.sea.es_gq || 4);
@@ -2026,30 +2142,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       </div>
 
                       {/* Receipt Delivery Method */}
-                      <div className="space-y-3 mb-10 p-4 bg-white/5 rounded-2xl border border-white/10">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-teal-400 mb-2">Método de Recibo</p>
-                        <div className="grid grid-cols-3 gap-2">
-                          <button
-                            onClick={() => setPosData({ ...posData, receiptMethod: 'print' })}
-                            className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all border ${posData.receiptMethod === 'print' ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
-                          >
-                            <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                            <span className="text-[8px] font-black uppercase">Imprimir</span>
-                          </button>
-                          <button
-                            onClick={() => setPosData({ ...posData, receiptMethod: 'email' })}
-                            className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all border ${posData.receiptMethod === 'email' ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
-                          >
-                            <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                            <span className="text-[8px] font-black uppercase">Email</span>
-                          </button>
-                          <button
-                            onClick={() => setPosData({ ...posData, receiptMethod: 'whatsapp' })}
-                            className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all border ${posData.receiptMethod === 'whatsapp' ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
-                          >
-                            <svg className="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                            <span className="text-[8px] font-black uppercase">WhatsApp</span>
-                          </button>
+                      <div className="space-y-4 mb-10">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-teal-400">Método de Recibo</p>
+                        <div className="grid grid-cols-3 gap-3">
+                          {[
+                            { id: 'print', icon: 'M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z', label: 'Imprimir' },
+                            { id: 'email', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', label: 'Email' },
+                            { id: 'whatsapp', icon: 'whatsapp', label: 'WhatsApp' }
+                          ].map(m => (
+                            <button
+                              key={m.id}
+                              onClick={() => setPosData({ ...posData, receiptMethod: m.id as any })}
+                              className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all border ${posData.receiptMethod === m.id ? 'bg-teal-500 border-teal-500 text-[#00151a]' : 'bg-transparent border-white/10 text-white/50'}`}
+                            >
+                              {m.icon === 'whatsapp' ? (
+                                <svg className="w-6 h-6 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+                              ) : (
+                                <svg className="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={m.icon} /></svg>
+                              )}
+                              <span className="text-[9px] font-black uppercase">{m.label}</span>
+                            </button>
+                          ))}
                         </div>
                       </div>
 
@@ -2134,7 +2247,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+
+            {activeTab === 'config' && allowedTabs.includes('config') && (
               <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
                   <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
@@ -2230,6 +2345,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                                 aria-label={`MesBloque${num}`}
                                 type="text"
                                 placeholder="Mes (Ej: ENERO)"
+                                title={`Mes para el bloque ${num}`}
                                 className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold"
                                 value={appConfig?.content?.schedule?.[blockKey]?.month || ''}
                                 onChange={(e) => updateConfig && updateConfig({
@@ -2246,6 +2362,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                                 aria-label={`DiasBloque${num}`}
                                 type="text"
                                 placeholder="Días (Ej: 2, 17 y 30)"
+                                title={`Días para el bloque ${num}`}
                                 className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium"
                                 value={appConfig?.content?.schedule?.[blockKey]?.days || ''}
                                 onChange={(e) => updateConfig && updateConfig({
@@ -2264,79 +2381,77 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                       })}
                     </div>
                   </div>
-
                 </section>
               </div>
             )}
-          </div>
-        </div>
+          </div> {/* close p-8 */}
+        </div> {/* close Content Area */}
+        {directNotifModal && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
+            <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
+              <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
+              <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
 
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
+                  <input
+                    aria-label="Título de la notificación"
+                    type="text"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
+                    placeholder="Ej: Aviso de recogida"
+                    title="Introduce un título para la alerta"
+                    value={directNotifData.title}
+                    onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
+                  <textarea
+                    aria-label="Mensaje de la notificación"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
+                    placeholder="Escribe el mensaje..."
+                    title="Introduce el mensaje de la alerta"
+                    value={directNotifData.message}
+                    onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
+                  <select
+                    aria-label="Tipo de notificación"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
+                    value={directNotifData.type}
+                    onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
+                  >
+                    <option value="info">Información</option>
+                    <option value="success">Éxito</option>
+                    <option value="warning">Advertencia</option>
+                    <option value="shipment_update">Envío</option>
+                    <option value="delivery">Entrega</option>
+                  </select>
+                </div>
 
-        {/* Direct Notification Modal */}
-        {
-          directNotifModal && (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
-              <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => setDirectNotifModal(null)} />
-              <div className="relative bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl animate-in zoom-in duration-200">
-                <h3 className="text-xl font-black text-[#00151a] mb-1">Enviar Notificación</h3>
-                <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-6">Para: {directNotifModal.name}</p>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Título</label>
-                    <input
-                      type="text"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium"
-                      placeholder="Ej: Aviso de recogida"
-                      value={directNotifData.title}
-                      onChange={e => setDirectNotifData({ ...directNotifData, title: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mensaje</label>
-                    <textarea
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium h-24 resize-none"
-                      placeholder="Escribe el mensaje..."
-                      value={directNotifData.message}
-                      onChange={e => setDirectNotifData({ ...directNotifData, message: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipo</label>
-                    <select
-                      aria-label="Tipo de notificación"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold"
-                      value={directNotifData.type}
-                      onChange={e => setDirectNotifData({ ...directNotifData, type: e.target.value })}
-                    >
-                      <option value="info">Información</option>
-                      <option value="success">Éxito</option>
-                      <option value="warning">Advertencia</option>
-                      <option value="shipment_update">Envío</option>
-                      <option value="delivery">Entrega</option>
-                    </select>
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      onClick={handleSendDirectNotif}
-                      disabled={sendingNotif}
-                      className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
-                    >
-                      {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
-                    </button>
-                    <button
-                      onClick={() => setDirectNotifModal(null)}
-                      className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={handleSendDirectNotif}
+                    disabled={sendingNotif}
+                    className="flex-1 bg-teal-500 text-[#00151a] py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-400 transition-all disabled:opacity-50"
+                  >
+                    {sendingNotif ? 'Enviando...' : 'Enviar Alerta'}
+                  </button>
+                  <button
+                    onClick={() => setDirectNotifModal(null)}
+                    className="px-6 py-3 border border-gray-200 rounded-xl font-black uppercase text-[10px] tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
+                  >
+                    Cancelar
+                  </button>
                 </div>
               </div>
             </div>
-          )
-        }
+          </div>
+        )}
       </div>
     </div>
   );

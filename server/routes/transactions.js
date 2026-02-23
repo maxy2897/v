@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, admin, finance } from '../middleware/auth.js';
 import Transaction from '../models/Transaction.js';
 import { generateWordReceipt } from '../utils/receiptGenerator.js';
 
@@ -9,7 +9,7 @@ const router = express.Router();
  * @desc    Get all transactions (Admin only)
  * @route   GET /api/transactions
  */
-router.get('/', protect, admin, async (req, res) => {
+router.get('/', protect, finance, async (req, res) => {
     try {
         const transactions = await Transaction.find().sort({ createdAt: -1 }).limit(100);
         res.json(transactions);

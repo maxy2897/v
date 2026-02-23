@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createNotification, getAllNotifications, deleteNotification } from '../services/notificationsApi';
+import { BASE_URL } from '../services/api';
 
 interface Notification {
     _id: string;

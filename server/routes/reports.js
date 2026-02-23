@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, finance } from '../middleware/auth.js';
 import User from '../models/User.js';
 import Shipment from '../models/Shipment.js';
 import Transfer from '../models/Transfer.js';
@@ -11,7 +11,7 @@ const router = express.Router();
  * @route   GET /api/reports/accounting
  * @access  Private/Admin
  */
-router.get('/accounting', protect, admin, async (req, res) => {
+router.get('/accounting', protect, finance, async (req, res) => {
     try {
         // 1. Fetch Data (Last 30 days or All - defaulting to ALL for now as per request "cada vez que se registre")
         // To help accounting, we usually want everything or filtered by date. 

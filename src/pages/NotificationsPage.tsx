@@ -10,6 +10,7 @@ interface Notification {
     type: 'general' | 'info' | 'success' | 'warning' | 'shipment_update' | 'delivery' | 'error';
     isRead: boolean;
     createdAt: string;
+    shipmentId?: any;
 }
 
 const NotificationsPage: React.FC = () => {

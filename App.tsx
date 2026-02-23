@@ -128,7 +128,8 @@ const AppContent: React.FC = () => {
   const { appConfig, t } = useSettings();
 
   const handleAdminLogin = () => {
-    if (user && user.role === 'admin') {
+    const isAdmin = user && (user.role === 'admin' || user.role?.startsWith('admin_'));
+    if (isAdmin) {
       setIsAdminOpen(true);
     } else {
       alert('Acceso denegado. Se requieren permisos de administrador.');

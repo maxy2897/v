@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, admin, tech } from '../middleware/auth.js';
 import Config from '../models/Config.js';
 
 const router = express.Router();
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
  * @route   PUT /api/config
  * @access  Private/Admin
  */
-router.put('/', protect, admin, async (req, res) => {
+router.put('/', protect, tech, async (req, res) => {
     try {
         let config = await Config.findOne();
         if (!config) {

@@ -1,23 +1,62 @@
 import express from 'express';
-import { protect } from '../middleware/auth.js';
+import { protect, admin } from '../middleware/auth.js';
 import User from '../models/User.js';
 
 const router = express.Router();
 
-// @route   GET /api/admin
+// @route   GET /api/admin/users
 // @desc    Admin dashboard data
-// @access  Private/Admin
-router.get('/', protect, async (req, res) => {
-    // Basic placeholder check for admin role
-    if (req.user.role !== 'admin') {
-        return res.status(401).json({ message: 'Not authorized as admin' });
-    }
-
+// @access  Private/SuperAdmin
+router.get('/users', protect, admin, async (req, res) => {
     try {
-        const users = await User.find({});
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal' });
+        }
+        const users = await User.find({}).select('-password');
         res.json({ users });
     } catch (error) {
         res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @route   PUT /api/admin/users/:id/role
+// @desc    Update user role
+// @access  Private/SuperAdmin
+router.put('/users/:id/role', protect, async (req, res) => {
+    try {
+        // Solo el administrador principal puede asignar roles a otros
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal' });
+        }
+
+        const { role } = req.body;
+        const validRoles = ['user', 'admin', 'admin_local', 'admin_finance', 'admin_tech'];
+
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({ message: 'Rol proporcionado no es válido' });
+        }
+
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Evitar que el admin principal se quite el rol a sí mismo
+        if (user._id.toString() === req.user._id.toString() && role !== 'admin') {
+            return res.status(400).json({ message: 'No puedes quitarte el rol de Administrador Principal a ti mismo' });
+        }
+
+        user.role = role;
+        const updatedUser = await user.save();
+
+        res.json({
+            message: 'Rol actualizado exitosamente',
+            user: { _id: updatedUser._id, name: updatedUser.name, role: updatedUser.role }
+        });
+    } catch (error) {
+        console.error('Error updating role:', error);
+        res.status(500).json({ message: 'Server Error al actualizar rol' });
     }
 });
 

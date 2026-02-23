@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, tech } from '../middleware/auth.js';
 import Product from '../models/Product.js';
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 // @route   POST /api/products
 // @desc    Crear un nuevo producto
 // @access  Private/Admin
-router.post('/', protect, admin, async (req, res) => {
+router.post('/', protect, tech, async (req, res) => {
     try {
         let { name, color, price, description, image, tag, slogan, waLink } = req.body;
 
@@ -77,7 +77,7 @@ router.post('/', protect, admin, async (req, res) => {
 // @route   DELETE /api/products/:id
 // @desc    Eliminar un producto
 // @access  Private/Admin
-router.delete('/:id', protect, admin, async (req, res) => {
+router.delete('/:id', protect, tech, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) {

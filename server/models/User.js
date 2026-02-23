@@ -60,7 +60,7 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin', 'admin_local', 'admin_finance', 'admin_tech'],
         default: 'user',
     },
     createdAt: {
@@ -71,7 +71,7 @@ const UserSchema = new mongoose.Schema({
 
 // Virtual for isAdmin
 UserSchema.virtual('isAdmin').get(function () {
-    return this.role === 'admin';
+    return ['admin', 'admin_local', 'admin_finance', 'admin_tech'].includes(this.role);
 });
 
 // Encriptar password antes de guardar

@@ -456,7 +456,7 @@ const Calculator: React.FC = () => {
                 </button>
                 <div className="bg-white p-3 rounded-2xl inline-block mx-auto shadow-lg">
                   <QRCodeCanvas
-                    value={generatedCode}
+                    value={`BODIPO_TRACK:${generatedCode}`}
                     size={120}
                     level="H"
                     includeMargin={false}
