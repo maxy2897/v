@@ -126,60 +126,109 @@ export const AdminUsers: React.FC = () => {
             {error && <p className="text-red-500 font-bold">{error}</p>}
 
             {!loading && !error && (
-                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-[#00151a] text-white">
-                            <tr>
-                                <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Usuario</th>
-                                <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Contacto</th>
-                                <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Rol Actual</th>
-                                <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Cambiar Rol</th>
-                                <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest text-right">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {users.map(user => (
-                                <tr key={user._id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <p className="font-bold text-gray-900">{user.name}</p>
-                                        <p className="text-xs text-gray-500">ID: {user._id.slice(-6)}</p>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-sm font-medium text-gray-900">{user.email}</p>
-                                        <p className="text-xs text-gray-500">{user.phone || 'Sin teléfono'}</p>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${user.role === 'admin' ? 'bg-orange-100 text-orange-800' : user.role === 'user' ? 'bg-gray-100 text-gray-600' : 'bg-teal-100 text-teal-800'}`}>
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
+                <>
+                    {/* Vista Desktop */}
+                    <div className="hidden lg:block bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-[#00151a] text-white">
+                                <tr>
+                                    <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Usuario</th>
+                                    <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Contacto</th>
+                                    <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Rol Actual</th>
+                                    <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest">Cambiar Rol</th>
+                                    <th className="px-6 py-4 font-black uppercase text-[10px] tracking-widest text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {users.map(user => (
+                                    <tr key={user._id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <p className="font-bold text-gray-900">{user.name}</p>
+                                            <p className="text-xs text-gray-500">ID: {user._id.slice(-6)}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                                            <p className="text-xs text-gray-500">{user.phone || 'Sin teléfono'}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${user.role === 'admin' ? 'bg-orange-100 text-orange-800' : user.role === 'user' ? 'bg-gray-100 text-gray-600' : 'bg-teal-100 text-teal-800'}`}>
+                                                {user.role}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <select
+                                                aria-label={`Cambiar rol de ${user.name}`}
+                                                title={`Cambiar rol de ${user.name}`}
+                                                value={user.role}
+                                                onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                                                className="bg-white border border-gray-200 text-gray-900 text-xs rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 font-bold cursor-pointer"
+                                            >
+                                                {rolesList.map(r => (
+                                                    <option key={r.value} value={r.value}>{r.label}</option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => handleDeleteUser(user._id, user.name)}
+                                                className="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition-colors shrink-0"
+                                                title="Eliminar usuario y todos sus datos"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Vista Móvil (Tarjetas) */}
+                    <div className="lg:hidden space-y-4">
+                        {users.map(user => (
+                            <div key={user._id} className="bg-white p-5 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-black text-gray-900 text-lg truncate">{user.name}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">ID: {user._id.slice(-6)}</p>
+                                    </div>
+                                    <span className={`shrink-0 px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider border ${user.role === 'admin' ? 'bg-orange-50 text-orange-600 border-orange-100' : user.role === 'user' ? 'bg-gray-50 text-gray-500 border-gray-200' : 'bg-teal-50 text-teal-600 border-teal-100'}`}>
+                                        {user.role}
+                                    </span>
+                                </div>
+
+                                <div className="bg-gray-50 p-4 rounded-2xl">
+                                    <p className="text-sm font-bold text-gray-700 break-all">{user.email}</p>
+                                    <p className="text-xs text-gray-500 mt-1 font-medium">{user.phone || 'Sin teléfono registrado'}</p>
+                                </div>
+
+                                <div className="pt-2 flex flex-col gap-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Permisos del usuario</label>
+                                    <div className="flex gap-2 items-center">
                                         <select
                                             aria-label={`Cambiar rol de ${user.name}`}
                                             title={`Cambiar rol de ${user.name}`}
                                             value={user.role}
                                             onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                                            className="bg-white border border-gray-200 text-gray-900 text-xs rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 font-bold cursor-pointer"
+                                            className="flex-1 bg-white border-2 border-gray-100 text-gray-900 text-xs rounded-xl focus:ring-teal-500 focus:border-teal-500 block p-3 font-bold cursor-pointer transition-all hover:bg-gray-50"
                                         >
                                             {rolesList.map(r => (
                                                 <option key={r.value} value={r.value}>{r.label}</option>
                                             ))}
                                         </select>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
                                         <button
                                             onClick={() => handleDeleteUser(user._id, user.name)}
-                                            className="text-red-500 hover:text-red-700 font-bold text-xs bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition-colors"
-                                            title="Eliminar usuario y todos sus datos"
+                                            className="text-red-500 hover:text-red-700 font-black tracking-widest uppercase text-[10px] bg-red-50 hover:bg-red-100 h-full px-5 py-3.5 rounded-xl transition-colors shrink-0 flex items-center justify-center border border-red-100 hover:border-red-200"
+                                            title="Eliminar usuario"
                                         >
-                                            Eliminar
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                         </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
 
             {/* Modal de Confirmación de Eliminación */}
