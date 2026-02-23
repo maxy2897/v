@@ -812,7 +812,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
         </aside>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto bg-white relative">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-white relative">
           {/* Top Bar Mobile/Desc */}
           <div className="sticky top-0 bg-white/90 backdrop-blur-sm z-10 px-8 py-6 border-b border-gray-50 flex justify-between items-center">
             <h3 className="text-xl font-black text-[#00151a] uppercase tracking-tighter">
