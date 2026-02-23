@@ -50,15 +50,38 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [loading, setLoading] = useState(false);
     const [isMobileMenu, setIsMobileMenu] = useState(true);
 
-    // Read query param for tab
+    // Read from session storage or query params to keep state
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const tab = params.get('tab');
-        if (tab === 'settings' || tab === 'invoices' || tab === 'shipments') {
-            setActiveTab(tab as any);
+        const storedTab = sessionStorage.getItem('dashboard_tab') as any;
+        const storedMenuState = sessionStorage.getItem('dashboard_mobile_menu');
+
+        const params = new URLSearchParams(location.search);
+        const urlTab = params.get('tab');
+
+        if (urlTab && ['settings', 'invoices', 'shipments'].includes(urlTab)) {
+            setActiveTab(urlTab as any);
+            sessionStorage.setItem('dashboard_tab', urlTab);
             setIsMobileMenu(false);
+        } else if (storedTab) {
+            setActiveTab(storedTab);
+            if (storedMenuState === 'false') {
+                setIsMobileMenu(false);
+            }
         }
     }, [location.search]);
+
+    const handleTabChange = (tabId: string) => {
+        setActiveTab(tabId as any);
+        setIsMobileMenu(false);
+        sessionStorage.setItem('dashboard_tab', tabId);
+        sessionStorage.setItem('dashboard_mobile_menu', 'false');
+        navigate(`/dashboard?tab=${tabId}`, { replace: true });
+    };
+
+    const handleBackToMenu = () => {
+        setIsMobileMenu(true);
+        sessionStorage.setItem('dashboard_mobile_menu', 'true');
+    };
 
     // Profile Form State (from SettingsModal logic)
     const [formData, setFormData] = useState({
@@ -226,14 +249,16 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             <button
                                 key={item.id}
                                 onClick={() => {
-                                    if (item.id === 'notifications') navigate('/notificaciones');
+                                    if (item.id === 'notifications') {
+                                        // Navegar pero en PC que se vea consistente.
+                                        navigate('/notificaciones');
+                                    }
                                     else if (item.id === 'admin') onOpenAdmin?.();
                                     else {
-                                        setActiveTab(item.id as any);
-                                        setIsMobileMenu(false);
+                                        handleTabChange(item.id);
                                     }
                                 }}
-                                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all ${activeTab === item.id ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
+                                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all ${activeTab === item.id || (item.id === 'notifications' && location.pathname === '/notificaciones') ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
                             >
                                 <span className={activeTab === item.id ? 'text-[#007e85]' : 'text-gray-400'}>{item.icon}</span>
                                 {item.label}
@@ -259,7 +284,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
 
                         {/* Mobile Back Button */}
                         <button
-                            onClick={() => setIsMobileMenu(true)}
+                            onClick={handleBackToMenu}
                             className="md:hidden flex items-center gap-2 text-gray-500 hover:text-[#00151a] font-black uppercase tracking-widest text-[10px] mb-8 bg-white px-5 py-3 rounded-2xl shadow-sm border border-gray-100 transition-all"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
@@ -280,7 +305,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             </div>
 
                             {activeTab === 'settings' && (
-                                <div className="text-[10px] font-black uppercase tracking-widest text-[#007e85] bg-[#f0fcfc] px-3 py-1 rounded-full">Perfil Verificado</div>
+                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#007e85] bg-[#f0fcfc] px-3 py-1 rounded-full border border-teal-100">
+                                    <svg className="w-3.5 h-3.5 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                    </svg>
+                                    Perfil Verificado
+                                </div>
                             )}
                         </div>
 
