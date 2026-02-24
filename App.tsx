@@ -1,32 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './src/components/Header';
-import AIChat from './src/components/AIChat';
-import RegisterModal from './src/components/RegisterModal';
-import LoginModal from './src/components/LoginModal';
-import ForgotPasswordModal from './src/components/ForgotPasswordModal';
-import ContactModal from './src/components/ContactModal';
-import AdminPanel from './src/components/AdminPanel';
-import SettingsModal from './src/components/SettingsModal';
-import { Product, AppConfig } from './types';
 import AnimatedPage from './src/components/AnimatedPage';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 import { getProducts } from './src/services/productsApi';
+import { Product, AppConfig } from './types';
 
-// Pages
-import HomePage from './src/pages/HomePage';
-import CalendarPage from './src/pages/CalendarPage';
-import ServicesPage from './src/pages/ServicesPage';
-import TrackingPage from './src/pages/TrackingPage';
-import RatesPage from './src/pages/RatesPage';
-import StorePage from './src/pages/StorePage';
-import ClientPage from './src/pages/ClientPage';
-import MoneyTransferPage from './src/pages/MoneyTransferPage';
-import DashboardPage from './src/pages/DashboardPage';
-import PrivacyPage from './src/pages/PrivacyPage';
-import NotificationsPage from './src/pages/NotificationsPage';
+// Lazy loaded components and modals to optimize bundle size
+const AIChat = lazy(() => import('./src/components/AIChat'));
+const RegisterModal = lazy(() => import('./src/components/RegisterModal'));
+const LoginModal = lazy(() => import('./src/components/LoginModal'));
+const ForgotPasswordModal = lazy(() => import('./src/components/ForgotPasswordModal'));
+const ContactModal = lazy(() => import('./src/components/ContactModal'));
+const AdminPanel = lazy(() => import('./src/components/AdminPanel'));
+const SettingsModal = lazy(() => import('./src/components/SettingsModal'));
+
+// Lazy loaded Pages
+const HomePage = lazy(() => import('./src/pages/HomePage'));
+const CalendarPage = lazy(() => import('./src/pages/CalendarPage'));
+const ServicesPage = lazy(() => import('./src/pages/ServicesPage'));
+const TrackingPage = lazy(() => import('./src/pages/TrackingPage'));
+const RatesPage = lazy(() => import('./src/pages/RatesPage'));
+const StorePage = lazy(() => import('./src/pages/StorePage'));
+const ClientPage = lazy(() => import('./src/pages/ClientPage'));
+const MoneyTransferPage = lazy(() => import('./src/pages/MoneyTransferPage'));
+const DashboardPage = lazy(() => import('./src/pages/DashboardPage'));
+const PrivacyPage = lazy(() => import('./src/pages/PrivacyPage'));
+const NotificationsPage = lazy(() => import('./src/pages/NotificationsPage'));
+
+// Fallback loader for Suspense
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+    <div className="flex flex-col items-center">
+      <div className="w-12 h-12 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin"></div>
+      <p className="mt-4 text-xs font-black uppercase tracking-widest text-teal-600 animate-pulse">Cargando...</p>
+    </div>
+  </div>
+);
 
 
 const INITIAL_CONFIG: AppConfig = {
@@ -148,14 +160,16 @@ const AppContent: React.FC = () => {
         />
 
         <main className="flex-grow">
-          <AnimatedRoutes
-            onOpenRegister={() => setIsRegisterOpen(true)}
-            onOpenContact={() => setIsContactOpen(true)}
-            onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
-            onOpenSettings={() => setIsSettingsOpen(true)}
-            onOpenAdmin={handleAdminLogin}
-            products={products}
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AnimatedRoutes
+              onOpenRegister={() => setIsRegisterOpen(true)}
+              onOpenContact={() => setIsContactOpen(true)}
+              onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
+              onOpenSettings={() => setIsSettingsOpen(true)}
+              onOpenAdmin={handleAdminLogin}
+              products={products}
+            />
+          </Suspense>
         </main>
 
         <footer className="bg-[#00151a] py-12 text-white">
@@ -240,27 +254,33 @@ const AppContent: React.FC = () => {
           </div>
         </footer>
 
-        <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
-        <LoginModal
-          isOpen={isLoginOpen}
-          onClose={() => setIsLoginOpen(false)}
-          onOpenForgotPassword={() => {
-            setIsLoginOpen(false);
-            setIsForgotPasswordOpen(true);
-          }}
-        />
-        <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />
-        <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-        <AdminPanel
-          isOpen={isAdminOpen}
-          onClose={() => setIsAdminOpen(false)}
-          products={products}
-          setProducts={setProducts}
-          config={config}
-          setConfig={setConfig}
-        />
-        <AIChat config={config} />
-        <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+        <Suspense fallback={null}>
+          {isRegisterOpen && <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />}
+          {isLoginOpen && (
+            <LoginModal
+              isOpen={isLoginOpen}
+              onClose={() => setIsLoginOpen(false)}
+              onOpenForgotPassword={() => {
+                setIsLoginOpen(false);
+                setIsForgotPasswordOpen(true);
+              }}
+            />
+          )}
+          {isForgotPasswordOpen && <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />}
+          {isContactOpen && <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
+          {isAdminOpen && (
+            <AdminPanel
+              isOpen={isAdminOpen}
+              onClose={() => setIsAdminOpen(false)}
+              products={products}
+              setProducts={setProducts}
+              config={config}
+              setConfig={setConfig}
+            />
+          )}
+          <AIChat config={config} />
+          {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
+        </Suspense>
       </div>
     </>
   );
