@@ -146,13 +146,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         >
                           {t('nav.dashboard')}
                         </Link>
-                        <Link
-                          to="/dashboard?tab=settings"
-                          onClick={() => setShowUserMenu(false)}
+                        <button
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            onOpenSettings();
+                          }}
                           className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 font-bold uppercase tracking-tighter"
                         >
                           {t('nav.settings') || 'Ajustes'}
-                        </Link>
+                        </button>
                         <button
                           onClick={() => {
                             logout();
@@ -232,14 +234,16 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     </Link>
                   ))}
 
-                  <Link
-                    to="/dashboard?tab=settings"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 text-lg font-black text-teal-600 py-4 border-b border-gray-50 group uppercase tracking-tighter"
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenSettings();
+                    }}
+                    className="flex text-left items-center gap-3 text-lg font-black text-teal-600 py-4 border-b border-gray-50 group uppercase tracking-tighter w-full"
                   >
                     <span className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition-colors">⚙️</span>
                     {t('nav.settings') || 'Ajustes'}
-                  </Link>
+                  </button>
                 </div>
 
                 <div className="mt-auto pt-6 flex flex-col gap-4">
