@@ -14,7 +14,7 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const { user, updateUser } = useAuth();
     const { t } = useSettings();
-    const [activeTab, setActiveTab] = useState<'profile' | 'terms' | 'help'>(user ? 'profile' : 'terms');
+    const [activeTab, setActiveTab] = useState<'terms' | 'help'>('help');
     const [loading, setLoading] = useState(false);
     const [isForgotOpen, setIsForgotOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -157,10 +157,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     {/* Navigation Items */}
                     <nav className="flex md:flex-col flex-row overflow-x-auto md:overflow-x-hidden px-4 md:px-4 pb-4 md:pb-8 space-x-2 md:space-x-0 md:space-y-1 scrollbar-hide shrink-0">
                         {[
-                            { id: 'profile', label: 'Mi Perfil', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>, protected: true },
-                            { id: 'terms', label: 'Condiciones', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, protected: false },
-                            { id: 'help', label: 'Ayuda', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>, protected: false }
-                        ].filter(tab => !tab.protected || !!user).map(tab => (
+                            { id: 'help', label: 'Ayuda', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg> },
+                            { id: 'terms', label: 'Condiciones', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> }
+                        ].map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
@@ -179,131 +178,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     {/* Content Header Section */}
                     <div className="mb-10 max-w-xl mx-auto">
                         <h2 className="text-3xl font-black text-[#00151a] tracking-tight mb-2">
-                            {activeTab === 'profile' ? 'Tus Datos' : activeTab === 'terms' ? 'Contrato Legal' : 'Centro de Ayuda'}
+                            {activeTab === 'terms' ? 'Contrato Legal' : 'Centro de Ayuda'}
                         </h2>
                         <p className="text-gray-400 text-sm font-medium leading-relaxed">
-                            {activeTab === 'profile' ? 'Edita tu información personal para que tus envíos lleguen siempre al lugar correcto.' :
-                                activeTab === 'terms' ? 'Aquí podrás consultar las condiciones de uso, gestión de datos y protección al cliente.' :
-                                    '¿Tienes alguna duda con tu paquete? Estamos aquí para ayudarte las 24 horas.'}
+                            {activeTab === 'terms' ? 'Aquí podrás consultar las condiciones de uso, gestión de datos y protección al cliente.' :
+                                '¿Tienes alguna duda con tu paquete? Estamos aquí para ayudarte las 24 horas.'}
                         </p>
                     </div>
 
-                    {activeTab === 'profile' && user && (
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 md:p-10 shadow-sm max-w-xl mx-auto">
-                            <form onSubmit={handleSubmit} className="space-y-8">
-                                {/* Profile Image Upload Logic Card */}
-                                <div className="flex items-center gap-6 p-6 rounded-3xl bg-gray-50 border border-gray-100">
-                                    <div className="relative shrink-0">
-                                        <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-md">
-                                            {previewImage ? (
-                                                <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
-                                            ) : user.profileImage ? (
-                                                <img src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`} alt="Profile" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-2xl">{user.name?.charAt(0)}</div>
-                                            )}
-                                        </div>
-                                        <label htmlFor="settings-image" className="absolute -bottom-1 -right-1 bg-[#007e85] text-white p-2 rounded-full cursor-pointer hover:bg-[#005f6b] transition-all shadow-md scale-90" title="Cambiar foto">
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                        </label>
-                                        <input id="settings-image" type="file" className="hidden" accept="image/*" onChange={handleImageChange} title="Cambiar imagen de perfil" />
-                                    </div>
-                                    <div>
-                                        <p className="font-black text-[#00151a] text-sm uppercase tracking-tight">Foto de perfil</p>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-1">Sube una foto clara para que podamos identificarte mejor.</p>
-                                    </div>
-                                </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="settings-name" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">Nombre Completo</label>
-                                        <input
-                                            id="settings-name"
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-6 py-4 bg-gray-100 rounded-2xl border-none ring-1 ring-gray-100 focus:ring-2 focus:ring-[#007e85] transition-all font-medium text-black placeholder:text-gray-300"
-                                            placeholder="Tu nombre completo"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="settings-email" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">Email <span className="text-gray-300">(Protegido)</span></label>
-                                        <input
-                                            id="settings-email"
-                                            type="email"
-                                            value={user.email}
-                                            readOnly
-                                            className="w-full bg-gray-100/50 px-6 py-4 rounded-2xl text-gray-400 font-medium border border-gray-100 cursor-not-allowed text-sm"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="settings-nie" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">DNI / NIE / Passport</label>
-                                        <input
-                                            id="settings-nie"
-                                            type="text"
-                                            value={formData.idNumber}
-                                            onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
-                                            readOnly={!!user.idNumber && user.idNumber.trim() !== ''}
-                                            className={`w-full px-6 py-4 rounded-2xl font-medium border text-sm transition-all ${user.idNumber && user.idNumber.trim() !== '' ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed' : 'bg-white text-black ring-1 ring-gray-100 focus:ring-2 focus:ring-[#007e85] border-none'}`}
-                                            placeholder="DNI/NIE"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="settings-phone" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">Teléfono Móvil</label>
-                                        <PhoneInput
-                                            id="settings-phone"
-                                            value={formData.phone}
-                                            onChange={(val) => setFormData({ ...formData, phone: val })}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="settings-username" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">Alias / Username</label>
-                                        <input
-                                            id="settings-username"
-                                            type="text"
-                                            value={formData.username}
-                                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                            className="w-full px-6 py-4 bg-gray-100 rounded-2xl border-none ring-1 ring-gray-100 focus:ring-2 focus:ring-[#007e85] transition-all font-medium text-black text-sm"
-                                            placeholder="@usuario"
-                                        />
-                                    </div>
-
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="settings-address" className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block ml-1">Tu Dirección Particular</label>
-                                        <input
-                                            id="settings-address"
-                                            type="text"
-                                            value={formData.address}
-                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                            className="w-full px-6 py-4 bg-gray-100 rounded-2xl border-none ring-1 ring-gray-100 focus:ring-2 focus:ring-[#007e85] transition-all font-medium text-black text-sm"
-                                            placeholder="Calle, Número, Ciudad..."
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col md:flex-row gap-4 pt-4 border-t border-gray-50">
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="flex-grow bg-[#007e85] text-white py-4 rounded-3xl font-black uppercase tracking-widest text-[10px] hover:bg-[#00151a] transition-all shadow-xl shadow-teal-900/10"
-                                    >
-                                        {loading ? 'Sincronizando...' : 'Guardar Cambios'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsForgotOpen(true)}
-                                        className="px-8 py-4 bg-white text-orange-600 border border-orange-100 rounded-3xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-50 transition-all"
-                                    >
-                                        Cambiar Contraseña
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
 
                     {activeTab === 'terms' && (
                         <div className="max-w-xl mx-auto space-y-6">
