@@ -6,6 +6,7 @@ import { useSettings } from '../context/SettingsContext';
 import * as api from '../services/api';
 import { BASE_URL } from '../services/api';
 import { PhoneInput } from '../components/PhoneInput';
+import { TERMS_AND_CONDITIONS } from '../constants/terms';
 
 interface Shipment {
     _id: string;
@@ -45,7 +46,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loadingShipments, setLoadingShipments] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(true);
-    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings'>('shipments');
+    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings' | 'help'>('shipments');
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [isMobileMenu, setIsMobileMenu] = useState(true);
@@ -58,7 +59,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
         const params = new URLSearchParams(location.search);
         const urlTab = params.get('tab');
 
-        if (urlTab && ['settings', 'invoices', 'shipments'].includes(urlTab)) {
+        if (urlTab && ['settings', 'invoices', 'shipments', 'help'].includes(urlTab)) {
             setActiveTab(urlTab as any);
             sessionStorage.setItem('dashboard_tab', urlTab);
             setIsMobileMenu(false);
@@ -279,6 +280,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
 
                         <div className="pt-4 mt-4 border-t border-gray-50">
                             <button
+                                onClick={() => handleTabChange('help')}
+                                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all mb-4 ${activeTab === 'help' ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
+                            >
+                                <span className={activeTab === 'help' ? 'text-[#007e85]' : 'text-gray-400'}>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                </span>
+                                Ayuda y Condiciones
+                                {activeTab === 'help' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#007e85]" />}
+                            </button>
+
+                            <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold text-red-400 hover:bg-red-50 transition-all"
                             >
@@ -306,12 +318,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                         <div className="mb-10 flex justify-between items-end border-b border-gray-100 pb-8">
                             <div>
                                 <h1 className="text-3xl font-black text-[#00151a] tracking-tight mb-2 uppercase">
-                                    {activeTab === 'shipments' ? 'Tus Envíos' : activeTab === 'invoices' ? 'Tus Facturas' : 'Configuración'}
+                                    {activeTab === 'shipments' ? 'Tus Envíos' : activeTab === 'invoices' ? 'Tus Facturas' : activeTab === 'settings' ? 'Configuración' : 'Ayuda y Condiciones'}
                                 </h1>
                                 <p className="text-gray-400 text-sm font-medium">
                                     {activeTab === 'shipments' ? 'Aquí podrás ver y gestionar todos tus paquetes en tránsito.' :
                                         activeTab === 'invoices' ? 'Descarga tus facturas y comprobantes de pago.' :
-                                            'Gestiona tu información personal y de seguridad.'}
+                                            activeTab === 'settings' ? 'Gestiona tu información personal y de seguridad.' :
+                                                'Resuelve tus dudas y consulta nuestras políticas.'}
                                 </p>
                             </div>
 
@@ -534,6 +547,67 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                         <p className="text-[10px] font-bold text-orange-600/70 uppercase">¿Quieres proteger más tu cuenta? Actualiza tu clave periódicamente.</p>
                                     </div>
                                     <button className="px-8 py-3 bg-white text-orange-600 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-600 hover:text-white transition-all shadow-sm">Actualizar Clave</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Help and Terms View */}
+                        {activeTab === 'help' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+                                    {/* FAQs Section */}
+                                    <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm h-fit">
+                                        <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-tight ml-2">Dudas frecuentes</h3>
+                                        <div className="space-y-4">
+                                            {[
+                                                { q: '¿Cómo rastreo mi pedido?', a: 'Introduce tu código BB en la sección de "Rastreo" o pídelo a nuestro bot de IA.' },
+                                                { q: '¿Tiempos de envío España - Guinea?', a: 'El tiempo estimado es de 7 a 15 días laborables dependiendo del tipo de carga.' },
+                                                { q: '¿Puedo enviar dinero?', a: 'Sí, disponemos de una sección de Money Transfer con tasas competitivas.' }
+                                            ].map((faq, idx) => (
+                                                <details key={idx} className="group bg-gray-50 rounded-3xl overflow-hidden border border-transparent hover:border-teal-100 transition-all">
+                                                    <summary className="flex items-center justify-between p-6 cursor-pointer list-none font-bold text-sm text-[#00151a]">
+                                                        {faq.q}
+                                                        <span className="bg-white w-6 h-6 rounded-full flex items-center justify-center shadow-sm text-[10px] text-teal-600 transition-transform group-open:rotate-180">▼</span>
+                                                    </summary>
+                                                    <div className="px-6 pb-6 text-gray-500 text-sm font-medium leading-relaxed border-t border-gray-100 pt-4">
+                                                        {faq.a}
+                                                    </div>
+                                                </details>
+                                            ))}
+                                        </div>
+
+                                        <div className="mt-8 bg-[#00151a] text-white p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#007e85]/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-700"></div>
+                                            <div className="relative z-10 text-center">
+                                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#007e85] mb-3">Contacto VIP</p>
+                                                <h4 className="text-2xl font-black mb-8 leading-tight">¿Tienes un caso especial?<br />Hablemos por WhatsApp.</h4>
+                                                <a
+                                                    href="https://wa.me/34643521042"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex bg-[#007e85] text-white px-10 py-5 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-[#00151a] transition-all shadow-lg"
+                                                >
+                                                    Chat Directo 24/7
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Terms Section */}
+                                    <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm max-h-[900px] overflow-y-auto scrollbar-hide">
+                                        <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-tight ml-2">Términos Legales</h3>
+                                        <div className="space-y-6">
+                                            {TERMS_AND_CONDITIONS.map((term, index) => (
+                                                <section key={index} className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100/50 hover:shadow-sm transition-all group">
+                                                    <div className="flex items-center gap-4 mb-4">
+                                                        <span className="w-8 h-8 rounded-full bg-white text-[#007e85] flex items-center justify-center font-black text-xs shadow-sm">{index + 1}</span>
+                                                        <h4 className="font-black text-[#00151a] uppercase text-[11px] tracking-widest group-hover:text-[#007e85] transition-colors">{term.title}</h4>
+                                                    </div>
+                                                    <p className="text-sm leading-relaxed text-gray-500 font-medium">{term.content}</p>
+                                                </section>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}

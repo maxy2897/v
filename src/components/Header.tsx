@@ -153,15 +153,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         >
                           {t('nav.settings') || 'Ajustes'}
                         </Link>
-                        <button
-                          onClick={() => {
-                            setShowUserMenu(false);
-                            onOpenSettings();
-                          }}
-                          className="block w-full text-left px-4 py-2 text-sm text-[#007e85] hover:bg-[#f0fcfc] font-black uppercase tracking-tighter"
-                        >
-                          Ayuda
-                        </button>
+
                         <button
                           onClick={() => {
                             logout();
@@ -250,16 +242,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     {t('nav.settings') || 'Ajustes'}
                   </Link>
 
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      onOpenSettings();
-                    }}
-                    className="flex text-left items-center gap-3 text-lg font-black text-teal-600 py-4 border-b border-gray-50 group uppercase tracking-tighter w-full"
-                  >
-                    <span className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center group-hover:bg-teal-100 transition-colors">💬</span>
-                    Ayuda
-                  </button>
+
                 </div>
 
                 <div className="mt-auto pt-6 flex flex-col gap-4">
