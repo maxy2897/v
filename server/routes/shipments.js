@@ -19,7 +19,7 @@ const generateTrackingNumber = () => {
 // @access  Private
 router.post('/', protect, async (req, res) => {
     try {
-        const { origin, destination, recipient, weight, price, description } = req.body;
+        const { origin, destination, recipient, weight, price, description, usedDiscount } = req.body;
 
         // Validate required fields
         if (!origin || !destination || !recipient?.name || !weight || !price) {
@@ -56,6 +56,16 @@ router.post('/', protect, async (req, res) => {
         });
 
         await shipment.save();
+
+        // Check if user should be verified
+        const shipmentCount = await Shipment.countDocuments({ user: req.user._id });
+        if (shipmentCount >= 3) {
+            await User.findByIdAndUpdate(req.user._id, { isVerified: true });
+        }
+
+        if (usedDiscount) {
+            await User.findByIdAndUpdate(req.user._id, { discountEligible: false });
+        }
 
         // Create transaction record for receipt generation
         const transaction = await Transaction.create({
@@ -175,6 +185,16 @@ router.post('/bulk', protect, async (req, res) => {
             await shipment.save();
             createdShipments.push(shipment);
             totalAmount += price;
+        }
+
+        // Check if user should be verified (after creating all bulk shipments)
+        const shipmentCount = await Shipment.countDocuments({ user: req.user._id });
+        if (shipmentCount >= 3) {
+            await User.findByIdAndUpdate(req.user._id, { isVerified: true });
+        }
+
+        if (shipments.some(s => s.usedDiscount)) {
+            await User.findByIdAndUpdate(req.user._id, { discountEligible: false });
         }
 
         const transaction = await Transaction.create({

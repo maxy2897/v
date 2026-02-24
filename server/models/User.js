@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
     role: {
         type: String,
         enum: ['user', 'admin', 'admin_local', 'admin_finance', 'admin_tech'],

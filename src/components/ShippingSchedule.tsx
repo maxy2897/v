@@ -56,24 +56,44 @@ const ShippingSchedule: React.FC = () => {
 
   // Referencia anual dinámica con fallback
   const schedule = appConfig?.content?.schedule;
-  const yearlyOverview = [
+  const rawYearlyOverview = [
     {
-      month: schedule?.block1?.month || 'DICIEMBRE',
-      days: schedule?.block1?.days || '12 y 19'
+      month: schedule?.block1?.month || 'ENERO',
+      days: schedule?.block1?.days || '2, 17 y 30'
     },
     {
-      month: schedule?.block2?.month || 'ENERO',
-      days: schedule?.block2?.days || '2, 17 y 30'
+      month: schedule?.block2?.month || 'FEBRERO',
+      days: schedule?.block2?.days || '10 y 21'
     },
     {
-      month: schedule?.block3?.month || 'FEBRERO',
-      days: schedule?.block3?.days || '13 y 27'
+      month: schedule?.block3?.month || 'MARZO',
+      days: schedule?.block3?.days || '7 y 24'
     },
     {
-      month: schedule?.block4?.month || 'MARZO',
-      days: schedule?.block4?.days || '13 y 27'
+      month: schedule?.block4?.month || 'ABRIL',
+      days: schedule?.block4?.days || '11, 18 y 28'
     },
   ];
+
+  const currentMonthNum = new Date().getMonth() + 1;
+  const getMonthNumber = (monthName: string) => {
+    const name = monthName?.toUpperCase().trim() || '';
+    const months: Record<string, number> = {
+      'ENERO': 1, 'FEBRERO': 2, 'MARZO': 3, 'ABRIL': 4, 'ABLIL': 4, 'MAYO': 5, 'JUNIO': 6,
+      'JULIO': 7, 'AGOSTO': 8, 'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
+    };
+    return months[name] || 0;
+  };
+
+  const processedOverview = rawYearlyOverview
+    .map(item => {
+      const num = getMonthNumber(item.month);
+      let dist = num === 0 ? 999 : num - currentMonthNum;
+      if (dist < -6 && dist !== 999) dist += 12; // Maneja saltos de año (ej. estando en Nov, Enero es +2 meses)
+      return { ...item, num, dist };
+    })
+    .filter(item => item.num === 0 ? item.month.trim() !== '' : item.dist >= 0)
+    .sort((a, b) => a.dist - b.dist);
 
   return (
     <section id="calendario" className="py-24 bg-white">
@@ -90,7 +110,7 @@ const ShippingSchedule: React.FC = () => {
           </div>
           <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
             <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">{t('schedule.current_month_label')}</p>
-            <p className="text-xl font-black text-[#00151a]">{currentMonth}</p>
+            <p className="text-xl font-black text-[#00151a] uppercase">{currentMonth}</p>
           </div>
         </div>
 
@@ -177,16 +197,20 @@ const ShippingSchedule: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {yearlyOverview.map((item, i) => (
-              <div key={i} className={`p-6 rounded-3xl border shadow-sm transition-all ${item.month === 'ENERO' ? 'bg-white border-teal-500 ring-2 ring-teal-500/10 scale-105' : 'bg-white/50 border-teal-50 grayscale-[0.5]'}`}>
-                <p className="text-[10px] font-black text-[#005f6b] uppercase tracking-[0.2em] mb-3">{item.month}</p>
-                <p className="text-xl font-black text-[#00151a] tracking-tight">{item.days}</p>
-                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                  <span className={`w-1.5 h-1.5 rounded-full mr-2 ${item.month === 'ENERO' ? 'bg-teal-500' : 'bg-gray-300'}`}></span>
-                  {item.month === 'ENERO' ? t('schedule.current_month_badge') : t('schedule.programming_badge')}
+            {processedOverview.map((item, i) => {
+              const dist = item.dist;
+              const isCurrent = dist === 0;
+              return (
+                <div key={i} className={`p-6 rounded-3xl border shadow-sm transition-all flex flex-col h-full ${isCurrent ? 'bg-white border-teal-500 ring-4 ring-teal-500/20 scale-105 shadow-xl relative z-10' : 'bg-gray-50/50 border-gray-100 hover:border-teal-200'}`}>
+                  <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-3 ${isCurrent ? 'text-teal-600' : 'text-gray-400'}`}>{item.month}</p>
+                  <p className="text-2xl font-black text-[#00151a] tracking-tight">{item.days}</p>
+                  <div className="mt-auto pt-4 border-t border-gray-100 flex items-center text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                    <span className={`w-1.5 h-1.5 rounded-full mr-2 ${isCurrent ? 'bg-teal-500 animate-pulse' : 'bg-gray-300'}`}></span>
+                    {isCurrent ? t('schedule.current_month_badge') : t('schedule.programming_badge')}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

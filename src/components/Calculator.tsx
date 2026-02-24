@@ -28,6 +28,7 @@ const Calculator: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [useDiscount, setUseDiscount] = useState(false);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
@@ -104,9 +105,19 @@ const Calculator: React.FC = () => {
         rate = 5000; // Fixed for now or add to config
         currency = 'XAF';
       }
-      setTotal({ value: info.weight * rate, currency });
+
+      let finalPrice = info.weight * rate;
+      if (isAuthenticated && user?.isVerified && appConfig?.discounts?.active && appConfig?.discounts?.percentage && user?.discountEligible && useDiscount) {
+        finalPrice = finalPrice - (finalPrice * (appConfig.discounts.percentage / 100));
+      }
+
+      setTotal({ value: finalPrice, currency });
     } else {
-      setTotal({ value: bultoType === 23 ? 220 : 310, currency: '€' });
+      let finalPrice = bultoType === 23 ? 220 : 310;
+      if (isAuthenticated && user?.isVerified && appConfig?.discounts?.active && appConfig?.discounts?.percentage && user?.discountEligible && useDiscount) {
+        finalPrice = finalPrice - (finalPrice * (appConfig.discounts.percentage / 100));
+      }
+      setTotal({ value: finalPrice, currency: '€' });
     }
   };
 
@@ -146,7 +157,8 @@ const Calculator: React.FC = () => {
             name: userData.fullName,
             phone: userData.phone
           },
-          currency: total?.currency || 'EUR'
+          currency: total?.currency || 'EUR',
+          usedDiscount: useDiscount
         };
 
         // Validate current shipment
@@ -254,6 +266,7 @@ const Calculator: React.FC = () => {
     setRecipientData({ name: '', phone: '' });
     setPayLocation('Origen');
     setPayMethod('Almacén');
+    setUseDiscount(false);
   };
 
   return (
@@ -431,6 +444,26 @@ const Calculator: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {isAuthenticated && user?.isVerified && appConfig?.discounts?.active && user?.discountEligible && appConfig?.discounts?.percentage > 0 && (
+              <div className="bg-teal-50 border border-teal-200 p-4 rounded-2xl flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                <div>
+                  <p className="text-[11px] font-black tracking-widest uppercase text-teal-900 flex items-center gap-1.5 leading-tight">
+                    <svg width="14" height="14" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill="#0095F6" />
+                    </svg>
+                    ¡DESCUENTO DISPONIBLE ({appConfig.discounts.percentage}%)!
+                  </p>
+                  {appConfig.discounts.message && (
+                    <p className="text-[10px] text-teal-700/80 font-bold mt-1 pr-4">{appConfig.discounts.message}</p>
+                  )}
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                  <input type="checkbox" aria-label="Aplicar descuento" className="sr-only peer" checked={useDiscount} onChange={(e) => setUseDiscount(e.target.checked)} />
+                  <div className="w-11 h-6 bg-teal-900/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-teal-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
+              </div>
+            )}
 
             <button onClick={calculateShipping} className="w-full bg-[#00151a] text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/10">
               {t('calc.cta.view_cost')}

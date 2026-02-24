@@ -57,6 +57,11 @@ export interface DynamicConfig {
         bizum: string;
         holder: string;
     };
+    discounts: {
+        active: boolean;
+        percentage: number;
+        message: string;
+    };
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

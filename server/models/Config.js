@@ -68,6 +68,11 @@ const ConfigSchema = new mongoose.Schema({
         bizum: { type: String, default: "" },
         holder: { type: String, default: "" }
     },
+    discounts: {
+        active: { type: Boolean, default: false },
+        percentage: { type: Number, default: 0 },
+        message: { type: String, default: "" }
+    },
     updatedAt: { type: Date, default: Date.now }
 });
 

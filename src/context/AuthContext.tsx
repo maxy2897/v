@@ -11,6 +11,7 @@ interface User {
     profileImage?: string;
     idNumber?: string;
     discountEligible: boolean;
+    isVerified?: boolean;
     gender?: string;
     role?: string;
     token?: string;

@@ -117,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   <div className="relative">
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white border-2 border-teal-500 hover:border-teal-600 transition-all shadow-md overflow-hidden"
+                      className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white border-2 border-teal-500 hover:border-teal-600 transition-all shadow-md overflow-hidden relative"
                     >
                       {user.profileImage ? (
                         <img
@@ -129,6 +129,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         <div className="w-full h-full flex items-center justify-center text-teal-700 font-bold text-xs">{user.name.charAt(0)}</div>
                       )}
                     </button>
+                    {(user.role !== 'user' || user.isVerified) && (
+                      <div className="absolute -bottom-1 -right-1 z-10 bg-white rounded-full p-[1.5px] shadow-sm">
+                        <svg width="14" height="14" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill="#0095F6" />
+                        </svg>
+                      </div>
+                    )}
 
                     {showUserMenu && (
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">

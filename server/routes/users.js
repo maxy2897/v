@@ -152,6 +152,12 @@ router.post(
                 recipient
             });
 
+            // Verificar si el usuario debe ser promovido a verificado (>= 3 envíos)
+            const shipmentCount = await Shipment.countDocuments({ user: req.user._id });
+            if (shipmentCount >= 3) {
+                await User.findByIdAndUpdate(req.user._id, { isVerified: true });
+            }
+
             // Crear registro de transacción para recibo
             const transaction = await Transaction.create({
                 type: 'SHIPMENT',

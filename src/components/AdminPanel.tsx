@@ -151,6 +151,196 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     }
   }, [activeTab]);
 
+  const printShippingLabel = (shipment: Shipment) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BODIPO_TRACK:${shipment.trackingNumber}`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Etiqueta de Envío - ${shipment.trackingNumber}</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; margin: 0; padding: 20px; background: #fff; }
+          .label { width: 10cm; height: 15cm; border: 2px solid #000; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; margin: 0 auto; page-break-after: always; }
+          .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; }
+          .logo { font-size: 24px; font-weight: 900; margin: 0; color: #000; text-transform: uppercase; }
+          .track-box { background: #000; color: #fff; padding: 5px 10px; font-size: 16px; font-weight: bold; letter-spacing: 1px; }
+          .route { font-size: 18px; font-weight: 900; text-align: center; margin: 15px 0; border: 2px dashed #000; padding: 10px; text-transform: uppercase; }
+          .qr-section { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 15px 0; }
+          .qr-section img { width: 120px; height: 120px; }
+          .details { flex-grow: 1; display:flex; flex-direction:column; gap: 10px; }
+          .box { border: 1px solid #000; padding: 10px; }
+          .box-title { font-size: 10px; text-transform: uppercase; color: #000; margin: 0 0 5px 0; font-weight: bold; }
+          .box-content { font-size: 14px; font-weight: bold; color: #000; margin:0; }
+          .footer { margin-top: auto; border-top: 2px solid #000; padding-top: 10px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
+          @media print {
+            body { padding: 0; margin: 0; }
+            .label { border: none; width: 100%; height: 100%; margin: 0; padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="label">
+          <div class="header">
+            <div>
+              <h1 class="logo">Bodipo</h1>
+              <span style="font-size:10px;font-weight:bold;color:#000;text-transform:uppercase;">Network</span>
+            </div>
+            <div class="track-box">${shipment.trackingNumber}</div>
+          </div>
+          
+          <div class="route">
+            ${shipment.origin} ✈️ ${shipment.destination}
+          </div>
+
+          <div class="details">
+            <div class="box">
+              <p class="box-title">Destinatario</p>
+              <p class="box-content" style="font-size: 16px;">${shipment.recipient?.name || 'N/A'}</p>
+              <p class="box-content mt-1">Tel: ${shipment.recipient?.phone || 'N/A'}</p>
+            </div>
+            
+            <div class="box">
+              <p class="box-title">Remitente</p>
+              <p class="box-content">${shipment.user?.name || 'N/A'}</p>
+            </div>
+
+            <div class="box">
+              <p class="box-title">Información del Paquete</p>
+              <p class="box-content">${shipment.weight} Kg • ${shipment.description || 'Paquete Estándar'}</p>
+            </div>
+          </div>
+
+          <div class="qr-section">
+            <img src="${qrUrl}" alt="QR Code" />
+          </div>
+
+          <div class="footer">
+            <span>Fecha: ${new Date(shipment.createdAt).toLocaleDateString()}</span>
+            <span>ID: ${shipment._id.slice(-6).toUpperCase()}</span>
+          </div>
+        </div>
+        <script>
+          window.onload = () => {
+             // Pequeño delay para asegurar que la imagen QR cargue antes de imprimir
+             setTimeout(() => {
+                window.print();
+                window.close();
+             }, 800);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
+  const printAllShippingLabels = (shipmentsToPrint: Shipment[]) => {
+    if (!shipmentsToPrint || shipmentsToPrint.length === 0) return;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const lotOrigin = shipmentsToPrint[0].origin;
+    const lotDestination = shipmentsToPrint[0].destination;
+    const totalWeight = shipmentsToPrint.reduce((acc, curr) => acc + (curr.weight || 0), 0).toFixed(2);
+
+    const qrData = encodeURIComponent(`Remitente: Bodipo Business\nDestino: ${lotDestination}\nTel (ES): +34 641 99 21 10\nTel (GQ): +240 222 667 763`);
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Etiqueta de Bulto / Lote</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; margin: 0; padding: 20px; background: #fff; }
+          .label { width: 10cm; height: 15cm; border: 2px solid #000; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; margin: 0 auto; page-break-after: always; }
+          .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; }
+          .logo { font-size: 24px; font-weight: 900; margin: 0; color: #000; text-transform: uppercase; }
+          .track-box { background: #000; color: #fff; padding: 5px 10px; font-size: 16px; font-weight: bold; letter-spacing: 1px; }
+          .route { font-size: 18px; font-weight: 900; text-align: center; margin: 15px 0; border: 2px dashed #000; padding: 10px; text-transform: uppercase; }
+          .qr-section { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 15px 0; }
+          .qr-section img { width: 120px; height: 120px; }
+          .details { flex-grow: 1; display:flex; flex-direction:column; gap: 10px; }
+          .box { border: 1px solid #000; padding: 10px; }
+          .box-title { font-size: 10px; text-transform: uppercase; color: #000; margin: 0 0 5px 0; font-weight: bold; }
+          .box-content { font-size: 14px; font-weight: bold; color: #000; margin:0; }
+          .footer { margin-top: auto; border-top: 2px solid #000; padding-top: 10px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
+          @media print {
+            body { padding: 0; margin: 0; }
+            .label { border: none; width: 100%; height: 100%; margin: 0; padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="label">
+          <div class="header">
+            <div>
+              <h1 class="logo">Bodipo</h1>
+              <span style="font-size:10px;font-weight:bold;color:#000;text-transform:uppercase;">Network</span>
+            </div>
+            <div class="track-box">BULTO / LOTE</div>
+          </div>
+          
+          <div class="route">
+            ${lotOrigin} ✈️ ${lotDestination}
+          </div>
+
+          <div class="details">
+            <div class="box">
+              <p class="box-title">Remitente / Sender</p>
+              <p class="box-content" style="font-size: 16px;">Bodipo Business</p>
+            </div>
+            
+            <div class="box">
+              <p class="box-title">Destino del Lote/ Bulto</p>
+              <p class="box-content" style="font-size: 16px;">Bodipo Business - ${lotDestination}</p>
+            </div>
+
+            <div class="box">
+              <p class="box-title">Contacto Remitente / Destino</p>
+              <p class="box-content mt-1">ES: +34 641 99 21 10</p>
+              <p class="box-content mt-1">GQ: +240 222 667 763</p>
+            </div>
+
+            <div class="box">
+              <p class="box-title">Resumen del Lote</p>
+              <p class="box-content">Contiene ${shipmentsToPrint.length} paquetes</p>
+              <p class="box-content mt-1">Peso Total Aprox: ${totalWeight} Kg</p>
+            </div>
+          </div>
+
+          <div class="qr-section">
+            <img src="${qrUrl}" alt="QR Lote" />
+          </div>
+
+          <div class="footer">
+            <span>Fecha Lote: ${new Date(shipmentsToPrint[0].createdAt).toLocaleDateString()}</span>
+            <span>MANIFIESTO: ${shipmentsToPrint.length} PKG</span>
+          </div>
+        </div>
+        <script>
+          window.onload = () => {
+             setTimeout(() => {
+                window.print();
+                window.close();
+             }, 800);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   const fetchShipments = async () => {
     try {
       const userStr = localStorage.getItem('user');
@@ -1550,10 +1740,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                                 </div>
                               </div>
 
-                              {/* Group QR Code for Manifest */}
-                              <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center gap-2">
-                                <QRCodeCanvas value={`BODIPO_MANIFEST:${shipments.map(s => s._id).join(',')}`} size={80} level="L" />
-                                <span className="text-[8px] font-black text-teal-600 uppercase tracking-widest">QR Manifiesto</span>
+                              {/* Group Actions */}
+                              <div className="flex items-center gap-4">
+                                <button
+                                  onClick={() => printAllShippingLabels(shipments)}
+                                  className="flex flex-col items-center gap-2 p-4 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-3xl border border-teal-100 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm"
+                                >
+                                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                  Imprimir Etiquetas ({shipments.length})
+                                </button>
+                                <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center gap-2">
+                                  <QRCodeCanvas value={`BODIPO_MANIFEST:${shipments.map(s => s._id).join(',')}`} size={80} level="L" />
+                                  <span className="text-[8px] font-black text-teal-600 uppercase tracking-widest">QR Manifiesto</span>
+                                </div>
                               </div>
                             </div>
 
@@ -1575,6 +1774,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                                     <p className="text-xs text-gray-500">{shipment.description} • {shipment.weight}Kg • {shipment.price} FCFA</p>
                                   </div>
                                   <div className="shrink-0 flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
+
                                     <div className="text-right">
                                       <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-1">Estado</label>
                                       <select
@@ -2331,6 +2531,78 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     </div>
                   </div>
 
+                  {/* Discounts Configuration */}
+                  <div className="space-y-6 md:col-span-2">
+                    <h4 className="text-sm font-black text-[#0095F6] uppercase tracking-widest border-b pb-2 flex items-center gap-2">
+                      <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill="#0095F6" />
+                      </svg>
+                      Descuentos (Solo Clientes Verificados)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#f0fcfc] p-6 rounded-2xl border border-teal-100">
+                      <div>
+                        <label className="text-[10px] font-bold text-teal-800 uppercase tracking-widest block mb-1">Estado del Descuento</label>
+                        <select
+                          aria-label="Estado del Descuento"
+                          className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 font-bold text-sm"
+                          value={appConfig?.discounts?.active ? 'yes' : 'no'}
+                          onChange={(e) => updateConfig && updateConfig({ discounts: { ...appConfig?.discounts, active: e.target.value === 'yes' } } as any)}
+                        >
+                          <option value="no">Inactivo</option>
+                          <option value="yes">Activo</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-teal-800 uppercase tracking-widest block mb-1">Porcentaje de Descuento (%)</label>
+                        <input
+                          aria-label="Porcentaje de Descuento"
+                          type="number"
+                          className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 font-bold text-sm text-teal-900"
+                          value={appConfig?.discounts?.percentage || 0}
+                          onChange={(e) => updateConfig && updateConfig({ discounts: { ...appConfig?.discounts, percentage: parseFloat(e.target.value) } } as any)}
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="text-[10px] font-bold text-teal-800 uppercase tracking-widest block mb-1">Mensaje de Promoción</label>
+                        <input
+                          type="text"
+                          placeholder="Ej: ¡Aprovecha el 10% de descuento por ser Cliente Verificado!"
+                          className="w-full bg-white border border-teal-200 rounded-xl px-4 py-3 font-medium text-sm"
+                          value={appConfig?.discounts?.message || ''}
+                          onChange={(e) => updateConfig && updateConfig({ discounts: { ...appConfig?.discounts, message: e.target.value } } as any)}
+                        />
+                      </div>
+                      <div className="md:col-span-2 flex justify-end">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/notifications`, {
+                                method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                                },
+                                body: JSON.stringify({
+                                  title: '🤑 ¡Nuevo Descuento Disponible!',
+                                  message: appConfig?.discounts?.message || `Acabamos de activar un ${appConfig?.discounts?.percentage || 0}% de descuento en todos los envíos.`,
+                                  type: 'info',
+                                  verifiedOnly: true
+                                }),
+                              });
+                              if (!res.ok) throw new Error('Error al notificar');
+                              alert('¡Notificación enviada a todos los clientes verificados!');
+                            } catch (e) {
+                              alert('Hubo un problema al enviar la notificación.');
+                            }
+                          }}
+                          className="bg-[#0095F6] hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-xl text-xs uppercase tracking-widest transition-colors shadow-sm"
+                        >
+                          Publicar y Notificar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Schedule Blocks Configuration */}
                   <div className="space-y-6 md:col-span-2">
                     <h4 className="text-sm font-black text-teal-600 uppercase tracking-widest border-b pb-2">🗓️ Resumen Anual (Bloques)</h4>
@@ -2453,7 +2725,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

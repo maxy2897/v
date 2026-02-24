@@ -9,12 +9,18 @@ const router = express.Router();
 // @access  Private
 router.get('/', protect, async (req, res) => {
     try {
+        const isVerified = req.user.isAdmin || req.user.role !== 'user' || req.user.isVerified;
+        const globalFilters = { userId: null, adminOnly: false };
+        if (!isVerified) {
+            globalFilters.verifiedOnly = { $ne: true };
+        }
+
         const query = {
             $and: [
                 {
                     $or: [
                         { userId: req.user._id }, // Personal
-                        { userId: null, adminOnly: false } // Global
+                        globalFilters // Global
                     ]
                 },
                 {
@@ -54,13 +60,19 @@ router.get('/', protect, async (req, res) => {
 // @access  Private
 router.get('/unread-count', protect, async (req, res) => {
     try {
+        const isVerified = req.user.isAdmin || req.user.role !== 'user' || req.user.isVerified;
+        const globalFilters = { userId: null, adminOnly: false };
+        if (!isVerified) {
+            globalFilters.verifiedOnly = { $ne: true };
+        }
+
         const query = {
             readBy: { $ne: req.user._id },
             $and: [
                 {
                     $or: [
                         { userId: req.user._id },
-                        { userId: null, adminOnly: false }
+                        globalFilters
                     ]
                 },
                 {
@@ -114,11 +126,17 @@ router.post('/:id/read', protect, async (req, res) => {
 // @access  Private
 router.post('/read-all', protect, async (req, res) => {
     try {
+        const isVerified = req.user.isAdmin || req.user.role !== 'user' || req.user.isVerified;
+        const globalFilters = { userId: null, adminOnly: false };
+        if (!isVerified) {
+            globalFilters.verifiedOnly = { $ne: true };
+        }
+
         await Notification.updateMany(
             {
                 $or: [
                     { userId: req.user._id },
-                    { userId: null, adminOnly: false }
+                    globalFilters
                 ],
                 readBy: { $ne: req.user._id }
             },
@@ -141,7 +159,7 @@ router.post('/read-all', protect, async (req, res) => {
 // @access  Private/Admin
 router.post('/', protect, admin, async (req, res) => {
     try {
-        const { title, message, type, userId, shipmentId, expiresAt } = req.body;
+        const { title, message, type, userId, shipmentId, expiresAt, verifiedOnly } = req.body;
 
         if (!title || !message) {
             return res.status(400).json({ message: 'Título y mensaje son requeridos' });
@@ -153,7 +171,8 @@ router.post('/', protect, admin, async (req, res) => {
             type: type || 'general',
             userId: userId || null, // null = global notification
             shipmentId: shipmentId || null,
-            expiresAt: expiresAt || null
+            expiresAt: expiresAt || null,
+            verifiedOnly: verifiedOnly || false
         });
 
         res.status(201).json(notification);
