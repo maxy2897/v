@@ -137,3 +137,20 @@ export const deleteNotification = async (notificationId: string) => {
 
     return data;
 };
+
+// Subscribe to push notifications
+export const subscribeToPush = async (subscription: PushSubscription) => {
+    const response = await fetch(`${API_URL}/notifications/subscribe`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(subscription),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al suscribirse a push');
+    }
+
+    return data;
+};

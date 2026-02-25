@@ -7,7 +7,7 @@ import * as api from '../services/api';
 import { BASE_URL } from '../services/api';
 import { PhoneInput } from '../components/PhoneInput';
 import { TERMS_AND_CONDITIONS } from '../constants/terms';
-import { getNotifications, markAsRead, markAllAsRead } from '../services/notificationsApi';
+import { getNotifications, markAsRead, markAllAsRead, subscribeToPush } from '../services/notificationsApi';
 import { motion } from 'framer-motion';
 
 interface Notification {
@@ -138,6 +138,53 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             }
         }
     }, [isAuthenticated, authLoading, navigate]);
+
+    // Push Notifications Registration
+    useEffect(() => {
+        if (!authLoading && isAuthenticated && 'serviceWorker' in navigator && 'PushManager' in window) {
+            const registerPush = async () => {
+                try {
+                    const permission = await Notification.requestPermission();
+                    if (permission === 'granted') {
+                        const registration = await navigator.serviceWorker.ready;
+                        let subscription = await registration.pushManager.getSubscription();
+
+                        if (!subscription) {
+                            const vapidPublicKey = 'BEB9EE8uZeg4W7Iu5fjnYRLKEyriq3k3c4NDEBddiexQLhY3ybm_vJyBzMJEzLanSm8h-vGS8c8bbzsdkbUl7LY';
+                            const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+                            subscription = await registration.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: convertedVapidKey
+                            });
+                        }
+
+                        await subscribeToPush(subscription);
+                    }
+                } catch (error) {
+                    console.error('Error suscribiendo a notificaciones push:', error);
+                }
+            };
+
+            registerPush();
+        }
+    }, [isAuthenticated, authLoading]);
+
+    // Helper for VAPID conversion
+    function urlBase64ToUint8Array(base64String: string) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
 
     // Sync formData with user when user changes
     useEffect(() => {

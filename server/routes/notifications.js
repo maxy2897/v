@@ -1,8 +1,50 @@
 import express from 'express';
+import webPush from 'web-push';
 import Notification from '../models/Notification.js';
+import User from '../models/User.js';
 import { protect, admin } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Setup Web Push
+const initWebPush = () => {
+    if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+        webPush.setVapidDetails(
+            'mailto:admin@bodipobusiness.es',
+            process.env.VAPID_PUBLIC_KEY,
+            process.env.VAPID_PRIVATE_KEY
+        );
+    }
+};
+initWebPush();
+
+// @route   POST /api/notifications/subscribe
+// @desc    Subscribe a device for push notifications
+// @access  Private
+router.post('/subscribe', protect, async (req, res) => {
+    try {
+        const subscription = req.body;
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Check if subscription already exists to avoid duplicates
+        const exists = user.pushSubscriptions?.some(sub => sub.endpoint === subscription.endpoint);
+
+        if (!exists) {
+            if (!user.pushSubscriptions) user.pushSubscriptions = [];
+            user.pushSubscriptions.push(subscription);
+            await user.save();
+        }
+
+        res.status(201).json({ message: 'Suscripción guardada exitosamente' });
+    } catch (error) {
+        console.error('Error saving push subscription:', error);
+        res.status(500).json({ message: 'Error al procesar suscripción' });
+    }
+});
 
 // @route   GET /api/notifications
 // @desc    Get user notifications (both personal and global)
@@ -174,6 +216,46 @@ router.post('/', protect, admin, async (req, res) => {
             expiresAt: expiresAt || null,
             verifiedOnly: verifiedOnly || false
         });
+
+        // Send Push Notifications in background
+        if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+            const payload = JSON.stringify({
+                title: title,
+                body: message,
+                icon: '/logo-n.png',
+                url: '/#/dashboard'
+            });
+
+            const sendPushToUsers = async (users) => {
+                for (const u of users) {
+                    if (u.pushSubscriptions && u.pushSubscriptions.length > 0) {
+                        for (let idx = u.pushSubscriptions.length - 1; idx >= 0; idx--) {
+                            const sub = u.pushSubscriptions[idx];
+                            try {
+                                await webPush.sendNotification(sub, payload);
+                            } catch (error) {
+                                // If gone, remove it
+                                if (error.statusCode === 404 || error.statusCode === 410) {
+                                    u.pushSubscriptions.splice(idx, 1);
+                                    await u.save();
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (userId) {
+                // Personal Notification
+                const user = await User.findById(userId);
+                if (user) await sendPushToUsers([user]);
+            } else {
+                // Global notification
+                const query = verifiedOnly ? { isVerified: true } : {};
+                const users = await User.find(query);
+                await sendPushToUsers(users);
+            }
+        }
 
         res.status(201).json(notification);
     } catch (error) {

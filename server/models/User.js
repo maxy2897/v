@@ -58,6 +58,9 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    pushSubscriptions: [{
+        type: Object
+    }],
     isVerified: {
         type: Boolean,
         default: false,

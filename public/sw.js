@@ -46,3 +46,32 @@ self.addEventListener('fetch', (event) => {
         fetch(event.request).catch(() => caches.match(event.request))
     );
 });
+
+self.addEventListener('push', (event) => {
+    if (event.data) {
+        try {
+            const data = event.data.json();
+            const options = {
+                body: data.body,
+                icon: data.icon || '/logo-n.png',
+                badge: '/logo-n.png',
+                vibrate: [100, 50, 100],
+                data: {
+                    url: data.url || '/'
+                }
+            };
+            event.waitUntil(
+                self.registration.showNotification(data.title || 'Bodipo Business', options)
+            );
+        } catch (e) {
+            console.error('Error procesando push:', e);
+        }
+    }
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow(event.notification.data.url)
+    );
+});
