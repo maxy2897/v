@@ -439,6 +439,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     setIsSearchingPickup(true);
     setPickupShipment(null);
     setManifestShipments([]);
+
+    // PWA Optimización: Buscar primero en local para que la experiencia sea instantánea
+    const localMatch = allShipments.find(s => s.trackingNumber === trackingCode);
+    if (localMatch) {
+      setPickupShipment(localMatch);
+      setIsSearchingPickup(false);
+      // Call in background to refresh just in case, but keep UI fluid
+      fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/shipments/tracking/${trackingCode}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string).token : ''}` }
+      }).catch(() => { });
+      return;
+    }
+
     try {
       const userStr = localStorage.getItem('user');
       const token = userStr ? JSON.parse(userStr).token : '';
@@ -1879,6 +1892,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                     <div className="flex-1 relative">
                       <input
                         type="text"
+                        autoFocus
                         placeholder="Introduce o escanea código de envío..."
                         className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border-none focus:ring-2 focus:ring-orange-500 font-bold text-[#00151a] shadow-inner"
                         value={pickupSearch}
@@ -1904,8 +1918,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                         </div>
                         <p className="text-sm font-bold text-orange-900">Escanea un código de paquete individual o el código QR de un Manifiesto de grupo.</p>
                       </div>
-                      <div className="relative group">
-                        <div id="qr-reader" className="overflow-hidden rounded-[2.5rem] border-4 border-gray-100 shadow-2xl bg-black aspect-square max-w-sm mx-auto"></div>
+                      <div className="relative group w-full standalone:w-screen">
+                        {/* Se eliminó max-w-sm para permitir pantalla completa nativa */}
+                        <div id="qr-reader" className="overflow-hidden rounded-[2.5rem] border-4 border-gray-100 shadow-2xl bg-black aspect-square w-full sm:max-w-md mx-auto standalone-full-width"></div>
                         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
                           <div className="w-48 h-48 border-2 border-teal-500 rounded-3xl animate-pulse"></div>
                           <p className="text-white text-[10px] font-black uppercase tracking-[0.3em] mt-4 drop-shadow-lg">Escaneando...</p>

@@ -12,6 +12,14 @@
         content="envios guinea ecuatorial, paqueteria malabo, logistica bata, compras online guinea, bodipo business, transporte maritimo guinea, transporte aereo guinea">
     <meta name="author" content="Bodipo Business S.L.">
 
+    <!-- PWA Settings -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007e85">
+    <link rel="apple-touch-icon" href="/logo-n.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bodipo Business">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://v-five-dun.vercel.app/">
@@ -88,6 +96,17 @@
     }
     </script>
     <script type="module" src="./index.tsx"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then((reg) => {
+                    console.log('ServiceWorker registration successful with scope: ', reg.scope);
+                }, (err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>

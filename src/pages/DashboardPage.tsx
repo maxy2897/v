@@ -7,6 +7,18 @@ import * as api from '../services/api';
 import { BASE_URL } from '../services/api';
 import { PhoneInput } from '../components/PhoneInput';
 import { TERMS_AND_CONDITIONS } from '../constants/terms';
+import { getNotifications, markAsRead, markAllAsRead } from '../services/notificationsApi';
+import { motion } from 'framer-motion';
+
+interface Notification {
+    _id: string;
+    title: string;
+    message: string;
+    type: string;
+    isRead: boolean;
+    createdAt: string;
+    shipmentId?: any;
+}
 
 interface Shipment {
     _id: string;
@@ -46,7 +58,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loadingShipments, setLoadingShipments] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(true);
-    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings' | 'help'>('shipments');
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings' | 'help' | 'notifications'>('shipments');
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [isMobileMenu, setIsMobileMenu] = useState(true);
@@ -59,7 +72,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
         const params = new URLSearchParams(location.search);
         const urlTab = params.get('tab');
 
-        if (urlTab && ['settings', 'invoices', 'shipments', 'help'].includes(urlTab)) {
+        if (urlTab && ['settings', 'invoices', 'shipments', 'help', 'notifications'].includes(urlTab)) {
             setActiveTab(urlTab as any);
             sessionStorage.setItem('dashboard_tab', urlTab);
             setIsMobileMenu(false);
@@ -104,12 +117,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
         if (!authLoading && isAuthenticated) {
             const loadData = async () => {
                 try {
-                    const [shipmentsData, transactionsData] = await Promise.all([
+                    const [shipmentsData, transactionsData, notificationsData] = await Promise.all([
                         api.getUserShipments(),
-                        api.getUserTransactions()
+                        api.getUserTransactions(),
+                        getNotifications()
                     ]);
                     setShipments(shipmentsData);
                     setTransactions(transactionsData);
+                    setNotifications(notificationsData);
                 } catch (error) {
                     console.error('Error loading dashboard data:', error);
                 } finally {
@@ -149,6 +164,44 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             alert(error.message || 'Error al actualizar perfil');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleMarkAsRead = async (id: string) => {
+        try {
+            await markAsRead(id);
+            setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
+    };
+
+    const handleMarkAllRead = async () => {
+        try {
+            await markAllAsRead();
+            setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+        }
+    };
+
+    const getTypeColor = (type: string) => {
+        switch (type) {
+            case 'success': return 'text-teal-600 bg-teal-50 border-teal-100';
+            case 'delivery': return 'text-green-600 bg-green-50 border-green-100';
+            case 'shipment_update': return 'text-blue-600 bg-blue-50 border-blue-100';
+            case 'warning': return 'text-orange-600 bg-orange-50 border-orange-100';
+            default: return 'text-gray-600 bg-gray-50 border-gray-100';
+        }
+    };
+
+    const getTypeIcon = (type: string) => {
+        switch (type) {
+            case 'delivery': return '📦';
+            case 'shipment_update': return '🚚';
+            case 'success': return '✅';
+            case 'warning': return '⚠️';
+            default: return '🔔';
         }
     };
 
@@ -261,16 +314,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             <button
                                 key={item.id}
                                 onClick={() => {
-                                    if (item.id === 'notifications') {
-                                        // Navegar pero en PC que se vea consistente.
-                                        navigate('/notificaciones');
-                                    }
-                                    else if (item.id === 'admin') onOpenAdmin?.();
+                                    if (item.id === 'admin') onOpenAdmin?.();
                                     else {
                                         handleTabChange(item.id);
                                     }
                                 }}
-                                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all ${activeTab === item.id || (item.id === 'notifications' && location.pathname === '/notificaciones') ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
+                                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[13px] font-bold transition-all ${activeTab === item.id ? 'bg-[#f0fcfc] text-[#007e85]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#00151a]'}`}
                             >
                                 <span className={activeTab === item.id ? 'text-[#007e85]' : 'text-gray-400'}>{item.icon}</span>
                                 {item.label}
@@ -318,15 +367,28 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                         <div className="mb-10 flex justify-between items-end border-b border-gray-100 pb-8">
                             <div>
                                 <h1 className="text-3xl font-black text-[#00151a] tracking-tight mb-2 uppercase">
-                                    {activeTab === 'shipments' ? 'Tus Envíos' : activeTab === 'invoices' ? 'Tus Facturas' : activeTab === 'settings' ? 'Configuración' : 'Ayuda y Condiciones'}
+                                    {activeTab === 'shipments' ? 'Tus Envíos' : activeTab === 'invoices' ? 'Tus Facturas' : activeTab === 'settings' ? 'Configuración' : activeTab === 'notifications' ? 'Buzón / Notificaciones' : 'Ayuda y Condiciones'}
                                 </h1>
                                 <p className="text-gray-400 text-sm font-medium">
                                     {activeTab === 'shipments' ? 'Aquí podrás ver y gestionar todos tus paquetes en tránsito.' :
                                         activeTab === 'invoices' ? 'Descarga tus facturas y comprobantes de pago.' :
                                             activeTab === 'settings' ? 'Gestiona tu información personal y de seguridad.' :
-                                                'Resuelve tus dudas y consulta nuestras políticas.'}
+                                                activeTab === 'notifications' ? 'Centro de actualizaciones en tiempo real.' :
+                                                    'Resuelve tus dudas y consulta nuestras políticas.'}
                                 </p>
                             </div>
+
+                            {activeTab === 'notifications' && notifications.some(n => !n.isRead) && (
+                                <button
+                                    onClick={handleMarkAllRead}
+                                    className="bg-white text-teal-600 border-2 border-teal-500/20 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-50 transition-all shadow-sm flex items-center gap-2"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Marcar leídas
+                                </button>
+                            )}
 
                             {activeTab === 'settings' && (user.role !== 'user' || user.isVerified) && (
                                 <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#007e85] bg-[#f0fcfc] px-3 py-1 rounded-full border border-teal-100">
@@ -458,6 +520,67 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        )}
+
+                        {/* Notifications View */}
+                        {activeTab === 'notifications' && (
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {notifications.length === 0 ? (
+                                    <div className="bg-white rounded-[3rem] p-12 text-center border border-dashed border-gray-200 shadow-sm">
+                                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8 text-4xl">
+                                            📭
+                                        </div>
+                                        <h3 className="text-2xl font-black text-gray-800 tracking-tight">Bandeja de entrada vacía</h3>
+                                        <p className="text-gray-500 mt-4 max-w-xs mx-auto leading-relaxed">
+                                            Te avisaremos por aquí cuando haya actualizaciones sobre tus pedidos, salidas de vuelos o promociones.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    notifications.map((n) => (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            key={n._id}
+                                            onClick={() => !n.isRead && handleMarkAsRead(n._id)}
+                                            className={`group relative p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer flex gap-6 ${n.isRead
+                                                ? 'bg-white/60 border-gray-100 opacity-80 hover:bg-white hover:opacity-100'
+                                                : 'bg-white border-teal-200 shadow-xl shadow-teal-500/5 hover:border-teal-400'
+                                                }`}
+                                        >
+                                            {!n.isRead && (
+                                                <div className="absolute top-8 right-8 w-3 h-3 bg-teal-500 rounded-full animate-pulse shadow-lg shadow-teal-500/50"></div>
+                                            )}
+                                            <div className={`w-16 h-16 rounded-3xl flex items-center justify-center shrink-0 text-2xl border-2 transition-transform group-hover:scale-110 duration-500 ${getTypeColor(n.type)}`}>
+                                                {getTypeIcon(n.type)}
+                                            </div>
+                                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <h4 className={`text-xl font-black tracking-tight ${n.isRead ? 'text-gray-600' : 'text-[#00151a]'}`}>
+                                                        {n.title}
+                                                    </h4>
+                                                    <span className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                                                        {new Date(n.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                                    </span>
+                                                </div>
+                                                <p className={`text-sm leading-relaxed ${n.isRead ? 'text-gray-500' : 'text-gray-600 font-medium'}`}>
+                                                    {n.message}
+                                                </p>
+                                                {n.shipmentId && (
+                                                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4">
+                                                        <div className="bg-teal-50 px-3 py-1.5 rounded-xl flex items-center gap-3 border border-teal-100">
+                                                            <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest">Código</span>
+                                                            <span className="text-xs font-mono font-black text-teal-700">{n.shipmentId.trackingNumber}</span>
+                                                        </div>
+                                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                            Destino: <span className="text-gray-600">{n.shipmentId.destination}</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    ))
+                                )}
                             </div>
                         )}
 
