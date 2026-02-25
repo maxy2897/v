@@ -92,7 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             <div className="relative h-[400px] lg:h-auto overflow-hidden group">
                                 <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] via-[#00151a]/20 to-transparent z-10 lg:block hidden"></div>
                                 <img
-                                    src={appConfig?.content?.hero?.moneyTransferImage || "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"}
+                                    src={appConfig?.content?.hero?.moneyTransferImage || "https://raw.githubusercontent.com/antigravitydev/bodipo-assets/main/money_transfer_hero.webp"}
                                     alt="Money Transfer"
                                     className="w-full h-full object-cover lg:scale-110 group-hover:scale-105 transition-transform duration-700"
                                 />
