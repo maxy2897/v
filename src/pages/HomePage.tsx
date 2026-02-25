@@ -89,36 +89,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     </svg>
                                 </Link>
                             </div>
-                            <div className="relative h-[400px] lg:h-auto overflow-hidden group">
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] via-[#00151a]/20 to-transparent z-10 lg:block hidden"></div>
+                            <div className="relative h-[400px] lg:h-auto overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] to-transparent z-10 lg:block hidden"></div>
                                 <img
-                                    src={appConfig?.content?.hero?.moneyTransferImage || "/images/money.png"}
+                                    src={appConfig?.content?.hero?.moneyTransferImage || "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"}
                                     alt="Money Transfer"
-                                    className="w-full h-full object-cover lg:scale-110 group-hover:scale-105 transition-transform duration-700"
+                                    className="w-full h-full object-cover lg:scale-110"
                                 />
-
-                                {/* Floating Tech Graphics Override */}
-                                <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
-                                    <div className="absolute top-[10%] left-[20%] w-24 h-24 bg-teal-500/20 rounded-full blur-2xl animate-pulse"></div>
-                                    <div className="absolute bottom-[20%] right-[10%] w-32 h-32 bg-blue-500/20 rounded-full blur-2xl animate-pulse delay-700"></div>
-
-                                    {/* Connection Line */}
-                                    <div className="absolute top-1/2 left-0 w-full h-[2px] bg-gradient-to-r from-teal-400/0 via-teal-400/50 to-blue-500/0 rotate-[-15deg] transform scale-150">
-                                        <div className="absolute top-0 right-1/4 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#fff,0_0_20px_#2dd4bf] animate-ping"></div>
-                                    </div>
-
-                                    {/* Floating Symbols */}
-                                    <div className="absolute top-[20%] right-[25%] font-black text-white/50 text-4xl drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-bounce" style={{ animationDuration: '3s' }}>€</div>
-                                    <div className="absolute bottom-[30%] left-[30%] font-black text-teal-300/60 text-2xl drop-shadow-[0_0_10px_rgba(45,212,191,0.5)] animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>FCFA</div>
-
-                                    {/* Mobile UI overlay hint */}
-                                    <div className="absolute -right-8 bottom-8 w-40 h-56 bg-[#00151a]/80 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl skew-y-12 rotate-12 transform scale-75 group-hover:rotate-6 group-hover:scale-95 transition-all duration-500">
-                                        <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-teal-500/20"></div>
-                                        <div className="absolute top-6 left-16 w-16 h-2 bg-white/20 rounded-full"></div>
-                                        <div className="absolute top-16 left-4 right-4 h-12 bg-gradient-to-r from-teal-500/40 to-blue-500/40 rounded-xl"></div>
-                                        <div className="absolute bottom-4 left-4 text-[10px] font-black tracking-widest text-teal-400">ENVIADO ✓</div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
