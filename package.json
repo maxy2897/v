@@ -18,6 +18,7 @@
     "cloudinary": "^2.9.0",
     "concurrently": "^9.2.1",
     "cors": "^2.8.6",
+    "country-flag-emoji-polyfill": "^0.1.8",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "express-validator": "^7.3.1",
