@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 
 interface HomePageProps {
@@ -18,7 +19,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
-                        <div className="lg:col-span-7 space-y-8">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6 }}
+                            className="lg:col-span-7 space-y-8"
+                        >
                             <h1 className="text-5xl md:text-7xl font-black text-[#00151a] tracking-tighter leading-[0.9]">
                                 {t('home.hero.title')}
                             </h1>
@@ -38,9 +45,15 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     {t('home.hero.cta_contact')}
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        <div className="lg:col-span-5 mt-16 lg:mt-0 relative">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="lg:col-span-5 mt-16 lg:mt-0 relative"
+                        >
                             <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-[#00151a]">
                                 <img
                                     className="w-full h-[500px] object-cover scale-110 transition-transform duration-700 hover:scale-125"
@@ -56,7 +69,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     <p className="text-3xl font-black flex items-center gap-3">🇪🇸 {t('home.hero.route')}</p>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
@@ -64,7 +77,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* Money Transfer Section */}
             <section className="py-12 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7 }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                >
                     <div className="bg-[#00151a] rounded-[3rem] overflow-hidden relative shadow-2xl">
                         <div className="absolute top-0 right-0 w-1/2 h-full bg-teal-500/10 -z-0"></div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
@@ -99,12 +118,18 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Social Media Section */}
             <section className="py-12 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+                >
                     <p className="text-[#00151a] font-bold text-xs uppercase tracking-[0.2em] mb-8">
                         {t('home.social.follow')}
                     </p>
@@ -172,11 +197,17 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             </div>
                         </a>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Membership Banner */}
-            <section className="py-8 bg-[#00151a] relative overflow-hidden">
+            <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="py-8 bg-[#00151a] relative overflow-hidden"
+            >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="text-center md:text-left">
@@ -196,7 +227,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     </div>
                 </div>
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-teal-900/20 to-transparent"></div>
-            </section>
+            </motion.section>
         </>
     );
 };

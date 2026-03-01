@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 
 const MoneyTransfer: React.FC = () => {
@@ -180,7 +181,14 @@ const MoneyTransfer: React.FC = () => {
   }
 
   return (
-    <section id="transferencias" className="py-12 bg-white">
+    <motion.section
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6 }}
+      id="transferencias"
+      className="py-12 bg-white"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-full mb-6">
@@ -385,7 +393,7 @@ const MoneyTransfer: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

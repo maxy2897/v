@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 
 const Tracking: React.FC = () => {
@@ -68,7 +69,13 @@ const Tracking: React.FC = () => {
   return (
     <section id="rastreo" className="py-20">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-[#001a1a] rounded-[3rem] p-12 text-white shadow-[0_30px_60px_rgba(0,26,26,0.2)] relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="bg-[#001a1a] rounded-[3rem] p-12 text-white shadow-[0_30px_60px_rgba(0,26,26,0.2)] relative overflow-hidden"
+        >
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
           <div className="text-center sm:text-left mb-6">
@@ -169,7 +176,7 @@ const Tracking: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

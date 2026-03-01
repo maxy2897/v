@@ -270,7 +270,14 @@ const Calculator: React.FC = () => {
   };
 
   return (
-    <section id="calculadora" className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 p-4 md:p-12 relative overflow-hidden">
+    <motion.section
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6 }}
+      id="calculadora"
+      className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 p-4 md:p-12 relative overflow-hidden"
+    >
       <AnimatePresence>
         {notification && (
           <motion.div
@@ -731,7 +738,7 @@ const Calculator: React.FC = () => {
           )}
         </div>
       </div >
-    </section >
+    </motion.section >
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { Product } from '../../types';
 
@@ -35,9 +36,28 @@ const Store: React.FC<StoreProps> = ({ products }) => {
 
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-8 md:gap-x-4 md:gap-y-12">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 }
+            }
+          }}
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-8 md:gap-x-4 md:gap-y-12"
+        >
           {products.map((product) => (
-            <div key={product.id} className="group flex flex-col group">
+            <motion.div
+              key={product.id}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+              }}
+              className="group flex flex-col group"
+            >
               <div
                 className="relative aspect-[3/4] overflow-hidden bg-gray-100 cursor-zoom-in"
                 onClick={() => setSelectedImage(product.image)}
@@ -90,9 +110,9 @@ const Store: React.FC<StoreProps> = ({ products }) => {
                   </a>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Lightbox / Modal */}
