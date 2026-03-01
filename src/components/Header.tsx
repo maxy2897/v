@@ -28,7 +28,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
     { path: '/money-transfer', label: t('nav.money_transfer') },
     { path: '/tienda', label: t('nav.store') },
     { path: '/rastreo', label: t('nav.tracking') },
-    { path: '/servicios', label: t('nav.services') },
   ];
 
   return (

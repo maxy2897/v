@@ -20,7 +20,7 @@ const SettingsModal = lazy(() => import('./src/components/SettingsModal'));
 // Lazy loaded Pages
 const HomePage = lazy(() => import('./src/pages/HomePage'));
 const CalendarPage = lazy(() => import('./src/pages/CalendarPage'));
-const ServicesPage = lazy(() => import('./src/pages/ServicesPage'));
+
 const TrackingPage = lazy(() => import('./src/pages/TrackingPage'));
 const RatesPage = lazy(() => import('./src/pages/RatesPage'));
 const StorePage = lazy(() => import('./src/pages/StorePage'));
@@ -80,7 +80,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/" element={<AnimatedPage><HomePage onOpenRegister={onOpenRegister} onOpenContact={onOpenContact} /></AnimatedPage>} />
         <Route path="/calendario" element={<AnimatedPage><CalendarPage /></AnimatedPage>} />
         <Route path="/tarifas" element={<AnimatedPage><RatesPage /></AnimatedPage>} />
-        <Route path="/servicios" element={<AnimatedPage><ServicesPage /></AnimatedPage>} />
+
         <Route path="/rastreo" element={<AnimatedPage><TrackingPage /></AnimatedPage>} />
         <Route path="/tienda" element={<AnimatedPage><StorePage products={products} /></AnimatedPage>} />
         <Route path="/acceso" element={<AnimatedPage><ClientPage onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
@@ -235,7 +235,7 @@ const AppContent: React.FC = () => {
                   <li><Link to="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</Link></li>
                   <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</Link></li>
                   <li><Link to="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</Link></li>
-                  <li><Link to="/servicios" className="hover:text-white transition-colors">{t('footer.advisor')}</Link></li>
+                  <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.advisor')}</Link></li>
                 </ul>
               </div>
 
