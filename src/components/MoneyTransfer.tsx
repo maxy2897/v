@@ -182,10 +182,10 @@ const MoneyTransfer: React.FC = () => {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6 }}
+      initial={{ opacity: 0, y: 70, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="transferencias"
       className="py-12 bg-white"
     >
@@ -193,7 +193,6 @@ const MoneyTransfer: React.FC = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-full mb-6">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
             </span>
             <span className="text-[10px] font-black uppercase tracking-widest text-teal-800">{t('transfer.badge')}</span>

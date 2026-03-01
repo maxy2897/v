@@ -70,10 +70,10 @@ const Tracking: React.FC = () => {
     <section id="rastreo" className="py-20">
       <div className="max-w-4xl mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 60, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ type: "spring", stiffness: 90, damping: 20 }}
           className="bg-[#001a1a] rounded-[3rem] p-12 text-white shadow-[0_30px_60px_rgba(0,26,26,0.2)] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>

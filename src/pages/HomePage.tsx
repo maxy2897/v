@@ -20,10 +20,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
+                            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                            viewport={{ once: true, amount: 0.1 }}
+                            transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
                             className="lg:col-span-7 space-y-8"
                         >
                             <h1 className="text-5xl md:text-7xl font-black text-[#00151a] tracking-tighter leading-[0.9]">
@@ -48,10 +48,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
+                            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.1 }}
+                            transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.2 }}
                             className="lg:col-span-5 mt-16 lg:mt-0 relative"
                         >
                             <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-[#00151a]">
@@ -78,10 +78,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             {/* Money Transfer Section */}
             <section className="py-12 bg-white relative overflow-hidden">
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.7 }}
+                    initial={{ opacity: 0, y: 60, scale: 0.98 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ type: "spring", stiffness: 80, damping: 25 }}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
                 >
                     <div className="bg-[#00151a] rounded-[3rem] overflow-hidden relative shadow-2xl">
@@ -124,10 +124,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             {/* Social Media Section */}
             <section className="py-12 bg-white">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
                     className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
                 >
                     <p className="text-[#00151a] font-bold text-xs uppercase tracking-[0.2em] mb-8">
@@ -202,10 +202,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* Membership Banner */}
             <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ type: "spring", stiffness: 90, damping: 20 }}
                 className="py-8 bg-[#00151a] relative overflow-hidden"
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

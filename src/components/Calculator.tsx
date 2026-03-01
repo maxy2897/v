@@ -271,10 +271,10 @@ const Calculator: React.FC = () => {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6 }}
+      initial={{ opacity: 0, y: 80, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="calculadora"
       className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 p-4 md:p-12 relative overflow-hidden"
     >
@@ -386,7 +386,7 @@ const Calculator: React.FC = () => {
                   </button>
                 </div>
                 {info.type === 'Marítimo' && (
-                  <p className="text-[9px] text-amber-600 font-bold uppercase mt-3 tracking-widest animate-pulse">
+                  <p className="text-[9px] text-amber-600 font-bold uppercase mt-3 tracking-widest">
                     {t('calc.service.sea_warn')}
                   </p>
                 )}
