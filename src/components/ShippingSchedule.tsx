@@ -165,6 +165,28 @@ const ShippingSchedule: React.FC = () => {
             </div>
           ))}
 
+          {displayShipments.length > 0 && displayShipments.length < 4 && (
+            <div className={`hidden lg:flex flex-col justify-center items-center rounded-[2.5rem] bg-gradient-to-br from-teal-50 to-white border border-teal-100 p-8 text-center relative overflow-hidden ${displayShipments.length === 1 ? 'lg:col-span-3' :
+                displayShipments.length === 2 ? 'lg:col-span-2' :
+                  'lg:col-span-1'
+              }`}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+              <div className="w-20 h-20 bg-teal-100/50 rounded-full flex items-center justify-center mb-6 relative z-10 border border-teal-200 shadow-sm">
+                <svg className="w-10 h-10 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+
+              <h3 className="text-2xl font-black text-[#00151a] tracking-tight mb-3 relative z-10">
+                {t('schedule.promo.title') || 'Prepara tu próximo envío'}
+              </h3>
+              <p className="text-sm text-gray-500 font-medium relative z-10 max-w-sm">
+                {t('schedule.promo.desc') || 'Asegura tu espacio reservando con antelación. Contáctanos para asesoramiento personalizado.'}
+              </p>
+            </div>
+          )}
 
         </div>
 
