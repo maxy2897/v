@@ -1,6 +1,8 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { protect } from '../middleware/auth.js';
 import Shipment from '../models/Shipment.js';
+import User from '../models/User.js';
 import Transaction from '../models/Transaction.js';
 import Notification from '../models/Notification.js';
 
@@ -16,10 +18,22 @@ const generateTrackingNumber = () => {
 
 // @route   POST /api/shipments
 // @desc    Create a new shipment
-// @access  Private
-router.post('/', protect, async (req, res) => {
+// @access  Public (Optional Auth)
+router.post('/', async (req, res) => {
     try {
-        const { origin, destination, recipient, weight, price, description, usedDiscount } = req.body;
+        // Optional Auth: Try to get user if token provided
+        let authUser = null;
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            try {
+                const token = req.headers.authorization.split(' ')[1];
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                authUser = await User.findById(decoded.id).select('-password');
+            } catch (err) {
+                // Ignore invalid token, treat as guest
+            }
+        }
+
+        const { origin, destination, recipient, sender, weight, price, description, usedDiscount, currency } = req.body;
 
         // Validate required fields
         if (!origin || !destination || !recipient?.name || !weight || !price) {
@@ -39,11 +53,17 @@ router.post('/', protect, async (req, res) => {
 
         // Create shipment
         const shipment = new Shipment({
-            user: req.user._id,
+            user: authUser ? authUser._id : null,
             trackingNumber,
             origin,
             destination,
             recipient,
+            sender: authUser ? {
+                name: authUser.name,
+                phone: authUser.phone,
+                idNumber: authUser.idNumber,
+                email: authUser.email
+            } : sender,
             weight,
             price,
             description,
@@ -58,27 +78,34 @@ router.post('/', protect, async (req, res) => {
         await shipment.save();
 
         // Check if user should be verified
-        const shipmentCount = await Shipment.countDocuments({ user: req.user._id });
-        if (shipmentCount >= 3) {
-            await User.findByIdAndUpdate(req.user._id, { isVerified: true });
-        }
+        if (authUser) {
+            const shipmentCount = await Shipment.countDocuments({ user: authUser._id });
+            if (shipmentCount >= 3) {
+                await User.findByIdAndUpdate(authUser._id, { isVerified: true });
+            }
 
-        if (usedDiscount) {
-            await User.findByIdAndUpdate(req.user._id, { discountEligible: false });
+            if (usedDiscount) {
+                await User.findByIdAndUpdate(authUser._id, { discountEligible: false });
+            }
         }
 
         // Create transaction record for receipt generation
         const transaction = await Transaction.create({
             type: 'SHIPMENT',
             referenceId: shipment._id,
-            userId: req.user._id,
+            userId: authUser ? authUser._id : null,
             onModel: 'Shipment',
             amount: price,
-            user: {
-                name: req.user.name,
-                email: req.user.email,
-                phone: req.user.phone,
-                idNumber: req.user.idNumber
+            currency: currency || 'EUR',
+            user: authUser ? {
+                name: authUser.name,
+                email: authUser.email,
+                phone: authUser.phone,
+                idNumber: authUser.idNumber
+            } : {
+                name: sender?.name || recipient.name,
+                phone: sender?.phone || recipient.phone,
+                idNumber: sender?.idNumber || ''
             },
             details: {
                 trackingNumber,
@@ -86,21 +113,24 @@ router.post('/', protect, async (req, res) => {
                 destination,
                 description,
                 weight,
-                recipient
+                recipient,
+                sender: authUser ? null : sender
             }
         });
 
-        // Crear notificación de confirmación
-        try {
-            await Notification.create({
-                title: 'Envío Registrado',
-                message: `Tu envío con código ${trackingNumber} ha sido registrado correctamente.`,
-                type: 'success',
-                userId: req.user._id,
-                shipmentId: shipment._id
-            });
-        } catch (error) {
-            console.error('Error creating registration notification:', error);
+        // Crear notificación de confirmación (solo si hay usuario)
+        if (authUser) {
+            try {
+                await Notification.create({
+                    title: 'Envío Registrado',
+                    message: `Tu envío con código ${trackingNumber} ha sido registrado correctamente.`,
+                    type: 'success',
+                    userId: authUser._id,
+                    shipmentId: shipment._id
+                });
+            } catch (error) {
+                console.error('Error creating registration notification:', error);
+            }
         }
 
         res.status(201).json({
@@ -136,9 +166,19 @@ router.get('/', protect, async (req, res) => {
 
 // @route   POST /api/shipments/bulk
 // @desc    Create multiple shipments with consolidated invoice
-// @access  Private
-router.post('/bulk', protect, async (req, res) => {
+// @access  Public (Optional Auth)
+router.post('/bulk', async (req, res) => {
     try {
+        // Optional Auth
+        let authUser = null;
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            try {
+                const token = req.headers.authorization.split(' ')[1];
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                authUser = await User.findById(decoded.id).select('-password');
+            } catch (err) { }
+        }
+
         const { shipments } = req.body;
 
         if (!shipments || !Array.isArray(shipments) || shipments.length === 0) {
@@ -166,11 +206,16 @@ router.post('/bulk', protect, async (req, res) => {
             }
 
             const shipment = new Shipment({
-                user: req.user._id,
+                user: authUser ? authUser._id : null,
                 trackingNumber,
                 origin,
                 destination,
                 recipient,
+                sender: authUser ? {
+                    name: authUser.name,
+                    phone: authUser.phone,
+                    idNumber: authUser.idNumber
+                } : shipmentData.sender,
                 weight,
                 price,
                 description,
@@ -188,24 +233,30 @@ router.post('/bulk', protect, async (req, res) => {
         }
 
         // Check if user should be verified (after creating all bulk shipments)
-        const shipmentCount = await Shipment.countDocuments({ user: req.user._id });
-        if (shipmentCount >= 3) {
-            await User.findByIdAndUpdate(req.user._id, { isVerified: true });
-        }
+        if (authUser) {
+            const shipmentCount = await Shipment.countDocuments({ user: authUser._id });
+            if (shipmentCount >= 3) {
+                await User.findByIdAndUpdate(authUser._id, { isVerified: true });
+            }
 
-        if (shipments.some(s => s.usedDiscount)) {
-            await User.findByIdAndUpdate(req.user._id, { discountEligible: false });
+            if (shipments.some(s => s.usedDiscount)) {
+                await User.findByIdAndUpdate(authUser._id, { discountEligible: false });
+            }
         }
 
         const transaction = await Transaction.create({
             type: 'SHIPMENT_BULK',
-            userId: req.user._id,
+            userId: authUser ? authUser._id : null,
             amount: totalAmount,
-            user: {
-                name: req.user.name,
-                email: req.user.email,
-                phone: req.user.phone,
-                idNumber: req.user.idNumber
+            user: authUser ? {
+                name: authUser.name,
+                email: authUser.email,
+                phone: authUser.phone,
+                idNumber: authUser.idNumber
+            } : {
+                name: shipments[0]?.sender?.name || shipments[0]?.recipient?.name,
+                phone: shipments[0]?.sender?.phone || shipments[0]?.recipient?.phone,
+                idNumber: shipments[0]?.sender?.idNumber || ''
             },
             details: {
                 shipments: createdShipments.map(s => ({
@@ -221,15 +272,17 @@ router.post('/bulk', protect, async (req, res) => {
         });
 
         // Crear notificación consolidada
-        try {
-            await Notification.create({
-                title: 'Envíos Masivos Registrados',
-                message: `Se han registrado ${createdShipments.length} envíos nuevos.`,
-                type: 'success',
-                userId: req.user._id
-            });
-        } catch (error) {
-            console.error('Error creating bulk registration notification:', error);
+        if (authUser) {
+            try {
+                await Notification.create({
+                    title: 'Envíos Masivos Registrados',
+                    message: `Se han registrado ${createdShipments.length} envíos nuevos.`,
+                    type: 'success',
+                    userId: authUser._id
+                });
+            } catch (error) {
+                console.error('Error creating bulk registration notification:', error);
+            }
         }
 
         res.status(201).json({
@@ -410,7 +463,23 @@ router.get('/tracking/:trackingNumber', protect, async (req, res) => {
 });
 
 // @route   GET /api/shipments/track/:trackingNumber
+// @desc    Track a shipment PUBLICLY
+// @access  Public
+router.get('/track/:trackingNumber', async (req, res) => {
+    try {
+        const shipment = await Shipment.findOne({ trackingNumber: req.params.trackingNumber.toUpperCase() })
+            .select('trackingNumber status origin destination history description createdAt');
 
+        if (!shipment) {
+            return res.status(404).json({ message: 'Envío no encontrado' });
+        }
+
+        res.json(shipment);
+    } catch (error) {
+        console.error('Tracking error:', error);
+        res.status(500).json({ message: 'Error al consultar tracking' });
+    }
+});
 // @route   POST /api/shipments/bulk-arrival
 // @desc    Mark multiple shipments as arrived at destination
 // @access  Private/Admin

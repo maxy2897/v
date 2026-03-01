@@ -153,8 +153,13 @@ const Calculator: React.FC = () => {
           weight: info.weight || (calcMode === 'bulto' ? bultoType : 1),
           price: total?.value || 0,
           description: `Envío ${calcMode} desde ${info.origin}`,
-          recipient: isAuthenticated ? recipientData : {
+          sender: {
             name: userData.fullName,
+            phone: userData.phone,
+            idNumber: userData.idNumber
+          },
+          recipient: isAuthenticated ? recipientData : {
+            name: 'Pendiente / Self',
             phone: userData.phone
           },
           currency: total?.currency || 'EUR',
