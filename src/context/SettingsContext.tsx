@@ -292,6 +292,8 @@ const translations: Record<Language, Record<string, string>> = {
         'schedule.overview_title': 'Programación 2026 - Vista General',
         'schedule.current_month_badge': 'Mes Actual',
         'schedule.programming_badge': 'Programación',
+        'schedule.promo.title': 'Prepara tu próximo envío',
+        'schedule.promo.desc': 'Asegura tu espacio reservando con antelación. Contáctanos para asesoramiento personalizado.',
 
         // AIChat
         'chat.welcome': '¡Hola! Bienvenido al asistente virtual de Bodipo. Estoy aquí para ayudarle.',
@@ -626,6 +628,8 @@ const translations: Record<Language, Record<string, string>> = {
         'schedule.overview_title': '2026 Programming - Overview',
         'schedule.current_month_badge': 'Current Month',
         'schedule.programming_badge': 'Programming',
+        'schedule.promo.title': 'Prepare your next shipment',
+        'schedule.promo.desc': 'Secure your space by booking in advance. Contact us for personalized advice.',
 
         // AIChat
         'chat.welcome': 'Hello! Welcome to the Bodipo virtual assistant. I am here to help you.',
@@ -960,6 +964,8 @@ const translations: Record<Language, Record<string, string>> = {
         'schedule.overview_title': 'Programmation 2026 - Vue d\'ensemble',
         'schedule.current_month_badge': 'Mois Actuel',
         'schedule.programming_badge': 'Programmation',
+        'schedule.promo.title': 'Préparez votre prochain envoi',
+        'schedule.promo.desc': "Sécurisez votre place en réservant à l'avance. Contactez-nous pour des conseils personnalisés.",
 
         // AIChat
         'chat.welcome': 'Bonjour ! Bienvenue sur l\'assistant virtuel de Bodipo. Je suis là pour vous aider.',
