@@ -206,7 +206,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     try {
       await updateShipmentStatus(id, newStatus);
-      alert('Estado actualizado con \u00e9xito');
+      alert('Estado actualizado con éxito');
       if (scannedShipment?._id === id) {
         setScannedShipment(prev => prev ? { ...prev, status: newStatus } : null);
       }
@@ -245,7 +245,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     if (!window.confirm(`¿Actualizar todos los paquetes del bulto "${scannedManifest.manifestId}" a "${manifestStatusUpdate}"?`)) return;
     try {
       const result = await updateManifestStatus(scannedManifest.manifestId, manifestStatusUpdate);
-      alert(`\u00c9xito. ${result.message}`);
+      alert(`Éxito. ${result.message}`);
       setScannedManifest((prev: any) => prev ? { ...prev, status: manifestStatusUpdate } : null);
     } catch (err: any) {
       alert(`Error: ${err.message}`);
@@ -378,7 +378,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       const created = await apiCreateProduct(productToCreate as any);
       setProducts([...products, created]);
       setNewProduct({ name: '', price: '', image: '', color: '', description: '', tag: '', slogan: '' });
-      alert('Producto creado con \u00e9xito');
+      alert('Producto creado con éxito');
     } catch (error) {
       alert('Error al crear producto');
     } finally {
@@ -414,15 +414,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   };
 
   const exportToExcel = () => {
-      alert('Funci\u00f3n de exportaci\u00f3n PDF/Excel se activar\u00e1 en la pr\u00f3xima versi\u00f3n.');
+      alert('Función de exportación PDF/Excel se activará en la próxima versión.');
   };
 
   const renderDashboard = () => {
     const stats = [
-      { label: 'Env\u00edos del Mes', value: dashboardData.stats.shipments, icon: '\ud83d\udce6', color: 'bg-teal-50 text-teal-600', trend: '+12%' },
-      { label: 'Usuarios Activos', value: dashboardData.stats.users, icon: '\ud83d\udc64', color: 'bg-indigo-50 text-indigo-600', trend: '+5%' },
-      { label: 'Productos Tienda', value: dashboardData.stats.products, icon: '\ud83d\udcb1\ufe0f', color: 'bg-emerald-50 text-emerald-600', trend: '+8%' },
-      { label: 'Transacciones', value: dashboardData.stats.transactions, icon: '\ud83d\udc64', color: 'bg-amber-50 text-amber-600', trend: '+2%' },
+      { label: 'Envíos del Mes', value: dashboardData.stats.shipments, icon: '📦', color: 'bg-teal-50 text-teal-600', trend: '+12%' },
+      { label: 'Usuarios Activos', value: dashboardData.stats.users, icon: '👤', color: 'bg-indigo-50 text-indigo-600', trend: '+5%' },
+      { label: 'Productos Tienda', value: dashboardData.stats.products, icon: '🛍️', color: 'bg-emerald-50 text-emerald-600', trend: '+8%' },
+      { label: 'Transacciones', value: dashboardData.stats.transactions, icon: '👤', color: 'bg-amber-50 text-amber-600', trend: '+2%' },
     ];
 
     return (
@@ -453,17 +453,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
             <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
-              <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest italic">\u00daltimos Env\u00edos</h4>
+              <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest italic">Últimos Envíos</h4>
               <button onClick={() => setActiveTab('shipments')} className="text-[10px] font-black text-teal-600 hover:underline uppercase tracking-widest flex items-center gap-2">Ver todos <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></button>
             </div>
             <div className="space-y-4">
               {dashboardData.recentActivity.map((ship: Shipment) => (
                 <div key={ship._id} className="flex items-center justify-between p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">\ud83d\udce6</div>
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">📦</div>
                     <div>
                       <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">{ship.trackingNumber}</p>
-                      <p className="text-[10px] font-bold text-gray-400">{ship.origin} \u2794 {ship.destination}</p>
+                      <p className="text-[10px] font-bold text-gray-400">{ship.origin} ➔ {ship.destination}</p>
                     </div>
                   </div>
                   <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(ship.status)}`}>
@@ -480,7 +480,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                <svg className="w-40 h-40" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 112 0v4a1 1 0 11-2 0V9zm0 6a1 1 0 112 0 1 1 0 01-2 0z"/></svg>
             </div>
             <div className="relative z-10 h-full flex flex-col">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl mb-6">\ud83d\udd14</div>
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl mb-6">🔔</div>
               <h4 className="text-3xl font-black tracking-tighter uppercase leading-none mb-3">0</h4>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-8 border-l-2 border-white/30 pl-3">Notificaciones Pendientes</p>
               <button 
@@ -496,7 +496,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <button onClick={() => setActiveTab('pos')} title="Registrar nuevo envío" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-teal-200 hover:shadow-xl hover:shadow-teal-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">\u2728</span>
+            <span className="text-2xl group-hover:scale-125 transition-transform">✨</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Nuevo Envío</span>
           </button>
           <button onClick={() => setActiveTab('products')} title="Gestionar catálogo" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 transition-all flex flex-col items-center gap-3 group">
@@ -532,7 +532,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       </AnimatePresence>
 
       {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 transform md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shrink-0 overflow-y-auto border-r border-teal-900/20`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#00151a] text-white flex flex-col p-8 transition-all duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'} shrink-0 overflow-y-auto border-r border-teal-900/20`}>
           <div className="flex flex-col h-full">
             {/* Logo Section */}
              <div className="mb-8 flex items-center justify-between gap-4">
@@ -737,7 +737,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      </div>
                      <input required type="text" placeholder="Nombre del Producto" title="Nombre" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
                      <input required type="text" placeholder="Precio (ej: 50.000 FCFA)" title="Precio" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
-                     <textarea placeholder="Descripci\u00f3n (opcional)" title="Descripci\u00f3n" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
+                     <textarea placeholder="Descripción (opcional)" title="Descripción" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
                      <button type="submit" disabled={isUploading || !newProduct.image} title="Publicar Producto" className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">Publicar Producto</button>
                   </form>
                </section>
@@ -901,7 +901,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                               })
                            });
                            if (res.ok) {
-                               alert('Env\u00edo registrado con \u00e9xito');
+                               alert('Envío registrado con éxito');
                               setPosData({ trackingNumber: '', senderName: '', recipientName: '', destination: '', weight: '', price: '', description: '' });
                               fetchDashboardData();
                            } else {
@@ -915,7 +915,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                         }
                      }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">N\u00famero de Tracking</label>
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Número de Tracking</label>
                            <input required type="text" placeholder="ej: BB982342" title="Número de Tracking" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.trackingNumber} onChange={e => setPosData({...posData, trackingNumber: e.target.value})} />
                         </div>
                         <div className="space-y-2">
@@ -952,10 +952,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Configuración Web (Hero)</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">T\u00edtulo Principal</label>
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Título Principal</label>
                          <input type="text" title="Título Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={appConfig?.content?.hero?.title} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, title: e.target.value } } } as any)} />
                          
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2 mt-4">Subt\u00edtulo</label>
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2 mt-4">Subtítulo</label>
                          <textarea title="Subtítulo Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold h-32" value={appConfig?.content?.hero?.subtitle} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, subtitle: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-4">
@@ -995,7 +995,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                             </div>
                          </div>
                          <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Pr\u00f3ximos Vuelos / Barcos</h4>
+                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Próximos Vuelos / Barcos</h4>
                             <div className="space-y-4">
                                <div className="flex flex-col gap-2">
                                   <span className="text-[9px] font-black text-gray-500 uppercase">Cierre de Maletas Aéreo</span>
@@ -1006,7 +1006,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       </div>
                       <div className="space-y-6 text-center flex flex-col items-center justify-center">
                          <div className="w-40 h-40 bg-teal-500/20 rounded-full flex items-center justify-center border-4 border-teal-500 shadow-2xl shadow-teal-500/30">
-                            <span className="text-6xl font-black">\u2699\ufe0f</span>
+                            <span className="text-6xl font-black">⚙️</span>
                          </div>
                          <h4 className="text-lg font-black uppercase tracking-widest mt-4">Motor Logístico</h4>
                          <p className="text-[10px] text-teal-400/60 font-black uppercase tracking-widest">Estado: Optimizando Rutas</p>
