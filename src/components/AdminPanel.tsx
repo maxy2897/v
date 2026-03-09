@@ -99,6 +99,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [txSearch, setTxSearch] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
+  const [posData, setPosData] = useState({
+    trackingNumber: '',
+    senderName: '',
+    recipientName: '',
+    destination: '',
+    weight: '',
+    price: '',
+    description: ''
+  });
+
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
@@ -384,19 +394,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     <div className="min-h-screen bg-[#f8fafc] flex flex-col md:flex-row overflow-hidden italic-none">
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-72 bg-[#00151a] text-white flex flex-col justify-between p-8 shrink-0 overflow-y-auto h-screen sticky top-0 border-r border-teal-900/20">
-        <div className="flex flex-col h-full">
-          {/* Logo Section */}
-          <div className="mb-12 flex items-center gap-4">
-            <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-teal-500/30">
-              {config.customLogoUrl ? <img src={config.customLogoUrl} className="h-6 object-contain invert" alt="Logo" /> : config.logoText[0]}
+          <div className="flex flex-col h-full">
+            {/* Logo Section */}
+            <div className="mb-8 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-teal-500/30">
+                  {config.customLogoUrl ? <img src={config.customLogoUrl} className="h-6 object-contain invert" alt="Logo" /> : config.logoText[0]}
+                </div>
+                <div>
+                  <h2 className="text-lg font-black tracking-tighter leading-none italic">Panel Admin</h2>
+                  <p className="text-teal-400 text-[8px] font-black uppercase tracking-[0.2em] mt-1 italic">Bodipo Business</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-black tracking-tighter leading-none italic">Panel Admin</h2>
-              <p className="text-teal-400 text-[8px] font-black uppercase tracking-[0.2em] mt-1 italic">Bodipo Business</p>
-            </div>
-          </div>
 
-          <nav className="flex md:flex-col gap-1 overflow-x-auto pb-4 md:pb-0 scrollbar-hide">
+            <button onClick={() => navigate('/')} className="mb-10 w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-100 bg-red-500/20 hover:bg-red-500/40 transition-all border border-red-500/30 group">
+               <svg className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+               Cerrar Panel
+            </button>
+
+            <nav className="flex md:flex-col gap-1 overflow-x-auto pb-4 md:pb-0 scrollbar-hide">
              <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-2 hidden md:block">Principal</p>
              <button onClick={() => setActiveTab('dashboard')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'dashboard' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
@@ -500,9 +517,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
                   <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">Nuevo Producto</h3>
                   <form onSubmit={addProduct} className="space-y-4">
-                     <input required type="text" placeholder="Nombre" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
-                     <input required type="text" placeholder="Precio" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
-                     <button type="submit" disabled={isUploading} className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs">Publicar</button>
+                     <div className="relative group">
+                        <div className={`w-full h-48 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden transition-all ${isUploading ? 'opacity-50' : ''}`}>
+                           {newProduct.image ? (
+                              <img src={newProduct.image} className="w-full h-full object-cover" alt="Preview" />
+                           ) : (
+                              <>
+                                 <span className="text-3xl mb-2">📸</span>
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Subir Foto</p>
+                              </>
+                           )}
+                           <input type="file" onChange={e => handleImageUpload(e, 'product')} className="absolute inset-0 opacity-0 cursor-pointer" />
+                        </div>
+                        {newProduct.image && (
+                           <button type="button" onClick={() => setNewProduct({...newProduct, image: ''})} className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-xl text-xs font-black shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">Eliminar</button>
+                        )}
+                     </div>
+                     <input required type="text" placeholder="Nombre del Producto" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
+                     <input required type="text" placeholder="Precio (ej: 50.000 FCFA)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
+                     <textarea placeholder="Descripción (opcional)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
+                     <button type="submit" disabled={isUploading || !newProduct.image} className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">Publicar Producto</button>
                   </form>
                </section>
             </div>
@@ -512,13 +546,82 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
             <div className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {shipmentGroups.map(group => (
-                    <div key={group.userId} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:border-teal-200 transition-all">
-                       <h4 className="font-black text-teal-900 border-b pb-4 mb-4">{group.user.name}</h4>
-                       <p className="text-xs text-gray-500 mb-4">{group.shipments.length} Envíos registrados</p>
-                       <button onClick={() => setSelectedUserGroup(group)} className="w-full py-3 bg-teal-50 text-teal-600 rounded-xl text-[10px] font-black uppercase">Ver Detalles</button>
-                    </div>
+                    <motion.div layout key={group.userId} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:border-teal-200 transition-all group">
+                       <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-xl">👤</div>
+                          <div>
+                             <h4 className="font-black text-teal-900 leading-tight">{group.user.name}</h4>
+                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{group.user.phone}</p>
+                          </div>
+                       </div>
+                       <div className="bg-gray-50 rounded-2xl p-4 mb-4">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Envíos</p>
+                          <p className="text-2xl font-black text-teal-900 tracking-tighter">{group.shipments.length}</p>
+                       </div>
+                       <button onClick={() => setSelectedUserGroup(group)} className="w-full py-3 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-teal-700 transition-colors">Ver Detalles</button>
+                    </motion.div>
                   ))}
                </div>
+
+               <AnimatePresence>
+                  {selectedUserGroup && (
+                    <motion.div 
+                      initial={{ opacity: 0 }} 
+                      animate={{ opacity: 1 }} 
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-[100] bg-[#00151a]/60 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
+                    >
+                       <motion.div 
+                         initial={{ scale: 0.9, y: 20 }}
+                         animate={{ scale: 1, y: 0 }}
+                         exit={{ scale: 0.9, y: 20 }}
+                         className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col"
+                       >
+                          <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                             <div>
+                                <h3 className="text-2xl font-black text-teal-900 tracking-tighter uppercase italic">Envíos de {selectedUserGroup.user.name}</h3>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{selectedUserGroup.user.email}</p>
+                             </div>
+                             <button onClick={() => setSelectedUserGroup(null)} className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-xl hover:bg-red-50 hover:text-red-500 transition-colors">✕</button>
+                          </div>
+                          
+                          <div className="flex-1 overflow-y-auto p-8 space-y-4">
+                             {selectedUserGroup.shipments.map(ship => (
+                               <div key={ship._id} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-white hover:shadow-xl transition-all group">
+                                  <div className="flex items-center gap-6">
+                                     <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">📦</div>
+                                     <div>
+                                        <p className="text-xs font-black text-teal-600 uppercase tracking-widest mb-1">{ship.trackingNumber}</p>
+                                        <h4 className="text-lg font-black text-slate-900 tracking-tighter uppercase">{ship.description || 'Sin descripción'}</h4>
+                                        <p className="text-[10px] font-bold text-gray-400 italic">{ship.origin} → {ship.destination}</p>
+                                     </div>
+                                  </div>
+                                  <div className="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
+                                     <div className="text-right">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">{new Date(ship.createdAt).toLocaleDateString()}</p>
+                                        <p className="text-xl font-black text-teal-900 tracking-tighter italic">{ship.price} FCFA</p>
+                                     </div>
+                                     <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(ship.status)}`}>
+                                        {ship.status}
+                                     </span>
+                                  </div>
+                               </div>
+                             ))}
+                          </div>
+                          
+                          <div className="p-8 bg-teal-900 text-white flex justify-between items-center">
+                             <div>
+                                <p className="text-[10px] font-black text-teal-300 uppercase tracking-widest">Total Facturado</p>
+                                <p className="text-3xl font-black italic tracking-tighter">
+                                   {selectedUserGroup.shipments.reduce((sum, s) => sum + (s.price || 0), 0)} FCFA
+                                </p>
+                             </div>
+                             <button className="px-8 py-4 bg-white text-teal-900 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 transition-transform">Imprimir Reporte</button>
+                          </div>
+                       </motion.div>
+                    </motion.div>
+                  )}
+               </AnimatePresence>
             </div>
           )}
 
@@ -554,10 +657,81 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           )}
 
           {activeTab === 'pos' && (
-            <div className="bg-white p-12 rounded-[3rem] text-center border-2 border-dashed border-gray-100">
-               <h3 className="text-2xl font-black text-teal-900 mb-4 uppercase">Terminal POS</h3>
-               <p className="text-gray-400 mb-8 italic">Funcionalidad de registro de ventas físicas activa.</p>
-               <button className="px-12 py-4 bg-orange-500 text-white rounded-3xl font-black uppercase text-xs shadow-xl shadow-orange-500/20">Abrir Terminal</button>
+            <div className="max-w-4xl mx-auto">
+               <div className="bg-white p-10 md:p-12 rounded-[3.5rem] border border-gray-100 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                  
+                  <div className="relative z-10">
+                     <div className="flex justify-between items-start mb-12">
+                        <div>
+                           <h3 className="text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-2">Terminal POS</h3>
+                           <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em] border-l-2 border-orange-500 pl-3">Registro de Envío Directo</p>
+                        </div>
+                        <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner font-black">POS</div>
+                     </div>
+
+                     <form onSubmit={async (e) => {
+                        e.preventDefault();
+                        try {
+                           setIsUploading(true);
+                           const res = await fetch(`${BASE_URL}/api/shipments`, {
+                              method: 'POST',
+                              headers: { 
+                                 'Content-Type': 'application/json',
+                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                              },
+                              body: JSON.stringify({
+                                 trackingNumber: posData.trackingNumber,
+                                 origin: 'ESPAÑA',
+                                 destination: posData.destination || 'GUINEA ECUATORIAL',
+                                 description: posData.description,
+                                 weight: parseFloat(posData.weight),
+                                 price: parseFloat(posData.price),
+                                 recipient: { name: posData.recipientName }
+                              })
+                           });
+                           if (res.ok) {
+                              alert('Envío registrado con éxito');
+                              setPosData({ trackingNumber: '', senderName: '', recipientName: '', destination: '', weight: '', price: '', description: '' });
+                              fetchDashboardData();
+                           } else {
+                              alert('Error al registrar envío');
+                           }
+                        } catch (err) {
+                           alert('Error de conexión');
+                        } finally {
+                           setIsUploading(false);
+                        }
+                     }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Número de Tracking</label>
+                           <input required type="text" placeholder="ej: BB982342" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.trackingNumber} onChange={e => setPosData({...posData, trackingNumber: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Nombre del Destinatario</label>
+                           <input required type="text" placeholder="Nombre completo" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.recipientName} onChange={e => setPosData({...posData, recipientName: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Peso (kg)</label>
+                           <input required type="number" step="0.1" placeholder="0.0" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.weight} onChange={e => setPosData({...posData, weight: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Precio (FCFA)</label>
+                           <input required type="number" placeholder="50000" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.price} onChange={e => setPosData({...posData, price: e.target.value})} />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Descripción del Contenido</label>
+                           <textarea required placeholder="ej: Ropa, calzado y electrónicos" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all h-24" value={posData.description} onChange={e => setPosData({...posData, description: e.target.value})} />
+                        </div>
+                        
+                        <div className="md:col-span-2 pt-6">
+                           <button type="submit" disabled={isUploading} className="w-full py-5 bg-orange-500 text-white rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-orange-500/30 hover:bg-orange-600 active:scale-95 transition-all">
+                              {isUploading ? 'Procesando...' : 'Finalizar y Generar Recibo'}
+                           </button>
+                        </div>
+                     </form>
+                  </div>
+               </div>
             </div>
           )}
         </main>
