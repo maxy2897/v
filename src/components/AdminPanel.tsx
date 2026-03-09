@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +11,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BASE_URL, updateShipmentStatus } from '../services/api';
+import { BASE_URL, updateShipmentStatus, createManifest, getManifest, updateManifestStatus } from '../services/api';
 
 interface Shipment {
   _id: string;
@@ -67,7 +67,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     } else if (role === 'admin_finance') {
       tabs.push('shipments', 'transactions', 'reports', 'notifications', 'pos');
     } else {
-      tabs.push('products', 'branding', 'reports', 'config', 'content', 'operational', 'transactions', 'shipments', 'notifications', 'pickup', 'pos');
+      tabs.push('products', 'branding', 'reports', 'config', 'content', 'operational', 'manifests', 'transactions', 'shipments', 'notifications', 'pickup', 'pos');
       if (['admin', 'admin_tech'].includes(role as string)) {
         tabs.push('users');
       }
@@ -136,6 +136,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [bulkScanList, setBulkScanList] = useState<Shipment[]>([]);
   const [qrMode, setQrMode] = useState<'single' | 'bulk'>('single');
 
+  // Manifest / Bulto Colectivo state
+  const [manifestTab, setManifestTab] = useState<'create' | 'scan'>('create');
+  const [manifestDescription, setManifestDescription] = useState('');
+  const [manifestDestFilter, setManifestDestFilter] = useState<'all' | 'Malabo' | 'Bata'>('all');
+  const [selectedForManifest, setSelectedForManifest] = useState<string[]>([]);
+  const [createdManifest, setCreatedManifest] = useState<any>(null);
+  const [scannedManifest, setScannedManifest] = useState<any>(null);
+  const [manifestScanInput, setManifestScanInput] = useState('');
+  const [manifestStatusUpdate, setManifestStatusUpdate] = useState('Llegado a destino');
+  const [isCreatingManifest, setIsCreatingManifest] = useState(false);
+
   const startScanner = () => {
     setIsScanning(true);
     const scanner = new Html5Qrcode("reader");
@@ -191,7 +202,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     try {
       await updateShipmentStatus(id, newStatus);
-      alert('Estado actualizado con éxito');
+      alert('Estado actualizado con Ã©xito');
       if (scannedShipment?._id === id) {
         setScannedShipment(prev => prev ? { ...prev, status: newStatus } : null);
       }
@@ -201,22 +212,58 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     }
   };
 
+  const handleCreateManifest = async () => {
+    if (selectedForManifest.length === 0) { alert('Selecciona al menos un paquete'); return; }
+    setIsCreatingManifest(true);
+    try {
+      const result = await createManifest(selectedForManifest, manifestDescription);
+      setCreatedManifest(result);
+      setSelectedForManifest([]);
+      setManifestDescription('');
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setIsCreatingManifest(false);
+    }
+  };
+
+  const handleLookupManifest = async (id: string) => {
+    try {
+      const result = await getManifest(id.trim().toUpperCase());
+      setScannedManifest(result);
+    } catch (err: any) {
+      alert(`Bulto no encontrado: ${err.message}`);
+    }
+  };
+
+  const handleManifestStatusUpdate = async () => {
+    if (!scannedManifest) return;
+    if (!window.confirm(`Â¿Actualizar todos los paquetes del bulto "${scannedManifest.manifestId}" a "${manifestStatusUpdate}"?`)) return;
+    try {
+      const result = await updateManifestStatus(scannedManifest.manifestId, manifestStatusUpdate);
+      alert(`âœ… ${result.message}`);
+      setScannedManifest((prev: any) => prev ? { ...prev, status: manifestStatusUpdate } : null);
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   const safeFetch = async (url: string, options: RequestInit = {}) => {
     try {
       const res = await fetch(url, options);
       if (!res.ok) {
-        console.warn(`⚠️ Request to ${url} failed with status ${res.status}`);
+        console.warn(`âš ï¸ Request to ${url} failed with status ${res.status}`);
         return null;
       }
       const text = await res.text();
       try {
         return JSON.parse(text);
       } catch (e) {
-        console.error(`❌ Non-JSON response from ${url}:`, text.slice(0, 100));
+        console.error(`âŒ Non-JSON response from ${url}:`, text.slice(0, 100));
         return null;
       }
     } catch (e) {
-      console.error(`❌ Network error for ${url}:`, e);
+      console.error(`âŒ Network error for ${url}:`, e);
       return null;
     }
   };
@@ -260,7 +307,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const fetchDashboardData = async () => {
     const token = user?.token || localStorage.getItem('token') || '';
-    console.log('📊 Fetching dashboard data (v2)...');
+    console.log('ðŸ“Š Fetching dashboard data (v2)...');
     
     const [dataUsers, dataProducts, dataShipments, dataTransactions] = await Promise.all([
       safeFetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -283,7 +330,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       },
       recentActivity: shipments.slice(0, 5)
     });
-    console.log('✅ Dashboard data state updated');
+    console.log('âœ… Dashboard data state updated');
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'product' | 'logo' | 'hero' | 'money') => {
@@ -327,7 +374,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       const created = await apiCreateProduct(productToCreate as any);
       setProducts([...products, created]);
       setNewProduct({ name: '', price: '', image: '', color: '', description: '', tag: '', slogan: '' });
-      alert('Producto creado con éxito');
+      alert('Producto creado con Ã©xito');
     } catch (error) {
       alert('Error al crear producto');
     } finally {
@@ -336,7 +383,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   };
 
   const deleteProduct = async (id: string) => {
-    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+    if (!confirm('Â¿Seguro que deseas eliminar este producto?')) return;
     try {
       setIsDeletingId(id);
       await apiDeleteProduct(id);
@@ -363,15 +410,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   };
 
   const exportToExcel = () => {
-      alert('Función de exportación PDF/Excel se activará en la próxima versión.');
+      alert('FunciÃ³n de exportaciÃ³n PDF/Excel se activarÃ¡ en la prÃ³xima versiÃ³n.');
   };
 
   const renderDashboard = () => {
     const stats = [
-      { label: 'Envíos del Mes', value: dashboardData.stats.shipments, icon: '📦', color: 'bg-teal-50 text-teal-600', trend: '+12%' },
-      { label: 'Usuarios Activos', value: dashboardData.stats.users, icon: '👥', color: 'bg-indigo-50 text-indigo-600', trend: '+5%' },
-      { label: 'Productos Tienda', value: dashboardData.stats.products, icon: '🛍️', color: 'bg-emerald-50 text-emerald-600', trend: '+8%' },
-      { label: 'Transacciones', value: dashboardData.stats.transactions, icon: '💳', color: 'bg-amber-50 text-amber-600', trend: '+2%' },
+      { label: 'EnvÃ­os del Mes', value: dashboardData.stats.shipments, icon: 'ðŸ“¦', color: 'bg-teal-50 text-teal-600', trend: '+12%' },
+      { label: 'Usuarios Activos', value: dashboardData.stats.users, icon: 'ðŸ‘¥', color: 'bg-indigo-50 text-indigo-600', trend: '+5%' },
+      { label: 'Productos Tienda', value: dashboardData.stats.products, icon: 'ðŸ›ï¸', color: 'bg-emerald-50 text-emerald-600', trend: '+8%' },
+      { label: 'Transacciones', value: dashboardData.stats.transactions, icon: 'ðŸ’³', color: 'bg-amber-50 text-amber-600', trend: '+2%' },
     ];
 
     return (
@@ -402,17 +449,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
             <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
-              <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest italic">Últimos Envíos</h4>
+              <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest italic">Ãšltimos EnvÃ­os</h4>
               <button onClick={() => setActiveTab('shipments')} className="text-[10px] font-black text-teal-600 hover:underline uppercase tracking-widest flex items-center gap-2">Ver todos <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></button>
             </div>
             <div className="space-y-4">
               {dashboardData.recentActivity.map((ship: Shipment) => (
                 <div key={ship._id} className="flex items-center justify-between p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">📦</div>
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">ðŸ“¦</div>
                     <div>
                       <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">{ship.trackingNumber}</p>
-                      <p className="text-[10px] font-bold text-gray-400">{ship.origin} → {ship.destination}</p>
+                      <p className="text-[10px] font-bold text-gray-400">{ship.origin} â†’ {ship.destination}</p>
                     </div>
                   </div>
                   <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(ship.status)}`}>
@@ -429,7 +476,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                <svg className="w-40 h-40" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 112 0v4a1 1 0 11-2 0V9zm0 6a1 1 0 112 0 1 1 0 01-2 0z"/></svg>
             </div>
             <div className="relative z-10 h-full flex flex-col">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl mb-6">🔔</div>
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl mb-6">ðŸ””</div>
               <h4 className="text-3xl font-black tracking-tighter uppercase leading-none mb-3">0</h4>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-8 border-l-2 border-white/30 pl-3">Notificaciones Pendientes</p>
               <button 
@@ -444,20 +491,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <button onClick={() => setActiveTab('pos')} title="Registrar nuevo envío" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-teal-200 hover:shadow-xl hover:shadow-teal-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">➕</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Nuevo Envío</span>
+          <button onClick={() => setActiveTab('pos')} title="Registrar nuevo envÃ­o" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-teal-200 hover:shadow-xl hover:shadow-teal-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">âž•</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Nuevo EnvÃ­o</span>
           </button>
-          <button onClick={() => setActiveTab('products')} title="Gestionar catálogo" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">🛍️</span>
+          <button onClick={() => setActiveTab('products')} title="Gestionar catÃ¡logo" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">ðŸ›ï¸</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Subir Producto</span>
           </button>
           <button onClick={() => setActiveTab('transactions')} title="Ir a contabilidad" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-amber-200 hover:shadow-xl hover:shadow-amber-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">💳</span>
+            <span className="text-2xl group-hover:scale-125 transition-transform">ðŸ’³</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Contabilidad</span>
           </button>
-          <button onClick={() => setActiveTab('notifications')} title="Enviar notificación" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">📢</span>
+          <button onClick={() => setActiveTab('notifications')} title="Enviar notificaciÃ³n" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">ðŸ“¢</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Anunciar</span>
           </button>
         </div>
@@ -495,11 +542,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 Dashboard
              </button>
 
-             <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Logística</p>
+             <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">LogÃ­stica</p>
              {allowedTabs.includes('shipments') && (
                <button onClick={() => setActiveTab('shipments')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'shipments' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                 Envíos
+                 EnvÃ­os
                </button>
              )}
              {allowedTabs.includes('pos') && (
@@ -509,7 +556,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                </button>
              )}
 
-             <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Gestión Comercial</p>
+             <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">GestiÃ³n Comercial</p>
              {allowedTabs.includes('products') && (
                <button onClick={() => setActiveTab('products')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'products' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
@@ -529,7 +576,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                </button>
              )}
 
-             <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Configuración</p>
+             <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">ConfiguraciÃ³n</p>
              {allowedTabs.includes('branding') && (
                <button onClick={() => setActiveTab('branding')} title="Branding" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'branding' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -554,7 +601,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                  Operativa QR
                </button>
              )}
-             {allowedTabs.includes('reports') && (
+             
+              {allowedTabs.includes('manifests') && (
+                <button onClick={() => setActiveTab('manifests')} title="Bultos Colectivos" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'manifests' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+                  <span className="text-base">📦</span>
+                  Bultos Colectivos
+                </button>
+              )}
+              {allowedTabs.includes('reports') && (
                <button onClick={() => setActiveTab('reports')} title="Reports" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'reports' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                  Reportes
@@ -569,11 +623,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           </nav>
         </div>
 
-        <button onClick={() => navigate('/')} title="Cerrar Panel" className="flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-colors mt-8">
-           <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-           Cerrar Panel
-        </button>
-      </aside>
+       </aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8fafc]">
@@ -626,8 +676,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                               <img src={newProduct.image} className="w-full h-full object-cover" alt="Preview" />
                            ) : (
                               <>
-                                 <span className="text-3xl mb-2">📸</span>
-                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">HAGA CLIC AQUÍ PARA SELECCIONAR FOTO PRODUCTO</p>
+                                 <span className="text-3xl mb-2">ðŸ“¸</span>
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">HAGA CLIC AQUÃ PARA SELECCIONAR FOTO PRODUCTO</p>
                               </>
                            )}
                            <input type="file" title="Subir imagen de producto" onChange={e => handleImageUpload(e, 'product')} className="absolute inset-0 opacity-0 cursor-pointer" />
@@ -638,7 +688,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      </div>
                      <input required type="text" placeholder="Nombre del Producto" title="Nombre" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
                      <input required type="text" placeholder="Precio (ej: 50.000 FCFA)" title="Precio" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
-                     <textarea placeholder="Descripción (opcional)" title="Descripción" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
+                     <textarea placeholder="DescripciÃ³n (opcional)" title="DescripciÃ³n" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
                      <button type="submit" disabled={isUploading || !newProduct.image} title="Publicar Producto" className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">Publicar Producto</button>
                   </form>
                </section>
@@ -651,14 +701,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                   {shipmentGroups.map(group => (
                     <motion.div layout key={group.userId} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:border-teal-200 transition-all group">
                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-xl">👤</div>
+                          <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-xl">ðŸ‘¤</div>
                           <div>
                              <h4 className="font-black text-teal-900 leading-tight">{group.user.name}</h4>
                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{group.user.phone}</p>
                           </div>
                        </div>
                        <div className="bg-gray-50 rounded-2xl p-4 mb-4">
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Envíos</p>
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total EnvÃ­os</p>
                           <p className="text-2xl font-black text-teal-900 tracking-tighter">{group.shipments.length}</p>
                        </div>
                        <button onClick={() => setSelectedUserGroup(group)} className="w-full py-3 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-teal-700 transition-colors">Ver Detalles</button>
@@ -682,21 +732,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                        >
                           <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                              <div>
-                                <h3 className="text-2xl font-black text-teal-900 tracking-tighter uppercase italic">Envíos de {selectedUserGroup.user.name}</h3>
+                                <h3 className="text-2xl font-black text-teal-900 tracking-tighter uppercase italic">EnvÃ­os de {selectedUserGroup.user.name}</h3>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{selectedUserGroup.user.email}</p>
                              </div>
-                             <button onClick={() => setSelectedUserGroup(null)} className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-xl hover:bg-red-50 hover:text-red-500 transition-colors">✕</button>
+                             <button onClick={() => setSelectedUserGroup(null)} className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-xl hover:bg-red-50 hover:text-red-500 transition-colors">âœ•</button>
                           </div>
                           
                           <div className="flex-1 overflow-y-auto p-8 space-y-4">
                              {selectedUserGroup.shipments.map(ship => (
                                <div key={ship._id} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-white hover:shadow-xl transition-all group">
                                   <div className="flex items-center gap-6">
-                                     <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">📦</div>
+                                     <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">ðŸ“¦</div>
                                      <div>
                                         <p className="text-xs font-black text-teal-600 uppercase tracking-widest mb-1">{ship.trackingNumber}</p>
-                                        <h4 className="text-lg font-black text-slate-900 tracking-tighter uppercase">{ship.description || 'Sin descripción'}</h4>
-                                        <p className="text-[10px] font-bold text-gray-400 italic">{ship.origin} → {ship.destination}</p>
+                                        <h4 className="text-lg font-black text-slate-900 tracking-tighter uppercase">{ship.description || 'Sin descripciÃ³n'}</h4>
+                                        <p className="text-[10px] font-bold text-gray-400 italic">{ship.origin} â†’ {ship.destination}</p>
                                      </div>
                                   </div>
                                   <div className="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
@@ -737,7 +787,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      return acc;
                   }, {} as any)).map(folder => (
                     <div key={folder} onClick={() => setSelectedTxFolder(folder === selectedTxFolder ? null : folder)} className={`p-8 rounded-[2.5rem] border transition-all cursor-pointer flex flex-col items-center gap-4 group ${selectedTxFolder === folder ? 'bg-teal-500 border-teal-400 text-white shadow-xl shadow-teal-500/20' : 'bg-white border-gray-100 shadow-sm hover:shadow-xl'}`}>
-                       <div className={`text-4xl transition-transform ${selectedTxFolder === folder ? 'scale-110' : 'group-hover:scale-110'}`}>📁</div>
+                       <div className={`text-4xl transition-transform ${selectedTxFolder === folder ? 'scale-110' : 'group-hover:scale-110'}`}>ðŸ“</div>
                        <span className={`font-black uppercase text-[10px] tracking-widest ${selectedTxFolder === folder ? 'text-white' : 'text-teal-900'}`}>{folder}</span>
                     </div>
                   ))}
@@ -750,10 +800,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                         {transactions.filter(tx => getAssignedFolder(tx.createdAt) === selectedTxFolder).map(tx => (
                            <div key={tx._id} className="p-4 bg-gray-50 rounded-2xl flex items-center justify-between hover:bg-white hover:shadow-md transition-all border border-gray-100">
                               <div className="flex items-center gap-4">
-                                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">💳</div>
+                                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">ðŸ’³</div>
                                  <div>
                                     <p className="text-xs font-black text-slate-900 uppercase">{tx.user?.name || 'Cliente'}</p>
-                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{tx.type} • {new Date(tx.createdAt).toLocaleDateString()}</p>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{tx.type} â€¢ {new Date(tx.createdAt).toLocaleDateString()}</p>
                                  </div>
                               </div>
                               <p className="text-sm font-black text-teal-900 italic">{tx.amount} {tx.currency || 'FCFA'}</p>
@@ -776,7 +826,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      <div className="flex justify-between items-start mb-12">
                         <div>
                            <h3 className="text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-2">Terminal POS</h3>
-                           <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em] border-l-2 border-orange-500 pl-3">Registro de Envío Directo</p>
+                           <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em] border-l-2 border-orange-500 pl-3">Registro de EnvÃ­o Directo</p>
                         </div>
                         <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner font-black">POS</div>
                      </div>
@@ -793,7 +843,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                               },
                               body: JSON.stringify({
                                  trackingNumber: posData.trackingNumber,
-                                 origin: 'ESPAÑA',
+                                 origin: 'ESPAÃ‘A',
                                  destination: posData.destination || 'GUINEA ECUATORIAL',
                                  description: posData.description,
                                  weight: parseFloat(posData.weight),
@@ -802,22 +852,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                               })
                            });
                            if (res.ok) {
-                              alert('Envío registrado con éxito');
+                              alert('EnvÃ­o registrado con Ã©xito');
                               setPosData({ trackingNumber: '', senderName: '', recipientName: '', destination: '', weight: '', price: '', description: '' });
                               fetchDashboardData();
                            } else {
                               const err = await res.json();
-                              alert('Error al registrar envío: ' + (err.message || 'Error desconocido'));
+                              alert('Error al registrar envÃ­o: ' + (err.message || 'Error desconocido'));
                            }
                         } catch (err) {
-                           alert('Error de conexión');
+                           alert('Error de conexiÃ³n');
                         } finally {
                            setIsUploading(false);
                         }
                      }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Número de Tracking</label>
-                           <input required type="text" placeholder="ej: BB982342" title="Número de Tracking" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.trackingNumber} onChange={e => setPosData({...posData, trackingNumber: e.target.value})} />
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">NÃºmero de Tracking</label>
+                           <input required type="text" placeholder="ej: BB982342" title="NÃºmero de Tracking" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.trackingNumber} onChange={e => setPosData({...posData, trackingNumber: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Nombre del Destinatario</label>
@@ -832,8 +882,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                            <input required type="number" placeholder="50000" title="Precio en FCFA" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.price} onChange={e => setPosData({...posData, price: e.target.value})} />
                         </div>
                         <div className="md:col-span-2 space-y-2">
-                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Descripción del Contenido</label>
-                           <textarea required placeholder="ej: Ropa, calzado y electrónicos" title="Descripción" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all h-24" value={posData.description} onChange={e => setPosData({...posData, description: e.target.value})} />
+                           <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">DescripciÃ³n del Contenido</label>
+                           <textarea required placeholder="ej: Ropa, calzado y electrÃ³nicos" title="DescripciÃ³n" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all h-24" value={posData.description} onChange={e => setPosData({...posData, description: e.target.value})} />
                         </div>
                         
                         <div className="md:col-span-2 pt-6">
@@ -850,14 +900,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           {activeTab === 'content' && (
              <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5">
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
-                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Configuración Web (Hero)</h3>
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">ConfiguraciÃ³n Web (Hero)</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Título Principal</label>
-                         <input type="text" title="Título Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={appConfig?.content?.hero?.title} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, title: e.target.value } } } as any)} />
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">TÃ­tulo Principal</label>
+                         <input type="text" title="TÃ­tulo Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={appConfig?.content?.hero?.title} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, title: e.target.value } } } as any)} />
                          
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2 mt-4">Subtítulo</label>
-                         <textarea title="Subtítulo Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold h-32" value={appConfig?.content?.hero?.subtitle} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, subtitle: e.target.value } } } as any)} />
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2 mt-4">SubtÃ­tulo</label>
+                         <textarea title="SubtÃ­tulo Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold h-32" value={appConfig?.content?.hero?.subtitle} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, subtitle: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-4">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Imagen de Portada (Hero)</label>
@@ -883,33 +933,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="absolute top-0 right-0 p-12 opacity-5 translate-x-1/2 -translate-y-1/2">
                       <svg className="w-96 h-96" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
                    </div>
-                   <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-10 border-l-4 border-teal-500 pl-6">Configuración del Sistema</h3>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-10 border-l-4 border-teal-500 pl-6">ConfiguraciÃ³n del Sistema</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                       <div className="space-y-6">
                          <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
                             <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Tasas de Cambio</h4>
                             <div className="space-y-4">
                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">EUR ➔ CFA</span>
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">EUR âž” CFA</span>
                                   <input type="number" title="Tasa EUR a CFA" placeholder="655" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={appConfig?.rates?.exchange?.eur_xaf || 655} onChange={e => updateConfig?.({ rates: { ...appConfig?.rates, exchange: { ...appConfig?.rates?.exchange, eur_xaf: parseFloat(e.target.value) } } } as any)} />
                                </div>
                             </div>
                          </div>
                          <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Próximos Vuelos / Barcos</h4>
+                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">PrÃ³ximos Vuelos / Barcos</h4>
                             <div className="space-y-4">
                                <div className="flex flex-col gap-2">
-                                  <span className="text-[9px] font-black text-gray-500 uppercase">Cierre de Maletas Aéreo</span>
-                                  <input type="date" title="Fecha Próximo Vuelo" className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 font-black text-sm" value={appConfig?.dates?.nextAirDeparture} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
+                                  <span className="text-[9px] font-black text-gray-500 uppercase">Cierre de Maletas AÃ©reo</span>
+                                  <input type="date" title="Fecha PrÃ³ximo Vuelo" className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 font-black text-sm" value={appConfig?.dates?.nextAirDeparture} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
                                </div>
                             </div>
                          </div>
                       </div>
                       <div className="space-y-6 text-center flex flex-col items-center justify-center">
                          <div className="w-40 h-40 bg-teal-500/20 rounded-full flex items-center justify-center border-4 border-teal-500 shadow-2xl shadow-teal-500/30">
-                            <span className="text-6xl">⚙️</span>
+                            <span className="text-6xl">âš™ï¸</span>
                          </div>
-                         <h4 className="text-lg font-black uppercase tracking-widest mt-4">Motor Logístico</h4>
+                         <h4 className="text-lg font-black uppercase tracking-widest mt-4">Motor LogÃ­stico</h4>
                          <p className="text-[10px] text-teal-400/60 font-black uppercase tracking-widest">Estado: Optimizando Rutas</p>
                       </div>
                    </div>
@@ -923,16 +973,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="absolute -top-20 -left-20 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl"></div>
                    
                    <div className="relative z-10 flex flex-col items-center text-center">
-                      <div className="w-24 h-24 bg-teal-900 text-white rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-[0_20px_40px_rgba(13,44,43,0.3)]">📱</div>
-                      <h3 className="text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-4">Escáner Logístico</h3>
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-10 max-w-sm">Gestiona llegadas individuales o lotes masivos (Bultos Totales) vía QR</p>
+                      <div className="w-24 h-24 bg-teal-900 text-white rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-[0_20px_40px_rgba(13,44,43,0.3)]">ðŸ“±</div>
+                      <h3 className="text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-4">EscÃ¡ner LogÃ­stico</h3>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-10 max-w-sm">Gestiona llegadas individuales o lotes masivos (Bultos Totales) vÃ­a QR</p>
                       
                       <div className="w-full max-w-md bg-gray-50 p-8 rounded-[3rem] border-2 border-dashed border-gray-200 mb-10 relative">
                          <div id="reader" className="w-full aspect-square overflow-hidden rounded-[2rem] bg-black shadow-inner">
                             {!isScanning && (
                                <div className="h-full flex flex-col items-center justify-center text-white p-10">
                                   <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4 hidden group-active:block"></div>
-                                  <button onClick={startScanner} className="px-10 py-5 bg-teal-500 hover:bg-teal-400 text-teal-950 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95">Abrir Cámara</button>
+                                  <button onClick={startScanner} className="px-10 py-5 bg-teal-500 hover:bg-teal-400 text-teal-950 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95">Abrir CÃ¡mara</button>
                                </div>
                             )}
                          </div>
@@ -948,9 +998,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(scannedShipment.status)}`}>{scannedShipment.status}</span>
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm font-bold text-teal-800 mb-8 italic">
-                               <p>📍 {scannedShipment.origin} ➔ {scannedShipment.destination}</p>
-                               <p>⚖️ {scannedShipment.weight} KG</p>
-                               <p className="col-span-2">👤 {scannedShipment.recipient?.name}</p>
+                               <p>ðŸ“ {scannedShipment.origin} âž” {scannedShipment.destination}</p>
+                               <p>âš–ï¸ {scannedShipment.weight} KG</p>
+                               <p className="col-span-2">ðŸ‘¤ {scannedShipment.recipient?.name}</p>
                             </div>
                             <div className="flex gap-4">
                                <button onClick={() => handleStatusUpdate(scannedShipment._id, 'Llegado a Destino')} className="flex-1 py-4 bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-700 transition-colors shadow-lg">Marcar como Llegado</button>
@@ -968,14 +1018,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 <div className="flex justify-between items-end mb-4">
                    <div>
                       <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic leading-none mb-2">Reportes Ejecutivos</h3>
-                      <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] border-l-2 border-teal-500 pl-3">Rendimiento Logístico 2026</p>
+                      <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] border-l-2 border-teal-500 pl-3">Rendimiento LogÃ­stico 2026</p>
                    </div>
                    <button onClick={exportToExcel} className="px-8 py-3 bg-[#00151a] text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-900 transition-all shadow-xl">Exportar Data (PDF/CSV)</button>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                    <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm col-span-1 lg:col-span-2">
-                      <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-10 pb-2 border-b">Evolución de Envíos</h4>
+                      <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-10 pb-2 border-b">EvoluciÃ³n de EnvÃ­os</h4>
                       <div className="h-64 flex items-end justify-between gap-4 px-4 overflow-hidden">
                          {[65, 80, 45, 90, 100, 70, 85, 95, 110, 80, 90, 120].map((h, i) => (
                             <div key={i} className="w-full bg-teal-500/10 rounded-t-xl relative group">
@@ -995,8 +1045,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       <h4 className="text-xs font-black text-teal-400 uppercase tracking-widest mb-12">Cuota de Mercado</h4>
                       <div className="space-y-6 relative z-10">
                          {[
-                           { name: 'Aéreo España', val: '72%', color: 'bg-teal-500' },
-                           { name: 'Marítimo BIO', val: '18%', color: 'bg-indigo-500' },
+                           { name: 'AÃ©reo EspaÃ±a', val: '72%', color: 'bg-teal-500' },
+                           { name: 'MarÃ­timo BIO', val: '18%', color: 'bg-indigo-500' },
                            { name: 'Regional CM', val: '10%', color: 'bg-orange-500' }
                          ].map(item => (
                             <div key={item.name} className="space-y-2">
@@ -1015,34 +1065,182 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
              </div>
           )}
 
+          {activeTab === 'manifests' && (
+             <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5">
+                <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+                   <div className="absolute top-0 right-0 text-[200px] opacity-5 leading-none select-none">📦</div>
+                   <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-2">Bultos Colectivos</h3>
+                   <p className="text-indigo-300 text-[10px] font-black uppercase tracking-[0.3em]">Genera un QR maestro para un contenedor de paquetes — escaneable en Guinea para actualizar todos a la vez</p>
+                   <div className="flex gap-4 mt-8">
+                     <button onClick={() => setManifestTab('create')} className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${manifestTab === 'create' ? 'bg-white text-indigo-900 shadow-lg' : 'bg-white/10 text-indigo-300'}`}>Crear Bulto Colectivo</button>
+                     <button onClick={() => setManifestTab('scan')} className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${manifestTab === 'scan' ? 'bg-white text-indigo-900 shadow-lg' : 'bg-white/10 text-indigo-300'}`}>Escanear / Actualizar</button>
+                   </div>
+                </div>
+
+                {manifestTab === 'create' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     {/* Left: Package Selection */}
+                     <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+                        <h4 className="text-sm font-black text-indigo-900 uppercase tracking-widest mb-2 border-l-4 border-indigo-500 pl-4">Seleccionar Paquetes</h4>
+                        <div className="flex gap-2 mb-6 mt-4">
+                           {['all', 'Malabo', 'Bata'].map(dest => (
+                             <button key={dest} onClick={() => setManifestDestFilter(dest as any)} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${manifestDestFilter === dest ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500'}`}>{dest === 'all' ? 'Todos' : dest}</button>
+                           ))}
+                        </div>
+                        <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                           {allShipments
+                             .filter(s => manifestDestFilter === 'all' || s.destination?.toLowerCase().includes(manifestDestFilter.toLowerCase()))
+                             .map(s => (
+                               <label key={s._id} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all border ${selectedForManifest.includes(s._id) ? 'bg-indigo-50 border-indigo-400' : 'bg-gray-50 border-transparent hover:bg-white hover:border-gray-200'}`}>
+                                 <input type="checkbox" checked={selectedForManifest.includes(s._id)} onChange={e => setSelectedForManifest(prev => e.target.checked ? [...prev, s._id] : prev.filter(id => id !== s._id))} className="w-4 h-4 accent-indigo-600" />
+                                 <div className="flex-1 min-w-0">
+                                   <p className="text-[10px] font-black text-slate-900 uppercase truncate">{s.trackingNumber}</p>
+                                   <p className="text-[9px] font-bold text-gray-400">{s.recipient?.name} · {s.destination}</p>
+                                 </div>
+                                 <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-lg ${s.destination?.toLowerCase().includes('bata') ? 'bg-orange-100 text-orange-700' : 'bg-teal-100 text-teal-700'}`}>{s.destination?.toLowerCase().includes('bata') ? 'Bata' : 'Malabo'}</span>
+                               </label>
+                             ))}
+                        </div>
+                        {allShipments.length === 0 && <p className="text-center text-gray-300 font-bold italic text-sm py-8">Sin paquetes disponibles</p>}
+                     </div>
+
+                     {/* Right: Create / Preview */}
+                     <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm flex flex-col">
+                        <h4 className="text-sm font-black text-indigo-900 uppercase tracking-widest mb-6 border-l-4 border-indigo-500 pl-4">Configurar Bulto</h4>
+                        <div className="space-y-4 flex-1">
+                           <div>
+                             <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-2 mb-1">Descripción del Contenedor</label>
+                             <input type="text" title="Descripción del bulto colectivo" placeholder="Ej: Contenedor Nov-2025 Malabo" value={manifestDescription} onChange={e => setManifestDescription(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" />
+                           </div>
+                           <div className="p-4 bg-indigo-50 rounded-2xl">
+                             <p className="text-[9px] font-black text-indigo-700 uppercase tracking-widest mb-1">Paquetes seleccionados</p>
+                             <p className="text-2xl font-black text-indigo-900">{selectedForManifest.length}</p>
+                           </div>
+                           <div className="p-4 bg-orange-50 rounded-2xl">
+                             <p className="text-[9px] font-black text-orange-600 uppercase tracking-widest mb-1">Para Bata</p>
+                             <p className="text-lg font-black text-orange-800">{allShipments.filter(s => selectedForManifest.includes(s._id) && s.destination?.toLowerCase().includes('bata')).length} paquetes</p>
+                           </div>
+                           <div className="p-4 bg-teal-50 rounded-2xl">
+                             <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1">Para Malabo</p>
+                             <p className="text-lg font-black text-teal-800">{allShipments.filter(s => selectedForManifest.includes(s._id) && !s.destination?.toLowerCase().includes('bata')).length} paquetes</p>
+                           </div>
+                        </div>
+                        <button onClick={handleCreateManifest} disabled={isCreatingManifest || selectedForManifest.length === 0} className="mt-6 w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xl shadow-indigo-500/20">
+                           {isCreatingManifest ? 'Generando...' : `Generar QR de Bulto Colectivo (${selectedForManifest.length})`}
+                        </button>
+
+                        {createdManifest && (
+                          <div className="mt-6 p-6 bg-indigo-900 text-white rounded-3xl text-center space-y-4">
+                             <p className="text-[9px] font-black uppercase tracking-widest text-indigo-300">✅ Bulto Creado</p>
+                             <p className="font-black text-lg">{createdManifest.manifestId}</p>
+                             <div className="flex justify-center bg-white p-4 rounded-2xl">
+                               <QRCodeCanvas value={createdManifest.manifestId} size={180} bgColor="#ffffff" fgColor="#1e1b4b" />
+                             </div>
+                             <p className="text-[8px] text-indigo-400 font-bold">Escanea este QR en Guinea para actualizar todos los paquetes</p>
+                             <p className="text-[9px] text-indigo-200 font-bold italic">{createdManifest.shipments?.length || 0} paquetes incluidos</p>
+                          </div>
+                        )}
+                     </div>
+                  </div>
+                )}
+
+                {manifestTab === 'scan' && (
+                  <div className="max-w-2xl mx-auto space-y-6">
+                     <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+                        <h4 className="text-sm font-black text-indigo-900 uppercase tracking-widest mb-6 border-l-4 border-indigo-500 pl-4">Escanear / Buscar Bulto Colectivo</h4>
+                        <div className="flex gap-3">
+                           <input type="text" title="ID del Bulto Colectivo" placeholder="Ej: BB-MAN-123456AB" value={manifestScanInput} onChange={e => setManifestScanInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLookupManifest(manifestScanInput)} className="flex-1 p-4 bg-gray-50 rounded-2xl font-black text-sm" />
+                           <button onClick={() => handleLookupManifest(manifestScanInput)} className="px-6 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-700">Buscar</button>
+                        </div>
+                     </div>
+
+                     {scannedManifest && (
+                       <div className="bg-white p-8 rounded-[3rem] border border-indigo-200 shadow-xl">
+                          <div className="flex items-center justify-between mb-6">
+                             <div>
+                               <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Bulto Encontrado</p>
+                               <h4 className="text-xl font-black text-indigo-900">{scannedManifest.manifestId}</h4>
+                               <p className="text-[9px] text-gray-400 font-bold">{scannedManifest.shipments?.length} paquetes · Estado: <span className="text-indigo-600">{scannedManifest.status}</span></p>
+                             </div>
+                             <div className="bg-indigo-50 p-3 rounded-2xl">
+                               <QRCodeCanvas value={scannedManifest.manifestId} size={80} bgColor="#eef2ff" fgColor="#1e1b4b" />
+                             </div>
+                          </div>
+
+                          {/* Shipments split by destination */}
+                          <div className="grid grid-cols-2 gap-4 mb-6">
+                             {['Malabo', 'Bata'].map(dest => {
+                               const pkgs = scannedManifest.shipments?.filter((s: any) => s.destination?.toLowerCase().includes(dest.toLowerCase())) || [];
+                               return (
+                                 <div key={dest} className={`p-4 rounded-2xl ${dest === 'Bata' ? 'bg-orange-50 border border-orange-200' : 'bg-teal-50 border border-teal-200'}`}>
+                                   <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${dest === 'Bata' ? 'text-orange-600' : 'text-teal-600'}`}>{dest}</p>
+                                   <p className={`text-2xl font-black ${dest === 'Bata' ? 'text-orange-800' : 'text-teal-800'}`}>{pkgs.length}</p>
+                                   <p className="text-[8px] text-gray-500 font-bold mt-1">paquetes</p>
+                                 </div>
+                               );
+                             })}
+                          </div>
+
+                          <div className="space-y-2 max-h-48 overflow-y-auto mb-6">
+                             {scannedManifest.shipments?.map((s: any) => (
+                               <div key={s._id || s.trackingNumber} className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                                 <div>
+                                   <p className="text-[10px] font-black text-slate-900">{s.trackingNumber}</p>
+                                   <p className="text-[9px] text-gray-400">{s.recipient?.name}</p>
+                                 </div>
+                                 <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-lg ${s.destination?.toLowerCase().includes('bata') ? 'bg-orange-100 text-orange-700' : 'bg-teal-100 text-teal-700'}`}>{s.destination?.toLowerCase().includes('bata') ? 'Bata' : 'Malabo'}</span>
+                               </div>
+                             ))}
+                          </div>
+
+                          {/* Status Update */}
+                          <div className="border-t border-gray-100 pt-6 space-y-4">
+                             <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Actualizar todos los paquetes a:</p>
+                             <select title="Nuevo estado para todos los paquetes" value={manifestStatusUpdate} onChange={e => setManifestStatusUpdate(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl font-black text-sm">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En tránsito">En tránsito</option>
+                                <option value="En Aduanas">En Aduanas</option>
+                                <option value="Llegado a destino">Llegado a Destino</option>
+                                <option value="Entregado">Entregado</option>
+                             </select>
+                             <button onClick={handleManifestStatusUpdate} className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20">
+                                ✅ Actualizar {scannedManifest.shipments?.length} Paquetes
+                             </button>
+                          </div>
+                       </div>
+                     )}
+                  </div>
+                )}
+             </div>
+          )}
           {activeTab === 'pickup' && (
              <div className="max-w-4xl mx-auto animate-in fade-in">
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
                    <div className="flex items-center gap-6 mb-10">
-                      <div className="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner">🚛</div>
+                      <div className="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner">ðŸš›</div>
                       <div>
-                         <h3 className="text-3xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-1">Gestión de Recogidas</h3>
-                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Control de llegadas a almacén central</p>
+                         <h3 className="text-3xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-1">GestiÃ³n de Recogidas</h3>
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Control de llegadas a almacÃ©n central</p>
                       </div>
                    </div>
                    
                    <div className="relative mb-8">
-                      <input type="text" placeholder="Buscar por tracking, nombre o teléfono..." title="Buscar recogidas" className="w-full pl-14 pr-6 py-5 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-3xl text-sm font-bold outline-none transition-all shadow-inner" value={pickupSearch} onChange={e => setPickupSearch(e.target.value)} />
-                      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl">🔍</div>
+                      <input type="text" placeholder="Buscar por tracking, nombre o telÃ©fono..." title="Buscar recogidas" className="w-full pl-14 pr-6 py-5 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-3xl text-sm font-bold outline-none transition-all shadow-inner" value={pickupSearch} onChange={e => setPickupSearch(e.target.value)} />
+                      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl">ðŸ”</div>
                    </div>
                    
                    <div className="space-y-4">
                       {allShipments.filter(s => s.trackingNumber.includes(pickupSearch) || s.recipient.name.toLowerCase().includes(pickupSearch.toLowerCase())).slice(0, 10).map(ship => (
                          <div key={ship._id} className="p-6 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-xl transition-all group">
                             <div className="flex items-center gap-6">
-                               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-gray-100 group-hover:rotate-6 transition-transform">📦</div>
+                               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-gray-100 group-hover:rotate-6 transition-transform">ðŸ“¦</div>
                                <div>
                                   <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">{ship.trackingNumber}</p>
                                   <h4 className="text-lg font-black text-slate-900 tracking-tighter uppercase truncate max-w-[200px]">{ship.recipient.name}</h4>
                                   <p className="text-[9px] font-bold text-gray-400 italic">Estado Actual: {ship.status}</p>
                                </div>
                             </div>
-                            <button className="px-8 py-3 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:scale-105 transition-transform active:scale-95">Recibir en Almacén</button>
+                            <button className="px-8 py-3 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:scale-105 transition-transform active:scale-95">Recibir en AlmacÃ©n</button>
                          </div>
                       ))}
                       {allShipments.length === 0 && <div className="text-center py-20 text-gray-300 font-bold italic uppercase tracking-widest">No se encontraron registros activos</div>}

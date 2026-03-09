@@ -5,6 +5,7 @@ import Shipment from '../models/Shipment.js';
 import User from '../models/User.js';
 import Transaction from '../models/Transaction.js';
 import Notification from '../models/Notification.js';
+import Manifest from '../models/Manifest.js';
 
 const router = express.Router();
 
@@ -522,6 +523,103 @@ router.post('/bulk-arrival', protect, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/shipments/manifest
+// @desc    Create a collective package (manifest)
+// @access  Private/Admin
+router.post('/manifest', protect, async (req, res) => {
+    try {
+        const { shipmentIds, description } = req.body;
+        if (!shipmentIds || !Array.isArray(shipmentIds) || shipmentIds.length === 0) {
+            return res.status(400).json({ message: 'No shipments selected' });
+        }
+
+        const manifestId = `BB-MAN-${Date.now().toString().slice(-6)}${Math.random().toString(36).substring(2, 4).toUpperCase()}`;
+        
+        const manifest = new Manifest({
+            manifestId,
+            shipments: shipmentIds,
+            description
+        });
+
+        await manifest.save();
+        res.status(201).json(manifest);
+    } catch (error) {
+        console.error('Error creating manifest:', error);
+        res.status(500).json({ message: 'Error creating manifest' });
+    }
+});
+
+// @route   GET /api/shipments/manifest/:manifestId
+// @desc    Get manifest by ID and its shipments
+// @access  Private/Admin
+router.get('/manifest/:manifestId', protect, async (req, res) => {
+    try {
+        const manifest = await Manifest.findOne({ manifestId: req.params.manifestId.toUpperCase() })
+            .populate({
+                path: 'shipments',
+                select: 'trackingNumber status destination recipient'
+            });
+
+        if (!manifest) {
+            return res.status(404).json({ message: 'Manifest not found' });
+        }
+
+        res.json(manifest);
+    } catch (error) {
+        console.error('Error getting manifest:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @route   PATCH /api/shipments/manifest/:manifestId/status
+// @desc    Update all shipments in a manifest
+// @access  Private/Admin
+router.patch('/manifest/:manifestId/status', protect, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const manifest = await Manifest.findOne({ manifestId: req.params.manifestId.toUpperCase() });
+
+        if (!manifest) {
+            return res.status(404).json({ message: 'Manifest not found' });
+        }
+
+        const shipments = await Shipment.find({ _id: { $in: manifest.shipments } });
+        
+        for (const shipment of shipments) {
+            shipment.status = status;
+            shipment.history.push({
+                status,
+                location: shipment.destination,
+                date: new Date()
+            });
+            await shipment.save();
+
+            // Notify users
+            try {
+                if (shipment.user) {
+                    await Notification.create({
+                        title: `📦 Actualización: ${status}`,
+                        message: `Tu paquete ${shipment.trackingNumber} ha cambiado a: ${status}`,
+                        type: 'info',
+                        userId: shipment.user,
+                        shipmentId: shipment._id
+                    });
+                }
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
+        }
+
+        manifest.status = status;
+        await manifest.save();
+
+        res.json({ message: `Actualizados ${shipments.length} paquetes a ${status}`, count: shipments.length });
+    } catch (error) {
+        console.error('Error updating manifest status:', error);
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 

@@ -300,3 +300,40 @@ export const updateShipmentStatus = async (id: string, status: string) => {
 
     return data;
 };
+// Crear un bulto colectivo (manifiesto)
+export const createManifest = async (shipmentIds: string[], description?: string) => {
+    const response = await fetch(`${API_URL}/shipments/manifest`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ shipmentIds, description }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Error al crear bulto colectivo');
+    return data;
+};
+
+// Obtener un bulto colectivo por su ID
+export const getManifest = async (manifestId: string) => {
+    const response = await fetch(`${API_URL}/shipments/manifest/${manifestId}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Bulto colectivo no encontrado');
+    return data;
+};
+
+// Actualizar el estado de todos los paquetes de un manifest
+export const updateManifestStatus = async (manifestId: string, status: string) => {
+    const response = await fetch(`${API_URL}/shipments/manifest/${manifestId}/status`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Error al actualizar bulto');
+    return data;
+};
