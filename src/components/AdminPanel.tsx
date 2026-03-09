@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product, AppConfig, ShippingStatus } from '../../types';
@@ -141,6 +141,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [qrMode, setQrMode] = useState<'single' | 'bulk'>('single');
   const [operationalInputMode, setOperationalInputMode] = useState<'qr' | 'manual'>('qr');
   const [manualCode, setManualCode] = useState('');
+  const scannerRef = useRef<Html5Qrcode | null>(null);
 
   // Manifest / Bulto Colectivo state
   const [manifestTab, setManifestTab] = useState<'create' | 'scan'>('create');
@@ -154,10 +155,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [isCreatingManifest, setIsCreatingManifest] = useState(false);
 
   const startScanner = async () => {
-    if (isScanning) return;
+    if (isScanning || scannerRef.current) return;
     setIsScanning(true);
     setScanResult(null);
+
+    // Create instance once
     const scanner = new Html5Qrcode("reader");
+    scannerRef.current = scanner;
+
     try {
       await scanner.start(
         { facingMode: "environment" },
@@ -169,25 +174,46 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           } else {
             handleBulkTrack(decodedText);
           }
-          scanner.stop().then(() => {
-            setIsScanning(false);
-          });
+          // Stop after first scan in single mode
+          if (qrMode === 'single') {
+            stopScanner();
+          }
         },
         () => {}
       );
     } catch (err) {
       console.error("Scanner Error:", err);
       setIsScanning(false);
+      scannerRef.current = null;
+    }
+  };
+
+  const stopScanner = async () => {
+    if (scannerRef.current) {
+      try {
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+      } catch (err) {
+        console.error("Stop Scanner Error:", err);
+      } finally {
+        scannerRef.current = null;
+        setIsScanning(false);
+      }
     }
   };
 
   useEffect(() => {
     if (activeTab === 'operational' && operationalInputMode === 'qr') {
-      // Small delay to ensure the #reader div is rendered
       const timer = setTimeout(() => {
         startScanner();
       }, 500);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        stopScanner();
+      };
+    } else {
+      stopScanner();
     }
   }, [activeTab, operationalInputMode]);
 
