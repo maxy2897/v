@@ -51,7 +51,7 @@ export const AdminNotifications: React.FC = () => {
 
         try {
             // Re-using the admin endpoint to search shipments
-            const res = await fetch(`${BASE_URL}/api/shipments/admin/all`, {
+            const res = await fetch(`${BASE_URL}/api/admin/shipments`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             const allShipments = await res.json();
