@@ -139,6 +139,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [scannedShipment, setScannedShipment] = useState<Shipment | null>(null);
   const [bulkScanList, setBulkScanList] = useState<Shipment[]>([]);
   const [qrMode, setQrMode] = useState<'single' | 'bulk'>('single');
+  const [operationalInputMode, setOperationalInputMode] = useState<'qr' | 'manual'>('qr');
+  const [manualCode, setManualCode] = useState('');
 
   // Manifest / Bulto Colectivo state
   const [manifestTab, setManifestTab] = useState<'create' | 'scan'>('create');
@@ -151,24 +153,43 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [manifestStatusUpdate, setManifestStatusUpdate] = useState('Llegado a destino');
   const [isCreatingManifest, setIsCreatingManifest] = useState(false);
 
-  const startScanner = () => {
+  const startScanner = async () => {
+    if (isScanning) return;
     setIsScanning(true);
+    setScanResult(null);
     const scanner = new Html5Qrcode("reader");
-    scanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      (decodedText) => {
-        setScanResult(decodedText);
-        if (qrMode === 'single') {
-          handleQuickTrack(decodedText);
-        } else {
-          handleBulkTrack(decodedText);
-        }
-        scanner.stop().then(() => setIsScanning(false));
-      },
-      () => {} // error callback
-    ).catch(() => setIsScanning(false));
+    try {
+      await scanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          setScanResult(decodedText);
+          if (qrMode === 'single') {
+            handleQuickTrack(decodedText);
+          } else {
+            handleBulkTrack(decodedText);
+          }
+          scanner.stop().then(() => {
+            setIsScanning(false);
+          });
+        },
+        () => {}
+      );
+    } catch (err) {
+      console.error("Scanner Error:", err);
+      setIsScanning(false);
+    }
   };
+
+  useEffect(() => {
+    if (activeTab === 'operational' && operationalInputMode === 'qr') {
+      // Small delay to ensure the #reader div is rendered
+      const timer = setTimeout(() => {
+        startScanner();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab, operationalInputMode]);
 
   const handleQuickTrack = async (code: string) => {
      try {
@@ -1017,46 +1038,108 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           )}
 
           {activeTab === 'operational' && (
-             <div className="max-w-4xl mx-auto space-y-8 animate-in zoom-in-95 duration-500">
-                <div className="bg-white p-10 rounded-[4rem] shadow-2xl border border-gray-100 relative overflow-hidden">
-                   <div className="absolute -top-20 -left-20 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl"></div>
-                   
-                   <div className="relative z-10 flex flex-col items-center text-center">
-                      <div className="w-24 h-24 bg-teal-900 text-white rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-[0_20px_40px_rgba(13,44,43,0.3)]">📦</div>
-                      <h3 className="text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-4">Escáner Logístico</h3>
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-10 max-w-sm">Gestiona llegadas individuales o lotes masivos (Bultos Totales) vía QR</p>
-                      
-                      <div className="w-full max-w-md bg-gray-50 p-8 rounded-[3rem] border-2 border-dashed border-gray-200 mb-10 relative">
-                         <div id="reader" className="w-full aspect-square overflow-hidden rounded-[2rem] bg-black shadow-inner">
-                            {!isScanning && (
-                               <div className="h-full flex flex-col items-center justify-center text-white p-10">
-                                  <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4 hidden group-active:block"></div>
-                                  <button onClick={startScanner} className="px-10 py-5 bg-teal-500 hover:bg-teal-400 text-teal-950 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95">Abrir Cámara</button>
-                               </div>
-                            )}
-                         </div>
-                      </div>
+              <div className="max-w-4xl mx-auto space-y-8 animate-in zoom-in-95 duration-500 pb-20">
+                 <div className="bg-white p-6 md:p-10 rounded-[3rem] shadow-2xl border border-gray-100 relative overflow-hidden">
+                    <div className="absolute -top-20 -left-20 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl"></div>
+                    
+                    <div className="relative z-10 flex flex-col items-center text-center">
+                       <div className="w-20 h-20 bg-teal-900 text-white rounded-3xl flex items-center justify-center text-4xl mb-6 shadow-xl">📦</div>
+                       <h3 className="text-3xl md:text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-4">Escáner Logístico</h3>
+                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-10 max-w-sm">Gestiona llegadas individuales o lotes masivos vía QR o Código</p>
 
-                      {scannedShipment && (
-                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full p-8 bg-teal-50 rounded-[3rem] border border-teal-100 shadow-sm text-left">
-                            <div className="flex justify-between items-start mb-6">
-                               <div>
-                                  <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Paquete Detectado</p>
-                                  <h4 className="text-3xl font-black text-teal-900 tracking-tighter uppercase italic leading-none">{scannedShipment.trackingNumber}</h4>
-                               </div>
-                               <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(scannedShipment.status)}`}>{scannedShipment.status}</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm font-bold text-teal-800 mb-8 italic">
-                               <p>📦 {scannedShipment.origin} ➔ {scannedShipment.destination}</p>
-                               <p>⚖️ {scannedShipment.weight} KG</p>
-                               <p className="col-span-2">👤 {scannedShipment.recipient?.name}</p>
-                            </div>
-                            <div className="flex gap-4">
-                               <button onClick={() => handleStatusUpdate(scannedShipment._id, 'Llegado a Destino')} className="flex-1 py-4 bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-700 transition-colors shadow-lg">Marcar como Llegado</button>
-                               <button onClick={() => setScannedShipment(null)} className="px-6 py-4 bg-white text-gray-400 rounded-2xl font-black uppercase text-[10px] border border-gray-100">Cerrar</button>
-                            </div>
-                         </motion.div>
-                      )}
+                       {/* Mode Switcher */}
+                       <div className="flex p-1.5 bg-gray-100 rounded-2xl mb-10 w-full max-w-xs transition-all border border-gray-200 shadow-inner">
+                          <button 
+                             onClick={() => setOperationalInputMode('qr')}
+                             className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${operationalInputMode === 'qr' ? 'bg-white text-teal-600 shadow-md' : 'text-gray-400 hover:text-gray-600'}`}>
+                             Cámara QR
+                          </button>
+                          <button 
+                             onClick={() => setOperationalInputMode('manual')}
+                             className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${operationalInputMode === 'manual' ? 'bg-white text-teal-600 shadow-md' : 'text-gray-400 hover:text-gray-600'}`}>
+                             Código Manual
+                          </button>
+                       </div>
+                       
+                       {operationalInputMode === 'qr' ? (
+                          <div className="w-full max-w-md bg-[#011a1f] p-4 rounded-[3rem] mb-10 relative shadow-2xl border-4 border-[#01242b]">
+                             <div id="reader" className="w-full aspect-square overflow-hidden rounded-[2.5rem] bg-black">
+                                {!isScanning && (
+                                   <div className="h-full flex flex-col items-center justify-center text-white p-10">
+                                      <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+                                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500 mb-6">Iniciando Cámara...</p>
+                                      <button onClick={startScanner} className="px-8 py-4 bg-teal-500 hover:bg-teal-400 text-teal-950 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all">Reintentar Cámara</button>
+                                   </div>
+                                )}
+                             </div>
+                             {/* Scanning UI overlay */}
+                             {isScanning && (
+                                <div className="absolute inset-0 pointer-events-none rounded-[3rem]">
+                                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-teal-500/50 rounded-3xl animate-pulse"></div>
+                                   <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-teal-500/50 shadow-[0_0_15px_rgba(20,184,166,0.5)] animate-[scan_2s_infinite]"></div>
+                                </div>
+                             )}
+                             <p className="mt-6 text-[9px] font-bold text-teal-500/60 uppercase tracking-widest">Apunta al código QR del comprobante</p>
+                          </div>
+                       ) : (
+                          <div className="w-full max-w-md space-y-4 mb-10">
+                             <div className="relative group">
+                                <input 
+                                   type="text" 
+                                   placeholder="EJ: BB-ES-2401..." 
+                                   className="w-full px-8 py-6 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-[2rem] text-lg font-black tracking-tighter text-teal-900 placeholder:text-gray-300 outline-none transition-all shadow-sm"
+                                   value={manualCode}
+                                   onChange={(e) => setManualCode(e.target.value.toUpperCase())}
+                                   onKeyDown={(e) => e.key === 'Enter' && manualCode && handleQuickTrack(manualCode)}
+                                />
+                                <button 
+                                   onClick={() => manualCode && handleQuickTrack(manualCode)}
+                                   title="Buscar código"
+                                   className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-teal-600 text-white rounded-2xl flex items-center justify-center hover:bg-teal-700 transition-all shadow-lg active:scale-90">
+                                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7-7 7M3 12h18"/></svg>
+                                </button>
+                             </div>
+                             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Escribe el código de tracking y pulsa Enter</p>
+                          </div>
+                       )}
+
+                       {scannedShipment && (
+                          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full p-8 bg-teal-50 rounded-[3rem] border border-teal-100 shadow-xl text-left border-b-4 border-b-teal-500">
+                             <div className="flex justify-between items-start mb-6">
+                                <div>
+                                   <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Paquete Identificado</p>
+                                   <h4 className="text-3xl font-black text-teal-900 tracking-tighter uppercase italic leading-none">{scannedShipment.trackingNumber}</h4>
+                                </div>
+                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-colors ${getStatusColor(scannedShipment.status)}`}>{scannedShipment.status}</span>
+                             </div>
+                             <div className="grid grid-cols-2 gap-6 text-[11px] font-black uppercase text-teal-800 mb-8 italic tracking-tight">
+                                <div className="p-4 bg-white rounded-2xl border border-teal-100/50">
+                                   <p className="text-[8px] text-teal-400 mb-1">Trayecto</p>
+                                   📦 {scannedShipment.origin} ➔ {scannedShipment.destination}
+                                </div>
+                                <div className="p-4 bg-white rounded-2xl border border-teal-100/50">
+                                   <p className="text-[8px] text-teal-400 mb-1">Peso</p>
+                                   ⚖️ {scannedShipment.weight} KG
+                                </div>
+                                <div className="col-span-2 p-4 bg-white rounded-2xl border border-teal-100/50">
+                                   <p className="text-[8px] text-teal-400 mb-1">Destinatario</p>
+                                   👤 {scannedShipment.recipient?.name}
+                                </div>
+                             </div>
+                             <div className="flex gap-4">
+                                <button 
+                                   onClick={() => {
+                                      handleStatusUpdate(scannedShipment._id, 'Llegado a Destino');
+                                      setScannedShipment(null);
+                                      if (operationalInputMode === 'manual') setManualCode('');
+                                   }} 
+                                   className="flex-1 py-5 bg-teal-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-teal-700 transition-all shadow-xl shadow-teal-500/20 active:scale-95">
+                                   Marcar como Llegado
+                                </button>
+                                <button onClick={() => setScannedShipment(null)} className="px-8 py-5 bg-white text-gray-400 rounded-2xl font-black uppercase text-[10px] border border-gray-100 hover:bg-gray-50 transition-all">Cerrar</button>
+                             </div>
+                          </motion.div>
+                       )}
                    </div>
                 </div>
              </div>
