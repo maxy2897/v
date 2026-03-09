@@ -162,16 +162,21 @@ const AppContent: React.FC = () => {
     }
   };
 
+  const location = useLocation();
+  const isAdminRoute = location.pathname === '/admin';
+
   return (
     <>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
-        <Header
-          onOpenRegister={() => setIsRegisterOpen(true)}
-          onOpenLogin={() => setIsLoginOpen(true)}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          config={config}
-        />
+        {!isAdminRoute && (
+          <Header
+            onOpenRegister={() => setIsRegisterOpen(true)}
+            onOpenLogin={() => setIsLoginOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            config={config}
+          />
+        )}
 
         <main className="flex-grow">
           <Suspense fallback={<PageLoader />}>
@@ -189,87 +194,89 @@ const AppContent: React.FC = () => {
           </Suspense>
         </main>
 
-        <footer className="bg-[#00151a] py-12 text-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
-              <div className="col-span-1 lg:col-span-1">
-                <div className="flex items-center space-x-4 mb-8">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
-                    {config.customLogoUrl && (
-                      <img
-                        src={config.customLogoUrl}
-                        className="h-10 object-contain"
-                        alt="Logo"
-                      />
-                    )}
-                    {!config.customLogoUrl && (
-                      <span className="logo-font text-4xl logo-color leading-none select-none pt-1">{config.logoText}</span>
-                    )}
+        {!isAdminRoute && (
+          <footer className="bg-[#00151a] py-12 text-white">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
+                <div className="col-span-1 lg:col-span-1">
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
+                      {config.customLogoUrl && (
+                        <img
+                          src={config.customLogoUrl}
+                          className="h-10 object-contain"
+                          alt="Logo"
+                        />
+                      )}
+                      {!config.customLogoUrl && (
+                        <span className="logo-font text-4xl logo-color leading-none select-none pt-1">{config.logoText}</span>
+                      )}
+                    </div>
+                    <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
                   </div>
-                  <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
+                  <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
+                    {t('footer.logistics_desc')}
+                  </p>
                 </div>
-                <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
-                  {t('footer.logistics_desc')}
-                </p>
-              </div>
 
-              <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.direct_contact')}</p>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                      <span className="text-sm">🇪🇸</span>
+                <div className="space-y-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.direct_contact')}</p>
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                        <span className="text-sm">🇪🇸</span>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.spain')}</p>
+                        <p className="text-sm font-bold">{appConfig?.contact?.phones?.es || '+34 641 992 110'}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.spain')}</p>
-                      <p className="text-sm font-bold">{appConfig?.contact?.phones?.es || '+34 641 992 110'}</p>
+                    <div className="flex items-start space-x-4">
+                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                        <span className="text-sm">🇨🇲</span>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.cameroon')}</p>
+                        <p className="text-sm font-bold">{appConfig?.contact?.phones?.cm || '+237 687528854'}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                      <span className="text-sm">🇨🇲</span>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.cameroon')}</p>
-                      <p className="text-sm font-bold">{appConfig?.contact?.phones?.cm || '+237 687528854'}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                      <span className="text-sm">🇬🇶</span>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.guinea')}</p>
-                      <p className="text-sm font-bold">{appConfig?.contact?.phones?.gq || '+240 222 667 763'}</p>
+                    <div className="flex items-start space-x-4">
+                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                        <span className="text-sm">🇬🇶</span>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.guinea')}</p>
+                        <p className="text-sm font-bold">{appConfig?.contact?.phones?.gq || '+240 222 667 763'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.logistics_services')}</p>
-                <ul className="space-y-3 text-sm font-medium text-gray-400">
-                  <li><Link to="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</Link></li>
-                  <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</Link></li>
-                  <li><Link to="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</Link></li>
-                  <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.advisor')}</Link></li>
-                </ul>
-              </div>
+                <div className="space-y-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.logistics_services')}</p>
+                  <ul className="space-y-3 text-sm font-medium text-gray-400">
+                    <li><Link to="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</Link></li>
+                    <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</Link></li>
+                    <li><Link to="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</Link></li>
+                    <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.advisor')}</Link></li>
+                  </ul>
+                </div>
 
-              <div className="space-y-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.locations')}</p>
-                <ul className="space-y-3 text-sm font-medium text-gray-400">
-                  <li>{appConfig?.contact?.addresses?.es || t('footer.loc.madrid')}</li>
-                  <li>{t('footer.loc.yaounde')}</li>
-                  <li>{appConfig?.contact?.addresses?.gq || t('footer.loc.gq')}</li>
-                </ul>
-                <div className="pt-4">
-                  <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">{t('footer.copyright')}</p>
+                <div className="space-y-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.locations')}</p>
+                  <ul className="space-y-3 text-sm font-medium text-gray-400">
+                    <li>{appConfig?.contact?.addresses?.es || t('footer.loc.madrid')}</li>
+                    <li>{t('footer.loc.yaounde')}</li>
+                    <li>{appConfig?.contact?.addresses?.gq || t('footer.loc.gq')}</li>
+                  </ul>
+                  <div className="pt-4">
+                    <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">{t('footer.copyright')}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        )}
 
         <Suspense fallback={null}>
           {isRegisterOpen && <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />}
