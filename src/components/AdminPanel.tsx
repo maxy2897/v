@@ -116,104 +116,89 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     if (activeTab === 'dashboard') fetchDashboardData();
   }, [activeTab]);
 
-  const fetchTransactions = async () => {
+  const safeFetch = async (url: string, options: RequestInit = {}) => {
     try {
-      const token = user?.token || localStorage.getItem('token') || '';
-      const res = await fetch(`${BASE_URL}/api/transactions`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const txs = Array.isArray(data) ? data : (data.transactions || []);
-        setTransactions(txs);
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        console.warn(`⚠️ Request to ${url} failed with status ${res.status}`);
+        return null;
       }
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error(`❌ Non-JSON response from ${url}:`, text.slice(0, 100));
+        return null;
+      }
+    } catch (e) {
+      console.error(`❌ Network error for ${url}:`, e);
+      return null;
+    }
+  };
+
+  const fetchTransactions = async () => {
+    const token = user?.token || localStorage.getItem('token') || '';
+    const data = await safeFetch(`${BASE_URL}/api/transactions`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (data) {
+      const txs = Array.isArray(data) ? data : (data.transactions || []);
+      setTransactions(txs);
     }
   };
 
   const fetchShipments = async () => {
-    try {
-      const token = user?.token || localStorage.getItem('token') || '';
-      const res = await fetch(`${BASE_URL}/api/shipments/admin/all`, {
-        headers: { Authorization: `Bearer ${token}` }
+    const token = user?.token || localStorage.getItem('token') || '';
+    const data = await safeFetch(`${BASE_URL}/api/shipments?status=all`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    if (data) {
+      const shipments = Array.isArray(data) ? data : (data.shipments || []);
+      setAllShipments(shipments);
+      
+      const groups: Record<string, UserShipmentGroup> = {};
+      shipments.forEach((ship: Shipment) => {
+        if (!ship.user?._id) return;
+        if (!groups[ship.user._id]) {
+          groups[ship.user._id] = {
+            userId: ship.user._id,
+            user: ship.user,
+            shipments: []
+          };
+        }
+        groups[ship.user._id].shipments.push(ship);
       });
-      if (res.ok) {
-        const data = await res.json();
-        const shipments = Array.isArray(data) ? data : (data.shipments || []);
-        setAllShipments(shipments);
-        
-        // Group by user
-        const groups: Record<string, UserShipmentGroup> = {};
-        shipments.forEach((ship: Shipment) => {
-          if (!ship.user) return;
-          if (!groups[ship.user._id]) {
-            groups[ship.user._id] = {
-              userId: ship.user._id,
-              user: ship.user,
-              shipments: []
-            };
-          }
-          groups[ship.user._id].shipments.push(ship);
-        });
-        setShipmentGroups(Object.values(groups));
-      }
-    } catch (error) {
-      console.error('Error fetching shipments:', error);
+      setShipmentGroups(Object.values(groups));
     }
   };
 
   const fetchDashboardData = async () => {
-    try {
-      const token = user?.token || localStorage.getItem('token') || '';
-      console.log('📊 Fetching dashboard data...');
-      
-      // Fetch everything, but wrap in individual try-catches to identify failure point
-      const safeFetch = async (url: string, options: RequestInit = {}) => {
-        try {
-          const res = await fetch(url, options);
-          if (!res.ok) {
-            console.warn(`⚠️ Request to ${url} failed with status ${res.status}`);
-            return null;
-          }
-          const text = await res.text();
-          try {
-            return JSON.parse(text);
-          } catch (e) {
-            console.error(`❌ Non-JSON response from ${url}:`, text.slice(0, 100));
-            return null;
-          }
-        } catch (e) {
-          console.error(`❌ Network error for ${url}:`, e);
-          return null;
-        }
-      };
+    const token = user?.token || localStorage.getItem('token') || '';
+    console.log('📊 Fetching dashboard data...');
+    
+    const [dataUsers, dataProducts, dataShipments, dataTransactions] = await Promise.all([
+      safeFetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
+      safeFetch(`${BASE_URL}/api/products`),
+      safeFetch(`${BASE_URL}/api/shipments?status=all`, { headers: { Authorization: `Bearer ${token}` } }),
+      safeFetch(`${BASE_URL}/api/transactions`, { headers: { Authorization: `Bearer ${token}` } })
+    ]);
 
-      const [dataUsers, dataProducts, dataShipments, dataTransactions] = await Promise.all([
-        safeFetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
-        safeFetch(`${BASE_URL}/api/products`),
-        safeFetch(`${BASE_URL}/api/shipments/admin/all`, { headers: { Authorization: `Bearer ${token}` } }),
-        safeFetch(`${BASE_URL}/api/transactions`, { headers: { Authorization: `Bearer ${token}` } })
-      ]);
+    const users = dataUsers?.users || [];
+    const productsList = Array.isArray(dataProducts) ? dataProducts : [];
+    const shipments = Array.isArray(dataShipments) ? dataShipments : (dataShipments?.shipments || []);
+    const txs = Array.isArray(dataTransactions) ? dataTransactions : (dataTransactions?.transactions || []);
 
-      const users = dataUsers?.users || [];
-      const productsList = Array.isArray(dataProducts) ? dataProducts : [];
-      const shipments = Array.isArray(dataShipments) ? dataShipments : (dataShipments?.shipments || []);
-      const txs = Array.isArray(dataTransactions) ? dataTransactions : (dataTransactions?.transactions || []);
-
-      setDashboardData({
-        stats: {
-          shipments: shipments.length,
-          users: users.length,
-          products: productsList.length,
-          transactions: txs.length
-        },
-        recentActivity: shipments.slice(0, 5)
-      });
-      console.log('✅ Dashboard data loaded successfully');
-    } catch (error) {
-      console.error('Error in fetchDashboardData:', error);
-    }
+    setDashboardData({
+      stats: {
+        shipments: shipments.length,
+        users: users.length,
+        products: productsList.length,
+        transactions: txs.length
+      },
+      recentActivity: shipments.slice(0, 5)
+    });
+    console.log('✅ Dashboard data state updated');
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'product' | 'logo' | 'hero' | 'money') => {
