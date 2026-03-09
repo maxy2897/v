@@ -155,34 +155,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [isCreatingManifest, setIsCreatingManifest] = useState(false);
 
   const startScanner = async () => {
-    if (isScanning || scannerRef.current) return;
+    // Only proceed if we are in the right tab and mode, and not already scanning
+    const element = document.getElementById("reader");
+    if (!element || scannerRef.current?.isScanning) return;
+
     setIsScanning(true);
     setScanResult(null);
 
-    // Create instance once
-    const scanner = new Html5Qrcode("reader");
-    scannerRef.current = scanner;
-
     try {
-      await scanner.start(
+      if (!scannerRef.current) {
+        scannerRef.current = new Html5Qrcode("reader");
+      }
+      
+      await scannerRef.current.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
           setScanResult(decodedText);
           if (qrMode === 'single') {
             handleQuickTrack(decodedText);
+            stopScanner();
           } else {
             handleBulkTrack(decodedText);
-          }
-          // Stop after first scan in single mode
-          if (qrMode === 'single') {
-            stopScanner();
           }
         },
         () => {}
       );
     } catch (err) {
-      console.error("Scanner Error:", err);
+      console.error("Scanner Start Error:", err);
       setIsScanning(false);
       scannerRef.current = null;
     }
@@ -190,31 +190,35 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const stopScanner = async () => {
     if (scannerRef.current) {
+      const s = scannerRef.current;
+      scannerRef.current = null; // Clear ref first to avoid re-entry
       try {
-        if (scannerRef.current.isScanning) {
-          await scannerRef.current.stop();
+        if (s.isScanning) {
+          await s.stop();
         }
       } catch (err) {
         console.error("Stop Scanner Error:", err);
       } finally {
-        scannerRef.current = null;
         setIsScanning(false);
       }
     }
   };
 
   useEffect(() => {
+    let mounted = true;
     if (activeTab === 'operational' && operationalInputMode === 'qr') {
       const timer = setTimeout(() => {
-        startScanner();
-      }, 500);
+        if (mounted) startScanner();
+      }, 800);
       return () => {
+        mounted = false;
         clearTimeout(timer);
         stopScanner();
       };
     } else {
       stopScanner();
     }
+    return () => { mounted = false; };
   }, [activeTab, operationalInputMode]);
 
   const handleQuickTrack = async (code: string) => {
