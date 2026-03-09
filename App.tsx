@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation, Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './src/components/Header';
 import AnimatedPage from './src/components/AnimatedPage';
@@ -71,7 +71,10 @@ const AnimatedRoutes: React.FC<{
   onOpenSettings: () => void;
   onOpenAdmin: () => void;
   products: Product[];
-}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, onOpenSettings, onOpenAdmin, products }) => {
+  setProducts: (p: Product[]) => void;
+  config: AppConfig;
+  setConfig: (c: AppConfig) => void;
+}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, onOpenSettings, onOpenAdmin, products, setProducts, config, setConfig }) => {
   const location = useLocation();
 
   return (
@@ -88,6 +91,16 @@ const AnimatedRoutes: React.FC<{
         <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
+        <Route path="/admin" element={
+          <AnimatedPage>
+            <AdminPanel 
+              products={products} 
+              setProducts={setProducts} 
+              config={config} 
+              setConfig={setConfig} 
+            />
+          </AnimatedPage>
+        } />
       </Routes>
     </AnimatePresence>
   );
@@ -97,10 +110,10 @@ const AnimatedRoutes: React.FC<{
 const AppContent: React.FC = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Dynamic State
   const [products, setProducts] = useState<Product[]>([]);
@@ -142,7 +155,8 @@ const AppContent: React.FC = () => {
   const handleAdminLogin = () => {
     const isAdmin = user && (user.role === 'admin' || user.role?.startsWith('admin_'));
     if (isAdmin) {
-      setIsAdminOpen(true);
+      window.scrollTo(0, 0);
+      navigate('/admin');
     } else {
       alert('Acceso denegado. Se requieren permisos de administrador.');
     }
@@ -168,6 +182,9 @@ const AppContent: React.FC = () => {
               onOpenSettings={() => setIsSettingsOpen(true)}
               onOpenAdmin={handleAdminLogin}
               products={products}
+              setProducts={setProducts}
+              config={config}
+              setConfig={setConfig}
             />
           </Suspense>
         </main>
@@ -268,16 +285,6 @@ const AppContent: React.FC = () => {
           )}
           {isForgotPasswordOpen && <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />}
           {isContactOpen && <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
-          {isAdminOpen && (
-            <AdminPanel
-              isOpen={isAdminOpen}
-              onClose={() => setIsAdminOpen(false)}
-              products={products}
-              setProducts={setProducts}
-              config={config}
-              setConfig={setConfig}
-            />
-          )}
           <AIChat config={config} />
           {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
         </Suspense>
