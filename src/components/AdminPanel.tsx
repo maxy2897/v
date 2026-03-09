@@ -11,7 +11,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BASE_URL } from '../services/api';
+import { BASE_URL, updateShipmentStatus } from '../services/api';
 
 interface Shipment {
   _id: string;
@@ -57,6 +57,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const navigate = useNavigate();
   const { user } = useAuth();
   const role = user?.role || 'user';
+  console.log('Rendering AdminPanel for role:', role);
 
   // Define allowed tabs per role
   const getTabs = () => {
@@ -124,7 +125,81 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     if (activeTab === 'transactions') fetchTransactions();
     if (activeTab === 'shipments') fetchShipments();
     if (activeTab === 'dashboard') fetchDashboardData();
-  }, [activeTab]);
+    if (activeTab === 'users' && (['admin', 'admin_tech'].includes(role as string))) {
+       // Users tab logic handled in AdminUsers component
+    }
+  }, [activeTab, role]);
+
+  const [scanResult, setScanResult] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scannedShipment, setScannedShipment] = useState<Shipment | null>(null);
+  const [bulkScanList, setBulkScanList] = useState<Shipment[]>([]);
+  const [qrMode, setQrMode] = useState<'single' | 'bulk'>('single');
+
+  const startScanner = () => {
+    setIsScanning(true);
+    const scanner = new Html5Qrcode("reader");
+    scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText) => {
+        setScanResult(decodedText);
+        if (qrMode === 'single') {
+          handleQuickTrack(decodedText);
+        } else {
+          handleBulkTrack(decodedText);
+        }
+        scanner.stop().then(() => setIsScanning(false));
+      },
+      () => {} // error callback
+    ).catch(() => setIsScanning(false));
+  };
+
+  const handleQuickTrack = async (code: string) => {
+     try {
+        const res = await fetch(`${BASE_URL}/api/shipments/tracking/${code}`, {
+           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.ok) {
+           const data = await res.json();
+           setScannedShipment(data);
+        } else {
+           alert('Paquete no encontrado');
+        }
+     } catch (err) {
+        console.error('QR Search Error:', err);
+     }
+  };
+  const handleBulkTrack = async (code: string) => {
+      try {
+         const res = await fetch(`${BASE_URL}/api/shipments/tracking/${code}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+         });
+         if (res.ok) {
+            const data = await res.json();
+            if (!bulkScanList.find(s => s._id === data._id)) {
+               setBulkScanList(prev => [...prev, data]);
+            }
+         } else {
+            alert('Paquete no encontrado');
+         }
+      } catch (err) {
+         console.error('Bulk QR Error:', err);
+      }
+  };
+
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
+    try {
+      await updateShipmentStatus(id, newStatus);
+      alert('Estado actualizado con éxito');
+      if (scannedShipment?._id === id) {
+        setScannedShipment(prev => prev ? { ...prev, status: newStatus } : null);
+      }
+      fetchShipments();
+    } catch (err) {
+      alert('Error al actualizar estado');
+    }
+  };
 
   const safeFetch = async (url: string, options: RequestInit = {}) => {
     try {
@@ -408,8 +483,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
               </div>
             </div>
 
-            <button onClick={() => navigate('/')} className="mb-10 w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-100 bg-red-500/20 hover:bg-red-500/40 transition-all border border-red-500/30 group">
-               <svg className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            <button onClick={() => navigate('/')} title="Cerrar Panel" className="mb-10 w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white bg-red-600 hover:bg-red-700 transition-all shadow-xl shadow-red-500/20 border border-white/10 group animate-pulse">
+               <svg className="w-6 h-6 text-white group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                Cerrar Panel
             </button>
 
@@ -456,27 +531,45 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
              <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Configuración</p>
              {allowedTabs.includes('branding') && (
-               <button onClick={() => setActiveTab('branding')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'branding' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+               <button onClick={() => setActiveTab('branding')} title="Branding" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'branding' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                  Marca
                </button>
              )}
              {allowedTabs.includes('content') && (
-               <button onClick={() => setActiveTab('content')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'content' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+               <button onClick={() => setActiveTab('content')} title="Web Content" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'content' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                  Web
                </button>
              )}
              {allowedTabs.includes('config') && (
-               <button onClick={() => setActiveTab('config')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'config' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+               <button onClick={() => setActiveTab('config')} title="System Config" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'config' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                  Sistema
+               </button>
+             )}
+             {allowedTabs.includes('operational') && (
+               <button onClick={() => setActiveTab('operational')} title="Operational QR" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'operational' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+                 Operativa QR
+               </button>
+             )}
+             {allowedTabs.includes('reports') && (
+               <button onClick={() => setActiveTab('reports')} title="Reports" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'reports' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                 Reportes
+               </button>
+             )}
+             {allowedTabs.includes('pickup') && (
+               <button onClick={() => setActiveTab('pickup')} title="Pickup Management" className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'pickup' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                 Recogidas
                </button>
              )}
           </nav>
         </div>
 
-        <button onClick={() => navigate('/')} className="flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-colors mt-8">
+        <button onClick={() => navigate('/')} title="Cerrar Panel" className="flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-colors mt-8">
            <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
            Cerrar Panel
         </button>
@@ -495,8 +588,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4">
               <div className="text-right hidden md:block">
-                <p className="text-[11px] font-black text-teal-900 leading-none">{user?.name || 'Admin'}</p>
-                <p className="text-[9px] font-bold text-teal-500 uppercase tracking-widest mt-1 italic">{role}</p>
+                 <p className="text-[11px] font-black text-teal-900 leading-none">{user?.name || 'Admin'}</p>
+                 <p className="text-[9px] font-bold text-teal-500 uppercase tracking-widest mt-1 italic">{role}</p>
               </div>
               <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-teal-500/20 overflow-hidden border-2 border-white">
                 {user?.profileImage ? (
@@ -509,7 +602,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+          {/* Debug Indicator - Will be invisible but useful for trace */}
+          <div className="hidden" data-tab={activeTab} data-role={role}></div>
+
+          {!appConfig && ['content', 'config', 'branding'].includes(activeTab) && (
+            <div className="flex flex-col items-center justify-center h-[60vh] animate-in fade-in">
+              <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-[10px] font-black text-teal-900 uppercase tracking-widest animate-pulse italic">Sincronizando con el servidor...</p>
+            </div>
+          )}
+
           {activeTab === 'dashboard' && renderDashboard()}
           
           {activeTab === 'products' && (
@@ -524,19 +627,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                            ) : (
                               <>
                                  <span className="text-3xl mb-2">📸</span>
-                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Subir Foto</p>
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">HAGA CLIC AQUÍ PARA SELECCIONAR FOTO PRODUCTO</p>
                               </>
                            )}
-                           <input type="file" onChange={e => handleImageUpload(e, 'product')} className="absolute inset-0 opacity-0 cursor-pointer" />
+                           <input type="file" title="Subir imagen de producto" onChange={e => handleImageUpload(e, 'product')} className="absolute inset-0 opacity-0 cursor-pointer" />
                         </div>
                         {newProduct.image && (
-                           <button type="button" onClick={() => setNewProduct({...newProduct, image: ''})} className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-xl text-xs font-black shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">Eliminar</button>
+                           <button type="button" onClick={() => setNewProduct({...newProduct, image: ''})} title="Eliminar imagen" className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-xl text-xs font-black shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">Eliminar</button>
                         )}
                      </div>
-                     <input required type="text" placeholder="Nombre del Producto" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
-                     <input required type="text" placeholder="Precio (ej: 50.000 FCFA)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
-                     <textarea placeholder="Descripción (opcional)" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
-                     <button type="submit" disabled={isUploading || !newProduct.image} className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">Publicar Producto</button>
+                     <input required type="text" placeholder="Nombre del Producto" title="Nombre" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
+                     <input required type="text" placeholder="Precio (ej: 50.000 FCFA)" title="Precio" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
+                     <textarea placeholder="Descripción (opcional)" title="Descripción" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
+                     <button type="submit" disabled={isUploading || !newProduct.image} title="Publicar Producto" className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">Publicar Producto</button>
                   </form>
                </section>
             </div>
@@ -626,35 +729,43 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           )}
 
           {activeTab === 'transactions' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-               {Object.keys(transactions.reduce((acc, tx) => {
-                  const label = getAssignedFolder(tx.createdAt);
-                  acc[label] = true;
-                  return acc;
-               }, {} as any)).map(folder => (
-                 <div key={folder} onClick={() => setSelectedTxFolder(folder)} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl cursor-pointer transition-all flex flex-col items-center gap-4 group">
-                    <div className="text-4xl group-hover:scale-110 transition-transform">📁</div>
-                    <span className="font-black text-teal-900 uppercase text-[10px] tracking-widest">{folder}</span>
-                 </div>
-               ))}
+            <div className="space-y-8 animate-in fade-in">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {Object.keys(transactions.reduce((acc, tx) => {
+                     const label = getAssignedFolder(tx.createdAt);
+                     acc[label] = true;
+                     return acc;
+                  }, {} as any)).map(folder => (
+                    <div key={folder} onClick={() => setSelectedTxFolder(folder === selectedTxFolder ? null : folder)} className={`p-8 rounded-[2.5rem] border transition-all cursor-pointer flex flex-col items-center gap-4 group ${selectedTxFolder === folder ? 'bg-teal-500 border-teal-400 text-white shadow-xl shadow-teal-500/20' : 'bg-white border-gray-100 shadow-sm hover:shadow-xl'}`}>
+                       <div className={`text-4xl transition-transform ${selectedTxFolder === folder ? 'scale-110' : 'group-hover:scale-110'}`}>📁</div>
+                       <span className={`font-black uppercase text-[10px] tracking-widest ${selectedTxFolder === folder ? 'text-white' : 'text-teal-900'}`}>{folder}</span>
+                    </div>
+                  ))}
+               </div>
+
+                {(selectedTxFolder || true) && (
+                  <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm animate-in slide-in-from-top-4">
+                     <h4 className="text-sm font-black text-teal-900 uppercase tracking-widest mb-6 border-b pb-4 italic">Transacciones de {selectedTxFolder}</h4>
+                     <div className="space-y-3">
+                        {transactions.filter(tx => getAssignedFolder(tx.createdAt) === selectedTxFolder).map(tx => (
+                           <div key={tx._id} className="p-4 bg-gray-50 rounded-2xl flex items-center justify-between hover:bg-white hover:shadow-md transition-all border border-gray-100">
+                              <div className="flex items-center gap-4">
+                                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">💳</div>
+                                 <div>
+                                    <p className="text-xs font-black text-slate-900 uppercase">{tx.user?.name || 'Cliente'}</p>
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{tx.type} • {new Date(tx.createdAt).toLocaleDateString()}</p>
+                                 </div>
+                              </div>
+                              <p className="text-sm font-black text-teal-900 italic">{tx.amount} {tx.currency || 'FCFA'}</p>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
+               {transactions.length === 0 && <div className="p-20 text-center bg-white rounded-[3rem] border border-gray-100 text-gray-300 font-bold italic uppercase tracking-widest">No hay movimientos contables registrados</div>}
             </div>
           )}
 
-          {activeTab === 'users' && <AdminUsers />}
-          {activeTab === 'notifications' && <AdminNotifications />}
-          
-          {activeTab === 'branding' && (
-             <div className="max-w-xl mx-auto bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <h3 className="font-black text-teal-900 uppercase text-xs mb-8">Configuración de Marca</h3>
-                <div className="space-y-6">
-                   <input type="text" title="Texto del Logo" placeholder="Texto del Logo" className="w-full p-4 bg-gray-50 rounded-2xl font-black" value={config.logoText} onChange={e => setConfig({...config, logoText: e.target.value})} />
-                   <div className="p-8 border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center gap-4">
-                      {config.customLogoUrl && <img src={config.customLogoUrl} className="h-12 object-contain" alt="Logo" />}
-                      <input type="file" title="Subir Logo Personalizado" onChange={e => handleImageUpload(e, 'logo')} className="text-xs font-bold" />
-                   </div>
-                </div>
-             </div>
-          )}
 
           {activeTab === 'pos' && (
             <div className="max-w-4xl mx-auto">
@@ -695,7 +806,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                               setPosData({ trackingNumber: '', senderName: '', recipientName: '', destination: '', weight: '', price: '', description: '' });
                               fetchDashboardData();
                            } else {
-                              alert('Error al registrar envío');
+                              const err = await res.json();
+                              alert('Error al registrar envío: ' + (err.message || 'Error desconocido'));
                            }
                         } catch (err) {
                            alert('Error de conexión');
@@ -705,23 +817,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Número de Tracking</label>
-                           <input required type="text" placeholder="ej: BB982342" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.trackingNumber} onChange={e => setPosData({...posData, trackingNumber: e.target.value})} />
+                           <input required type="text" placeholder="ej: BB982342" title="Número de Tracking" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.trackingNumber} onChange={e => setPosData({...posData, trackingNumber: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Nombre del Destinatario</label>
-                           <input required type="text" placeholder="Nombre completo" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.recipientName} onChange={e => setPosData({...posData, recipientName: e.target.value})} />
+                           <input required type="text" placeholder="Nombre completo" title="Nombre del Destinatario" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.recipientName} onChange={e => setPosData({...posData, recipientName: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Peso (kg)</label>
-                           <input required type="number" step="0.1" placeholder="0.0" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.weight} onChange={e => setPosData({...posData, weight: e.target.value})} />
+                           <input required type="number" step="0.1" placeholder="0.0" title="Peso en kg" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.weight} onChange={e => setPosData({...posData, weight: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Precio (FCFA)</label>
-                           <input required type="number" placeholder="50000" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.price} onChange={e => setPosData({...posData, price: e.target.value})} />
+                           <input required type="number" placeholder="50000" title="Precio en FCFA" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all" value={posData.price} onChange={e => setPosData({...posData, price: e.target.value})} />
                         </div>
                         <div className="md:col-span-2 space-y-2">
                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ml-4">Descripción del Contenido</label>
-                           <textarea required placeholder="ej: Ropa, calzado y electrónicos" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all h-24" value={posData.description} onChange={e => setPosData({...posData, description: e.target.value})} />
+                           <textarea required placeholder="ej: Ropa, calzado y electrónicos" title="Descripción" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-2xl text-sm font-bold outline-none transition-all h-24" value={posData.description} onChange={e => setPosData({...posData, description: e.target.value})} />
                         </div>
                         
                         <div className="md:col-span-2 pt-6">
@@ -733,6 +845,242 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                   </div>
                </div>
             </div>
+          )}
+
+          {activeTab === 'content' && (
+             <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5">
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Configuración Web (Hero)</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Título Principal</label>
+                         <input type="text" title="Título Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={appConfig?.content?.hero?.title} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, title: e.target.value } } } as any)} />
+                         
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2 mt-4">Subtítulo</label>
+                         <textarea title="Subtítulo Hero" className="w-full p-4 bg-gray-50 rounded-2xl font-bold h-32" value={appConfig?.content?.hero?.subtitle} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, subtitle: e.target.value } } } as any)} />
+                      </div>
+                      <div className="space-y-4">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Imagen de Portada (Hero)</label>
+                         <div className="w-full h-48 bg-gray-100 rounded-[2rem] overflow-hidden relative group border-2 border-dashed border-gray-200">
+                            {appConfig?.content?.hero?.heroImage ? (
+                               <img src={appConfig.content.hero.heroImage} className="w-full h-full object-cover" alt="Hero" />
+                            ) : (
+                               <div className="flex items-center justify-center h-full text-gray-300 font-black italic">No hay imagen</div>
+                            )}
+                            <input type="file" title="Subir Imagen Hero" onChange={e => handleImageUpload(e, 'hero')} className="absolute inset-0 opacity-0 cursor-pointer" />
+                         </div>
+                         <p className="text-[9px] text-gray-400 font-bold italic text-center">Click en el recuadro para subir nueva imagen</p>
+                      </div>
+                   </div>
+                   <button onClick={() => updateConfig?.(appConfig as any).then(() => alert('Web actualizada'))} className="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20">Guardar Cambios</button>
+                </div>
+             </div>
+          )}
+
+          {activeTab === 'config' && (
+             <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in">
+                <div className="bg-[#00151a] p-10 rounded-[3rem] text-white shadow-2xl shadow-teal-900/40 relative overflow-hidden">
+                   <div className="absolute top-0 right-0 p-12 opacity-5 translate-x-1/2 -translate-y-1/2">
+                      <svg className="w-96 h-96" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                   </div>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-10 border-l-4 border-teal-500 pl-6">Configuración del Sistema</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
+                      <div className="space-y-6">
+                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Tasas de Cambio</h4>
+                            <div className="space-y-4">
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">EUR ➔ CFA</span>
+                                  <input type="number" title="Tasa EUR a CFA" placeholder="655" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={appConfig?.rates?.exchange?.eur_xaf || 655} onChange={e => updateConfig?.({ rates: { ...appConfig?.rates, exchange: { ...appConfig?.rates?.exchange, eur_xaf: parseFloat(e.target.value) } } } as any)} />
+                               </div>
+                            </div>
+                         </div>
+                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Próximos Vuelos / Barcos</h4>
+                            <div className="space-y-4">
+                               <div className="flex flex-col gap-2">
+                                  <span className="text-[9px] font-black text-gray-500 uppercase">Cierre de Maletas Aéreo</span>
+                                  <input type="date" title="Fecha Próximo Vuelo" className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 font-black text-sm" value={appConfig?.dates?.nextAirDeparture} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+                      <div className="space-y-6 text-center flex flex-col items-center justify-center">
+                         <div className="w-40 h-40 bg-teal-500/20 rounded-full flex items-center justify-center border-4 border-teal-500 shadow-2xl shadow-teal-500/30">
+                            <span className="text-6xl">⚙️</span>
+                         </div>
+                         <h4 className="text-lg font-black uppercase tracking-widest mt-4">Motor Logístico</h4>
+                         <p className="text-[10px] text-teal-400/60 font-black uppercase tracking-widest">Estado: Optimizando Rutas</p>
+                      </div>
+                   </div>
+                </div>
+             </div>
+          )}
+
+          {activeTab === 'operational' && (
+             <div className="max-w-4xl mx-auto space-y-8 animate-in zoom-in-95 duration-500">
+                <div className="bg-white p-10 rounded-[4rem] shadow-2xl border border-gray-100 relative overflow-hidden">
+                   <div className="absolute -top-20 -left-20 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl"></div>
+                   
+                   <div className="relative z-10 flex flex-col items-center text-center">
+                      <div className="w-24 h-24 bg-teal-900 text-white rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-[0_20px_40px_rgba(13,44,43,0.3)]">📱</div>
+                      <h3 className="text-4xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-4">Escáner Logístico</h3>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-10 max-w-sm">Gestiona llegadas individuales o lotes masivos (Bultos Totales) vía QR</p>
+                      
+                      <div className="w-full max-w-md bg-gray-50 p-8 rounded-[3rem] border-2 border-dashed border-gray-200 mb-10 relative">
+                         <div id="reader" className="w-full aspect-square overflow-hidden rounded-[2rem] bg-black shadow-inner">
+                            {!isScanning && (
+                               <div className="h-full flex flex-col items-center justify-center text-white p-10">
+                                  <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4 hidden group-active:block"></div>
+                                  <button onClick={startScanner} className="px-10 py-5 bg-teal-500 hover:bg-teal-400 text-teal-950 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95">Abrir Cámara</button>
+                               </div>
+                            )}
+                         </div>
+                      </div>
+
+                      {scannedShipment && (
+                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full p-8 bg-teal-50 rounded-[3rem] border border-teal-100 shadow-sm text-left">
+                            <div className="flex justify-between items-start mb-6">
+                               <div>
+                                  <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Paquete Detectado</p>
+                                  <h4 className="text-3xl font-black text-teal-900 tracking-tighter uppercase italic leading-none">{scannedShipment.trackingNumber}</h4>
+                               </div>
+                               <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(scannedShipment.status)}`}>{scannedShipment.status}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 text-sm font-bold text-teal-800 mb-8 italic">
+                               <p>📍 {scannedShipment.origin} ➔ {scannedShipment.destination}</p>
+                               <p>⚖️ {scannedShipment.weight} KG</p>
+                               <p className="col-span-2">👤 {scannedShipment.recipient?.name}</p>
+                            </div>
+                            <div className="flex gap-4">
+                               <button onClick={() => handleStatusUpdate(scannedShipment._id, 'Llegado a Destino')} className="flex-1 py-4 bg-teal-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-700 transition-colors shadow-lg">Marcar como Llegado</button>
+                               <button onClick={() => setScannedShipment(null)} className="px-6 py-4 bg-white text-gray-400 rounded-2xl font-black uppercase text-[10px] border border-gray-100">Cerrar</button>
+                            </div>
+                         </motion.div>
+                      )}
+                   </div>
+                </div>
+             </div>
+          )}
+
+          {activeTab === 'reports' && (
+             <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in">
+                <div className="flex justify-between items-end mb-4">
+                   <div>
+                      <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic leading-none mb-2">Reportes Ejecutivos</h3>
+                      <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] border-l-2 border-teal-500 pl-3">Rendimiento Logístico 2026</p>
+                   </div>
+                   <button onClick={exportToExcel} className="px-8 py-3 bg-[#00151a] text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-900 transition-all shadow-xl">Exportar Data (PDF/CSV)</button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                   <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm col-span-1 lg:col-span-2">
+                      <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-10 pb-2 border-b">Evolución de Envíos</h4>
+                      <div className="h-64 flex items-end justify-between gap-4 px-4 overflow-hidden">
+                         {[65, 80, 45, 90, 100, 70, 85, 95, 110, 80, 90, 120].map((h, i) => (
+                            <div key={i} className="w-full bg-teal-500/10 rounded-t-xl relative group">
+                               <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05, duration: 1 }} className="absolute bottom-0 left-0 right-0 bg-teal-500 rounded-t-xl group-hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20"></motion.div>
+                            </div>
+                         ))}
+                      </div>
+                      <div className="flex justify-between mt-6 text-[9px] font-black text-gray-300 uppercase tracking-widest px-2">
+                         <span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span><span>Jul</span><span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dic</span>
+                      </div>
+                   </div>
+                   
+                   <div className="bg-gradient-to-br from-teal-900 to-slate-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                         <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+                      </div>
+                      <h4 className="text-xs font-black text-teal-400 uppercase tracking-widest mb-12">Cuota de Mercado</h4>
+                      <div className="space-y-6 relative z-10">
+                         {[
+                           { name: 'Aéreo España', val: '72%', color: 'bg-teal-500' },
+                           { name: 'Marítimo BIO', val: '18%', color: 'bg-indigo-500' },
+                           { name: 'Regional CM', val: '10%', color: 'bg-orange-500' }
+                         ].map(item => (
+                            <div key={item.name} className="space-y-2">
+                               <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                  <span>{item.name}</span>
+                                  <span>{item.val}</span>
+                               </div>
+                               <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div initial={{ width: 0 }} animate={{ width: item.val }} transition={{ duration: 1.5 }} className={`h-full ${item.color} shadow-[0_0_10px_rgba(20,184,166,0.3)]`}></motion.div>
+                               </div>
+                            </div>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+             </div>
+          )}
+
+          {activeTab === 'pickup' && (
+             <div className="max-w-4xl mx-auto animate-in fade-in">
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <div className="flex items-center gap-6 mb-10">
+                      <div className="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner">🚛</div>
+                      <div>
+                         <h3 className="text-3xl font-black text-teal-900 tracking-tighter uppercase italic leading-none mb-1">Gestión de Recogidas</h3>
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Control de llegadas a almacén central</p>
+                      </div>
+                   </div>
+                   
+                   <div className="relative mb-8">
+                      <input type="text" placeholder="Buscar por tracking, nombre o teléfono..." title="Buscar recogidas" className="w-full pl-14 pr-6 py-5 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-3xl text-sm font-bold outline-none transition-all shadow-inner" value={pickupSearch} onChange={e => setPickupSearch(e.target.value)} />
+                      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl">🔍</div>
+                   </div>
+                   
+                   <div className="space-y-4">
+                      {allShipments.filter(s => s.trackingNumber.includes(pickupSearch) || s.recipient.name.toLowerCase().includes(pickupSearch.toLowerCase())).slice(0, 10).map(ship => (
+                         <div key={ship._id} className="p-6 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-xl transition-all group">
+                            <div className="flex items-center gap-6">
+                               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-gray-100 group-hover:rotate-6 transition-transform">📦</div>
+                               <div>
+                                  <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">{ship.trackingNumber}</p>
+                                  <h4 className="text-lg font-black text-slate-900 tracking-tighter uppercase truncate max-w-[200px]">{ship.recipient.name}</h4>
+                                  <p className="text-[9px] font-bold text-gray-400 italic">Estado Actual: {ship.status}</p>
+                               </div>
+                            </div>
+                            <button className="px-8 py-3 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:scale-105 transition-transform active:scale-95">Recibir en Almacén</button>
+                         </div>
+                      ))}
+                      {allShipments.length === 0 && <div className="text-center py-20 text-gray-300 font-bold italic uppercase tracking-widest">No se encontraron registros activos</div>}
+                   </div>
+                </div>
+             </div>
+          )}
+
+          {activeTab === 'branding' && (
+             <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in">
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100 italic-none">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Identidad Visual</h3>
+                   <div className="space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div className="space-y-4">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Logo de la Empresa (Texto)</label>
+                            <input type="text" title="Logo Texto" placeholder="ej: BV" className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={config.logoText} onChange={e => setConfig({ ...config, logoText: e.target.value })} />
+                         </div>
+                         <div className="space-y-4">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Logo Personalizado (Imagen)</label>
+                            <div className="w-full h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center relative">
+                               {config.customLogoUrl ? <img src={config.customLogoUrl} className="h-12 object-contain" alt="Logo" /> : <span className="text-gray-300 font-black">Subir Logo</span>}
+                               <input type="file" title="Subir Logo" className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => handleImageUpload(e, 'logo')} />
+                            </div>
+                         </div>
+                      </div>
+                      <button onClick={() => alert('Identidad actualizada')} title="Guardar Identidad" className="w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20">Guardar Identidad</button>
+                   </div>
+                </div>
+             </div>
+          )}
+
+          {activeTab === 'notifications' && (
+             <AdminNotifications />
+          )}
+
+          {activeTab === 'users' && (
+             <AdminUsers />
           )}
         </main>
       </div>

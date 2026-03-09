@@ -284,3 +284,19 @@ export const createTransfer = async (formData: FormData) => {
 
     return data;
 };
+// Actualizar solo el estado de un envío
+export const updateShipmentStatus = async (id: string, status: string) => {
+    const response = await fetch(`${API_URL}/shipments/${id}/status`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al actualizar estado');
+    }
+
+    return data;
+};
