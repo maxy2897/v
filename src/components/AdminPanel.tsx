@@ -61,15 +61,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
   // Define allowed tabs per role
   const getTabs = () => {
-    // Definición precisa de permisos por rol
+    // Todos los roles autorizados ven el Dashboard como primera opción
+    const tabs = ['dashboard'];
+
     if (role === 'admin_local') {
-      return ['shipments', 'pos', 'notifications', 'pickup'];
+      tabs.push('shipments', 'pos', 'notifications', 'pickup');
+    } else if (role === 'admin_finance') {
+      tabs.push('shipments', 'transactions', 'reports', 'notifications', 'pos');
+    } else {
+      // admin_tech y admin (superadmin) ven todo
+      tabs.push('products', 'branding', 'reports', 'config', 'content', 'operational', 'transactions', 'shipments', 'notifications', 'pickup', 'pos');
+      if (['admin', 'admin_tech'].includes(role as string)) {
+        tabs.push('users');
+      }
     }
-    if (role === 'admin_finance') {
-      return ['shipments', 'transactions', 'reports', 'notifications', 'pos'];
-    }
-    // admin_tech y admin (superadmin) ven todo
-    return ['products', 'branding', 'reports', 'config', 'content', 'operational', 'transactions', 'shipments', 'notifications', 'pickup', 'pos', ...(['admin', 'admin_tech'].includes(role as string) ? ['users'] : [])];
+    return tabs;
   };
 
   const allowedTabs = getTabs();
@@ -99,6 +105,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   const [adminNotification, setAdminNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [manifestShipments, setManifestShipments] = useState<Shipment[]>([]);
   const [isProcessingManifest, setIsProcessingManifest] = useState(false);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setAdminNotification({ message, type });
@@ -148,8 +155,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
       fetchTransactions();
     } else if (activeTab === 'shipments') {
       fetchShipments();
+    } else if (activeTab === 'dashboard') {
+      fetchDashboardData();
     }
   }, [activeTab]);
+
+  const fetchDashboardData = async () => {
+    fetchShipments();
+    fetchTransactions();
+    fetchUsers();
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const userStr = localStorage.getItem('user');
+      const token = userStr ? JSON.parse(userStr).token : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://bodipo-business-api.onrender.com'}/api/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAllUsers(data.users || []);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
 
   const printShippingLabel = (shipment: Shipment) => {
     const printWindow = window.open('', '_blank');
@@ -532,17 +563,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
   }, [activeTab, pickupShipment]);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Entregado':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'En tránsito':
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'entregado':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'en tránsito':
+      case 'en transito':
         return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'En Aduanas':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Recogido':
+      case 'llegada a destino':
         return 'bg-teal-100 text-teal-800 border-teal-200';
-      case 'Cancelado':
+      case 'en aduanas':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'recogido':
+        return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'cancelado':
         return 'bg-red-100 text-red-800 border-red-200';
+      case 'pendiente':
+        return 'bg-gray-100 text-gray-500 border-gray-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -871,135 +908,236 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[#00151a]/95 backdrop-blur-md" onClick={onClose} />
-      <div className="relative bg-white w-full max-w-6xl h-full md:h-[85vh] rounded-none md:rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in duration-300">
+  const renderDashboard = () => {
+    const stats = [
+      { label: 'Envíos del Mes', value: allShipments.length, icon: '📦', color: 'blue', trend: '+12%' },
+      { label: 'Usuarios Activos', value: allUsers.length, icon: '👥', color: 'indigo', trend: '+5%' },
+      { label: 'Productos Tienda', value: products.length, icon: '🛍️', color: 'emerald', trend: '+8%' },
+      { label: 'Transacciones', value: transactions.length, icon: '💳', color: 'amber', trend: '+2%' },
+    ];
 
-        {/* Sidebar Navigation */}
-        <aside className="w-full md:w-64 bg-[#00151a] text-white flex flex-col justify-between p-6 shrink-0 overflow-y-auto md:h-full">
-          <div className="flex flex-col h-full">
-            <div className="mb-6 md:mb-10 pl-2 flex justify-between items-center md:block">
-              <div>
-                <h2 className="text-xl font-black tracking-tighter">Admin Panel</h2>
-                <p className="text-teal-400 text-[9px] font-black uppercase tracking-widest mt-1">Gestión Global</p>
+    const recentShipments = [...allShipments].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5);
+
+    return (
+      <div className="space-y-8 animate-in fade-in duration-700">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, i) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              key={stat.label}
+              className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl transition-transform ${
+                  stat.color === 'blue' ? 'bg-blue-50' : 
+                  stat.color === 'indigo' ? 'bg-indigo-50' : 
+                  stat.color === 'emerald' ? 'bg-emerald-50' : 'bg-amber-50'
+                } group-hover:scale-110`}>
+                  {stat.icon}
+                </div>
+                <span className={`text-[10px] font-black px-2 py-1 rounded-full uppercase ${
+                  stat.color === 'blue' ? 'bg-blue-50 text-blue-600' : 
+                  stat.color === 'indigo' ? 'bg-indigo-50 text-indigo-600' : 
+                  stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
+                }`}>
+                  {stat.trend}
+                </span>
               </div>
-              <button
-                onClick={onClose}
-                className="md:hidden text-white/50 hover:text-white"
-                aria-label="Cerrar menú"
+              <h4 className="text-3xl font-black text-gray-900 tracking-tighter">{stat.value}</h4>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{stat.label}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Notification Card */}
+          <div className="lg:col-span-1 bg-blue-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-2xl shadow-blue-500/20">
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-6 text-2xl">🔔</div>
+              <h3 className="text-4xl font-black tracking-tighter mb-2">0</h3>
+              <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mb-8">Notificaciones Pendientes</p>
+              <button 
+                onClick={() => setActiveTab('notifications')}
+                className="mt-auto bg-white text-blue-600 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-blue-50 transition-colors"
+                title="Ver Notificaciones"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                Ver Bandeja de Entrada
               </button>
             </div>
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+          </div>
 
-            <nav className="flex md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 hide-scrollbar">
-              {allowedTabs.includes('products') && (
-                <button
-                  onClick={() => setActiveTab('products')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'products' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                  Productos
-                </button>
+          {/* Recent Activity */}
+          <div className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Últimos Envíos</h3>
+              <button onClick={() => setActiveTab('shipments')} className="text-blue-600 text-[10px] font-black uppercase tracking-widest hover:underline" title="Ver todos los envíos">Ver Todos ➜</button>
+            </div>
+            <div className="space-y-4">
+              {recentShipments.length > 0 ? recentShipments.map(s => (
+                <div key={s._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-lg shadow-sm border border-gray-100">📦</div>
+                    <div>
+                      <p className="text-xs font-black text-gray-900">{s.trackingNumber}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{s.origin} ➜ {s.destination}</p>
+                    </div>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(s.status)}`}>
+                    {s.status}
+                  </span>
+                </div>
+              )) : (
+                <div className="text-center py-12 text-gray-400">
+                  <p className="font-bold">No hay envíos recientes.</p>
+                </div>
               )}
-              {allowedTabs.includes('content') && (
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <button onClick={() => setActiveTab('pos')} title="Registrar nuevo envío" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">➕</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Nuevo Envío</span>
+          </button>
+          <button onClick={() => setActiveTab('products')} title="Gestionar catálogo" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">🛍️</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Subir Producto</span>
+          </button>
+          <button onClick={() => setActiveTab('transactions')} title="Ir a contabilidad" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-amber-200 hover:shadow-xl hover:shadow-amber-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">💳</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Contabilidad</span>
+          </button>
+          <button onClick={() => setActiveTab('notifications')} title="Enviar notificación" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col items-center gap-3 group">
+            <span className="text-2xl group-hover:scale-125 transition-transform">📢</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Anunciar</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-0 md:p-4">
+      <div className="absolute inset-0 bg-[#00151a]/95 backdrop-blur-md" onClick={onClose} />
+      <div className="relative bg-[#f8fafc] w-full max-w-7xl h-full md:h-[90vh] rounded-none md:rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in duration-300 border border-white/20">
+
+        {/* Improved Sidebar Navigation */}
+        <aside className="w-full md:w-72 bg-[#1e293b] text-white flex flex-col justify-between p-8 shrink-0 overflow-y-auto md:h-full border-r border-[#334155]/30">
+          <div className="flex flex-col h-full">
+            {/* Sidebar Logo */}
+            <div className="mb-12 flex items-center gap-4">
+              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/30">B</div>
+              <div>
+                <h2 className="text-lg font-black tracking-tighter leading-none italic">Panel Admin</h2>
+                <p className="text-blue-400 text-[8px] font-black uppercase tracking-[0.2em] mt-1 italic">Bodipo Business</p>
+              </div>
+              <button onClick={onClose} className="md:hidden ml-auto text-white/50" title="Cerrar Panel" aria-label="Cerrar Panel de Administrador"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+
+            <nav className="flex md:flex-col gap-1 overflow-x-auto pb-4 md:pb-0 hide-scrollbar scrollbar-hide">
+              <p className="text-[9px] font-black text-[#64748b] uppercase tracking-[0.2em] mb-4 mt-2 hidden md:block">Principal</p>
+              
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+              >
+                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                Dashboard
+              </button>
+
+              <p className="text-[9px] font-black text-[#64748b] uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Logística</p>
+
+              {allowedTabs.includes('shipments') && (
                 <button
-                  onClick={() => setActiveTab('content')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'content' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                  onClick={() => setActiveTab('shipments')}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'shipments' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
                 >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                  Contenido
-                </button>
-              )}
-              {allowedTabs.includes('operational') && (
-                <button
-                  onClick={() => setActiveTab('operational')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'operational' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                  Operativo
-                </button>
-              )}
-              {allowedTabs.includes('branding') && (
-                <button
-                  onClick={() => setActiveTab('branding')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'branding' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                  Marca
-                </button>
-              )}
-              {allowedTabs.includes('reports') && (
-                <button
-                  onClick={() => setActiveTab('reports')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'reports' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                  Reportes
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                  Todos los Envíos
                 </button>
               )}
               {allowedTabs.includes('pos') && (
                 <button
                   onClick={() => setActiveTab('pos')}
-                  className={`w-full px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pos' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'pos' ? 'bg-orange-500 text-white shadow-xl shadow-orange-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
                 >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                  Registro Envío (POS)
-                </button>
-              )}
-              {allowedTabs.includes('shipments') && (
-                <button
-                  onClick={() => setActiveTab('shipments')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'shipments' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                  Envíos
-                </button>
-              )}
-              {allowedTabs.includes('transactions') && (
-                <button
-                  onClick={() => setActiveTab('transactions')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'transactions' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                  Contabilidad
-                </button>
-              )}
-              {allowedTabs.includes('config') && (
-                <button
-                  onClick={() => setActiveTab('config')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'config' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  Config
-                </button>
-              )}
-              {allowedTabs.includes('notifications') && (
-                <button
-                  onClick={() => setActiveTab('notifications')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'notifications' ? 'bg-teal-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
-                >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                  Notificaciones
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                  Registro POS
                 </button>
               )}
               {allowedTabs.includes('pickup') && (
                 <button
                   onClick={() => setActiveTab('pickup')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'pickup' ? 'bg-orange-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'pickup' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
                 >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
-                  Recogida 📦
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h3m-3 3h3m7.5 12h-9a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 0111.25 3h9a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0120.25 21z" /></svg>
+                  Centro de Recogida
+                </button>
+              )}
+
+              <p className="text-[9px] font-black text-[#64748b] uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Gestión Comercial</p>
+
+              {allowedTabs.includes('products') && (
+                <button
+                  onClick={() => setActiveTab('products')}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'products' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                  Productos
+                </button>
+              )}
+              {allowedTabs.includes('transactions') && (
+                <button
+                  onClick={() => setActiveTab('transactions')}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'transactions' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Contabilidad
                 </button>
               )}
               {allowedTabs.includes('users') && (
                 <button
                   onClick={() => setActiveTab('users')}
-                  className={`whitespace-nowrap px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${activeTab === 'users' ? 'bg-orange-500 text-[#00151a]' : 'text-white/50 hover:bg-white/10 hover:text-white'}`}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'users' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
                 >
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                   Usuarios
+                </button>
+              )}
+
+              <p className="text-[9px] font-black text-[#64748b] uppercase tracking-[0.2em] mb-4 mt-8 hidden md:block">Configuración</p>
+
+              {allowedTabs.includes('branding') && (
+                <button
+                  onClick={() => setActiveTab('branding')}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'branding' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  Marca
+                </button>
+              )}
+              {allowedTabs.includes('content') && (
+                <button
+                  onClick={() => setActiveTab('content')}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'content' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  Contenido Web
+                </button>
+              )}
+              {allowedTabs.includes('config') && (
+                <button
+                  onClick={() => setActiveTab('config')}
+                  className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'config' ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                >
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  Sistema
                 </button>
               )}
             </nav>
@@ -1007,59 +1145,70 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
 
           <button
             onClick={onClose}
-            className="hidden md:flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-colors mt-auto"
+            className="hidden md:flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-colors mt-auto"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-            Cerrar Panel
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            Salir
           </button>
         </aside>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-white relative">
-          {/* Top Bar Mobile/Desc */}
-          <div className="sticky top-0 bg-white/90 backdrop-blur-sm z-10 px-8 py-6 border-b border-gray-50 flex justify-between items-center">
-            <h3 className="text-xl font-black text-[#00151a] uppercase tracking-tighter">
-              {activeTab === 'products' && 'Gestión de Productos'}
-              {activeTab === 'branding' && 'Marca y Personalización'}
-              {activeTab === 'reports' && 'Centro de Reportes'}
-              {activeTab === 'transactions' && 'Historial de Transacciones'}
-              {activeTab === 'shipments' && 'Gestión de Envíos'}
-              {activeTab === 'notifications' && 'Sistema de Notificaciones'}
-              {activeTab === 'pickup' && 'Centro de Recogida y Entrega'}
-              {activeTab === 'pos' && 'Terminal Punto de Venta (POS)'}
-              {activeTab === 'config' && 'Configuración Global'}
-              {activeTab === 'content' && 'Gestión de Contenido'}
-              {activeTab === 'operational' && 'Datos Operativos'}
-            </h3>
-            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              {new Date().toLocaleDateString()}
+        {/* Content Area with Sticky Header */}
+        <div className="flex-1 flex flex-col h-full relative overflow-hidden">
+          {/* Dashboard Header Bar */}
+          <header className="sticky top-0 bg-white/80 backdrop-blur-md z-30 px-8 py-5 border-b border-gray-100 flex justify-between items-center shrink-0">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                <span className="hover:text-blue-600 cursor-pointer" onClick={() => setActiveTab('dashboard')}>Home</span>
+                <span>/</span>
+                <span className="text-blue-600">{activeTab}</span>
+              </div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic drop-shadow-sm">
+                {activeTab === 'dashboard' && 'Vista General'}
+                {activeTab === 'shipments' && 'Logística de Envíos'}
+                {activeTab === 'pos' && 'Terminal de Venta'}
+                {activeTab === 'products' && 'Catálogo de Productos'}
+                {activeTab === 'transactions' && 'Contabilidad Corporativa'}
+                {activeTab === 'users' && 'Gestión de Personal'}
+                {activeTab === 'branding' && 'Identidad Visual'}
+                {activeTab === 'notifications' && 'Centro de Difusión'}
+              </h1>
             </div>
-          </div>
 
-          {/* Toast Notification */}
-          <AnimatePresence>
-            {adminNotification && (
-              <motion.div
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                className={`fixed bottom-8 right-8 z-[500] px-6 py-4 rounded-2xl shadow-2xl font-black uppercase text-[10px] tracking-widest flex items-center gap-3 border-2 ${adminNotification.type === 'success'
-                  ? 'bg-teal-500 text-white border-teal-400'
-                  : 'bg-red-500 text-white border-red-400'
-                  }`}
-              >
-                {adminNotification.type === 'success' ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                )}
-                {adminNotification.message}
-              </motion.div>
-            )}
-          </AnimatePresence>
+            <div className="flex items-center gap-6">
+              {/* Search Bar */}
+              <div className="relative hidden lg:block">
+                <input 
+                  type="text" 
+                  placeholder="Buscar..." 
+                  className="bg-slate-100 border-none rounded-2xl py-2.5 pl-10 pr-4 w-64 text-xs font-bold focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+                <svg className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
 
-          <div className="p-8">
-            {activeTab === 'products' && allowedTabs.includes('products') && (
+              {/* Notification & User Icons */}
+              <div className="flex items-center gap-3">
+                <button className="relative w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm border border-gray-100 hover:bg-slate-50 transition-colors" title="Ver Notificaciones" aria-label="Ver Notificaciones">
+                   <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                   <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <div className="flex items-center gap-3 pl-2 border-l border-gray-100">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-xs font-black text-slate-900 leading-none">{user?.name || 'Admin User'}</p>
+                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 italic">{role}</p>
+                  </div>
+                  <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-blue-500/20">
+                    {(user?.name || 'A')[0].toUpperCase()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-1 overflow-y-auto px-0 md:px-8 py-8">
+            {activeTab === 'dashboard' && <div className="p-8">{renderDashboard()}</div>}
+            
+            <div className="p-8">
+              {activeTab === 'products' && allowedTabs.includes('products') && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <section>
                   <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">Añadir Nuevo Producto</h3>
@@ -2671,7 +2820,30 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, products, setP
                 </section>
               </div>
             )}
-          </div> {/* close p-8 */}
+            </div> {/* close p-8 */}
+
+            {/* Toast Notification Container */}
+            <AnimatePresence>
+              {adminNotification && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                  className={`fixed bottom-8 right-8 z-[500] px-6 py-4 rounded-3xl shadow-2xl font-black uppercase text-[10px] tracking-widest flex items-center gap-3 border-2 ${adminNotification.type === 'success'
+                    ? 'bg-blue-600 text-white border-blue-400'
+                    : 'bg-red-500 text-white border-red-400'
+                    }`}
+                >
+                  {adminNotification.type === 'success' ? (
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  )}
+                  {adminNotification.message}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </main>
         </div> {/* close Content Area */}
         {directNotifModal && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
