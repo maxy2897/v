@@ -118,14 +118,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const fetchTransactions = async () => {
     try {
-      const userStr = localStorage.getItem('user');
-      const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${BASE_URL}/api/admin/transactions`, {
+      const token = user?.token || localStorage.getItem('token') || '';
+      const res = await fetch(`${BASE_URL}/api/transactions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
-        setTransactions(data.transactions || []);
+        const txs = Array.isArray(data) ? data : (data.transactions || []);
+        setTransactions(txs);
       }
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -134,18 +134,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const fetchShipments = async () => {
     try {
-      const userStr = localStorage.getItem('user');
-      const token = userStr ? JSON.parse(userStr).token : '';
-      const res = await fetch(`${BASE_URL}/api/admin/shipments`, {
+      const token = user?.token || localStorage.getItem('token') || '';
+      const res = await fetch(`${BASE_URL}/api/shipments/admin/all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
-        setAllShipments(data.shipments || []);
+        const shipments = Array.isArray(data) ? data : (data.shipments || []);
+        setAllShipments(shipments);
         
         // Group by user
         const groups: Record<string, UserShipmentGroup> = {};
-        (data.shipments || []).forEach((ship: Shipment) => {
+        shipments.forEach((ship: Shipment) => {
+          if (!ship.user) return;
           if (!groups[ship.user._id]) {
             groups[ship.user._id] = {
               userId: ship.user._id,
@@ -164,28 +165,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const fetchDashboardData = async () => {
     try {
-      const userStr = localStorage.getItem('user');
-      const token = userStr ? JSON.parse(userStr).token : '';
+      const token = user?.token || localStorage.getItem('token') || '';
       
       const [resUsers, resProducts, resShipments, resTransactions] = await Promise.all([
         fetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${BASE_URL}/api/products`),
-        fetch(`${BASE_URL}/api/admin/shipments`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${BASE_URL}/api/admin/transactions`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${BASE_URL}/api/shipments/admin/all`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${BASE_URL}/api/transactions`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       const [dataUsers, dataProducts, dataShipments, dataTransactions] = await Promise.all([
         resUsers.json(), resProducts.json(), resShipments.json(), resTransactions.json()
       ]);
 
+      const users = dataUsers.users || [];
+      const productsList = Array.isArray(dataProducts) ? dataProducts : [];
+      const shipments = Array.isArray(dataShipments) ? dataShipments : (dataShipments.shipments || []);
+      const txs = Array.isArray(dataTransactions) ? dataTransactions : (dataTransactions.transactions || []);
+
       setDashboardData({
         stats: {
-          shipments: dataShipments.shipments?.length || 0,
-          users: dataUsers.users?.length || 0,
-          products: dataProducts.length || 0,
-          transactions: dataTransactions.transactions?.length || 0
+          shipments: shipments.length || 0,
+          users: users.length || 0,
+          products: productsList.length || 0,
+          transactions: txs.length || 0
         },
-        recentActivity: dataShipments.shipments?.slice(0, 5) || []
+        recentActivity: shipments.slice(0, 5) || []
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
