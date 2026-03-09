@@ -159,7 +159,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const fetchShipments = async () => {
     const token = user?.token || localStorage.getItem('token') || '';
-    const data = await safeFetch(`${BASE_URL}/api/admin/shipments`, {
+    const data = await safeFetch(`${BASE_URL}/api/shipments`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -190,8 +190,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     const [dataUsers, dataProducts, dataShipments, dataTransactions] = await Promise.all([
       safeFetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
       safeFetch(`${BASE_URL}/api/products`),
-      safeFetch(`${BASE_URL}/api/admin/shipments`, { headers: { Authorization: `Bearer ${token}` } }),
-      safeFetch(`${BASE_URL}/api/admin/transactions`, { headers: { Authorization: `Bearer ${token}` } })
+      safeFetch(`${BASE_URL}/api/shipments`, { headers: { Authorization: `Bearer ${token}` } }),
+      safeFetch(`${BASE_URL}/api/transactions`, { headers: { Authorization: `Bearer ${token}` } })
     ]);
 
     const users = dataUsers?.users || [];
