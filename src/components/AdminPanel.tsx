@@ -166,34 +166,53 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const fetchDashboardData = async () => {
     try {
       const token = user?.token || localStorage.getItem('token') || '';
+      console.log('📊 Fetching dashboard data...');
       
-      const [resUsers, resProducts, resShipments, resTransactions] = await Promise.all([
-        fetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${BASE_URL}/api/products`),
-        fetch(`${BASE_URL}/api/shipments/admin/all`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${BASE_URL}/api/transactions`, { headers: { Authorization: `Bearer ${token}` } })
-      ]);
+      // Fetch everything, but wrap in individual try-catches to identify failure point
+      const safeFetch = async (url: string, options: RequestInit = {}) => {
+        try {
+          const res = await fetch(url, options);
+          if (!res.ok) {
+            console.warn(`⚠️ Request to ${url} failed with status ${res.status}`);
+            return null;
+          }
+          const text = await res.text();
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            console.error(`❌ Non-JSON response from ${url}:`, text.slice(0, 100));
+            return null;
+          }
+        } catch (e) {
+          console.error(`❌ Network error for ${url}:`, e);
+          return null;
+        }
+      };
 
       const [dataUsers, dataProducts, dataShipments, dataTransactions] = await Promise.all([
-        resUsers.json(), resProducts.json(), resShipments.json(), resTransactions.json()
+        safeFetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
+        safeFetch(`${BASE_URL}/api/products`),
+        safeFetch(`${BASE_URL}/api/shipments/admin/all`, { headers: { Authorization: `Bearer ${token}` } }),
+        safeFetch(`${BASE_URL}/api/transactions`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
-      const users = dataUsers.users || [];
+      const users = dataUsers?.users || [];
       const productsList = Array.isArray(dataProducts) ? dataProducts : [];
-      const shipments = Array.isArray(dataShipments) ? dataShipments : (dataShipments.shipments || []);
-      const txs = Array.isArray(dataTransactions) ? dataTransactions : (dataTransactions.transactions || []);
+      const shipments = Array.isArray(dataShipments) ? dataShipments : (dataShipments?.shipments || []);
+      const txs = Array.isArray(dataTransactions) ? dataTransactions : (dataTransactions?.transactions || []);
 
       setDashboardData({
         stats: {
-          shipments: shipments.length || 0,
-          users: users.length || 0,
-          products: productsList.length || 0,
-          transactions: txs.length || 0
+          shipments: shipments.length,
+          users: users.length,
+          products: productsList.length,
+          transactions: txs.length
         },
-        recentActivity: shipments.slice(0, 5) || []
+        recentActivity: shipments.slice(0, 5)
       });
+      console.log('✅ Dashboard data loaded successfully');
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('Error in fetchDashboardData:', error);
     }
   };
 
