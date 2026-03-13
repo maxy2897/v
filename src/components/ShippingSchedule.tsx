@@ -22,8 +22,8 @@ const ShippingSchedule: React.FC = () => {
 
   // Fallback si no hay config (Fechas hardcodeadas de ejemplo)
   const fallbackSchedule = [
-    { date: new Date(2026, 0, 17), type: 'Aéreo', destination: 'Malabo / Bata' },
-    { date: new Date(2026, 0, 30), type: 'Aéreo', destination: 'Malabo / Bata' }
+    { date: new Date(2026, 3, 17), type: 'Aéreo', destination: 'Malabo / Bata' },
+    { date: new Date(2026, 3, 30), type: 'Aéreo', destination: 'Malabo / Bata' }
   ];
 
   const fullSchedule = dynamicSchedule.length > 0 ? dynamicSchedule : fallbackSchedule;
@@ -97,7 +97,7 @@ const ShippingSchedule: React.FC = () => {
     .sort((a, b) => a.dist - b.dist);
 
   return (
-    <section id="calendario" className="py-24 bg-white">
+    <section id="calendario" className="pt-10 pb-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-6 w-full">
           <div className="max-w-xl shrink-0">
@@ -225,6 +225,33 @@ const ShippingSchedule: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* Resumen Anual - MOVIDO AQUÍ */}
+        <div className="bg-[#f8fcfc] rounded-[3rem] p-8 md:p-12 border border-teal-100 shadow-sm mb-16">
+          <div className="flex items-center space-x-4 mb-10">
+            <div className="w-10 h-10 bg-[#005f6b] rounded-xl flex items-center justify-center text-white">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            </div>
+            <h3 className="text-2xl font-black text-[#00151a] tracking-tight">{t('schedule.overview_title')}</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {processedOverview.map((item, i) => {
+              const dist = item.dist;
+              const isCurrent = dist === 0;
+              return (
+                <div key={i} className={`p-6 rounded-3xl border shadow-sm transition-all flex flex-col h-full ${isCurrent ? 'bg-white border-teal-500 ring-4 ring-teal-500/20 scale-105 shadow-xl relative z-10' : 'bg-gray-50/50 border-gray-100 hover:border-teal-200'}`}>
+                  <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-3 ${isCurrent ? 'text-teal-600' : 'text-gray-400'}`}>{item.month}</p>
+                  <p className="text-2xl font-black text-[#00151a] tracking-tight">{item.days}</p>
+                  <div className="mt-auto pt-4 border-t border-gray-100 flex items-center text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                    <span className={`w-1.5 h-1.5 rounded-full mr-2 ${isCurrent ? 'bg-teal-500 animate-pulse' : 'bg-gray-300'}`}></span>
+                    {isCurrent ? t('schedule.current_month_badge') : t('schedule.programming_badge')}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* --- Services Integrated From ServicesPage --- */}
         <div className="bg-[#f8fcfc] rounded-[3rem] p-8 md:p-12 mb-10 shadow-sm border border-teal-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#00151a]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
@@ -289,33 +316,6 @@ const ShippingSchedule: React.FC = () => {
                 </ul>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Resumen Anual */}
-        <div className="bg-[#f8fcfc] rounded-[3rem] p-8 md:p-12 border border-teal-100 shadow-sm">
-          <div className="flex items-center space-x-4 mb-10">
-            <div className="w-10 h-10 bg-[#005f6b] rounded-xl flex items-center justify-center text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-            </div>
-            <h3 className="text-2xl font-black text-[#00151a] tracking-tight">{t('schedule.overview_title')}</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {processedOverview.map((item, i) => {
-              const dist = item.dist;
-              const isCurrent = dist === 0;
-              return (
-                <div key={i} className={`p-6 rounded-3xl border shadow-sm transition-all flex flex-col h-full ${isCurrent ? 'bg-white border-teal-500 ring-4 ring-teal-500/20 scale-105 shadow-xl relative z-10' : 'bg-gray-50/50 border-gray-100 hover:border-teal-200'}`}>
-                  <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-3 ${isCurrent ? 'text-teal-600' : 'text-gray-400'}`}>{item.month}</p>
-                  <p className="text-2xl font-black text-[#00151a] tracking-tight">{item.days}</p>
-                  <div className="mt-auto pt-4 border-t border-gray-100 flex items-center text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                    <span className={`w-1.5 h-1.5 rounded-full mr-2 ${isCurrent ? 'bg-teal-500 animate-pulse' : 'bg-gray-300'}`}></span>
-                    {isCurrent ? t('schedule.current_month_badge') : t('schedule.programming_badge')}
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>
