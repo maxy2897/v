@@ -60,7 +60,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   console.log('Rendering AdminPanel for role:', role);
 
   // Define allowed tabs per role
-  const getTabs = () => {
+  const allowedTabs = React.useMemo(() => {
     const tabs = ['dashboard'];
     if (role === 'admin_local') {
       tabs.push('shipments', 'pos', 'notifications', 'pickup');
@@ -73,9 +73,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       }
     }
     return tabs;
-  };
+  }, [role]);
 
-  const allowedTabs = getTabs();
   const [activeTab, setActiveTab] = useState(allowedTabs[0] as any);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -84,9 +83,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     if (!allowedTabs.includes(activeTab)) {
       setActiveTab(allowedTabs[0] as any);
     }
-    // Close sidebar on tab change on mobile
+  }, [allowedTabs, activeTab]);
+
+  // Separate effect for closing sidebar to avoid interference
+  useEffect(() => {
     setSidebarOpen(false);
-  }, [role, allowedTabs, activeTab]);
+  }, [activeTab]);
 
   const [transactions, setTransactions] = useState<any[]>([]);
   const [shipmentGroups, setShipmentGroups] = useState<UserShipmentGroup[]>([]);
@@ -142,6 +144,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [operationalInputMode, setOperationalInputMode] = useState<'qr' | 'manual'>('qr');
   const [manualCode, setManualCode] = useState('');
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const readerMounted = useRef<boolean>(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   // Manifest / Bulto Colectivo state
   const [manifestTab, setManifestTab] = useState<'create' | 'scan'>('create');
@@ -155,21 +159,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [isCreatingManifest, setIsCreatingManifest] = useState(false);
 
   const startScanner = async () => {
-    // Only proceed if we are in the right tab and mode, and not already scanning
     const element = document.getElementById("reader");
-    if (!element || scannerRef.current?.isScanning) return;
+    if (!element) return;
+    if (scannerRef.current?.isScanning) return;
 
     setIsScanning(true);
     setScanResult(null);
 
     try {
+      setCameraError(null);
       if (!scannerRef.current) {
         scannerRef.current = new Html5Qrcode("reader");
       }
       
+      const cameras = await Html5Qrcode.getCameras();
+      if (!cameras || cameras.length === 0) {
+        throw new Error("No se detectaron cámaras en este dispositivo.");
+      }
+
       await scannerRef.current.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 20, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
           setScanResult(decodedText);
           if (qrMode === 'single') {
@@ -181,8 +191,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
         },
         () => {}
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error("Scanner Start Error:", err);
+      setCameraError(err.message || "Error al iniciar cámara");
       setIsScanning(false);
       scannerRef.current = null;
     }
@@ -191,7 +202,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const stopScanner = async () => {
     if (scannerRef.current) {
       const s = scannerRef.current;
-      scannerRef.current = null; // Clear ref first to avoid re-entry
+      scannerRef.current = null;
       try {
         if (s.isScanning) {
           await s.stop();
@@ -209,7 +220,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     if (activeTab === 'operational' && operationalInputMode === 'qr') {
       const timer = setTimeout(() => {
         if (mounted) startScanner();
-      }, 800);
+      }, 1200); // 1.2s delay for mobile camera hardware stability
       return () => {
         mounted = false;
         clearTimeout(timer);
@@ -218,7 +229,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     } else {
       stopScanner();
     }
-    return () => { mounted = false; };
+    return () => { mounted = false; stopScanner(); };
   }, [activeTab, operationalInputMode]);
 
   const handleQuickTrack = async (code: string) => {
@@ -470,98 +481,75 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   const renderDashboard = () => {
     const stats = [
-      { label: 'Envíos del Mes', value: dashboardData.stats.shipments, icon: '📦', color: 'bg-teal-50 text-teal-600', trend: '+12%' },
-      { label: 'Usuarios Activos', value: dashboardData.stats.users, icon: '👤', color: 'bg-indigo-50 text-indigo-600', trend: '+5%' },
-      { label: 'Productos Tienda', value: dashboardData.stats.products, icon: '🛍️', color: 'bg-emerald-50 text-emerald-600', trend: '+8%' },
-      { label: 'Transacciones', value: dashboardData.stats.transactions, icon: '👤', color: 'bg-amber-50 text-amber-600', trend: '+2%' },
+      { label: 'Envíos', value: dashboardData.stats.shipments, icon: '📦', color: 'text-teal-600' },
+      { label: 'Usuarios', value: dashboardData.stats.users, icon: '👤', color: 'text-indigo-600' },
+      { label: 'Productos', value: dashboardData.stats.products, icon: '🛍️', color: 'text-emerald-600' },
+      { label: 'Ventas', value: dashboardData.stats.transactions, icon: '💰', color: 'text-amber-600' },
     ];
 
     return (
-      <div className="space-y-12 animate-in fade-in duration-700">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, i) => (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ delay: i * 0.1 }}
-              key={stat.label} 
-              className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all group"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className={`w-14 h-14 ${stat.color} rounded-2xl flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform`}>
-                  {stat.icon}
-                </div>
-                <span className="text-[10px] font-black px-2.5 py-1 bg-green-50 text-green-600 rounded-full tracking-widest">{stat.trend}</span>
-              </div>
-              <p className="text-[10px] font-black text-gray-400 border-l-2 border-teal-500 pl-3 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
-              <h3 className="text-4xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
-            </motion.div>
+      <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+        {/* Simplified Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center text-center">
+              <span className="text-xl mb-3">{stat.icon}</span>
+              <h3 className="text-2xl font-black text-slate-900 tracking-tighter leading-none mb-1">{stat.value}</h3>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{stat.label}</p>
+            </div>
           ))}
         </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
-              <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest italic">Últimos Envíos</h4>
-              <button onClick={() => setActiveTab('shipments')} className="text-[10px] font-black text-teal-600 hover:underline uppercase tracking-widest flex items-center gap-2">Ver todos <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></button>
-            </div>
-            <div className="space-y-4">
-              {dashboardData.recentActivity.map((ship: Shipment) => (
-                <div key={ship._id} className="flex items-center justify-between p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100">📦</div>
-                    <div>
-                      <p className="text-sm font-black text-slate-900 uppercase tracking-tighter">{ship.trackingNumber}</p>
-                      <p className="text-[10px] font-bold text-gray-400">{ship.origin} ➔ {ship.destination}</p>
-                    </div>
-                  </div>
-                  <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusColor(ship.status)}`}>
-                    {ship.status}
-                  </span>
+        {/* Minimal Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+             <div className="flex justify-between items-center mb-6">
+                <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-2 border-teal-500 pl-3">Actividad</h4>
+                <button onClick={() => setActiveTab('shipments')} className="text-[9px] font-black text-teal-600 uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">Ver todos</button>
+             </div>
+             <div className="space-y-3">
+               {dashboardData.recentActivity.slice(0, 5).map((ship: Shipment) => (
+                 <div key={ship._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-white border border-transparent hover:border-gray-100 transition-all">
+                   <div className="flex items-center gap-3">
+                     <span className="text-lg">📦</span>
+                     <div>
+                       <p className="text-[11px] font-black text-slate-900 truncate max-w-[120px]">{ship.trackingNumber}</p>
+                       <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">{ship.destination}</p>
+                     </div>
+                   </div>
+                   <span className="text-[8px] font-black uppercase px-2 py-1 bg-white border border-gray-100 rounded-lg text-gray-500">{ship.status}</span>
+                 </div>
+               ))}
+               {dashboardData.recentActivity.length === 0 && <p className="text-center py-10 text-[10px] text-gray-300 font-black uppercase tracking-widest">Sin actividad</p>}
+             </div>
+           </div>
+
+           <div className="space-y-6">
+              <div className="bg-[#00151a] p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group">
+                <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:rotate-12 transition-transform duration-700">
+                   <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
                 </div>
-              ))}
-              {dashboardData.recentActivity.length === 0 && <p className="text-center py-10 text-gray-400 font-bold italic">No hay actividad reciente</p>}
-            </div>
-          </div>
+                <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-2 italic">Accesos Rápidos</h4>
+                <div className="grid grid-cols-2 gap-3 mt-6">
+                   <button onClick={() => setActiveTab('pos')} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-teal-500 hover:text-white transition-all text-left group">
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">POS</p>
+                      <p className="text-xs font-black">Nuevo Envío</p>
+                   </button>
+                   <button onClick={() => setActiveTab('operational')} className="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-teal-500 hover:text-white transition-all text-left group">
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Escáner</p>
+                      <p className="text-xs font-black">QR Master</p>
+                   </button>
+                </div>
+              </div>
 
-          <div className="bg-teal-600 p-8 rounded-[3rem] shadow-xl shadow-teal-500/20 text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
-               <svg className="w-40 h-40" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 112 0v4a1 1 0 11-2 0V9zm0 6a1 1 0 112 0 1 1 0 01-2 0z"/></svg>
-            </div>
-            <div className="relative z-10 h-full flex flex-col">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl mb-6">🔔</div>
-              <h4 className="text-3xl font-black tracking-tighter uppercase leading-none mb-3">0</h4>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-8 border-l-2 border-white/30 pl-3">Notificaciones Pendientes</p>
-              <button 
-                onClick={() => setActiveTab('notifications')}
-                className="mt-auto w-full py-4 bg-white text-teal-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-lg"
-              >
-                Gestionar Alertas
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <button onClick={() => setActiveTab('pos')} title="Registrar nuevo envío" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-teal-200 hover:shadow-xl hover:shadow-teal-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">✨</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Nuevo Envío</span>
-          </button>
-          <button onClick={() => setActiveTab('products')} title="Gestionar catálogo" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">🛍️</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Subir Producto</span>
-          </button>
-          <button onClick={() => setActiveTab('transactions')} title="Ir a contabilidad" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-amber-200 hover:shadow-xl hover:shadow-amber-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">👤</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Contabilidad</span>
-          </button>
-          <button onClick={() => setActiveTab('notifications')} title="Enviar notificación" className="p-6 bg-white border border-gray-100 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col items-center gap-3 group">
-            <span className="text-2xl group-hover:scale-125 transition-transform">📢</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Anunciar</span>
-          </button>
+              <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-between">
+                <div>
+                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Estado Sistema</p>
+                   <p className="text-xs font-black text-teal-600 uppercase italic">Activo y Seguro</p>
+                </div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-ping"></div>
+              </div>
+           </div>
         </div>
       </div>
     );
@@ -577,13 +565,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] md:hidden"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[90] md:hidden cursor-pointer"
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#00151a] text-white flex flex-col p-8 transition-all duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'} shrink-0 overflow-y-auto border-r border-teal-900/20`}>
+      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none`}>
           <div className="flex flex-col h-full">
             {/* Logo Section */}
              <div className="mb-8 flex items-center justify-between gap-4">
@@ -701,12 +689,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 md:gap-8">
             <button 
-              onClick={() => setSidebarOpen(true)}
-              className="md:hidden p-2 text-teal-900 border border-gray-100 rounded-xl bg-gray-50"
-              aria-label="Abrir menú lateral"
-              title="Abrir menú"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setSidebarOpen(true);
+              }}
+              className="p-3 text-teal-900 border border-gray-100 rounded-2xl bg-gray-50 md:hidden active:scale-90 transition-transform"
+              aria-label="Menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <div className="block">
               <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-teal-600/50 mb-1">
@@ -776,8 +767,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                               <img src={newProduct.image} className="w-full h-full object-cover" alt="Preview" />
                            ) : (
                               <>
-                                 <span className="text-3xl mb-2">\ud83d\udcf7</span>
-                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">HAGA CLIC AQU\u00cd PARA SELECCIONAR FOTO PRODUCTO</p>
+                                 <span className="text-3xl mb-2">📷</span>
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">HAGA CLIC AQUÍ PARA SELECCIONAR FOTO PRODUCTO</p>
                               </>
                            )}
                            <input type="file" title="Subir imagen de producto" onChange={e => handleImageUpload(e, 'product')} className="absolute inset-0 opacity-0 cursor-pointer" />
@@ -1022,8 +1013,49 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                          <p className="text-[9px] text-gray-400 font-bold italic text-center">Click en el recuadro para subir nueva imagen</p>
                       </div>
                    </div>
-                   <button onClick={() => updateConfig?.(appConfig as any).then(() => alert('Web actualizada'))} className="mt-8 w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20">Guardar Cambios</button>
                 </div>
+
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Teléfonos de Contacto</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Teléfono España 🇪🇸</label>
+                         <input type="text" title="Teléfono España" placeholder="Ej: +34 600..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.contact?.phones?.es || ''} onChange={e => updateConfig?.({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, es: e.target.value } } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Teléfono Guinea 🇬🇶</label>
+                         <input type="text" title="Teléfono Guinea" placeholder="Ej: +240 222..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.contact?.phones?.gq || ''} onChange={e => updateConfig?.({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, gq: e.target.value } } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Teléfono Camerún 🇨🇲</label>
+                         <input type="text" title="Teléfono Camerún" placeholder="Ej: +237 600..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.contact?.phones?.cm || ''} onChange={e => updateConfig?.({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, cm: e.target.value } } } as any)} />
+                      </div>
+                   </div>
+                </div>
+
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Redes Sociales</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">WhatsApp (Ej: 34600112233)</label>
+                         <input type="text" title="WhatsApp Número o Link" placeholder="Ej: 34643521042" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.whatsapp || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, whatsapp: e.target.value } } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Instagram Link</label>
+                         <input type="text" title="Instagram Link" placeholder="https://instagram.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.instagram || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, instagram: e.target.value } } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">TikTok Link</label>
+                         <input type="text" title="TikTok Link" placeholder="https://tiktok.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.tiktok || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, tiktok: e.target.value } } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Facebook Link</label>
+                         <input type="text" title="Facebook Link" placeholder="https://facebook.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.facebook || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, facebook: e.target.value } } } as any)} />
+                      </div>
+                   </div>
+                </div>
+
+                <button onClick={() => updateConfig?.(appConfig as any).then(() => alert('Web actualizada'))} className="w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">Guardar Cambios de Web</button>
              </div>
           )}
 
