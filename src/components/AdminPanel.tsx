@@ -571,8 +571,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       </AnimatePresence>
 
       {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none overflow-y-auto custom-scrollbar`}>
-          <div className="flex flex-col h-full shrink-0">
+      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:block md:w-72 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none overflow-y-auto h-[100dvh] custom-scrollbar`}>
+          <div className="flex flex-col min-h-full shrink-0">
             {/* Logo Section */}
              <div className="mb-8 flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
@@ -1034,6 +1034,54 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 </div>
 
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Fechas Próximos Envíos (Calendario)</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Cierre de Maletas Aéreo</label>
+                         <input type="date" title="Fecha Próximo Vuelo" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.dates?.nextAirDeparture || ''} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Cierre de Maletas Marítimo</label>
+                         <input type="date" title="Fecha Próximo Barco" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.dates?.nextSeaDeparture || ''} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextSeaDeparture: e.target.value } } as any)} />
+                      </div>
+                   </div>
+                </div>
+
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Resumen Anual (Calendario - Bloques de Texto)</h3>
+                   <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-6 block font-bold">Estos textos aparecen en la sección anual (ej. "ENERO" - "2, 17 y 30")</p>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Bloque 1 */}
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Bloque 1 (Mes y Días)</label>
+                         <input type="text" placeholder="ENERO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block1?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block1: { ...appConfig?.content?.schedule?.block1, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="2, 17 y 30" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block1?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block1: { ...appConfig?.content?.schedule?.block1, days: e.target.value } } } } as any)} />
+                      </div>
+                      
+                      {/* Bloque 2 */}
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Bloque 2 (Mes y Días)</label>
+                         <input type="text" placeholder="FEBRERO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block2?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block2: { ...appConfig?.content?.schedule?.block2, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="10 y 21" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block2?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block2: { ...appConfig?.content?.schedule?.block2, days: e.target.value } } } } as any)} />
+                      </div>
+
+                      {/* Bloque 3 */}
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Bloque 3 (Mes y Días)</label>
+                         <input type="text" placeholder="MARZO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block3?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block3: { ...appConfig?.content?.schedule?.block3, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="7 y 24" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block3?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block3: { ...appConfig?.content?.schedule?.block3, days: e.target.value } } } } as any)} />
+                      </div>
+
+                      {/* Bloque 4 */}
+                      <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Bloque 4 (Mes y Días)</label>
+                         <input type="text" placeholder="ABRIL" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block4?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block4: { ...appConfig?.content?.schedule?.block4, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="11, 18 y 28" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block4?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block4: { ...appConfig?.content?.schedule?.block4, days: e.target.value } } } } as any)} />
+                      </div>
+                   </div>
+                </div>
+
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Redes Sociales</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -1077,14 +1125,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                </div>
                             </div>
                          </div>
-                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">Próximos Vuelos / Barcos</h4>
-                            <div className="space-y-4">
-                               <div className="flex flex-col gap-2">
-                                  <span className="text-[9px] font-black text-gray-500 uppercase">Cierre de Maletas Aéreo</span>
-                                  <input type="date" title="Fecha Próximo Vuelo" className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 font-black text-sm" value={appConfig?.dates?.nextAirDeparture} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
-                               </div>
-                            </div>
+                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10 flex flex-col items-center justify-center text-center">
+                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-2">Fechas de Envío (Movidas)</h4>
+                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Edita las fechas y bloques anuales en la pestaña "Web", sección "Calendario".</p>
                          </div>
                       </div>
                       <div className="space-y-6 text-center flex flex-col items-center justify-center">

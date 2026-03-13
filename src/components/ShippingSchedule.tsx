@@ -27,6 +27,9 @@ const ShippingSchedule: React.FC = () => {
   ];
 
   const fullSchedule = dynamicSchedule.length > 0 ? dynamicSchedule : fallbackSchedule;
+  
+  // Ensure chronologically sorted items so that we accurately get the 'next' ones
+  fullSchedule.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   // Filtrar salidas futuras (incluyendo hoy)
   const upcomingShipments = fullSchedule.filter(s => {
