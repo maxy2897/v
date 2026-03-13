@@ -11,8 +11,11 @@ const ShippingSchedule: React.FC = () => {
   console.log('ShippingSchedule: appConfig state:', appConfig);
 
   // Obtener fechas desde la configuración o usar defaults
-  const nextAir = appConfig?.dates?.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture) : null;
-  const nextSea = appConfig?.dates?.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture) : null;
+  const parsedNextAir = appConfig?.dates?.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture) : null;
+  const parsedNextSea = appConfig?.dates?.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture) : null;
+
+  const nextAir = parsedNextAir && !isNaN(parsedNextAir.getTime()) ? parsedNextAir : null;
+  const nextSea = parsedNextSea && !isNaN(parsedNextSea.getTime()) ? parsedNextSea : null;
 
 
   // Construir lista dinámica
@@ -99,8 +102,8 @@ const ShippingSchedule: React.FC = () => {
   return (
     <section id="calendario" className="pt-10 pb-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-6 w-full">
-          <div className="max-w-xl shrink-0">
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-2 gap-6 w-full">
+          <div className="max-w-xl shrink-0 pt-2">
             <div className="inline-flex items-center space-x-2 bg-teal-50 px-3 py-1 rounded-full mb-4">
               <span className="w-2 h-2 bg-teal-600 rounded-full animate-pulse"></span>
               <span className="text-[10px] font-black uppercase tracking-widest text-teal-900">{t('schedule.status_operating')}</span>
@@ -116,8 +119,9 @@ const ShippingSchedule: React.FC = () => {
           </div>
         </div>
 
-        {nextShipment && (
-           <div className="flex justify-center mb-12">
+        {/* Panel Centralizado - Ubicado en el "espacio" pero más abajo */}
+        <div className="flex justify-center mb-16 mt-4">
+           {nextShipment && (
               <div className="bg-teal-50/80 border border-teal-100 rounded-2xl p-5 flex items-center gap-5 shadow-sm relative overflow-hidden w-full max-w-lg">
                  <div className="absolute top-0 right-0 w-32 h-32 bg-teal-400/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm shrink-0 border border-teal-100/50 z-10">
@@ -128,8 +132,8 @@ const ShippingSchedule: React.FC = () => {
                     <p className="text-xl font-black text-[#00151a] tracking-tight leading-none">{nextShipment.date.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                  </div>
               </div>
-           </div>
-        )}
+           )}
+        </div>
 
 
 
