@@ -98,6 +98,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | null>(null);
   const [selectedTxFolder, setSelectedTxFolder] = useState<string | null>(null);
   const [pickupSearch, setPickupSearch] = useState('');
+  const [editConfig, setEditConfig] = useState(appConfig);
+
+  useEffect(() => {
+    if (appConfig) {
+      setEditConfig(appConfig);
+    }
+  }, [appConfig]);
   const [dashboardData, setDashboardData] = useState({
     stats: { shipments: 0, users: 0, products: 0, transactions: 0 },
     recentActivity: [] as any[]
@@ -417,8 +424,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       
       if (type === 'product') setNewProduct({ ...newProduct, image: data.secure_url });
       else if (type === 'logo') setConfig({ ...config, customLogoUrl: data.secure_url });
-      else if (type === 'hero') updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, heroImage: data.secure_url } } } as any);
-      else if (type === 'money') updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, moneyTransferImage: data.secure_url } } } as any);
+      else if (type === 'hero') setEditConfig({ ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, heroImage: data.secure_url } } } as any);
+      else if (type === 'money') setEditConfig({ ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, moneyTransferImage: data.secure_url } } } as any);
       
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -995,16 +1002,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.main_title')}</label>
-                         <input type="text" title={t('admin.main_title')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={appConfig?.content?.hero?.title} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, title: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.main_title')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold" value={editConfig?.content?.hero?.title} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, title: e.target.value } } } as any)} />
                          
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2 mt-4">{t('admin.subtitle_label')}</label>
-                         <textarea title={t('admin.subtitle_label')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold h-32" value={appConfig?.content?.hero?.subtitle} onChange={e => updateConfig?.({ content: { ...appConfig?.content, hero: { ...appConfig?.content?.hero, subtitle: e.target.value } } } as any)} />
+                         <textarea title={t('admin.subtitle_label')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold h-32" value={editConfig?.content?.hero?.subtitle} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, subtitle: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-4">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.hero_cover_image')}</label>
                          <div className="w-full h-48 bg-gray-100 rounded-[2rem] overflow-hidden relative group border-2 border-dashed border-gray-200">
-                            {appConfig?.content?.hero?.heroImage ? (
-                               <img src={appConfig.content.hero.heroImage} className="w-full h-full object-cover" alt={t('admin.web_config_hero')} />
+                            {editConfig?.content?.hero?.heroImage ? (
+                               <img src={editConfig.content.hero.heroImage} className="w-full h-full object-cover" alt={t('admin.web_config_hero')} />
                             ) : (
                                 <div className="flex items-center justify-center h-full text-gray-300 font-black italic">{t('admin.scanner.no_img')}</div>
                             )}
@@ -1020,15 +1027,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.phone_es')}</label>
-                         <input type="text" title={t('admin.scanner.phone_es')} placeholder="Ej: +34 600..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.contact?.phones?.es || ''} onChange={e => updateConfig?.({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, es: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.scanner.phone_es')} placeholder="Ej: +34 600..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.contact?.phones?.es || ''} onChange={e => setEditConfig({ ...editConfig, contact: { ...editConfig?.contact, phones: { ...editConfig?.contact?.phones, es: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.phone_gq')}</label>
-                         <input type="text" title={t('admin.scanner.phone_gq')} placeholder="Ej: +240 222..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.contact?.phones?.gq || ''} onChange={e => updateConfig?.({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, gq: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.scanner.phone_gq')} placeholder="Ej: +240 222..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.contact?.phones?.gq || ''} onChange={e => setEditConfig({ ...editConfig, contact: { ...editConfig?.contact, phones: { ...editConfig?.contact?.phones, gq: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.phone_cm')}</label>
-                         <input type="text" title={t('admin.scanner.phone_cm')} placeholder="Ej: +237 600..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.contact?.phones?.cm || ''} onChange={e => updateConfig?.({ contact: { ...appConfig?.contact, phones: { ...appConfig?.contact?.phones, cm: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.scanner.phone_cm')} placeholder="Ej: +237 600..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.contact?.phones?.cm || ''} onChange={e => setEditConfig({ ...editConfig, contact: { ...editConfig?.contact, phones: { ...editConfig?.contact?.phones, cm: e.target.value } } } as any)} />
                       </div>
                    </div>
                 </div>
@@ -1038,11 +1045,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.air_closing')}</label>
-                         <input type="date" title={t('admin.scanner.air_closing')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.dates?.nextAirDeparture || ''} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
+                         <input type="date" title={t('admin.scanner.air_closing')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.dates?.nextAirDeparture || ''} onChange={e => setEditConfig({ ...editConfig, dates: { ...editConfig?.dates, nextAirDeparture: e.target.value } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.sea_closing')}</label>
-                         <input type="date" title={t('admin.scanner.sea_closing')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.dates?.nextSeaDeparture || ''} onChange={e => updateConfig?.({ dates: { ...appConfig?.dates, nextSeaDeparture: e.target.value } } as any)} />
+                         <input type="date" title={t('admin.scanner.sea_closing')} className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.dates?.nextSeaDeparture || ''} onChange={e => setEditConfig({ ...editConfig, dates: { ...editConfig?.dates, nextSeaDeparture: e.target.value } } as any)} />
                       </div>
                    </div>
                 </div>
@@ -1054,29 +1061,29 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       {/* Bloque 1 */}
                       <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.block', { num: 1 })}</label>
-                         <input type="text" placeholder="ENERO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block1?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block1: { ...appConfig?.content?.schedule?.block1, month: e.target.value } } } } as any)} />
-                         <input type="text" placeholder="2, 17 y 30" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block1?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block1: { ...appConfig?.content?.schedule?.block1, days: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="ENERO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={editConfig?.content?.schedule?.block1?.month || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block1: { ...editConfig?.content?.schedule?.block1, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="2, 17 y 30" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={editConfig?.content?.schedule?.block1?.days || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block1: { ...editConfig?.content?.schedule?.block1, days: e.target.value } } } } as any)} />
                       </div>
                       
                       {/* Bloque 2 */}
                       <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.block', { num: 2 })}</label>
-                         <input type="text" placeholder="FEBRERO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block2?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block2: { ...appConfig?.content?.schedule?.block2, month: e.target.value } } } } as any)} />
-                         <input type="text" placeholder="10 y 21" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block2?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block2: { ...appConfig?.content?.schedule?.block2, days: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="FEBRERO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={editConfig?.content?.schedule?.block2?.month || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block2: { ...editConfig?.content?.schedule?.block2, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="10 y 21" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={editConfig?.content?.schedule?.block2?.days || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block2: { ...editConfig?.content?.schedule?.block2, days: e.target.value } } } } as any)} />
                       </div>
 
                       {/* Bloque 3 */}
                       <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.block', { num: 3 })}</label>
-                         <input type="text" placeholder="MARZO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block3?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block3: { ...appConfig?.content?.schedule?.block3, month: e.target.value } } } } as any)} />
-                         <input type="text" placeholder="7 y 24" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block3?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block3: { ...appConfig?.content?.schedule?.block3, days: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="MARZO" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={editConfig?.content?.schedule?.block3?.month || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block3: { ...editConfig?.content?.schedule?.block3, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="7 y 24" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={editConfig?.content?.schedule?.block3?.days || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block3: { ...editConfig?.content?.schedule?.block3, days: e.target.value } } } } as any)} />
                       </div>
 
                       {/* Bloque 4 */}
                       <div className="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.scanner.block', { num: 4 })}</label>
-                         <input type="text" placeholder="ABRIL" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={appConfig?.content?.schedule?.block4?.month || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block4: { ...appConfig?.content?.schedule?.block4, month: e.target.value } } } } as any)} />
-                         <input type="text" placeholder="11, 18 y 28" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={appConfig?.content?.schedule?.block4?.days || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, schedule: { ...appConfig?.content?.schedule, block4: { ...appConfig?.content?.schedule?.block4, days: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="ABRIL" className="w-full p-3 bg-white rounded-xl font-bold text-sm border-none shadow-sm" value={editConfig?.content?.schedule?.block4?.month || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block4: { ...editConfig?.content?.schedule?.block4, month: e.target.value } } } } as any)} />
+                         <input type="text" placeholder="11, 18 y 28" className="w-full p-3 bg-white rounded-xl font-bold text-xs border-none shadow-sm mt-2" value={editConfig?.content?.schedule?.block4?.days || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, schedule: { ...editConfig?.content?.schedule, block4: { ...editConfig?.content?.schedule?.block4, days: e.target.value } } } } as any)} />
                       </div>
                    </div>
                 </div>
@@ -1086,49 +1093,48 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_air_es_gq')}</label>
-                         <input type="text" placeholder="11€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.air_es_gq || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, air_es_gq: e.target.value } } as any)} />
+                         <input type="text" placeholder="11€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.air_es_gq || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, air_es_gq: e.target.value } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_sea_es_gq')}</label>
-                         <input type="text" placeholder="4€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.sea_es_gq || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, sea_es_gq: e.target.value } } as any)} />
+                         <input type="text" placeholder="4€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.sea_es_gq || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, sea_es_gq: e.target.value } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_kg_cm_gq')}</label>
-                         <input type="text" placeholder="3000 XAF" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.kg_cm_gq || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, kg_cm_gq: e.target.value } } as any)} />
+                         <input type="text" placeholder="3000 XAF" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.kg_cm_gq || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, kg_cm_gq: e.target.value } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_docs_gq_es')}</label>
-                         <input type="text" placeholder="15€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.docs_gq_es || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, docs_gq_es: e.target.value } } as any)} />
+                         <input type="text" placeholder="15€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.docs_gq_es || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, docs_gq_es: e.target.value } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_bulto_23kg')}</label>
-                         <input type="text" placeholder="220€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.bulto_23kg || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, bulto_23kg: e.target.value } } as any)} />
+                         <input type="text" placeholder="220€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.bulto_23kg || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, bulto_23kg: e.target.value } } as any)} />
                       </div>
                    </div>
                 </div>
 
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
-
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.social_networks')}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.whatsapp_number')}</label>
-                         <input type="text" title={t('admin.whatsapp_number_link')} placeholder="Ej: 34643521042" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.whatsapp || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, whatsapp: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.whatsapp_number_link')} placeholder="Ej: 34643521042" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.whatsapp || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, whatsapp: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.instagram_link')}</label>
-                         <input type="text" title={t('admin.instagram_link')} placeholder="https://instagram.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.instagram || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, instagram: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.instagram_link')} placeholder="https://instagram.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.instagram || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, instagram: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.tiktok_link')}</label>
-                         <input type="text" title={t('admin.tiktok_link')} placeholder="https://tiktok.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.tiktok || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, tiktok: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.tiktok_link')} placeholder="https://tiktok.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.tiktok || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, tiktok: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.facebook_link')}</label>
-                         <input type="text" title={t('admin.facebook_link')} placeholder="https://facebook.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.content?.social?.facebook || ''} onChange={e => updateConfig?.({ content: { ...appConfig?.content, social: { ...appConfig?.content?.social, facebook: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.facebook_link')} placeholder="https://facebook.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.facebook || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, facebook: e.target.value } } } as any)} />
                       </div>
                    </div>
-                   <button onClick={() => updateConfig?.(appConfig as any).then(() => alert(t('common.success')))} className="w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
+                   <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
                 </div>
              </div>
           )}
@@ -1145,9 +1151,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                             <div className="space-y-4">
                                <div className="flex items-center justify-between">
                                   <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">EUR ➜ CFA</span>
-                                  <input type="number" title={t('admin.eur_cfa_rate')} placeholder="655" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={appConfig?.rates?.exchange?.eur_xaf || 655} onChange={e => updateConfig?.({ rates: { ...appConfig?.rates, exchange: { ...appConfig?.rates?.exchange, eur_xaf: parseFloat(e.target.value) } } } as any)} />
+                                  <input type="number" title={t('admin.eur_cfa_rate')} placeholder="655" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.exchange?.eur_xaf || 655} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, exchange: { ...editConfig?.rates?.exchange, eur_xaf: parseFloat(e.target.value) } } } as any)} />
                                </div>
                             </div>
+                            <div className="mt-8">
+                                <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_system_config')}</button>
+                             </div>
                          </div>
                          <div className="p-6 bg-white/5 rounded-3xl border border-white/10 flex flex-col items-center justify-center text-center">
                             <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-2">{t('admin.shipping_dates_moved')}</h4>
