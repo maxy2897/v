@@ -10,6 +10,10 @@ const ConfigSchema = new mongoose.Schema({
         sea: {
             es_gq: { type: Number, default: 4 },  // Spain -> GQ Sea
         },
+        bulto: {
+            kg23: { type: Number, default: 220 },
+            kg32: { type: Number, default: 310 }
+        },
         exchange: {
             eur_xaf: { type: Number, default: 600 }, // 1 EUR = 600 XAF
             xaf_eur: { type: Number, default: 730 }  // 730 XAF = 1 EUR
@@ -72,6 +76,14 @@ const ConfigSchema = new mongoose.Schema({
         active: { type: Boolean, default: false },
         percentage: { type: Number, default: 0 },
         message: { type: String, default: "" }
+    },
+    starRates: {
+        air_es_gq: { type: String, default: '11€/Kg' },
+        sea_es_gq: { type: String, default: '4€/Kg' },
+        kg_cm_gq: { type: String, default: '3000 XAF' },
+        docs_gq_es: { type: String, default: '15€' },
+        bulto_23kg: { type: String, default: '220€' },
+        bulto_32kg: { type: String, default: '310€' }
     },
     updatedAt: { type: Date, default: Date.now }
 });

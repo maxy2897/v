@@ -36,7 +36,13 @@ router.put('/', protect, tech, async (req, res) => {
             if (req.body.rates) {
                 if (req.body.rates.air) config.rates.air = { ...config.rates.air, ...req.body.rates.air };
                 if (req.body.rates.sea) config.rates.sea = { ...config.rates.sea, ...req.body.rates.sea };
+                if (req.body.rates.bulto) config.rates.bulto = { ...config.rates.bulto, ...req.body.rates.bulto };
                 if (req.body.rates.exchange) config.rates.exchange = { ...config.rates.exchange, ...req.body.rates.exchange };
+            }
+
+            // Update Star Rates
+            if (req.body.starRates) {
+                config.starRates = { ...config.starRates, ...req.body.starRates };
             }
 
             // Update Dates
