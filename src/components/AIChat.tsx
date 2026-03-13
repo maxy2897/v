@@ -60,17 +60,18 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-[#00151a] hover:bg-[#007e85] text-white p-6 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.3)] transition-all transform hover:scale-110 flex items-center justify-center group"
+          aria-label={t('chat.cta')}
+          title={t('chat.cta')}
+          className="bg-[#00151a] hover:bg-[#007e85] text-white p-5 rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.3)] transition-all transform hover:scale-110 flex items-center justify-center group"
         >
           <div className="relative">
-            <svg className="w-8 h-8 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-7 h-7 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
               <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
             </span>
           </div>
-          <span className="ml-4 font-black uppercase text-[10px] tracking-[0.3em] hidden md:inline">{t('chat.cta')}</span>
         </button>
       ) : (
         <div className="fixed bottom-0 right-0 left-0 md:bottom-10 md:right-10 md:left-auto z-[9999] flex justify-center md:block pointer-events-none pb-4 md:pb-0">

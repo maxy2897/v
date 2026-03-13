@@ -1998,7 +1998,30 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
             if (res.ok) {
                 const updated = await res.json();
-                setAppConfig(updated);
+                // Deep merge: always apply what was sent, in case the API response
+                // is missing some keys (e.g. starRates, rates.bulto)
+                const merged: DynamicConfig = {
+                    ...(appConfig as DynamicConfig),
+                    ...updated,
+                    rates: {
+                        ...(appConfig?.rates || {}),
+                        ...(updated?.rates || {}),
+                        ...(newConfig?.rates || {}),
+                        air: { ...(appConfig?.rates?.air || {}), ...(updated?.rates?.air || {}), ...(newConfig?.rates?.air || {}) },
+                        sea: { ...(appConfig?.rates?.sea || {}), ...(updated?.rates?.sea || {}), ...(newConfig?.rates?.sea || {}) },
+                        bulto: { ...(appConfig?.rates?.bulto || {}), ...(updated?.rates?.bulto || {}), ...(newConfig?.rates?.bulto || {}) },
+                        exchange: { ...(appConfig?.rates?.exchange || {}), ...(updated?.rates?.exchange || {}), ...(newConfig?.rates?.exchange || {}) },
+                    },
+                    starRates: {
+                        ...(appConfig?.starRates || {}),
+                        ...(updated?.starRates || {}),
+                        ...(newConfig?.starRates || {}),
+                    },
+                    content: { ...(appConfig?.content || {}), ...(updated?.content || {}), ...(newConfig?.content || {}) },
+                    contact: { ...(appConfig?.contact || {}), ...(updated?.contact || {}), ...(newConfig?.contact || {}) },
+                    discounts: { ...(appConfig?.discounts || {}), ...(updated?.discounts || {}), ...(newConfig?.discounts || {}) },
+                };
+                setAppConfig(merged);
             }
         } catch (error) {
             console.error('Failed to update config', error);
