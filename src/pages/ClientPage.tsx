@@ -64,7 +64,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
             await login(loginData.email, loginData.password);
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.message || 'Error al iniciar sesión');
+            setError(err.message || t('client.error_login'));
         } finally {
             setLoading(false);
         }
@@ -75,12 +75,12 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
         setError('');
 
         if (registerData.password !== registerData.confirmPassword) {
-            setError('Las contraseñas no coinciden');
+            setError(t('client.passwords_dont_match'));
             return;
         }
 
         if (!acceptedPrivacy || !acceptedTerms) {
-            setError('Debes aceptar las políticas de privacidad y los términos y condiciones');
+            setError(t('client.accept_policies_error'));
             return;
         }
 
@@ -97,7 +97,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
             });
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.message || 'Error al registrarse');
+            setError(err.message || t('client.error_register'));
         } finally {
             setLoading(false);
         }
@@ -120,7 +120,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                         <button
                             onClick={() => navigate('/')}
                             className="absolute -top-4 -right-4 md:-top-8 md:-right-8 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100/50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all backdrop-blur-sm"
-                            title="Volver al inicio"
+                            title={t('client.back_to_home')}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
@@ -171,13 +171,13 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                             </svg>
-                            <span className="text-xs font-bold text-gray-600 group-hover:text-black transition-colors">Continuar con Google</span>
+                            <span className="text-xs font-bold text-gray-600 group-hover:text-black transition-colors">{t('client.continue_google')}</span>
                         </button>
 
                         <div className="relative mt-6">
                             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100"></div></div>
                             <div className="relative flex justify-center">
-                                <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 bg-white px-4">O usa tu email</span>
+                                <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 bg-white px-4">{t('client.or_use_email')}</span>
                             </div>
                         </div>
                     </div>
@@ -289,21 +289,21 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                         >
                             <form onSubmit={handleRegisterSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="md:col-span-2">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Sexo</label>
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">{t('client.gender')}</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         <button
                                             type="button"
                                             onClick={() => handleRegisterChange({ target: { name: 'gender', value: 'male' } } as React.ChangeEvent<HTMLInputElement>)}
                                             className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'male' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
                                         >
-                                            Hombre
+                                            {t('client.male')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => handleRegisterChange({ target: { name: 'gender', value: 'female' } } as React.ChangeEvent<HTMLInputElement>)}
                                             className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'female' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
                                         >
-                                            Mujer
+                                            {t('client.female')}
                                         </button>
                                     </div>
                                 </div>
@@ -312,7 +312,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     name="name"
                                     value={registerData.name}
                                     onChange={handleRegisterChange}
-                                    placeholder="Nombre"
+                                    placeholder={t('client.first_name')}
                                     required
                                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black"
                                 />
@@ -321,7 +321,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     name="apellidos"
                                     value={registerData.apellidos}
                                     onChange={handleRegisterChange}
-                                    placeholder="Apellidos"
+                                    placeholder={t('client.last_name')}
                                     required
                                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black"
                                 />
@@ -330,7 +330,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     name="email"
                                     value={registerData.email}
                                     onChange={handleRegisterChange}
-                                    placeholder="Email"
+                                    placeholder={t('client.email')}
                                     required
                                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black"
                                 />
@@ -339,7 +339,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     name="phone"
                                     value={registerData.phone}
                                     onChange={handleRegisterChange}
-                                    placeholder="Teléfono"
+                                    placeholder={t('client.phone')}
                                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black"
                                 />
                                 <input
@@ -347,7 +347,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     name="dni"
                                     value={registerData.dni}
                                     onChange={handleRegisterChange}
-                                    placeholder="DNI / Pasaporte"
+                                    placeholder={t('client.dni_passport')}
                                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black"
                                 />
                                 <input
@@ -355,7 +355,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     name="address"
                                     value={registerData.address}
                                     onChange={handleRegisterChange}
-                                    placeholder="Dirección Completa"
+                                    placeholder={t('client.full_address')}
                                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black"
                                 />
 
@@ -365,7 +365,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                         name="password"
                                         value={registerData.password}
                                         onChange={handleRegisterChange}
-                                        placeholder="Contraseña"
+                                        placeholder={t('client.password')}
                                         required
                                         minLength={6}
                                         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black pr-14"
@@ -388,7 +388,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                         name="confirmPassword"
                                         value={registerData.confirmPassword}
                                         onChange={handleRegisterChange}
-                                        placeholder="Confirmar Contraseña"
+                                        placeholder={t('client.confirm_password')}
                                         required
                                         className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all text-sm font-medium text-black pr-14"
                                     />
@@ -415,7 +415,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                             className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
                                         />
                                         <label htmlFor="privacy" className="text-xs text-gray-600 font-medium leading-relaxed cursor-pointer">
-                                            He leído y acepto la <Link to="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">política de privacidad</Link>
+                                            {t('client.accept_privacy')} <Link to="/privacidad" target="_blank" onClick={(e) => e.stopPropagation()} className="text-teal-600 font-bold hover:underline">{t('client.privacy_policy')}</Link>
                                         </label>
                                     </div>
 
@@ -428,7 +428,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                             className="mt-1 w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 cursor-pointer"
                                         />
                                         <label htmlFor="terms" className="text-xs text-gray-600 font-medium leading-relaxed cursor-pointer">
-                                            Acepto los <button type="button" onClick={() => setShowTermsModal(true)} className="text-teal-600 font-bold hover:underline">términos y condiciones</button> de envío de Bodipo Business
+                                            {t('client.accept_terms_prefix')} <button type="button" onClick={() => setShowTermsModal(true)} className="text-teal-600 font-bold hover:underline">{t('client.terms_conditions')}</button> {t('client.terms_suffix')}
                                         </label>
                                     </div>
 
@@ -461,7 +461,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     className="relative bg-white w-full max-w-lg rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl p-6 md:p-8"
                                 >
                                     <div className="flex justify-between items-center mb-6">
-                                        <h3 className="text-xl md:text-2xl font-black text-[#00151a] tracking-tight">Términos y Condiciones</h3>
+                                        <h3 className="text-xl md:text-2xl font-black text-[#00151a] tracking-tight">{t('client.terms_conditions')}</h3>
                                         <button onClick={() => setShowTermsModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors" title="Cerrar términos">
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
@@ -483,7 +483,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                         }}
                                         className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs mt-8 hover:bg-[#007e85] transition-all"
                                     >
-                                        Entendido y Aceptar
+                                        {t('client.understood_accept')}
                                     </button>
                                 </motion.div>
                             </div>

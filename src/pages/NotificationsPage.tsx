@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
+import { useSettings } from '../context/SettingsContext';
 import { getNotifications, markAsRead, markAllAsRead } from '../services/notificationsApi';
 
 interface Notification {
@@ -14,6 +15,7 @@ interface Notification {
 }
 
 const NotificationsPage: React.FC = () => {
+    const { t, language } = useSettings();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
@@ -75,8 +77,8 @@ const NotificationsPage: React.FC = () => {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="text-center">
-                    <h2 className="text-2xl font-black text-gray-800">Inicia sesión para ver tus notificaciones</h2>
-                    <p className="text-gray-500 mt-2">Mantente al tanto de tus envíos y actualizaciones.</p>
+                    <h2 className="text-2xl font-black text-gray-800">{t('dashboard.notifications.login_prompt')}</h2>
+                    <p className="text-gray-500 mt-2">{t('dashboard.notifications.login_desc')}</p>
                 </div>
             </div>
         );
@@ -95,11 +97,11 @@ const NotificationsPage: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div>
                         <h1 className="text-4xl font-black text-[#00151a] tracking-tighter uppercase italic">
-                            Mis Notificaciones
+                            {t('dashboard.your_notifications')}
                         </h1>
                         <p className="text-gray-500 font-bold text-sm uppercase tracking-widest mt-2 flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-teal-500"></span>
-                            Centro de actualizaciones en tiempo real
+                            {t('dashboard.notifications_desc')}
                         </p>
                     </div>
 
@@ -111,7 +113,7 @@ const NotificationsPage: React.FC = () => {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                             </svg>
-                            Marcar todas como leídas
+                            {t('dashboard.mark_all_read_all')}
                         </button>
                     )}
                 </div>
@@ -121,9 +123,9 @@ const NotificationsPage: React.FC = () => {
                         <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8 text-4xl">
                             📭
                         </div>
-                        <h3 className="text-2xl font-black text-gray-800 tracking-tight">Bandeja de entrada vacía</h3>
+                        <h3 className="text-2xl font-black text-gray-800 tracking-tight">{t('dashboard.empty_inbox')}</h3>
                         <p className="text-gray-500 mt-4 max-w-xs mx-auto leading-relaxed">
-                            Te avisaremos por aquí cuando haya actualizaciones sobre tus pedidos, salidas de vuelos o promociones.
+                            {t('dashboard.empty_inbox_desc')}
                         </p>
                     </div>
                 ) : (
@@ -156,7 +158,7 @@ const NotificationsPage: React.FC = () => {
                                             {n.title}
                                         </h4>
                                         <span className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded">
-                                            {new Date(n.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                            {new Date(n.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' })}
                                         </span>
                                     </div>
 
@@ -168,11 +170,11 @@ const NotificationsPage: React.FC = () => {
                                     {n.shipmentId && (
                                         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4">
                                             <div className="bg-teal-50 px-3 py-1.5 rounded-xl flex items-center gap-3 border border-teal-100">
-                                                <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest">Código</span>
+                                                <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest">{t('dashboard.track_code')}</span>
                                                 <span className="text-xs font-mono font-black text-teal-700">{n.shipmentId.trackingNumber}</span>
                                             </div>
                                             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                                Destino: <span className="text-gray-600">{n.shipmentId.destination}</span>
+                                                {t('dashboard.destination')}: <span className="text-gray-600">{n.shipmentId.destination}</span>
                                             </div>
                                         </div>
                                     )}
@@ -184,7 +186,7 @@ const NotificationsPage: React.FC = () => {
                                         e.stopPropagation();
                                         // TODO: Implement delete on client side
                                     }}
-                                    title="Eliminar notificación"
+                                    title={t('dashboard.notifications.delete')}
                                     className="absolute bottom-8 right-8 w-8 h-8 flex items-center justify-center rounded-xl bg-gray-50 text-gray-300 hover:bg-red-50 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

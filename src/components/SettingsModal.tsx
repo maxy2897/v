@@ -98,9 +98,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         setLoading(true);
         try {
             await updateUser(formData);
-            alert('Perfil actualizado correctamente');
+            alert(t('dashboard.profile.updated_success'));
         } catch (error: any) {
-            alert(error.message || 'Error al actualizar perfil');
+            alert(error.message || t('dashboard.profile.update_error'));
         } finally {
             setLoading(false);
         }
@@ -145,11 +145,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 )}
                             </div>
                             <div>
-                                <h3 className="font-black text-[#00151a] text-base md:text-lg tracking-tight leading-tight">{user?.name || 'Usuario'}</h3>
+                                <h3 className="font-black text-[#00151a] text-base md:text-lg tracking-tight leading-tight">{user?.name || t('dashboard.user_default')}</h3>
                                 <div className="flex text-yellow-400 text-[8px] md:text-[10px] mt-0.5 md:mt-1">
                                     ★ ★ ★ ★ ★
                                 </div>
-                                <p className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5 md:mt-1">Desde {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
+                                <p className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5 md:mt-1">{t('dashboard.since')} {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</p>
                             </div>
                         </div>
                     </div>
@@ -157,8 +157,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     {/* Navigation Items */}
                     <nav className="flex md:flex-col flex-row overflow-x-auto md:overflow-x-hidden px-4 md:px-4 pb-4 md:pb-8 space-x-2 md:space-x-0 md:space-y-1 scrollbar-hide shrink-0">
                         {[
-                            { id: 'help', label: 'Ayuda', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg> },
-                            { id: 'terms', label: 'Condiciones', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> }
+                            { id: 'help', label: t('dashboard.help'), icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg> },
+                            { id: 'terms', label: t('dashboard.terms'), icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> }
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -178,15 +178,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     {/* Content Header Section */}
                     <div className="mb-10 max-w-xl mx-auto">
                         <h2 className="text-3xl font-black text-[#00151a] tracking-tight mb-2">
-                            {activeTab === 'terms' ? 'Contrato Legal' : 'Centro de Ayuda'}
+                            {activeTab === 'terms' ? t('dashboard.legal_contract') : t('dashboard.help_center')}
                         </h2>
                         <p className="text-gray-400 text-sm font-medium leading-relaxed">
-                            {activeTab === 'terms' ? 'Aquí podrás consultar las condiciones de uso, gestión de datos y protección al cliente.' :
-                                '¿Tienes alguna duda con tu paquete? Estamos aquí para ayudarte las 24 horas.'}
+                            {activeTab === 'terms' ? t('dashboard.terms_desc') : t('dashboard.help_center_desc')}
                         </p>
                     </div>
-
-
 
                     {activeTab === 'terms' && (
                         <div className="max-w-xl mx-auto space-y-6">
@@ -194,9 +191,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 <section key={index} className="bg-white p-8 rounded-[2rem] border border-gray-100/50 shadow-sm hover:shadow-md transition-all group">
                                     <div className="flex items-center gap-4 mb-4">
                                         <span className="w-8 h-8 rounded-full bg-[#f0fcfc] text-[#007e85] flex items-center justify-center font-black text-xs">{index + 1}</span>
-                                        <h4 className="font-black text-[#00151a] uppercase text-[11px] tracking-widest group-hover:text-[#007e85] transition-colors">{term.title}</h4>
+                                        <h4 className="font-black text-[#00151a] uppercase text-[11px] tracking-widest group-hover:text-[#007e85] transition-colors">{t(`terms.title.${index + 1}`) || term.title}</h4>
                                     </div>
-                                    <p className="text-sm leading-relaxed text-gray-500 font-medium">{term.content}</p>
+                                    <p className="text-sm leading-relaxed text-gray-500 font-medium">{t(`terms.content.${index + 1}`) || term.content}</p>
                                 </section>
                             ))}
                         </div>
@@ -205,12 +202,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     {activeTab === 'help' && (
                         <div className="max-w-xl mx-auto space-y-8">
                             <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                                <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-tight ml-2">Dudas frecuentes</h3>
+                                <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-tight ml-2">{t('dashboard.faqs')}</h3>
                                 <div className="space-y-4">
                                     {[
-                                        { q: '¿Cómo rastreo mi pedido?', a: 'Introduce tu código BB en la sección de "Rastreo" o pídelo a nuestro bot de IA.' },
-                                        { q: '¿Tiempos de envío España - Guinea?', a: 'El tiempo estimado es de 7 a 15 días laborables dependiendo del tipo de carga.' },
-                                        { q: '¿Puedo enviar dinero?', a: 'Sí, disponemos de una sección de Money Transfer con tasas competitivas.' }
+                                        { q: t('dashboard.faq_q1'), a: t('dashboard.faq_a1') },
+                                        { q: t('dashboard.faq_q2'), a: t('dashboard.faq_a2') },
+                                        { q: t('dashboard.faq_q3'), a: t('dashboard.faq_a3') }
                                     ].map((faq, idx) => (
                                         <details key={idx} className="group bg-gray-50 rounded-3xl overflow-hidden border border-transparent hover:border-teal-100 transition-all">
                                             <summary className="flex items-center justify-between p-6 cursor-pointer list-none font-bold text-sm text-[#00151a]">
@@ -228,15 +225,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                             <div className="bg-[#00151a] text-white p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#007e85]/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-700"></div>
                                 <div className="relative z-10 text-center">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#007e85] mb-3">Contacto VIP</p>
-                                    <h4 className="text-2xl font-black mb-8 leading-tight">¿Tienes un caso especial?<br />Hablemos por WhatsApp.</h4>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#007e85] mb-3">{t('dashboard.vip_contact')}</p>
+                                    <h4 className="text-2xl font-black mb-8 leading-tight">{t('dashboard.vip_contact_desc')}</h4>
                                     <a
                                         href="https://wa.me/34643521042"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex bg-[#007e85] text-white px-10 py-5 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-[#00151a] transition-all shadow-lg"
                                     >
-                                        Chat Directo 24/7
+                                        {t('dashboard.chat_direct_24_7')}
                                     </a>
                                 </div>
                             </div>
