@@ -19,6 +19,7 @@ export interface DynamicConfig {
     rates: {
         air: { es_gq: number; gq_es: number; cm_gq: number };
         sea: { es_gq: number };
+        bulto: { kg23: number; kg32: number };
         exchange: { eur_xaf: number; xaf_eur: number };
     };
     dates: {
@@ -68,6 +69,7 @@ export interface DynamicConfig {
         kg_cm_gq: string;
         docs_gq_es: string;
         bulto_23kg: string;
+        bulto_32kg: string;
     };
 }
 
@@ -322,6 +324,15 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.rate_kg_cm_gq': 'Camerún -> Malabo (Kg)',
         'admin.rate_docs_gq_es': 'Documentos -> España',
         'admin.rate_bulto_23kg': 'Bulto 23 Kg (España)',
+        'admin.rate_bulto_32kg': 'Bulto 32 Kg (España)',
+
+        // Operational Rates
+        'admin.op_rates_title': 'Tarifas Operativas (Cálculos)',
+        'admin.op_rate_air_es': 'Aéreo España (€/Kg)',
+        'admin.op_rate_sea_es': 'Marítimo España (€/Kg)',
+        'admin.op_rate_air_cm': 'Aéreo Camerún (XAF/Kg)',
+        'admin.op_rate_bulto_23': 'Bulto 23 Kg (€)',
+        'admin.op_rate_bulto_32': 'Bulto 32 Kg (€)',
 
         // Sidebar & Tabs
         'admin.panel_title': 'Panel de Administración',
@@ -1621,6 +1632,15 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.rate_kg_cm_gq': 'Cameroun -> Malabo (Kg)',
         'admin.rate_docs_gq_es': 'Documents -> Espagne',
         'admin.rate_bulto_23kg': 'Colis 23 Kg (Espagne)',
+        'admin.rate_bulto_32kg': 'Colis 32 Kg (Espagne)',
+
+        // Operational Rates
+        'admin.op_rates_title': 'Tarifs Opérationnels (Calculs)',
+        'admin.op_rate_air_es': 'Aérien Espagne (€/Kg)',
+        'admin.op_rate_sea_es': 'Maritime Espagne (€/Kg)',
+        'admin.op_rate_air_cm': 'Aérien Cameroun (XAF/Kg)',
+        'admin.op_rate_bulto_23': 'Colis 23 Kg (€)',
+        'admin.op_rate_bulto_32': 'Colis 32 Kg (€)',
 
         // Sidebar & Tabs
         'admin.panel_title': 'Panneau d\'Administration',

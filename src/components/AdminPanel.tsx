@@ -1111,7 +1111,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_bulto_23kg')}</label>
                          <input type="text" placeholder="220€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.bulto_23kg || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, bulto_23kg: e.target.value } } as any)} />
                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_bulto_32kg')}</label>
+                          <input type="text" placeholder="310€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.bulto_32kg || ''} onChange={e => setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, bulto_32kg: e.target.value } } as any)} />
+                       </div>
                    </div>
+                   <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="mt-8 w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
                 </div>
 
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
@@ -1134,7 +1139,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                          <input type="text" title={t('admin.facebook_link')} placeholder="https://facebook.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.facebook || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, facebook: e.target.value } } } as any)} />
                       </div>
                    </div>
-                   <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
+                   <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="mt-6 w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
                 </div>
              </div>
           )}
@@ -1147,6 +1152,31 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                       <div className="space-y-6">
                          <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                            <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">{t('admin.op_rates_title')}</h4>
+                            <div className="space-y-4">
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_air_es')}</span>
+                                  <input type="number" placeholder="11" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.air?.es_gq || ''} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, air: { ...editConfig?.rates?.air, es_gq: parseFloat(e.target.value) } } } as any)} />
+                               </div>
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_sea_es')}</span>
+                                  <input type="number" placeholder="4" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.sea?.es_gq || ''} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, sea: { ...editConfig?.rates?.sea, es_gq: parseFloat(e.target.value) } } } as any)} />
+                               </div>
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_air_cm')}</span>
+                                  <input type="number" placeholder="3000" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.air?.cm_gq || ''} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, air: { ...editConfig?.rates?.air, cm_gq: parseFloat(e.target.value) } } } as any)} />
+                               </div>
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_bulto_23')}</span>
+                                  <input type="number" placeholder="220" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.bulto?.kg23 || ''} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, bulto: { ...editConfig?.rates?.bulto, kg23: parseFloat(e.target.value) } } } as any)} />
+                               </div>
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_bulto_32')}</span>
+                                  <input type="number" placeholder="310" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.bulto?.kg32 || ''} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, bulto: { ...editConfig?.rates?.bulto, kg32: parseFloat(e.target.value) } } } as any)} />
+                               </div>
+                            </div>
+                         </div>
+                         <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
                             <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-4">{t('admin.exchange_rates')}</h4>
                             <div className="space-y-4">
                                <div className="flex items-center justify-between">
@@ -1154,9 +1184,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                   <input type="number" title={t('admin.eur_cfa_rate')} placeholder="655" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.exchange?.eur_xaf || 655} onChange={e => setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, exchange: { ...editConfig?.rates?.exchange, eur_xaf: parseFloat(e.target.value) } } } as any)} />
                                </div>
                             </div>
-                            <div className="mt-8">
-                                <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_system_config')}</button>
-                             </div>
+                         </div>
+                         <div className="mt-4">
+                            <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="w-full py-4 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_system_config')}</button>
                          </div>
                          <div className="p-6 bg-white/5 rounded-3xl border border-white/10 flex flex-col items-center justify-center text-center">
                             <h4 className="text-[10px] font-black text-teal-400 uppercase tracking-[0.2em] mb-2">{t('admin.shipping_dates_moved')}</h4>

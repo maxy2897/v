@@ -310,7 +310,8 @@ const ShippingSchedule: React.FC = () => {
                     { label: t('admin.rate_sea_es_gq'), price: appConfig?.starRates?.sea_es_gq || '4€/Kg' },
                     { label: t('admin.rate_kg_cm_gq'), price: appConfig?.starRates?.kg_cm_gq || '3000 XAF' },
                     { label: t('admin.rate_docs_gq_es'), price: appConfig?.starRates?.docs_gq_es || '15€' },
-                    { label: t('admin.rate_bulto_23kg'), price: appConfig?.starRates?.bulto_23kg || '220€' }
+                    { label: t('admin.rate_bulto_23kg'), price: appConfig?.starRates?.bulto_23kg || '220€' },
+                    { label: t('admin.rate_bulto_32kg'), price: appConfig?.starRates?.bulto_32kg || '310€' }
                   ].map((item, i) => (
                     <li key={i} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-white/50 px-2 rounded-xl transition-colors">
                       <span className="font-bold text-gray-600 text-xs">{item.label}</span>

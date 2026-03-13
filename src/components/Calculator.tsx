@@ -113,7 +113,9 @@ const Calculator: React.FC = () => {
 
       setTotal({ value: finalPrice, currency });
     } else {
-      let finalPrice = bultoType === 23 ? 220 : 310;
+      const bulto23Price = appConfig?.rates?.bulto?.kg23 || 220;
+      const bulto32Price = appConfig?.rates?.bulto?.kg32 || 310;
+      let finalPrice = bultoType === 23 ? bulto23Price : bulto32Price;
       if (isAuthenticated && user?.isVerified && appConfig?.discounts?.active && appConfig?.discounts?.percentage && user?.discountEligible && useDiscount) {
         finalPrice = finalPrice - (finalPrice * (appConfig.discounts.percentage / 100));
       }
@@ -438,11 +440,11 @@ const Calculator: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <button onClick={() => setBultoType(23)} className={`py-6 rounded-2xl font-bold border flex flex-col items-center transition-all ${bultoType === 23 ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}>
                       <span className="text-2xl font-black">23 Kg</span>
-                      <span className="text-xs uppercase opacity-60">220€</span>
+                      <span className="text-xs uppercase opacity-60">{appConfig?.rates?.bulto?.kg23 || 220}€</span>
                     </button>
                     <button onClick={() => setBultoType(32)} className={`py-6 rounded-2xl font-bold border flex flex-col items-center transition-all ${bultoType === 32 ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}>
                       <span className="text-2xl font-black">32 Kg</span>
-                      <span className="text-xs uppercase opacity-60">310€</span>
+                      <span className="text-xs uppercase opacity-60">{appConfig?.rates?.bulto?.kg32 || 310}€</span>
                     </button>
                   </div>
                 </div>
