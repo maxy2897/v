@@ -1082,6 +1082,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 </div>
 
                 <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                   <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.star_rates_title')}</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_air_es_gq')}</label>
+                         <input type="text" placeholder="11€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.air_es_gq || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, air_es_gq: e.target.value } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_sea_es_gq')}</label>
+                         <input type="text" placeholder="4€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.sea_es_gq || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, sea_es_gq: e.target.value } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_kg_cm_gq')}</label>
+                         <input type="text" placeholder="3000 XAF" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.kg_cm_gq || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, kg_cm_gq: e.target.value } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_docs_gq_es')}</label>
+                         <input type="text" placeholder="15€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.docs_gq_es || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, docs_gq_es: e.target.value } } as any)} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_bulto_23kg')}</label>
+                         <input type="text" placeholder="220€" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={appConfig?.starRates?.bulto_23kg || ''} onChange={e => updateConfig?.({ starRates: { ...appConfig?.starRates, bulto_23kg: e.target.value } } as any)} />
+                      </div>
+                   </div>
+                </div>
+
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">Redes Sociales</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">

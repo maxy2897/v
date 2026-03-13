@@ -62,6 +62,13 @@ export interface DynamicConfig {
         percentage: number;
         message: string;
     };
+    starRates: {
+        air_es_gq: string;
+        sea_es_gq: string;
+        kg_cm_gq: string;
+        docs_gq_es: string;
+        bulto_23kg: string;
+    };
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -317,6 +324,13 @@ const translations: Record<Language, Record<string, string>> = {
         'login.error.fields': 'Por favor completa todos los campos',
         'login.error.general': 'Error al iniciar sesión',
         'login.loading': 'Iniciando sesión...',
+        'admin.star_rates_title': 'Tarifas Estrella (Visibles en Web)',
+        'admin.rate_air_es_gq': 'España -> Malabo (Aéreo)',
+        'admin.rate_sea_es_gq': 'España -> Malabo (Marítimo)',
+        'admin.rate_kg_cm_gq': 'Camerún -> Malabo (Kg)',
+        'admin.rate_docs_gq_es': 'Documentos -> España',
+        'admin.rate_bulto_23kg': 'Bulto 23 Kg (España)',
+
 
         // Register
         'register.title': 'Club BodipoBusiness',
@@ -653,6 +667,13 @@ const translations: Record<Language, Record<string, string>> = {
         'login.error.fields': 'Please fill in all fields',
         'login.error.general': 'Error logging in',
         'login.loading': 'Logging in...',
+        'admin.star_rates_title': 'Star Rates (Visible on Web)',
+        'admin.rate_air_es_gq': 'Spain -> Malabo (Air)',
+        'admin.rate_sea_es_gq': 'Spain -> Malabo (Sea)',
+        'admin.rate_kg_cm_gq': 'Cameroon -> Malabo (Kg)',
+        'admin.rate_docs_gq_es': 'Documents -> Spain',
+        'admin.rate_bulto_23kg': '23 Kg Package (Spain)',
+
 
         // Register
         'register.title': 'BodipoBusiness Club',
@@ -989,6 +1010,12 @@ const translations: Record<Language, Record<string, string>> = {
         'login.error.fields': 'Veuillez remplir tous les champs',
         'login.error.general': 'Erreur lors de la connexion',
         'login.loading': 'Connexion en cours...',
+        'admin.star_rates_title': 'Tarifs Étoiles (Visibles sur le Web)',
+        'admin.rate_air_es_gq': 'Espagne -> Malabo (Air)',
+        'admin.rate_sea_es_gq': 'Espagne -> Malabo (Mer)',
+        'admin.rate_kg_cm_gq': 'Cameroun -> Malabo (Kg)',
+        'admin.rate_docs_gq_es': 'Documents -> Espagne',
+        'admin.rate_bulto_23kg': 'Colis 23 Kg (Espagne)',
 
         // Register
         'register.title': 'Club BodipoBusiness',

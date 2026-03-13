@@ -306,11 +306,11 @@ const ShippingSchedule: React.FC = () => {
                 <h4 className="text-xl font-black text-[#00151a] mb-6 tracking-tight">{t('services.rates.title') || 'TARIFAS'}</h4>
                 <ul className="space-y-3">
                   {[
-                    { label: '🇪🇸 España -> Malabo (Aéreo)', price: '11€/Kg' },
-                    { label: '🇪🇸 España -> Malabo (Marítimo)', price: '4€/Kg' },
-                    { label: '🇨🇲 Camerún -> Malabo (Kg)', price: '3000 XAF' },
-                    { label: '🇬🇶 Documentos -> España', price: '15€' },
-                    { label: '🇪🇸 Bulto 23 Kg (España)', price: '220€' }
+                    { label: t('admin.rate_air_es_gq'), price: appConfig?.starRates?.air_es_gq || '11€/Kg' },
+                    { label: t('admin.rate_sea_es_gq'), price: appConfig?.starRates?.sea_es_gq || '4€/Kg' },
+                    { label: t('admin.rate_kg_cm_gq'), price: appConfig?.starRates?.kg_cm_gq || '3000 XAF' },
+                    { label: t('admin.rate_docs_gq_es'), price: appConfig?.starRates?.docs_gq_es || '15€' },
+                    { label: t('admin.rate_bulto_23kg'), price: appConfig?.starRates?.bulto_23kg || '220€' }
                   ].map((item, i) => (
                     <li key={i} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-white/50 px-2 rounded-xl transition-colors">
                       <span className="font-bold text-gray-600 text-xs">{item.label}</span>
@@ -318,6 +318,7 @@ const ShippingSchedule: React.FC = () => {
                     </li>
                   ))}
                 </ul>
+
               </div>
             </div>
           </div>
