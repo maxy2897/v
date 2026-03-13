@@ -40,9 +40,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
               <Link to="/" className="flex items-center space-x-2 group relative z-20">
                 <div className="flex items-center justify-center w-12 h-12 md:w-20 md:h-20 xl:w-28 xl:h-28 bg-transparent rounded-full group-hover:scale-110 transition-transform p-1">
                   {config.customLogoUrl ? (
-                    <img src={config.customLogoUrl} className="h-full w-full object-contain filter drop-shadow-md animate-[spin_10s_linear_infinite]" alt="Logo" />
+                    <img src={config.customLogoUrl} className="h-full w-full object-contain filter drop-shadow-md animate-[spinY_10s_linear_infinite]" alt="Logo" style={{ transformStyle: 'preserve-3d' }} />
                   ) : (
-                    <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block animate-[spin_10s_linear_infinite]">{config.logoText}</span>
+                    <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block animate-[spinY_10s_linear_infinite]" style={{ transformStyle: 'preserve-3d' }}>{config.logoText}</span>
                   )}
                 </div>
                 <div className="flex flex-col -space-y-0.5 xl:-space-y-1">
