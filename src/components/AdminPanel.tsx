@@ -556,7 +556,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col md:flex-row h-screen overflow-hidden italic-none relative">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col md:flex-row h-screen italic-none relative">
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -571,8 +571,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       </AnimatePresence>
 
       {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none`}>
-          <div className="flex flex-col h-full">
+      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none overflow-y-auto custom-scrollbar`}>
+          <div className="flex flex-col h-full shrink-0">
             {/* Logo Section */}
              <div className="mb-8 flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
@@ -589,12 +589,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
               </button>
             </div>
 
-            <button onClick={() => navigate('/')} title="Cerrar Panel" className="mb-10 w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white bg-red-600 hover:bg-red-700 transition-all shadow-xl shadow-red-500/20 border border-white/10 group animate-pulse">
+            <button onClick={() => navigate('/')} title="Cerrar Panel" className="mb-10 w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white bg-red-600 hover:bg-red-700 transition-all shadow-xl shadow-red-500/20 border border-white/10 group animate-pulse shrink-0">
                <svg className="w-6 h-6 text-white group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                Cerrar Panel
             </button>
 
-            <nav className="flex flex-col gap-1">
+            <nav className="flex flex-col gap-1 pb-10 mt-auto shrink-0">
              <p className="text-[9px] font-black text-teal-500/40 uppercase tracking-[0.2em] mb-4 mt-2 hidden md:block">Principal</p>
              <button onClick={() => setActiveTab('dashboard')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'dashboard' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
@@ -685,7 +685,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
        </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f8fafc]">
+      <div className="flex-1 flex flex-col h-screen bg-[#f8fafc] overflow-y-auto w-full relative custom-scrollbar">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 md:gap-8">
             <button 
