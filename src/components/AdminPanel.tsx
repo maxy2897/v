@@ -421,12 +421,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
         body: formData
       });
       const data = await res.json();
-      
       if (type === 'product') setNewProduct({ ...newProduct, image: data.secure_url });
       else if (type === 'logo') setConfig({ ...config, customLogoUrl: data.secure_url });
-      else if (type === 'hero') setEditConfig({ ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, heroImage: data.secure_url } } } as any);
-      else if (type === 'money') setEditConfig({ ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, moneyTransferImage: data.secure_url } } } as any);
-      
+      else if (type === 'hero') {
+        const newConf = { ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, heroImage: data.secure_url } } } as any;
+        setEditConfig(newConf);
+        if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
+      }
+      else if (type === 'money') {
+        const newConf = { ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, moneyTransferImage: data.secure_url } } } as any;
+        setEditConfig(newConf);
+        if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
     } finally {
