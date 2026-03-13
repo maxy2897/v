@@ -695,10 +695,81 @@ const Calculator: React.FC = () => {
             <div className="bg-[#00151a] p-12 rounded-[3rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-transparent"></div>
               <p className="text-teal-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6">{t('calc.result.badge')}</p>
-              <div className="flex items-baseline">
-                <span className="text-7xl font-black text-white">{total.value.toLocaleString()}</span>
-                <span className="text-2xl font-black text-teal-500 ml-2">{total.currency}</span>
+
+              {/* Payment location toggle right on the result */}
+              <div className="flex bg-white/10 p-1 rounded-2xl mb-6 gap-1">
+                <button
+                  onClick={() => setPayLocation('Origen')}
+                  className={`flex-1 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                    payLocation === 'Origen' ? 'bg-white text-[#00151a]' : 'text-gray-400'
+                  }`}
+                >
+                  Pago en {info.origin}
+                </button>
+                <button
+                  onClick={() => setPayLocation('Guinea')}
+                  className={`flex-1 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                    payLocation === 'Guinea' ? 'bg-white text-[#00151a]' : 'text-gray-400'
+                  }`}
+                >
+                  Pago en Guinea
+                </button>
               </div>
+
+              {/* Price display with live conversion */}
+              {(() => {
+                const eurXaf = appConfig?.rates?.exchange?.eur_xaf || 655;
+                const xafEur = appConfig?.rates?.exchange?.xaf_eur || (1 / 655);
+                const baseValue = total.value;
+                const baseCurrency = total.currency;
+
+                let displayValue = baseValue;
+                let displayCurrency = baseCurrency;
+                let altValue: number | null = null;
+                let altCurrency: string | null = null;
+
+                if (baseCurrency === '€') {
+                  if (payLocation === 'Guinea') {
+                    displayValue = Math.round(baseValue * eurXaf);
+                    displayCurrency = 'XAF';
+                    altValue = baseValue;
+                    altCurrency = '€';
+                  } else {
+                    // paying in Spain in €
+                    displayValue = baseValue;
+                    displayCurrency = '€';
+                    altValue = Math.round(baseValue * eurXaf);
+                    altCurrency = 'XAF';
+                  }
+                } else if (baseCurrency === 'XAF') {
+                  if (payLocation === 'Origen') {
+                    displayValue = baseValue;
+                    displayCurrency = 'XAF';
+                    altValue = parseFloat((baseValue * xafEur).toFixed(2));
+                    altCurrency = '€';
+                  } else {
+                    displayValue = baseValue;
+                    displayCurrency = 'XAF';
+                    altValue = parseFloat((baseValue * xafEur).toFixed(2));
+                    altCurrency = '€';
+                  }
+                }
+
+                return (
+                  <div className="flex flex-col items-center">
+                    <div className="flex items-baseline">
+                      <span className="text-7xl font-black text-white">{displayValue.toLocaleString()}</span>
+                      <span className="text-2xl font-black text-teal-500 ml-2">{displayCurrency}</span>
+                    </div>
+                    {altValue !== null && (
+                      <p className="text-gray-400 text-xs font-bold mt-2">
+                        ≈ {altValue.toLocaleString()} {altCurrency}
+                        <span className="ml-2 text-[9px] text-gray-500">(1€ = {eurXaf} XAF)</span>
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               <div className="mt-8 space-y-4 w-full">
                 <div className="bg-white/5 p-4 rounded-2xl border border-white/10 text-left">
