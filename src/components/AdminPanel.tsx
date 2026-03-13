@@ -406,38 +406,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     console.log('ï¿½o. Dashboard data state updated');
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'product' | 'logo' | 'hero' | 'money') => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'product' | 'logo' | 'hero' | 'money') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'ml_default');
+    const reader = new FileReader();
 
-    try {
-      const res = await fetch(`https://api.cloudinary.com/v1_1/dppvnotpx/image/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (type === 'product') setNewProduct({ ...newProduct, image: data.secure_url });
-      else if (type === 'logo') setConfig({ ...config, customLogoUrl: data.secure_url });
-      else if (type === 'hero') {
-        const newConf = { ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, heroImage: data.secure_url } } } as any;
-        setEditConfig(newConf);
-        if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      
+      try {
+        if (type === 'product') {
+          setNewProduct({ ...newProduct, image: base64String });
+        } else if (type === 'logo') {
+          // Send to config endpoint
+          const newConf = { ...config, customLogoUrl: base64String } as any;
+          setConfig(newConf);
+          if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
+        } else if (type === 'hero') {
+          const newConf = { ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, heroImage: base64String } } } as any;
+          setEditConfig(newConf);
+          if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
+        } else if (type === 'money') {
+          const newConf = { ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, moneyTransferImage: base64String } } } as any;
+          setEditConfig(newConf);
+          if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
+        }
+      } catch (error) {
+        console.error('Error handling image:', error);
+      } finally {
+        setIsUploading(false);
       }
-      else if (type === 'money') {
-        const newConf = { ...editConfig, content: { ...editConfig?.content, hero: { ...editConfig?.content?.hero, moneyTransferImage: data.secure_url } } } as any;
-        setEditConfig(newConf);
-        if (updateConfig) updateConfig(newConf).then(() => alert(t('common.success')));
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    } finally {
-      setIsUploading(false);
-    }
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const addProduct = async (e: React.FormEvent) => {

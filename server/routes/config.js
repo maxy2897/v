@@ -1,6 +1,14 @@
 import express from 'express';
 import { protect, admin, tech } from '../middleware/auth.js';
 import Config from '../models/Config.js';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dbrig81ou',
+    api_key: process.env.CLOUDINARY_API_KEY || '856675229911861',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'vzvSGxUz_seTZceaQzU6nXaC7lo'
+});
 
 const router = express.Router();
 
@@ -22,6 +30,27 @@ router.get('/', async (req, res) => {
 });
 
 /**
+ * Helper to upload base64 image to Cloudinary
+ */
+const uploadToCloudinary = async (base64Image, folderName) => {
+    if (!base64Image || !base64Image.startsWith('data:image')) return base64Image;
+    try {
+        const uploadOptions = {
+            folder: folderName,
+            resource_type: 'auto',
+            timeout: 60000
+        };
+        console.log(`Subiendo imagen a Cloudinary en carpeta ${folderName}...`);
+        const result = await cloudinary.uploader.upload(base64Image, uploadOptions);
+        console.log(`✅ Imagen subida: ${result.secure_url}`);
+        return result.secure_url;
+    } catch (err) {
+        console.error('❌ Error subiendo imagen a Cloudinary:', err);
+        return base64Image; // Fallback al original si falla
+    }
+};
+
+/**
  * @desc    Update config
  * @route   PUT /api/config
  * @access  Private/Admin
@@ -29,6 +58,18 @@ router.get('/', async (req, res) => {
 router.put('/', protect, tech, async (req, res) => {
     try {
         let config = await Config.findOne();
+        
+        // Handle image uploads if present in request body
+        if (req.body.customLogoUrl && req.body.customLogoUrl.startsWith('data:image')) {
+            req.body.customLogoUrl = await uploadToCloudinary(req.body.customLogoUrl, 'bodipo_config');
+        }
+        if (req.body.content?.hero?.heroImage && req.body.content.hero.heroImage.startsWith('data:image')) {
+            req.body.content.hero.heroImage = await uploadToCloudinary(req.body.content.hero.heroImage, 'bodipo_config');
+        }
+        if (req.body.content?.hero?.moneyTransferImage && req.body.content.hero.moneyTransferImage.startsWith('data:image')) {
+            req.body.content.hero.moneyTransferImage = await uploadToCloudinary(req.body.content.hero.moneyTransferImage, 'bodipo_config');
+        }
+
         if (!config) {
             config = new Config(req.body);
         } else {
@@ -66,6 +107,13 @@ router.put('/', protect, tech, async (req, res) => {
             // Update Bank
             if (req.body.bank) {
                 config.bank = { ...config.bank, ...req.body.bank };
+            }
+
+            if (req.body.customLogoUrl !== undefined) {
+                config.customLogoUrl = req.body.customLogoUrl;
+            }
+            if (req.body.logoText !== undefined) {
+                config.logoText = req.body.logoText;
             }
 
             config.updatedAt = Date.now();
