@@ -1444,10 +1444,31 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      {/* Left: Package Selection */}
                      <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
                         <h4 className="text-sm font-black text-teal-900 uppercase tracking-widest mb-2 border-l-4 border-teal-500 pl-4">{t('admin.select_packages')}</h4>
-                        <div className="flex gap-2 mb-6 mt-4">
-                           {['all', 'Malabo', 'Bata'].map(dest => (
-                             <button key={dest} onClick={() => setManifestDestFilter(dest as any)} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${manifestDestFilter === dest ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-500'}`}>{dest === 'all' ? t('common.all') : dest}</button>
-                           ))}
+                        <div className="flex gap-2 mb-6 mt-4 items-center">
+                           <div className="flex gap-2">
+                             {['all', 'Malabo', 'Bata'].map(dest => (
+                               <button key={dest} onClick={() => setManifestDestFilter(dest as any)} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${manifestDestFilter === dest ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-500'}`}>{dest === 'all' ? t('common.all') : dest}</button>
+                             ))}
+                           </div>
+                           <button 
+                              onClick={() => {
+                                const visible = allShipments.filter(s => manifestDestFilter === 'all' || s.destination?.toLowerCase().includes(manifestDestFilter.toLowerCase()));
+                                const visibleIds = visible.map(s => s._id);
+                                const allInVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedForManifest.includes(id));
+                                if (allInVisibleSelected) {
+                                  setSelectedForManifest(prev => prev.filter(id => !visibleIds.includes(id)));
+                                } else {
+                                  setSelectedForManifest(prev => Array.from(new Set([...prev, ...visibleIds])));
+                                }
+                              }}
+                              className="ml-auto px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-teal-50 text-teal-700 border border-teal-100 hover:bg-teal-100 transition-all active:scale-95"
+                           >
+                             {(() => {
+                               const visible = allShipments.filter(s => manifestDestFilter === 'all' || s.destination?.toLowerCase().includes(manifestDestFilter.toLowerCase()));
+                               const visibleIds = visible.map(s => s._id);
+                               return (visibleIds.length > 0 && visibleIds.every(id => selectedForManifest.includes(id))) ? t('common.deselect_all') : t('common.select_all');
+                             })()}
+                           </button>
                         </div>
                         <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                            {allShipments

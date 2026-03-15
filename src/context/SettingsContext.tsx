@@ -102,7 +102,10 @@ const translations: Record<Language, Record<string, string>> = {
         'common.print_qr': 'Imprimir QR',
         'common.download_qr': 'Descargar QR',
         'common.search': 'Buscar',
+        'common.select_all': 'Seleccionar Todo',
+        'common.deselect_all': 'Desmarcar Todo',
         'common.all': 'Todos',
+
         'common.packages': 'Paquetes',
         'common.status': 'Estado',
         'common.current_status': 'Estado actual',
@@ -715,7 +718,10 @@ const translations: Record<Language, Record<string, string>> = {
         'common.print_qr': 'Print QR',
         'common.download_qr': 'Download QR',
         'common.search': 'Search',
+        'common.select_all': 'Select All',
+        'common.deselect_all': 'Deselect All',
         'common.all': 'All',
+
         'common.packages': 'Packages',
         'common.status': 'Status',
         'common.current_status': 'Current status',
@@ -1356,7 +1362,10 @@ const translations: Record<Language, Record<string, string>> = {
         'common.print_qr': 'Imprimer le QR',
         'common.download_qr': 'Télécharger le QR',
         'common.search': 'Rechercher',
+        'common.select_all': 'Tout Sélectionner',
+        'common.deselect_all': 'Tout Déterminer',
         'common.all': 'Tous',
+
         'common.packages': 'Paquets',
         'common.status': 'Statut',
         'common.current_status': 'Statut actuel',
