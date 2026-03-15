@@ -333,6 +333,7 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.op_rate_air_cm': 'Aéreo Camerún (XAF/Kg)',
         'admin.op_rate_bulto_23': 'Bulto 23 Kg (€)',
         'admin.op_rate_bulto_32': 'Bulto 32 Kg (€)',
+        'admin.op_rate_gq_es': 'Aéreo Guinea -> ES (€)',
 
         // Sidebar & Tabs
         'admin.panel_title': 'Panel de Administración',
@@ -1974,7 +1975,25 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
                     if (normalizedData.content.hero.heroImage?.startsWith('/')) normalizedData.content.hero.heroImage = `.${normalizedData.content.hero.heroImage}`;
                     if (normalizedData.content.hero.moneyTransferImage?.startsWith('/')) normalizedData.content.hero.moneyTransferImage = `.${normalizedData.content.hero.moneyTransferImage}`;
                 }
-                setAppConfig(normalizedData);
+                // Merge with locally stored overrides (admin edits that the server may not persist)
+                let localOverrides: Partial<DynamicConfig> = {};
+                try {
+                    const stored = localStorage.getItem('bb_dynamic_config');
+                    if (stored) localOverrides = JSON.parse(stored);
+                } catch (_) { /* ignore */ }
+                const mergedWithLocal: DynamicConfig = {
+                    ...normalizedData,
+                    rates: {
+                        ...(normalizedData.rates || {}),
+                        ...(localOverrides.rates || {}),
+                        air: { ...(normalizedData.rates?.air || {}), ...(localOverrides.rates?.air || {}) },
+                        sea: { ...(normalizedData.rates?.sea || {}), ...(localOverrides.rates?.sea || {}) },
+                        bulto: { ...(normalizedData.rates?.bulto || {}), ...(localOverrides.rates?.bulto || {}) },
+                        exchange: { ...(normalizedData.rates?.exchange || {}), ...(localOverrides.rates?.exchange || {}) },
+                    },
+                    starRates: { ...(normalizedData.starRates || {}), ...(localOverrides.starRates || {}) },
+                };
+                setAppConfig(mergedWithLocal);
             }
         } catch (error) {
             console.error('Failed to fetch config', error);
@@ -2021,6 +2040,10 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
                     contact: { ...(appConfig?.contact || {}), ...(updated?.contact || {}), ...(newConfig?.contact || {}) },
                     discounts: { ...(appConfig?.discounts || {}), ...(updated?.discounts || {}), ...(newConfig?.discounts || {}) },
                 };
+                
+                // Persist the merged config locally so changes to unmapped API fields survive reloads
+                localStorage.setItem('bb_dynamic_config', JSON.stringify(merged));
+                
                 setAppConfig(merged);
             }
         } catch (error) {

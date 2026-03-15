@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 
 const ConfigSchema = new mongoose.Schema({
+    customLogoUrl: { type: String, default: "" },
+    logoText: { type: String, default: "bb" },
     rates: {
         air: {
             es_gq: { type: Number, default: 11 }, // Spain -> GQ Air
@@ -28,7 +30,9 @@ const ConfigSchema = new mongoose.Schema({
             title: { type: String, default: "Tu conexión segura entre España y Guinea Ecuatorial" },
             subtitle: { type: String, default: "Servicios logísticos integrales, envíos aéreos y marítimos, y soluciones empresariales adaptadas a tus necesidades." },
             ctaPrimary: { type: String, default: "Calcular Envío" },
-            ctaSecondary: { type: String, default: "Contactar" }
+            ctaSecondary: { type: String, default: "Contactar" },
+            heroImage: { type: String, default: "" },
+            moneyTransferImage: { type: String, default: "" }
         },
         social: {
             tiktok: { type: String, default: "" },
