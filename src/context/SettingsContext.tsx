@@ -90,6 +90,25 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.logout': 'Cerrar Sesión',
         'nav.settings': 'Ajustes',
 
+        // Common
+        'common.success': 'Operación exitosa',
+        'common.error': 'Ha ocurrido un error',
+        'common.processing': 'Procesando...',
+        'common.save': 'Guardar',
+        'common.cancel': 'Cancelar',
+        'common.close': 'Cerrar',
+        'common.delete': 'Eliminar',
+        'common.print': 'Imprimir',
+        'common.print_qr': 'Imprimir QR',
+        'common.download_qr': 'Descargar QR',
+        'common.search': 'Buscar',
+        'common.all': 'Todos',
+        'common.packages': 'Paquetes',
+        'common.status': 'Estado',
+        'common.current_status': 'Estado actual',
+        'common.packages_included': 'paquetes incluidos',
+
+
         // Home Hero
         'home.hero.title': 'Servicio Internacional',
         'home.hero.title_highlight': 'de Envíos de Paquetes.',
@@ -683,6 +702,25 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.dashboard': 'Profile',
         'nav.logout': 'Logout',
         'nav.settings': 'Settings',
+
+        // Common
+        'common.success': 'Operation successful',
+        'common.error': 'An error has occurred',
+        'common.processing': 'Processing...',
+        'common.save': 'Save',
+        'common.cancel': 'Cancel',
+        'common.close': 'Close',
+        'common.delete': 'Delete',
+        'common.print': 'Print',
+        'common.print_qr': 'Print QR',
+        'common.download_qr': 'Download QR',
+        'common.search': 'Search',
+        'common.all': 'All',
+        'common.packages': 'Packages',
+        'common.status': 'Status',
+        'common.current_status': 'Current status',
+        'common.packages_included': 'packages included',
+
 
         // Home Hero
         'home.hero.title': 'International Package',
@@ -1305,6 +1343,25 @@ const translations: Record<Language, Record<string, string>> = {
         'nav.dashboard': 'Profil',
         'nav.logout': 'Déconnexion',
         'nav.settings': 'Paramètres',
+
+        // Common
+        'common.success': 'Opération réussie',
+        'common.error': 'Une erreur est survenue',
+        'common.processing': 'Traitement...',
+        'common.save': 'Enregistrer',
+        'common.cancel': 'Annuler',
+        'common.close': 'Fermer',
+        'common.delete': 'Supprimer',
+        'common.print': 'Imprimer',
+        'common.print_qr': 'Imprimer le QR',
+        'common.download_qr': 'Télécharger le QR',
+        'common.search': 'Rechercher',
+        'common.all': 'Tous',
+        'common.packages': 'Paquets',
+        'common.status': 'Statut',
+        'common.current_status': 'Statut actuel',
+        'common.packages_included': 'paquets inclus',
+
 
         // Home Hero
         'home.hero.title': 'Service International',

@@ -309,6 +309,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     }
   };
 
+  const handleDownloadQR = (id: string, fileName: string) => {
+    const canvas = document.getElementById(id) as HTMLCanvasElement;
+    if (canvas) {
+      const pngUrl = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.href = pngUrl;
+      downloadLink.download = `${fileName}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  };
+
+
   const handleManifestStatusUpdate = async () => {
     if (!scannedManifest) return;
     if (!window.confirm(t('admin.scanner.update_confirm', { id: scannedManifest.manifestId, status: manifestStatusUpdate }))) return;
@@ -1482,13 +1496,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                              <p className="text-[9px] font-black uppercase tracking-widest text-teal-400">✅ {t('admin.bundle_created')}</p>
                              <p className="font-black text-lg">{createdManifest.manifestId}</p>
                              <div className="flex justify-center bg-white p-4 rounded-2xl shadow-inner">
-                               <QRCodeCanvas value={createdManifest.manifestId} size={180} bgColor="#ffffff" fgColor="#00151a" />
-                             </div>
-                             <p className="text-[8px] text-teal-300 font-bold uppercase tracking-widest">{t('admin.scan_qr_guinea_update')}</p>
-                             <div className="flex gap-2">
-                                <button onClick={() => window.print()} className="flex-1 py-2 bg-teal-500 text-[#00151a] rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-teal-400 transition-colors">{t('common.print_qr')}</button>
-                                <button onClick={() => setCreatedManifest(null)} className="flex-1 py-2 bg-white/10 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/20 transition-colors">{t('common.close')}</button>
-                             </div>
+                                <QRCodeCanvas id="manifest-qr-created" value={createdManifest.manifestId} size={180} bgColor="#ffffff" fgColor="#00151a" />
+                              </div>
+                              <p className="text-[8px] text-teal-300 font-bold uppercase tracking-widest">{t('admin.scan_qr_guinea_update')}</p>
+                              <div className="flex flex-col gap-2">
+                                <div className="flex gap-2">
+                                   <button onClick={() => window.print()} className="flex-1 py-2 bg-teal-500 text-[#00151a] rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-teal-400 transition-colors">{t('common.print_qr')}</button>
+                                   <button onClick={() => handleDownloadQR('manifest-qr-created', createdManifest.manifestId)} className="flex-1 py-2 bg-white text-[#00151a] rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">{t('common.download_qr')}</button>
+                                </div>
+                                <button onClick={() => setCreatedManifest(null)} className="w-full py-2 bg-white/10 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/20 transition-colors">{t('common.close')}</button>
+                              </div>
                              <p className="text-[9px] text-gray-400 font-bold italic">{createdManifest.shipments?.length || 0} {t('common.packages_included')}</p>
                           </div>
                         )}
@@ -1513,9 +1530,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] mb-1">{t('admin.bundle_found')}</p>
                                <h4 className="text-3xl font-black text-teal-900 tracking-tighter italic uppercase">{scannedManifest.manifestId}</h4>
                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">{scannedManifest.shipments?.length} {t('common.packages')} · {t('common.status')}: <span className="text-teal-600 font-black">{scannedManifest.status}</span></p>
-                             </div>
-                             <div className="bg-teal-50 p-4 rounded-3xl shadow-inner border border-teal-100">
-                               <QRCodeCanvas value={scannedManifest.manifestId} size={100} bgColor="transparent" fgColor="#00151a" />
+                                <button onClick={() => handleDownloadQR('manifest-qr-scanned', scannedManifest.manifestId)} className="mt-4 px-4 py-2 bg-teal-50 text-teal-700 rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-teal-100 transition-all border border-teal-100">{t('common.download_qr')}</button>
+                              </div>
+                              <div className="bg-teal-50 p-4 rounded-3xl shadow-inner border border-teal-100">
+                                <QRCodeCanvas id="manifest-qr-scanned" value={scannedManifest.manifestId} size={100} bgColor="transparent" fgColor="#00151a" />
                              </div>
                           </div>
 
