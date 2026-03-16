@@ -7,7 +7,7 @@ import { AnimatePresence } from 'framer-motion';
 import { TERMS_AND_CONDITIONS } from '../constants/terms';
 
 interface ClientPageProps {
-    onOpenForgotPassword?: () => void;
+    onOpenForgotPassword?: (email?: string) => void;
 }
 
 const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
@@ -61,7 +61,12 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
         setError('');
         setLoading(true);
         try {
-            await login(loginData.email, loginData.password);
+            const res = await login(loginData.email, loginData.password);
+            if ((res as any)?.mustChangePassword) {
+                setLoading(false);
+                onOpenForgotPassword?.(loginData.email);
+                return;
+            }
             navigate('/dashboard');
         } catch (err: any) {
             setError(err.message || t('client.error_login'));
@@ -262,7 +267,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                 </div>
                                 <div className="flex justify-end">
                                     <span
-                                        onClick={onOpenForgotPassword}
+                                        onClick={() => onOpenForgotPassword?.()}
                                         className="text-[10px] font-bold text-teal-600 uppercase tracking-wide cursor-pointer hover:underline"
                                     >
                                         {t('login.forgot')}

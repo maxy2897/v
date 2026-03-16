@@ -45,7 +45,7 @@ interface Transaction {
 interface DashboardPageProps {
     onOpenSettings?: () => void;
     onOpenAdmin?: () => void;
-    onOpenForgotPassword?: () => void;
+    onOpenForgotPassword?: (email?: string) => void;
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdmin, onOpenForgotPassword }) => {
@@ -791,7 +791,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                 <div className="flex justify-end mt-1">
                                                     <button
                                                         type="button"
-                                                        onClick={onOpenForgotPassword}
+                                                        onClick={() => onOpenForgotPassword?.()}
                                                         className="text-[10px] font-bold text-teal-600 uppercase tracking-wide hover:underline"
                                                     >
                                                         {t('login.forgot')}
