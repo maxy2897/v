@@ -9,7 +9,7 @@ import { signInWithGoogle } from '../firebase';
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onOpenForgotPassword?: () => void;
+    onOpenForgotPassword?: (email?: string) => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPassword }) => {
@@ -58,7 +58,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
         setLoading(true);
 
         try {
-            await login(formData.email, formData.password);
+            const res = await login(formData.email, formData.password);
+            
+            // Si el backend indica que requiere cambio de clave
+            if ((res as any)?.mustChangePassword) {
+                setLoading(false);
+                onOpenForgotPassword?.(formData.email); // Esto abrirá el modal con el email pre-cargado
+                return;
+            }
+
             onClose();
         } catch (err: any) {
             setError(err.message || t('login.error.general'));
@@ -171,7 +179,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                                 <div className="flex justify-end mt-2">
                                     <button
                                         type="button"
-                                        onClick={onOpenForgotPassword}
+                                        onClick={() => onOpenForgotPassword?.()}
                                         className="text-[10px] font-bold text-teal-600 uppercase tracking-wide hover:underline"
                                     >
                                         {t('login.forgot')}

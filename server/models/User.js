@@ -74,6 +74,10 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    mustChangePassword: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 // Virtual for isAdmin

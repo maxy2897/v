@@ -97,6 +97,13 @@ router.post(
             // Buscar usuario por email
             const user = await User.findOne({ email }).select('+password');
 
+            if (user && user.mustChangePassword) {
+                return res.status(200).json({ 
+                    mustChangePassword: true, 
+                    message: 'Su cuenta requiere un cambio de contraseña. Hemos enviado un código a su correo.' 
+                });
+            }
+
             if (user && (await user.matchPassword(password))) {
                 res.json({
                     _id: user._id,

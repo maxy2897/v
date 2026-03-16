@@ -103,7 +103,7 @@ router.delete('/users/:id', protect, async (req, res) => {
 });
 
 // @route   POST /api/admin/users/:id/password
-// @desc    Reset user password (Admin only)
+// @desc    Solicitar cambio de contraseña al usuario
 // @access  Private/SuperAdmin
 router.post('/users/:id/password', protect, async (req, res) => {
     try {
@@ -111,25 +111,34 @@ router.post('/users/:id/password', protect, async (req, res) => {
             return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
         }
 
-        const { newPassword } = req.body;
-        if (!newPassword || newPassword.length < 6) {
-            return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
-        }
-
         const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        // Set new password (the model should handle hashing if pre-save hook exists, 
-        // which it should for authentication)
-        user.password = newPassword;
+        user.mustChangePassword = true;
         await user.save();
 
-        res.json({ message: 'Contraseña actualizada exitosamente por el administrador' });
+        // Disparar el flujo de recuperación de contraseña automáticamente
+        const VerificationCode = (await import('../models/VerificationCode.js')).default;
+        const { sendPasswordResetEmail, generateVerificationCode } = await import('../services/emailService.js');
+
+        const code = generateVerificationCode();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+
+        await VerificationCode.create({
+            email: user.email,
+            code,
+            type: 'password-reset',
+            expiresAt
+        });
+
+        await sendPasswordResetEmail(user.email, code);
+
+        res.json({ message: 'El usuario deberá cambiar su contraseña. Se ha enviado un código a su correo.' });
     } catch (error) {
-        console.error('Error resetting password:', error);
-        res.status(500).json({ message: 'Server Error al resetear contraseña' });
+        console.error('Error requesting password reset:', error);
+        res.status(500).json({ message: 'Server Error al solicitar cambio de clave' });
     }
 });
 

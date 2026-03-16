@@ -80,37 +80,30 @@ export const AdminUsers: React.FC = () => {
         setUserToDelete({ id: userId, name: userName });
     };
 
-    const handleResetPassword = async () => {
-        if (!userToResetPassword || !newPassword) return;
-        if (newPassword.length < 6) {
-            alert(t('register.error.password'));
-            return;
-        }
+    const handleResetPassword = async (userId: string, userName: string) => {
+        if (!window.confirm(`¿Solicitar que ${userName} cambie su contraseña al iniciar sesión?`)) return;
 
         try {
             setIsResetting(true);
             const userStr = localStorage.getItem('user');
             const token = userStr ? JSON.parse(userStr).token : '';
 
-            const res = await fetch(`${BASE_URL}/api/admin/users/${userToResetPassword.id}/password`, {
+            const res = await fetch(`${BASE_URL}/api/admin/users/${userId}/password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ newPassword })
+                }
             });
 
             if (!res.ok) {
                 const data = await res.json();
-                throw new Error(data.message || 'Error al cambiar contraseña');
+                throw new Error(data.message || 'Error al solicitar cambio');
             }
 
-            alert('✅ Contraseña actualizada correctamente');
-            setUserToResetPassword(null);
-            setNewPassword('');
+            alert(`✅ Se ha solicitado el cambio de contraseña para ${userName}`);
         } catch (err: any) {
-            alert(err.message || 'Error al cambiar contraseña');
+            alert(err.message || 'Error al procesar solicitud');
         } finally {
             setIsResetting(false);
         }
@@ -211,12 +204,12 @@ export const AdminUsers: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
                                             <button
-                                                onClick={() => setUserToResetPassword({ id: user._id, name: user.name })}
+                                                onClick={() => handleResetPassword(user._id, user.name)}
                                                 className="text-teal-600 hover:text-teal-800 font-bold text-xs bg-teal-50 hover:bg-teal-100 px-3 py-2 rounded-xl transition-colors shrink-0 flex items-center gap-1"
-                                                title="Cambiar Contraseña"
+                                                title="Solicitar cambio de contraseña"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
-                                                Clave
+                                                Cambio
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteUser(user._id, user.name)}
@@ -266,9 +259,9 @@ export const AdminUsers: React.FC = () => {
                                             ))}
                                         </select>
                                         <button
-                                            onClick={() => setUserToResetPassword({ id: user._id, name: user.name })}
+                                            onClick={() => handleResetPassword(user._id, user.name)}
                                             className="text-teal-600 hover:text-teal-800 font-black tracking-widest uppercase text-[10px] bg-teal-50 hover:bg-teal-100 h-full px-5 py-3.5 rounded-xl transition-colors shrink-0 flex items-center justify-center border border-teal-100 hover:border-teal-200"
-                                            title="Cambiar Contraseña"
+                                            title="Solicitar cambio de contraseña"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
                                         </button>
@@ -314,52 +307,6 @@ export const AdminUsers: React.FC = () => {
                                 className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-600 transition-colors disabled:opacity-50"
                             >
                                 {isDeleting ? t('admin.users.deleting') : t('admin.users.btn_confirm_delete')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {/* Modal de Cambio de Contraseña (Admin) */}
-            {userToResetPassword && (
-                <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-[#00151a]/80 backdrop-blur-sm" onClick={() => !isResetting && setUserToResetPassword(null)}></div>
-                    <div className="relative bg-white p-8 rounded-[2rem] shadow-2xl max-w-sm w-full animate-in zoom-in duration-200">
-                        <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
-                        </div>
-                        <h3 className="text-xl font-black text-center text-[#00151a] mb-2">Cambiar Contraseña</h3>
-                        <p className="text-gray-500 text-sm text-center font-medium mb-6">
-                            Nueva contraseña para <strong>{userToResetPassword.name}</strong>
-                        </p>
-
-                        <div className="mb-6">
-                            <input
-                                type="text"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full px-4 py-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-teal-500 transition-all font-bold text-center text-lg"
-                                placeholder="Mínimo 6 caracteres"
-                                autoFocus
-                            />
-                        </div>
-
-                        <div className="flex gap-4">
-                            <button
-                                onClick={() => {
-                                    setUserToResetPassword(null);
-                                    setNewPassword('');
-                                }}
-                                disabled={isResetting}
-                                className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-200 transition-colors disabled:opacity-50"
-                            >
-                                {t('admin.users.btn_cancel')}
-                            </button>
-                            <button
-                                onClick={handleResetPassword}
-                                disabled={isResetting || newPassword.length < 6}
-                                className="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-600 transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50"
-                            >
-                                {isResetting ? 'Guardando...' : 'Actualizar'}
                             </button>
                         </div>
                     </div>

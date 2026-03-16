@@ -11,7 +11,7 @@ interface ForgotPasswordModalProps {
 const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose, initialEmail }) => {
     const { t, appConfig } = useSettings();
     const [method, setMethod] = useState<'email' | 'phone' | 'call'>('email');
-    const [step, setStep] = useState<'input' | 'code' | 'password'>('input');
+    const [step, setStep] = useState<'input' | 'code' | 'password'>(initialEmail ? 'code' : 'input');
     const whatsappNumber = '34643521042';
     const [email, setEmail] = useState(initialEmail || '');
     const [code, setCode] = useState('');

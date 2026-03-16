@@ -68,7 +68,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const login = async (email: string, password: string) => {
         try {
             const data = await api.login({ email, password });
-            setUser(data);
+            if (!data.mustChangePassword) {
+                setUser(data);
+            }
+            return data;
         } catch (error: any) {
             throw error;
         }

@@ -67,7 +67,7 @@ const FirstVisitRedirect = () => {
 const AnimatedRoutes: React.FC<{
   onOpenRegister: () => void;
   onOpenContact: () => void;
-  onOpenForgotPassword: () => void;
+  onOpenForgotPassword: (email?: string) => void;
   onOpenSettings: () => void;
   onOpenAdmin: () => void;
   products: Product[];
@@ -111,6 +111,7 @@ const AppContent: React.FC = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState<string | undefined>(undefined);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
@@ -183,7 +184,10 @@ const AppContent: React.FC = () => {
             <AnimatedRoutes
               onOpenRegister={() => setIsRegisterOpen(true)}
               onOpenContact={() => setIsContactOpen(true)}
-              onOpenForgotPassword={() => setIsForgotPasswordOpen(true)}
+              onOpenForgotPassword={(email) => {
+                setResetEmail(email);
+                setIsForgotPasswordOpen(true);
+              }}
               onOpenSettings={() => setIsSettingsOpen(true)}
               onOpenAdmin={handleAdminLogin}
               products={products}
@@ -284,13 +288,23 @@ const AppContent: React.FC = () => {
             <LoginModal
               isOpen={isLoginOpen}
               onClose={() => setIsLoginOpen(false)}
-              onOpenForgotPassword={() => {
+              onOpenForgotPassword={(email) => {
                 setIsLoginOpen(false);
+                setResetEmail(email);
                 setIsForgotPasswordOpen(true);
               }}
             />
           )}
-          {isForgotPasswordOpen && <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />}
+          {isForgotPasswordOpen && (
+            <ForgotPasswordModal 
+              isOpen={isForgotPasswordOpen} 
+              onClose={() => {
+                setIsForgotPasswordOpen(false);
+                setResetEmail(undefined);
+              }} 
+              initialEmail={resetEmail}
+            />
+          )}
           {isContactOpen && <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
           <AIChat config={config} />
           {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
