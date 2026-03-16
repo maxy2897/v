@@ -480,6 +480,7 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.special_case': '¿Tienes un caso especial?',
         'dashboard.talk_whatsapp': 'Hablemos por WhatsApp.',
         'dashboard.direct_chat': 'Chat Directo 24/7',
+        'dashboard.chat_direct_24_7': 'Chat Directo 24/7',
         'dashboard.profile.updated_success': 'Perfil actualizado correctamente',
         'dashboard.profile.update_error': 'Error al actualizar perfil',
         'dashboard.invoice.download_error': 'Error al descargar factura',
