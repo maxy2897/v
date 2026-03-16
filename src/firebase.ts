@@ -26,6 +26,7 @@ export const signInWithGoogle = async () => {
         throw new Error("El inicio de sesión social (Google/Apple) no está disponible en la versión de escritorio por razones de seguridad de los proveedores. Por favor, usa tu correo y contraseña.");
     }
     try {
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, googleProvider);
         return result.user;
     } catch (error) {
@@ -39,6 +40,7 @@ export const signInWithApple = async () => {
         throw new Error("El inicio de sesión social (Google/Apple) no está disponible en la versión de escritorio por razones de seguridad de los proveedores. Por favor, usa tu correo y contraseña.");
     }
     try {
+        appleProvider.setCustomParameters({ prompt: 'select_account' });
         const result = await signInWithPopup(auth, appleProvider);
         return result.user;
     } catch (error) {

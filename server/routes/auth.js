@@ -431,6 +431,7 @@ router.post(
             }
 
             user.password = newPassword;
+            user.mustChangePassword = false;
             await user.save();
 
             res.json({ message: 'Contraseña actualizada exitosamente' });
