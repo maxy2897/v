@@ -108,6 +108,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
         profileImage: user?.profileImage || ''
     });
 
+    // Password Form State
+    const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
             navigate('/');
@@ -209,6 +217,30 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             alert(t('dashboard.profile.updated_success'));
         } catch (error: any) {
             alert(error.message || t('dashboard.profile.update_error'));
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    const handleUpdatePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            alert(t('client.passwords_dont_match'));
+            return;
+        }
+        
+        setLoading(true);
+        try {
+            await api.updatePassword({
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword
+            });
+            alert(t('dashboard.profile.updated_success'));
+            setIsPasswordFormOpen(false);
+            setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (error: any) {
+            alert(error.message || t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -717,9 +749,67 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                 <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-50">
                                     <h3 className="text-xl font-black text-[#00151a] mb-2">{t('dashboard.password_change')}</h3>
                                     <p className="text-sm text-gray-400 font-medium mb-8">{t('admin.last_update')}: 3 {t('admin.reports.months')}</p>
-                                    <button className="w-full border-2 border-[#00151a] text-[#00151a] px-8 py-5 rounded-3xl text-sm font-black uppercase tracking-widest hover:bg-[#00151a] hover:text-white transition-all">
-                                        {t('dashboard.update_password')}
-                                    </button>
+                                    
+                                    {!isPasswordFormOpen ? (
+                                        <button 
+                                            onClick={() => setIsPasswordFormOpen(true)}
+                                            className="w-full border-2 border-[#00151a] text-[#00151a] px-8 py-5 rounded-3xl text-sm font-black uppercase tracking-widest hover:bg-[#00151a] hover:text-white transition-all"
+                                        >
+                                            {t('dashboard.update_password')}
+                                        </button>
+                                    ) : (
+                                        <form onSubmit={handleUpdatePassword} className="space-y-6 animate-in slide-in-from-top-4 duration-500">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.current_password')}</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    title={t('dashboard.current_password')}
+                                                    value={passwordData.currentPassword}
+                                                    onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a]"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.new_password')}</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    title={t('dashboard.new_password')}
+                                                    value={passwordData.newPassword}
+                                                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a]"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.confirm_new_password')}</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    title={t('dashboard.confirm_new_password')}
+                                                    value={passwordData.confirmPassword}
+                                                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a]"
+                                                />
+                                            </div>
+                                            <div className="flex gap-4 pt-4">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setIsPasswordFormOpen(false)}
+                                                    className="flex-1 border-2 border-gray-100 text-gray-400 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all"
+                                                >
+                                                    {t('common.cancel')}
+                                                </button>
+                                                <button 
+                                                    type="submit"
+                                                    disabled={loading}
+                                                    className="flex-1 bg-[#00151a] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 transition-all shadow-lg"
+                                                >
+                                                    {loading ? t('common.processing') : t('common.save')}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    )}
                                 </div>
                             </div>
                         )}

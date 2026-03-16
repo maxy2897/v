@@ -434,4 +434,47 @@ router.post(
     }
 );
 
+// @route   POST /api/auth/update-password
+// @desc    Actualizar contraseña del usuario autenticado
+// @access  Private
+router.post(
+    '/update-password',
+    protect,
+    [
+        body('currentPassword').notEmpty().withMessage('La contraseña actual es requerida'),
+        body('newPassword').isLength({ min: 6 }).withMessage('La nueva contraseña debe tener al menos 6 caracteres')
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { currentPassword, newPassword } = req.body;
+
+        try {
+            const user = await User.findById(req.user._id).select('+password');
+            
+            if (!user) {
+                return res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+
+            // Verificar contraseña actual
+            const isMatch = await user.matchPassword(currentPassword);
+            if (!isMatch) {
+                return res.status(401).json({ message: 'La contraseña actual es incorrecta' });
+            }
+
+            // Actualizar a la nueva contraseña
+            user.password = newPassword;
+            await user.save();
+
+            res.json({ message: 'Contraseña actualizada correctamente' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error del servidor al actualizar contraseña' });
+        }
+    }
+);
+
 export default router;

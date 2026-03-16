@@ -337,3 +337,22 @@ export const updateManifestStatus = async (manifestId: string, status: string) =
     if (!response.ok) throw new Error(data.message || 'Error al actualizar bulto');
     return data;
 };
+// Actualizar contraseña
+export const updatePassword = async (passwords: {
+    currentPassword: string;
+    newPassword: string;
+}) => {
+    const response = await fetch(`${API_URL}/auth/update-password`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(passwords),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al actualizar contraseña');
+    }
+
+    return data;
+};
