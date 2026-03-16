@@ -464,7 +464,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       const productToCreate = {
         ...newProduct,
         id: Date.now().toString(),
-        waLink: `https://wa.me/34643521042?text=Hola,%20estoy%20interesado%20en%20el%20producto%20${encodeURIComponent(newProduct.name)}`,
+        waLink: `https://wa.me/34641992110?text=Hola,%20estoy%20interesado%20en%20el%20producto%20${encodeURIComponent(newProduct.name)}`,
         price: newProduct.price.includes('FCFA') ? newProduct.price : `${newProduct.price} FCFA`
       };
       const created = await apiCreateProduct(productToCreate as any);
@@ -1171,7 +1171,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.whatsapp_number')}</label>
-                         <input type="text" title={t('admin.whatsapp_number_link')} placeholder="Ej: 34643521042" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.whatsapp || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, whatsapp: e.target.value } } } as any)} />
+                         <input type="text" title={t('admin.whatsapp_number_link')} placeholder="Ej: 34641992110" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.whatsapp || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, whatsapp: e.target.value } } } as any)} />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.instagram_link')}</label>

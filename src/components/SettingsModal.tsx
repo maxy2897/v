@@ -228,7 +228,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#007e85] mb-3">{t('dashboard.vip_contact')}</p>
                                     <h4 className="text-2xl font-black mb-8 leading-tight">{t('dashboard.vip_contact_desc')}</h4>
                                     <a
-                                        href="https://wa.me/34643521042"
+                                        href="https://wa.me/34641992110"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex bg-[#007e85] text-white px-10 py-5 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-[#00151a] transition-all shadow-lg"

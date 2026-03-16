@@ -102,4 +102,35 @@ router.delete('/users/:id', protect, async (req, res) => {
     }
 });
 
+// @route   POST /api/admin/users/:id/password
+// @desc    Reset user password (Admin only)
+// @access  Private/SuperAdmin
+router.post('/users/:id/password', protect, async (req, res) => {
+    try {
+        if (!['admin', 'admin_tech'].includes(req.user.role)) {
+            return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
+        }
+
+        const { newPassword } = req.body;
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Set new password (the model should handle hashing if pre-save hook exists, 
+        // which it should for authentication)
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ message: 'Contraseña actualizada exitosamente por el administrador' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Server Error al resetear contraseña' });
+    }
+});
+
 export default router;

@@ -88,7 +88,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/tienda" element={<AnimatedPage><StorePage products={products} /></AnimatedPage>} />
         <Route path="/acceso" element={<AnimatedPage><ClientPage onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/money-transfer" element={<AnimatedPage><MoneyTransferPage /></AnimatedPage>} />
-        <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} /></AnimatedPage>} />
+        <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
         <Route path="/admin" element={
