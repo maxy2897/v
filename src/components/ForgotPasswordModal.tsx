@@ -26,13 +26,19 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
         setError('');
         setLoading(true);
 
+        // Crear un controlador para cancelar la petición si tarda demasiado
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos
+
         try {
             const response = await fetch(`${BASE_URL}/api/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email }),
+                signal: controller.signal
             });
 
+            clearTimeout(timeoutId);
             const data = await response.json();
 
             if (!response.ok) {
@@ -42,7 +48,11 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
             setStep('code');
             alert('📧 Código enviado a tu email');
         } catch (err: any) {
-            setError(err.message || 'Error al enviar código');
+            if (err.name === 'AbortError') {
+                setError('La solicitud está tardando demasiado. Prueba a contactar por WhatsApp o inténtalo de nuevo.');
+            } else {
+                setError(err.message || 'Error al enviar código');
+            }
         } finally {
             setLoading(false);
         }
