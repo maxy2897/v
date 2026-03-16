@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 import { BASE_URL } from '../services/api';
 
 interface ForgotPasswordModalProps {
@@ -10,6 +11,7 @@ interface ForgotPasswordModalProps {
 
 const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose, initialEmail }) => {
     const { t, appConfig } = useSettings();
+    const { user } = useAuth();
     const [method, setMethod] = useState<'email' | 'phone' | 'call'>('email');
     const [step, setStep] = useState<'input' | 'code' | 'password'>(initialEmail ? 'code' : 'input');
     const whatsappNumber = '34643521042';
@@ -210,7 +212,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                                 </p>
                             </div>
                             <a
-                                href={`https://wa.me/${whatsappNumber}?text=Hola,%20necesito%20recuperar%20el%20acceso%20a%20mi%20cuenta%20de%20Bodipo%20Business.%20Mi%20nombre%20es:%20(Escribe%20aqu%C3%AD%20tu%20nombre)%20y%20mi%20correo%20es:%20(Escribe%20aqu%C3%AD%20tu%20email)`}
+                                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hola, necesito recuperar el acceso a mi cuenta de Bodipo Business. Mi nombre es: ${user?.name || '(Escribe aquí tu nombre)'} y mi correo es: ${email || user?.email || '(Escribe aquí tu email)'}`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block w-full bg-[#25D366] text-white py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:brightness-110 transition-all shadow-xl shadow-green-200"
