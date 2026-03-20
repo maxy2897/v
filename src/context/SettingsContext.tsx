@@ -17,8 +17,8 @@ interface SettingsContextType {
 
 export interface DynamicConfig {
     rates: {
-        air: { es_gq: number; gq_es: number; cm_gq: number };
-        sea: { es_gq: number };
+        air: { es_gq: number; es_bata: number; gq_es: number; cm_gq: number };
+        sea: { es_gq: number; es_bata: number; };
         bulto: { kg23: number; kg32: number };
         exchange: { eur_xaf: number; xaf_eur: number };
     };
@@ -65,7 +65,9 @@ export interface DynamicConfig {
     };
     starRates: {
         air_es_gq: string;
+        air_es_bata: string;
         sea_es_gq: string;
+        sea_es_bata: string;
         kg_cm_gq: string;
         docs_gq_es: string;
         bulto_23kg: string;
@@ -342,7 +344,9 @@ const translations: Record<Language, Record<string, string>> = {
         'login.loading': 'Iniciando sesión...',
         'admin.star_rates_title': 'Tarifas Estrella (Visibles en Web)',
         'admin.rate_air_es_gq': 'España -> Malabo (Aéreo)',
+        'admin.rate_air_es_bata': 'España -> Bata (Aéreo)',
         'admin.rate_sea_es_gq': 'España -> Malabo (Marítimo)',
+        'admin.rate_sea_es_bata': 'España -> Bata (Marítimo)',
         'admin.rate_kg_cm_gq': 'Camerún -> Malabo (Kg)',
         'admin.rate_docs_gq_es': 'Documentos -> España',
         'admin.rate_bulto_23kg': 'Bulto 23 Kg (España)',
@@ -350,8 +354,10 @@ const translations: Record<Language, Record<string, string>> = {
 
         // Operational Rates
         'admin.op_rates_title': 'Tarifas Operativas (Cálculos)',
-        'admin.op_rate_air_es': 'Aéreo España (€/Kg)',
-        'admin.op_rate_sea_es': 'Marítimo España (€/Kg)',
+        'admin.op_rate_air_es': 'Aéreo España -> Malabo (€/Kg)',
+        'admin.op_rate_air_es_bata': 'Aéreo España -> Bata (€/Kg)',
+        'admin.op_rate_sea_es': 'Marítimo España -> Malabo (€/Kg)',
+        'admin.op_rate_sea_es_bata': 'Marítimo España -> Bata (€/Kg)',
         'admin.op_rate_air_cm': 'Aéreo Camerún (XAF/Kg)',
         'admin.op_rate_bulto_23': 'Bulto 23 Kg (€)',
         'admin.op_rate_bulto_32': 'Bulto 32 Kg (€)',
@@ -1707,7 +1713,9 @@ const translations: Record<Language, Record<string, string>> = {
         'login.loading': 'Connexion en cours...',
         'admin.star_rates_title': 'Tarifs Étoiles (Visibles sur le Web)',
         'admin.rate_air_es_gq': 'Espagne -> Malabo (Air)',
+        'admin.rate_air_es_bata': 'Espagne -> Bata (Air)',
         'admin.rate_sea_es_gq': 'Espagne -> Malabo (Mer)',
+        'admin.rate_sea_es_bata': 'Espagne -> Bata (Mer)',
         'admin.rate_kg_cm_gq': 'Cameroun -> Malabo (Kg)',
         'admin.rate_docs_gq_es': 'Documents -> Espagne',
         'admin.rate_bulto_23kg': 'Colis 23 Kg (Espagne)',
@@ -1715,8 +1723,10 @@ const translations: Record<Language, Record<string, string>> = {
 
         // Operational Rates
         'admin.op_rates_title': 'Tarifs Opérationnels (Calculs)',
-        'admin.op_rate_air_es': 'Aérien Espagne (€/Kg)',
-        'admin.op_rate_sea_es': 'Maritime Espagne (€/Kg)',
+        'admin.op_rate_air_es': 'Aérien Espagne -> Malabo (€/Kg)',
+        'admin.op_rate_air_es_bata': 'Aérien Espagne -> Bata (€/Kg)',
+        'admin.op_rate_sea_es': 'Maritime Espagne -> Malabo (€/Kg)',
+        'admin.op_rate_sea_es_bata': 'Maritime Espagne -> Bata (€/Kg)',
         'admin.op_rate_air_cm': 'Aérien Cameroun (XAF/Kg)',
         'admin.op_rate_bulto_23': 'Colis 23 Kg (€)',
         'admin.op_rate_bulto_32': 'Colis 32 Kg (€)',

@@ -5,12 +5,14 @@ const ConfigSchema = new mongoose.Schema({
     logoText: { type: String, default: "bb" },
     rates: {
         air: {
-            es_gq: { type: Number, default: 11 }, // Spain -> GQ Air
+            es_gq: { type: Number, default: 11 }, // Spain -> GQ Air (Malabo)
+            es_bata: { type: Number, default: 11 }, // Spain -> Bata Air
             gq_es: { type: Number, default: 15 }, // GQ -> Spain Docs
             cm_gq: { type: Number, default: 3000 } // Cameroon -> GQ
         },
         sea: {
-            es_gq: { type: Number, default: 4 },  // Spain -> GQ Sea
+            es_gq: { type: Number, default: 4 },  // Spain -> GQ Sea (Malabo)
+            es_bata: { type: Number, default: 4 },  // Spain -> Bata Sea
         },
         bulto: {
             kg23: { type: Number, default: 220 },
@@ -83,7 +85,9 @@ const ConfigSchema = new mongoose.Schema({
     },
     starRates: {
         air_es_gq: { type: String, default: '11€/Kg' },
+        air_es_bata: { type: String, default: '11€/Kg' },
         sea_es_gq: { type: String, default: '4€/Kg' },
+        sea_es_bata: { type: String, default: '4€/Kg' },
         kg_cm_gq: { type: String, default: '3000 XAF' },
         docs_gq_es: { type: String, default: '15€' },
         bulto_23kg: { type: String, default: '220€' },

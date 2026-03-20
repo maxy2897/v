@@ -92,10 +92,18 @@ const Calculator: React.FC = () => {
       if (info.origin === 'España') {
         if (info.type === 'Aéreo') {
           // Dynamic Rate
-          rate = appConfig?.rates.air.es_gq || 11;
+          if (info.destination === 'Bata') {
+            rate = appConfig?.rates.air.es_bata || 11;
+          } else {
+            rate = appConfig?.rates.air.es_gq || 11;
+          }
         } else {
           // Dynamic Rate
-          rate = appConfig?.rates.sea.es_gq || 4;
+          if (info.destination === 'Bata') {
+            rate = appConfig?.rates.sea.es_bata || 4;
+          } else {
+            rate = appConfig?.rates.sea.es_gq || 4;
+          }
         }
         currency = '€';
       } else if (info.origin === 'Camerún') {

@@ -1123,11 +1123,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                          }} />
                       </div>
                       <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_air_es_bata')}</label>
+                         <input type="text" placeholder="11€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.air_es_bata || ''} onChange={e => {
+                            const val = e.target.value;
+                            const num = parseFloat(val.replace(/[^\d.]/g, '')) || 0;
+                            setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, air_es_bata: val }, rates: { ...editConfig?.rates, air: { ...editConfig?.rates?.air, es_bata: num } } } as any);
+                         }} />
+                      </div>
+                      <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_sea_es_gq')}</label>
                          <input type="text" placeholder="4€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.sea_es_gq || ''} onChange={e => {
                             const val = e.target.value;
                             const num = parseFloat(val.replace(/[^\d.]/g, '')) || 0;
                             setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, sea_es_gq: val }, rates: { ...editConfig?.rates, sea: { ...editConfig?.rates?.sea, es_gq: num } } } as any);
+                         }} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.rate_sea_es_bata')}</label>
+                         <input type="text" placeholder="4€/Kg" className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.starRates?.sea_es_bata || ''} onChange={e => {
+                            const val = e.target.value;
+                            const num = parseFloat(val.replace(/[^\d.]/g, '')) || 0;
+                            setEditConfig({ ...editConfig, starRates: { ...editConfig?.starRates, sea_es_bata: val }, rates: { ...editConfig?.rates, sea: { ...editConfig?.rates?.sea, es_bata: num } } } as any);
                          }} />
                       </div>
                       <div className="space-y-2">
@@ -1209,10 +1225,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                    }} />
                                </div>
                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_air_es_bata')}</span>
+                                  <input type="number" placeholder="11" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.air?.es_bata || ''} onChange={e => {
+                                      const num = parseFloat(e.target.value) || 0;
+                                      setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, air: { ...editConfig?.rates?.air, es_bata: num } }, starRates: { ...editConfig?.starRates, air_es_bata: num + "€/Kg" } } as any);
+                                   }} />
+                               </div>
+                               <div className="flex items-center justify-between">
                                   <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_sea_es')}</span>
                                   <input type="number" placeholder="4" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.sea?.es_gq || ''} onChange={e => {
                                       const num = parseFloat(e.target.value) || 0;
                                       setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, sea: { ...editConfig?.rates?.sea, es_gq: num } }, starRates: { ...editConfig?.starRates, sea_es_gq: num + "€/Kg" } } as any);
+                                   }} />
+                               </div>
+                               <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">{t('admin.op_rate_sea_es_bata')}</span>
+                                  <input type="number" placeholder="4" className="bg-white/10 border border-white/20 rounded-xl px-4 py-2 w-24 text-center font-black" value={editConfig?.rates?.sea?.es_bata || ''} onChange={e => {
+                                      const num = parseFloat(e.target.value) || 0;
+                                      setEditConfig({ ...editConfig, rates: { ...editConfig?.rates, sea: { ...editConfig?.rates?.sea, es_bata: num } }, starRates: { ...editConfig?.starRates, sea_es_bata: num + "€/Kg" } } as any);
                                    }} />
                                </div>
                                <div className="flex items-center justify-between">

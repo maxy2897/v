@@ -307,7 +307,9 @@ const ShippingSchedule: React.FC = () => {
                 <ul className="space-y-3">
                   {[
                     { label: t('admin.rate_air_es_gq'), price: appConfig?.starRates?.air_es_gq || '11€/Kg' },
+                    { label: t('admin.rate_air_es_bata'), price: appConfig?.starRates?.air_es_bata || '11€/Kg' },
                     { label: t('admin.rate_sea_es_gq'), price: appConfig?.starRates?.sea_es_gq || '4€/Kg' },
+                    { label: t('admin.rate_sea_es_bata'), price: appConfig?.starRates?.sea_es_bata || '4€/Kg' },
                     { label: t('admin.rate_kg_cm_gq'), price: appConfig?.starRates?.kg_cm_gq || '3000 XAF' },
                     { label: t('admin.rate_docs_gq_es'), price: appConfig?.starRates?.docs_gq_es || '15€' },
                     { label: t('admin.rate_bulto_23kg'), price: appConfig?.starRates?.bulto_23kg || '220€' },
