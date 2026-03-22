@@ -18,6 +18,7 @@ interface Shipment {
   trackingNumber: string;
   origin: string;
   destination: string;
+  type?: string;
   description: string;
   weight: number;
   price: number;
@@ -1416,7 +1417,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    monthlyCounts[d.getMonth()]++;
                 }
                 const origin = typeof ship.origin === 'string' ? ship.origin.toUpperCase() : '';
-                const type = typeof ship.type === 'string' ? ship.type.toUpperCase() : '';
+                const type = typeof (ship as any).type === 'string' ? (ship as any).type.toUpperCase() : '';
                 if (origin.includes('ESPAÑA') && type.includes('AÉREO')) airSpain++;
                 else if (origin.includes('ESPAÑA') && type.includes('MARÍTIMO')) maritimeBio++;
                 else if (origin.includes('CAMERÚN') || origin.includes('CAMEROON')) regionalCm++;
