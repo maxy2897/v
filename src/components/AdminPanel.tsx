@@ -1425,8 +1425,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                             </div>
                          ))}
                       </div>
-                      <div className="flex justify-between mt-6 text-[9px] font-black text-gray-300 uppercase tracking-widest px-2">
-                         <span>{t('common.jan')}</span><span>{t('common.feb')}</span><span>{t('common.mar')}</span><span>{t('common.apr')}</span><span>{t('common.may')}</span><span>{t('common.jun')}</span><span>{t('common.jul')}</span><span>{t('common.aug')}</span><span>{t('common.sep')}</span><span>{t('common.oct')}</span><span>{t('common.nov')}</span><span>{t('common.dec')}</span>
+                      <div className="flex justify-between mt-6 text-[10px] font-black text-gray-400 tracking-wider px-2 overflow-x-auto gap-2">
+                         {[
+                            t('common.jan'), t('common.feb'), t('common.mar'), t('common.apr'),
+                            t('common.may'), t('common.jun'), t('common.jul'), t('common.aug'),
+                            t('common.sep'), t('common.oct'), t('common.nov'), t('common.dec')
+                         ].map((m, idx) => (
+                            <span key={idx} className="uppercase flex-1 text-center shrink-0 min-w-[24px]">
+                               {m.slice(0, 3)}
+                            </span>
+                         ))}
                       </div>
                    </div>
                    
