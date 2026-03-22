@@ -1405,7 +1405,34 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
              </div>
           )}
 
-          {activeTab === 'reports' && (
+          {activeTab === 'reports' && (() => {
+             const currentYear = new Date().getFullYear();
+             const monthlyCounts = new Array(12).fill(0);
+             let airSpain = 0, maritimeBio = 0, regionalCm = 0, totalRoutes = 0;
+             
+             (allShipments || []).forEach(ship => {
+                const d = new Date(ship.createdAt);
+                if (d.getFullYear() === currentYear) {
+                   monthlyCounts[d.getMonth()]++;
+                }
+                const origin = typeof ship.origin === 'string' ? ship.origin.toUpperCase() : '';
+                const type = typeof ship.type === 'string' ? ship.type.toUpperCase() : '';
+                if (origin.includes('ESPAÑA') && type.includes('AÉREO')) airSpain++;
+                else if (origin.includes('ESPAÑA') && type.includes('MARÍTIMO')) maritimeBio++;
+                else if (origin.includes('CAMERÚN') || origin.includes('CAMEROON')) regionalCm++;
+             });
+             
+             totalRoutes = airSpain + maritimeBio + regionalCm;
+             const routePct = (val: number) => totalRoutes > 0 ? Math.round((val / totalRoutes) * 100) : 0;
+             
+             const pAir = routePct(airSpain);
+             const pMar = routePct(maritimeBio);
+             const pReg = routePct(regionalCm);
+             
+             const maxMonth = Math.max(...monthlyCounts, 1);
+             const normalizedMonthly = monthlyCounts.map(count => totalRoutes > 0 ? Math.round((count / maxMonth) * 100) : 5); // 5% base visual height if no data
+             
+             return (
              <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in">
                 <div className="flex justify-between items-end mb-4">
                    <div>
@@ -1419,9 +1446,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm col-span-1 lg:col-span-2">
                       <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-10 pb-2 border-b">{t('admin.shipment_evolution')}</h4>
                       <div className="h-64 flex items-end justify-between gap-4 px-4 overflow-hidden">
-                         {[65, 80, 45, 90, 100, 70, 85, 95, 110, 80, 90, 120].map((h, i) => (
-                            <div key={i} className="w-full bg-teal-500/10 rounded-t-xl relative group">
-                               <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05, duration: 1 }} className="absolute bottom-0 left-0 right-0 bg-teal-500 rounded-t-xl group-hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20"></motion.div>
+                         {normalizedMonthly.map((h, i) => (
+                            <div key={i} className="w-full bg-teal-500/10 rounded-t-xl relative group flex justify-center">
+                               <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05, duration: 1 }} className="absolute bottom-0 left-0 right-0 bg-teal-500 rounded-t-xl group-hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20">
+                                  {totalRoutes > 0 && monthlyCounts[i] > 0 && (
+                                     <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity">{monthlyCounts[i]}</span>
+                                  )}
+                               </motion.div>
                             </div>
                          ))}
                       </div>
@@ -1445,17 +1476,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       <h4 className="text-xs font-black text-teal-400 uppercase tracking-widest mb-12">{t('admin.market_share')}</h4>
                       <div className="space-y-6 relative z-10">
                          {[
-                           { name: t('admin.air_spain'), val: '72%', color: 'bg-teal-500' },
-                           { name: t('admin.maritime_bio'), val: '18%', color: 'bg-indigo-500' },
-                           { name: t('admin.regional_cm'), val: '10%', color: 'bg-orange-500' }
+                           { name: t('admin.air_spain'), val: `${pAir}%`, color: 'bg-teal-500' },
+                           { name: t('admin.maritime_bio'), val: `${pMar}%`, color: 'bg-indigo-500' },
+                           { name: t('admin.regional_cm'), val: `${pReg}%`, color: 'bg-orange-500' }
                          ].map(item => (
                             <div key={item.name} className="space-y-2">
                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                                   <span>{item.name}</span>
-                                  <span>{item.val}</span>
+                                  <span>{totalRoutes > 0 ? item.val : '0%'}</span>
                                </div>
                                <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                                  <motion.div initial={{ width: 0 }} animate={{ width: item.val }} transition={{ duration: 1.5 }} className={`h-full ${item.color} shadow-[0_0_10px_rgba(20,184,166,0.3)]`}></motion.div>
+                                  <motion.div initial={{ width: 0 }} animate={{ width: totalRoutes > 0 ? item.val : '0%' }} transition={{ duration: 1.5 }} className={`h-full ${item.color} shadow-[0_0_10px_rgba(20,184,166,0.3)]`}></motion.div>
                                </div>
                             </div>
                          ))}
@@ -1463,7 +1494,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    </div>
                 </div>
              </div>
-          )}
+             );
+          })()}
 
           {activeTab === 'manifests' && (
              <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5">
