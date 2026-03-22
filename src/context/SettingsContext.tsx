@@ -398,10 +398,16 @@ const translations: Record<Language, Record<string, string>> = {
 
         // Section Headers
         'admin.section.main': 'Principal',
+        'admin.section.business': 'Negocio',
+        'admin.section.management': 'Gestión',
+        'admin.section.logistics': 'Logística',
+        'admin.section.system': 'Sistema',
+        'admin.section.activity': 'Actividad',
         'admin.social_networks': 'Redes Sociales',
         'admin.whatsapp_number': 'WhatsApp (Número o Link)',
         'admin.system_config': 'Configuración del Sistema',
         'admin.exchange_rates': 'Tasas de Cambio',
+        'admin.eur_cfa_rate': 'Tasa EUR ➜ CFA',
         'admin.logistic_engine': 'Motor Logístico',
         'admin.route_optimizing': 'Estado: Optimizando Rutas',
         'admin.logistic_scanner': 'Escáner Logístico',
@@ -423,6 +429,8 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.air_spain': 'Aéreo España',
         'admin.maritime_bio': 'Marítimo Bioko',
         'admin.regional_cm': 'Regional Camerún',
+        'admin.next_shipment_dates': 'Fechas Próximos Envíos',
+        'admin.annual_summary_title': 'Resumen de Programación Anual',
         'admin.collective_packages': 'Bultos Colectivos',
         'admin.generate_qr_master': 'Genera un QR maestro para un contenedor de paquetes',
         'admin.create_collective': 'Crear Bulto Colectivo',
@@ -693,6 +701,11 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.scanner.product_delete_confirm': '¿Seguro que deseas eliminar este producto?',
         'admin.scanner.product_delete_error': 'Error al eliminar producto',
         'admin.scanner.export_hint': 'Función de exportación PDF/Excel se activará en la próxima versión.',
+        'admin.save_system_config': 'Guardar Configuración del Sistema',
+        'admin.save_web_changes': 'Guardar Cambios Web',
+        'admin.system_status': 'Estado del Sistema',
+        'admin.quick_access': 'Acceso Rápido',
+        'admin.scanner': 'Escáner',
 
         // Shared/Footer
         'footer.rights': 'Todos los derechos reservados',
@@ -1128,6 +1141,10 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.active_secure': 'Active and Secure',
         'dash.view_all': 'View All',
         'dash.no_activity': 'No activity',
+        'admin.save_system_config': 'Save System Config',
+        'admin.next_shipment_dates': 'Next Shipment Dates',
+        'admin.annual_summary_title': 'Annual Programming Summary',
+        'admin.eur_cfa_rate': 'EUR ➜ CFA Rate',
 
         // Register
 
@@ -1261,7 +1278,6 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.tiktok_link': 'TikTok Link',
         'admin.facebook_link': 'Facebook Link',
         'admin.whatsapp_number_link': 'WhatsApp Number (ex: +34 643...)',
-        'admin.save_web_changes': 'Save Web Changes',
         'admin.exchange_rates': 'Exchange Rates',
         'admin.shipping_dates_moved': 'Shipping dates moved',
         'admin.edit_dates_web_calendar': 'To edit these dates go to Web > Calendar',
@@ -1799,6 +1815,10 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.section.logistics': 'Logistique',
         'admin.section.system': 'Système',
         'admin.section.activity': 'Activité',
+        'admin.save_system_config': 'Enregistrer la configuration du système',
+        'admin.next_shipment_dates': 'Dates des prochains envois',
+        'admin.annual_summary_title': 'Résumé de la programmation annuelle',
+        'admin.eur_cfa_rate': 'Taux EUR ➜ CFA',
         'admin.quick_access': 'Accès Rapides',
         'admin.scanner': 'Scanner',
         'admin.system_status': 'État du Système',
