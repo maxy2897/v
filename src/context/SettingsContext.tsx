@@ -112,6 +112,18 @@ const translations: Record<Language, Record<string, string>> = {
         'common.status': 'Estado',
         'common.current_status': 'Estado actual',
         'common.packages_included': 'paquetes incluidos',
+        'common.jan': 'Enero',
+        'common.feb': 'Febrero',
+        'common.mar': 'Marzo',
+        'common.apr': 'Abril',
+        'common.may': 'Mayo',
+        'common.jun': 'Junio',
+        'common.jul': 'Julio',
+        'common.aug': 'Agosto',
+        'common.sep': 'Septiembre',
+        'common.oct': 'Octubre',
+        'common.nov': 'Noviembre',
+        'common.dec': 'Diciembre',
 
 
         // Home Hero
@@ -737,6 +749,18 @@ const translations: Record<Language, Record<string, string>> = {
         'common.status': 'Status',
         'common.current_status': 'Current status',
         'common.packages_included': 'packages included',
+        'common.jan': 'January',
+        'common.feb': 'February',
+        'common.mar': 'March',
+        'common.apr': 'April',
+        'common.may': 'May',
+        'common.jun': 'June',
+        'common.jul': 'July',
+        'common.aug': 'August',
+        'common.sep': 'September',
+        'common.oct': 'October',
+        'common.nov': 'November',
+        'common.dec': 'December',
 
 
         // Home Hero
@@ -1385,6 +1409,18 @@ const translations: Record<Language, Record<string, string>> = {
         'common.status': 'Statut',
         'common.current_status': 'Statut actuel',
         'common.packages_included': 'paquets inclus',
+        'common.jan': 'Janvier',
+        'common.feb': 'Février',
+        'common.mar': 'Mars',
+        'common.apr': 'Avril',
+        'common.may': 'Mai',
+        'common.jun': 'Juin',
+        'common.jul': 'Juillet',
+        'common.aug': 'Août',
+        'common.sep': 'Septembre',
+        'common.oct': 'Octobre',
+        'common.nov': 'Novembre',
+        'common.dec': 'Décembre',
 
 
         // Home Hero
