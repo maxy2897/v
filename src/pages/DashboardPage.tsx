@@ -522,6 +522,386 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                 )}
                             </div>
 
+                            {/* Shipments View */}
+                            {activeTab === 'shipments' && (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {/* Doc Promo */}
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate('/tarifas?mode=documento&origin=Guinea Ecuatorial')}
+                                        className="w-full p-8 rounded-[2rem] border-2 border-dashed border-teal-200 bg-teal-50/50 flex flex-col sm:flex-row items-center justify-between gap-6 hover:bg-teal-100 transition-all group"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-600 shadow-sm shrink-0 group-hover:scale-110 transition-transform">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-xs font-black uppercase tracking-widest text-teal-800">{t('dashboard.document_shipment')}</p>
+                                                <p className="text-[10px] font-bold text-gray-500 uppercase italic">{t('dashboard.express_service_spain')}</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-[#00151a] text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">{t('dashboard.send_now')}</span>
+                                    </button>
+
+                                    {/* Search */}
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder={t('dashboard.search_shipments_placeholder')}
+                                            title={t('dashboard.search_shipments')}
+                                            aria-label={t('dashboard.search_shipments')}
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-none bg-white shadow-sm focus:ring-2 focus:ring-teal-500 transition-all font-medium text-gray-700 placeholder-gray-400"
+                                        />
+                                        <svg className="w-5 h-5 text-gray-300 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                    </div>
+
+                                    {/* List */}
+                                    <div className="space-y-4">
+                                        {Object.entries(groupedShipments).map(([date, group]) => (
+                                            <div key={date}>
+                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-teal-400" />
+                                                    {date}
+                                                </h3>
+                                                <div className="space-y-4 mb-10">
+                                                    {group.map((shipment) => (
+                                                        <div key={shipment._id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:border-teal-100 transition-all flex flex-col md:flex-row gap-6">
+                                                            <div className="flex-grow">
+                                                                <div className="flex items-center gap-3 mb-4">
+                                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter border ${getStatusColor(shipment.status)}`}>
+                                                                        {shipment.status}
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-gray-300">#{shipment.trackingNumber}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-8">
+                                                                    <div>
+                                                                        <p className="text-[9px] font-black uppercase text-gray-400 mb-1">{t('dashboard.origin')}</p>
+                                                                        <p className="text-sm font-black text-[#00151a]">{shipment.origin}</p>
+                                                                    </div>
+                                                                    <svg className="w-4 h-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                                                    <div>
+                                                                        <p className="text-[9px] font-black uppercase text-gray-400 mb-1">{t('dashboard.destination')}</p>
+                                                                        <p className="text-sm font-black text-[#00151a]">{shipment.destination}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="shrink-0 flex md:flex-col justify-between items-end gap-2 border-l border-gray-50 pl-6">
+                                                                <div className="text-right">
+                                                                    <p className="text-[10px] font-black text-gray-300 uppercase">{t('dashboard.amount')}</p>
+                                                                    <p className="text-lg font-black text-teal-600 tracking-tighter">{shipment.price.toLocaleString()} FCFA</p>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => navigate(`/rastreo?code=${shipment.trackingNumber}`)}
+                                                                    className="text-[9px] font-black uppercase text-[#007e85] hover:bg-[#f0fcfc] px-4 py-2 rounded-lg transition-all"
+                                                                >
+                                                                    {t('dashboard.track')} →
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Invoices View */}
+                            {activeTab === 'invoices' && (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {transactions.map((tx) => (
+                                        <div key={tx._id} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-6">
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400">
+                                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                                        {tx.type === 'SHIPMENT' ? t('dashboard.shipment_payment') : t('dashboard.transfer_made')}
+                                                    </p>
+                                                    <p className="text-base font-black text-[#00151a]">
+                                                        {new Date(tx.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-6">
+                                                <div className="text-right">
+                                                    <p className="text-lg font-black text-[#00151a] tracking-tighter">{tx.amount.toLocaleString()} {tx.currency || 'FCFA'}</p>
+                                                    <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">{tx.status === 'completed' ? t('shipping.status.delivered') : tx.status}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => downloadInvoice(tx._id)}
+                                                    title={t('dashboard.download_invoice')}
+                                                    aria-label={t('dashboard.download_invoice')}
+                                                    className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center hover:bg-teal-600 hover:text-white transition-all shadow-sm"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Notifications View */}
+                            {activeTab === 'notifications' && (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    {notifications.length === 0 ? (
+                                        <div className="bg-white rounded-[3rem] p-12 text-center border border-dashed border-gray-200 shadow-sm">
+                                            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8 text-4xl">
+                                                📭
+                                            </div>
+                                            <h3 className="text-2xl font-black text-gray-800 tracking-tight">{t('dashboard.empty_inbox')}</h3>
+                                            <p className="text-gray-500 mt-4 max-w-xs mx-auto leading-relaxed">
+                                                {t('dashboard.empty_inbox_desc')}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        notifications.map((n) => (
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                key={n._id}
+                                                onClick={() => !n.isRead && handleMarkAsRead(n._id)}
+                                                className={`group relative p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer flex gap-6 ${n.isRead
+                                                    ? 'bg-white/60 border-gray-100 opacity-80 hover:bg-white hover:opacity-100'
+                                                    : 'bg-white border-teal-200 shadow-xl shadow-teal-500/5 hover:border-teal-400'
+                                                    }`}
+                                            >
+                                                {!n.isRead && (
+                                                    <div className="absolute top-8 right-8 w-3 h-3 bg-teal-500 rounded-full animate-pulse shadow-lg shadow-teal-500/50"></div>
+                                                )}
+                                                <div className={`w-16 h-16 rounded-3xl flex items-center justify-center shrink-0 text-2xl border-2 transition-transform group-hover:scale-110 duration-500 ${getTypeColor(n.type)}`}>
+                                                    {getTypeIcon(n.type)}
+                                                </div>
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <h4 className={`text-xl font-black tracking-tight ${n.isRead ? 'text-gray-600' : 'text-[#00151a]'}`}>
+                                                            {n.title}
+                                                        </h4>
+                                                        <span className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                                                            {new Date(n.createdAt).toLocaleDateString(language === 'es' ? 'es-ES' : language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' })}
+                                                        </span>
+                                                    </div>
+                                                    <p className={`text-sm leading-relaxed ${n.isRead ? 'text-gray-500' : 'text-gray-600 font-medium'}`}>
+                                                        {n.message}
+                                                    </p>
+                                                    {n.shipmentId && (
+                                                        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4">
+                                                            <div className="bg-teal-50 px-3 py-1.5 rounded-xl flex items-center gap-3 border border-teal-100">
+                                                                <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest">{t('dashboard.track_code')}</span>
+                                                                <span className="text-xs font-mono font-black text-teal-700">{n.shipmentId.trackingNumber}</span>
+                                                            </div>
+                                                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                                {t('dashboard.destination')}: <span className="text-gray-600">{n.shipmentId.destination}</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Settings View (Wallapop Style) */}
+                            {activeTab === 'settings' && (
+                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
+                                    <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 md:p-12 shadow-sm">
+                                        <h3 className="text-xl font-black text-[#00151a] mb-10 border-b border-gray-50 pb-6 uppercase tracking-tight">{t('dashboard.edit_profile')}</h3>
+
+                                        <form onSubmit={handleUpdateProfile} className="space-y-10">
+                                            {/* Avatar Edit */}
+                                            <div className="flex flex-col sm:flex-row items-center gap-8 mb-12 bg-gray-50 p-6 rounded-3xl border border-gray-100/50">
+                                                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-md relative group">
+                                                    {formData.profileImage ? (
+                                                        <img src={formData.profileImage.startsWith('http') ? formData.profileImage : `${BASE_URL}/${formData.profileImage}`} alt="Profile" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-black text-2xl uppercase">{user.name?.charAt(0)}</div>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col gap-2">
+                                                    <button type="button" className="px-6 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-black uppercase text-gray-700 hover:bg-gray-50 transition-all shadow-sm">{t('dashboard.change_photo')}</button>
+                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest text-center sm:text-left">{t('dashboard.image_format_info')}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.full_name')}</label>
+                                                    <input
+                                                        type="text"
+                                                        title={t('dashboard.full_name')}
+                                                        aria-label={t('dashboard.full_name')}
+                                                        value={formData.name}
+                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                        className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a]"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.email_protected')}</label>
+                                                    <input type="text" title="Email" aria-label="Email" value={user.email} readOnly className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl text-gray-400 font-bold text-sm cursor-not-allowed" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.phone')}</label>
+                                                    <PhoneInput
+                                                        value={formData.phone}
+                                                        onChange={(val) => setFormData({ ...formData, phone: val })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.dni_nie')}</label>
+                                                    <input
+                                                        type="text"
+                                                        title={t('dashboard.dni_nie')}
+                                                        aria-label={t('dashboard.dni_nie')}
+                                                        value={formData.idNumber}
+                                                        onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                                                        className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a]"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2 space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.shipping_address')}</label>
+                                                    <input
+                                                        type="text"
+                                                        title={t('dashboard.shipping_address')}
+                                                        aria-label={t('dashboard.shipping_address')}
+                                                        value={formData.address}
+                                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                                        className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a]"
+                                                        placeholder={t('dashboard.shipping_address_placeholder')}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                type="submit"
+                                                disabled={loading}
+                                                className="w-full mt-10 bg-[#00151a] text-white py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-teal-600 transition-all shadow-xl shadow-gray-200"
+                                            >
+                                                {loading ? t('admin.loading') : t('dashboard.save_info')}
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-50">
+                                        <h3 className="text-xl font-black text-[#00151a] mb-2">{t('dashboard.password_change')}</h3>
+                                        <p className="text-sm text-gray-400 font-medium mb-8">{t('admin.last_update')}: 3 {t('admin.reports.months')}</p>
+                                        
+                                        {!isPasswordFormOpen ? (
+                                            <button 
+                                                onClick={() => setIsPasswordFormOpen(true)}
+                                                className="w-full border-2 border-[#00151a] text-[#00151a] px-8 py-5 rounded-3xl text-sm font-black uppercase tracking-widest hover:bg-[#00151a] hover:text-white transition-all"
+                                            >
+                                                {t('dashboard.update_password')}
+                                            </button>
+                                        ) : (
+                                            <form onSubmit={handleUpdatePassword} className="space-y-6 animate-in slide-in-from-top-4 duration-500">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.current_password')}</label>
+                                                    <div className="relative">
+                                                        <input
+                                                            type={showPasswords.current ? "text" : "password"}
+                                                            required
+                                                            title={t('dashboard.current_password')}
+                                                            value={passwordData.currentPassword}
+                                                            onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                                                            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a] pr-14"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+                                                            className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600 transition-colors"
+                                                        >
+                                                            {showPasswords.current ? (
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+                                                            ) : (
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex justify-end mt-1">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => onOpenForgotPassword?.()}
+                                                            className="text-[10px] font-bold text-teal-600 uppercase tracking-wide hover:underline"
+                                                        >
+                                                            {t('login.forgot')}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.new_password')}</label>
+                                                    <div className="relative">
+                                                        <input
+                                                            type={showPasswords.new ? "text" : "password"}
+                                                            required
+                                                            title={t('dashboard.new_password')}
+                                                            value={passwordData.newPassword}
+                                                            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                                            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a] pr-14"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                                                            className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600 transition-colors"
+                                                        >
+                                                            {showPasswords.new ? (
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+                                                            ) : (
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{t('dashboard.confirm_new_password')}</label>
+                                                    <div className="relative">
+                                                        <input
+                                                            type={showPasswords.confirm ? "text" : "password"}
+                                                            required
+                                                            title={t('dashboard.confirm_new_password')}
+                                                            value={passwordData.confirmPassword}
+                                                            onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                                                            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500 transition-all font-bold text-sm text-[#00151a] pr-14"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                                                            className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-600 transition-colors"
+                                                        >
+                                                            {showPasswords.confirm ? (
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+                                                            ) : (
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-4 pt-4">
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => setIsPasswordFormOpen(false)}
+                                                        className="flex-1 border-2 border-gray-100 text-gray-400 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all"
+                                                    >
+                                                        {t('common.cancel')}
+                                                    </button>
+                                                    <button 
+                                                        type="submit"
+                                                        disabled={loading}
+                                                        className="flex-1 bg-[#00151a] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 transition-all shadow-lg"
+                                                    >
+                                                        {loading ? t('common.processing') : t('common.save')}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Virtual Card View */}
                             {activeTab === 'virtual_card' && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
