@@ -3,6 +3,30 @@ import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
+const StoreLogoImage = ({ src, domain, name, googleLogoFn, initialsLogoFn }: { src: string, domain: string, name: string, googleLogoFn: (domain: string) => string, initialsLogoFn: (name: string) => string }) => {
+  const [currentSrc, setCurrentSrc] = React.useState(src);
+  const [errorStep, setErrorStep] = React.useState(0);
+
+  return (
+    <div className="relative h-12 md:h-16 w-full flex items-center justify-center mb-2">
+      <img
+        src={currentSrc}
+        alt={name}
+        className="max-h-full max-w-full object-contain transition-all group-hover:scale-110"
+        onError={() => {
+          if (errorStep === 0) {
+            setCurrentSrc(googleLogoFn(domain));
+            setErrorStep(1);
+          } else if (errorStep === 1) {
+            setCurrentSrc(initialsLogoFn(name));
+            setErrorStep(2);
+          }
+        }}
+      />
+    </div>
+  );
+};
+
 const OnlineShoppingPage: React.FC = () => {
   const { t, appConfig } = useSettings();
   const { user } = useAuth();
@@ -41,8 +65,49 @@ const OnlineShoppingPage: React.FC = () => {
     { name: 'Disney Store', domain: 'disneystore.es', url: 'https://disneystore.es' },
   ];
 
-  const getLogo = (domain: string) => `https://unavatar.io/${domain}`;
-  const getGoogleLogo = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+  // Logo sources in priority order: Clearbit (best quality) → Google Favicons → Initials
+  const getClearbitLogo = (domain: string) => `https://logo.clearbit.com/${domain}`;
+  const getGoogleLogo = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
+  const getInitialsLogo = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D9488&color=fff&bold=true&size=128&font-size=0.4`;
+
+  // Direct logo URLs for top stores (most reliable)
+  const directLogos: Record<string, string> = {
+    'amazon.es': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
+    'zara.com': 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Zara_Logo.svg',
+    'aliexpress.com': 'https://upload.wikimedia.org/wikipedia/commons/7/77/Aliexpress_logo.svg',
+    'shein.com': 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Shein_logo.svg',
+    'temu.com': 'https://logo.clearbit.com/temu.com',
+    'nike.com': 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg',
+    'ikea.com': 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg',
+    'apple.com': 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
+    'hm.com': 'https://upload.wikimedia.org/wikipedia/commons/5/53/H%26M-Logo.svg',
+    'adidas.es': 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg',
+    'puma.com': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Puma_logo.svg/1200px-Puma_logo.svg.png',
+    'mango.com': 'https://logo.clearbit.com/mango.com',
+    'decathlon.es': 'https://logo.clearbit.com/decathlon.es',
+    'mediamarkt.es': 'https://logo.clearbit.com/mediamarkt.es',
+    'sephora.es': 'https://logo.clearbit.com/sephora.es',
+    'elcorteingles.es': 'https://logo.clearbit.com/elcorteingles.es',
+    'booking.com': 'https://logo.clearbit.com/booking.com',
+    'airbnb.com': 'https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg',
+    'ebay.es': 'https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.svg',
+    'asos.com': 'https://logo.clearbit.com/asos.com',
+    'zalando.es': 'https://logo.clearbit.com/zalando.es',
+    'fnac.es': 'https://logo.clearbit.com/fnac.es',
+    'lego.com': 'https://logo.clearbit.com/lego.com',
+    'nespresso.com': 'https://logo.clearbit.com/nespresso.com',
+    'pandora.net': 'https://logo.clearbit.com/pandora.net',
+    'massimodutti.com': 'https://logo.clearbit.com/massimodutti.com',
+    'bershka.com': 'https://logo.clearbit.com/bershka.com',
+    'pullandbear.com': 'https://logo.clearbit.com/pullandbear.com',
+    'stradivarius.com': 'https://logo.clearbit.com/stradivarius.com',
+    'disneystore.es': 'https://logo.clearbit.com/disneystore.es',
+  };
+
+  const getStoreLogo = (domain: string, customLogo?: string) => {
+    if (customLogo) return customLogo;
+    return directLogos[domain] || getClearbitLogo(domain);
+  };
 
   const [clickCounts, setClickCounts] = React.useState<Record<string, number>>(() => {
     const saved = localStorage.getItem('shopping_frequencies');
@@ -173,21 +238,13 @@ const OnlineShoppingPage: React.FC = () => {
               whileHover={{ y: -10 }}
               className="bg-white dark:bg-gray-800 p-6 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center group hover:border-teal-500 transition-all duration-300 relative overflow-hidden h-32 md:h-44"
             >
-              <div className="relative h-12 md:h-16 w-full flex items-center justify-center mb-2">
-                <img
-                  src={store.logo || getLogo(store.domain)}
-                  alt={store.name}
-                  className="max-h-full max-w-full object-contain transition-all group-hover:scale-110"
-                  onError={(e) => {
-                    const img = e.target as HTMLImageElement;
-                    if (img.src.includes('unavatar.io')) {
-                      img.src = getGoogleLogo(store.domain);
-                    } else if (img.src.includes('google.com')) {
-                      img.src = `https://ui-avatars.com/api/?name=${store.name}&background=0D9488&color=fff&bold=true`;
-                    }
-                  }}
-                />
-              </div>
+              <StoreLogoImage
+                src={getStoreLogo(store.domain, store.logo)}
+                domain={store.domain}
+                name={store.name}
+                googleLogoFn={getGoogleLogo}
+                initialsLogoFn={getInitialsLogo}
+              />
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-teal-600 transition-colors">{store.name}</p>
               {(clickCounts[store.name] || 0) > 0 && (
                 <div className="absolute top-4 right-6 bg-teal-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-lg">Frecuente</div>
