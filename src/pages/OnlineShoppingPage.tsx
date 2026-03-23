@@ -92,30 +92,37 @@ const OnlineShoppingPage: React.FC = () => {
             </motion.p>
           </div>
 
-          {user?.virtualCard?.active && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-              animate={{ opacity: 1, scale: 1, rotate: -2 }}
-              className="relative group shrink-0"
-            >
-              <div className="absolute -inset-4 bg-teal-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
-              <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                <div className="flex justify-between items-center mb-6">
-                  <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
-                  <div className="text-right">
-                    <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Tu Saldo</p>
-                    <p className="text-lg font-black tracking-tight">{(user.virtualCard.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
-                    <p className="text-[11px] font-black text-teal-500 tracking-widest mt-0.5">≈ {((user.virtualCard.balance || 0) / eurRate).toFixed(2)} €</p>
-                  </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+            animate={{ opacity: 1, scale: 1, rotate: -2 }}
+            className="relative group shrink-0"
+          >
+            <div className="absolute -inset-4 bg-teal-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
+            <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden">
+              {!user?.virtualCard?.active && (
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-20 flex items-center justify-center p-6 text-center">
+                  <div className="px-4 py-2 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">Activar para ver datos</div>
                 </div>
-                <div className="flex justify-between items-end">
-                   <p className="text-[10px] font-mono tracking-widest opacity-60">**** **** **** {user.virtualCard.number?.slice(-4) || '3238'}</p>
-                   <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/10 text-[8px] font-black uppercase tracking-widest text-teal-400">Card Active</div>
+              )}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+              <div className="flex justify-between items-center mb-6">
+                <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
+                <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[4px]' : ''}`}>
+                  <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Tu Saldo</p>
+                  <p className="text-lg font-black tracking-tight">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
+                  <p className="text-[11px] font-black text-teal-500 tracking-widest mt-0.5">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} €</p>
                 </div>
               </div>
-            </motion.div>
-          )}
+              <div className="flex justify-between items-end">
+                 <p className={`text-[10px] font-mono tracking-widest opacity-60 ${!user?.virtualCard?.active ? 'blur-[5px]' : ''}`}>
+                    **** **** **** {user?.virtualCard?.number?.slice(-4) || '3238'}
+                 </p>
+                 <div className={`px-3 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-white/5 border-white/10 text-teal-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                    {user?.virtualCard?.active ? 'Card Active' : 'Inactive'}
+                 </div>
+              </div>
+            </div>
+          </motion.div>
         </header>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -201,58 +208,62 @@ const OnlineShoppingPage: React.FC = () => {
       </div>
 
       {/* Floating Card Widget */}
-      {user?.virtualCard?.active && (
-        <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
-          <AnimatePresence>
-            {isCardVisible && (
-              <motion.div
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 50, scale: 0.9 }}
-                className="w-80 bg-slate-900 rounded-[2rem] p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                <div className="flex justify-between items-center mb-6">
-                  <img src="/images/virtual-card.png" className="w-12 h-12 object-contain rounded-lg" alt="Card" />
-                  <div className="text-right">
-                    <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest">Saldo</p>
-                    <p className="text-sm font-black tracking-tight">{(user.virtualCard.balance || 0).toLocaleString()} FCFA</p>
-                    <p className="text-[11px] font-black text-teal-500 tracking-widest mt-1">≈ {((user.virtualCard.balance || 0) / eurRate).toFixed(2)} €</p>
-                  </div>
+      <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
+        <AnimatePresence>
+          {isCardVisible && (
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 50, scale: 0.9 }}
+              className="w-80 bg-slate-900 rounded-[2rem] p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden"
+            >
+              {!user?.virtualCard?.active && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[3px] z-20 flex flex-col items-center justify-center p-8 text-center">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4">Tarjeta Protegida</p>
+                  <button className="px-6 py-2.5 bg-teal-600 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-all">Solicitar Activación</button>
                 </div>
-                <div className="space-y-4 font-mono tracking-widest">
+              )}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+              <div className="flex justify-between items-center mb-6">
+                <img src="/images/virtual-card.png" className="w-12 h-12 object-contain rounded-lg" alt="Card" />
+                <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[4px]' : ''}`}>
+                  <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest">Saldo</p>
+                  <p className="text-sm font-black tracking-tight">{(user?.virtualCard?.balance || 0).toLocaleString()} FCFA</p>
+                  <p className="text-[11px] font-black text-teal-500 tracking-widest mt-1">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} €</p>
+                </div>
+              </div>
+              <div className="space-y-4 font-mono tracking-widest">
+                <div className={!user?.virtualCard?.active ? 'blur-[6px]' : ''}>
+                  <p className="text-[8px] opacity-40 uppercase mb-1">Número de Tarjeta</p>
+                  <p className="text-xs font-black flex justify-between items-center">
+                    {user?.virtualCard?.number || '4918 5004 2135 3238'}
+                    {user?.virtualCard?.active && <button onClick={() => navigator.clipboard.writeText(user?.virtualCard?.number || '')} className="text-teal-400 text-[10px] hover:scale-110 transition-transform">📋</button>}
+                  </p>
+                </div>
+                <div className={`flex justify-between ${!user?.virtualCard?.active ? 'blur-[6px]' : ''}`}>
                   <div>
-                    <p className="text-[8px] opacity-40 uppercase mb-1">Número de Tarjeta</p>
-                    <p className="text-xs font-black flex justify-between items-center">
-                      {user.virtualCard.number || '4918 5004 2135 3238'}
-                      <button onClick={() => navigator.clipboard.writeText(user.virtualCard?.number || '')} className="text-teal-400 text-[10px] hover:scale-110 transition-transform">📋</button>
-                    </p>
+                    <p className="text-[8px] opacity-40 uppercase mb-1">EXP</p>
+                    <p className="text-[10px] font-black">{user?.virtualCard?.expiry || '04/2029'}</p>
                   </div>
-                  <div className="flex justify-between">
-                    <div>
-                      <p className="text-[8px] opacity-40 uppercase mb-1">EXP</p>
-                      <p className="text-[10px] font-black">{user.virtualCard.expiry || '04/2029'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[8px] opacity-40 uppercase mb-1">CVV</p>
-                      <p className="text-[10px] font-black">{user.virtualCard.cvv || '043'}</p>
-                    </div>
+                  <div>
+                    <p className="text-[8px] opacity-40 uppercase mb-1">CVV</p>
+                    <p className="text-[10px] font-black">{user?.virtualCard?.cvv || '043'}</p>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <button
-            onClick={() => setIsCardVisible(!isCardVisible)}
-            className="w-16 h-16 bg-teal-600 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all text-white relative group"
-          >
-            <span className="group-hover:rotate-12 transition-transform">💳</span>
-            {!isCardVisible && (
-              <span className="absolute -top-1 -right-1 bg-white text-teal-600 p-1 rounded-full text-[10px] font-black animate-bounce shadow-sm">!</span>
-            )}
-          </button>
-        </div>
-      )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <button
+          onClick={() => setIsCardVisible(!isCardVisible)}
+          className="w-16 h-16 bg-teal-600 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all text-white relative group"
+        >
+          <span className="group-hover:rotate-12 transition-transform">💳</span>
+          {!isCardVisible && (
+            <span className="absolute -top-1 -right-1 bg-white text-teal-600 p-1 rounded-full text-[10px] font-black animate-bounce shadow-sm">!</span>
+          )}
+        </button>
+      </div>
     </div>
   );
 };
