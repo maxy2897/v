@@ -276,7 +276,13 @@ export const createTransfer = async (formData: FormData) => {
         body: formData,
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (e) {
+        throw new Error(`Error del servidor (${response.status}): El servidor no respondió con un JSON válido.`);
+    }
 
     if (!response.ok) {
         throw new Error(data.message || 'Error al crear transferencia');

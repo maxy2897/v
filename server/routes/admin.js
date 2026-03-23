@@ -142,4 +142,42 @@ router.post('/users/:id/password', protect, async (req, res) => {
     }
 });
 
+// @route   PUT /api/admin/users/:id/virtual-card
+// @desc    Actualizar o activar tarjeta virtual de usuario
+// @access  Private/Admin
+router.put('/users/:id/virtual-card', protect, async (req, res) => {
+    try {
+        if (!['admin', 'admin_tech', 'admin_finance'].includes(req.user.role)) {
+            return res.status(403).json({ message: 'No autorizado' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const { active, balance, cardNumber, expiryDate, cvv, holderName } = req.body;
+
+        // Si no existe el objeto virtualCard, inicializarlo
+        if (!user.virtualCard) user.virtualCard = {};
+
+        if (active !== undefined) user.virtualCard.active = active;
+        if (balance !== undefined) user.virtualCard.balance = (user.virtualCard.balance || 0) + Number(balance);
+        
+        // Generar datos aleatorios si se activa por primera vez y no se pasan
+        if (active && (!user.virtualCard.cardNumber || cardNumber)) {
+            user.virtualCard.cardNumber = cardNumber || `4532 ${Math.floor(Math.random()*9000+1000)} ${Math.floor(Math.random()*9000+1000)} ${Math.floor(Math.random()*9000+1000)}`;
+            user.virtualCard.expiryDate = expiryDate || "12/28";
+            user.virtualCard.cvv = cvv || `${Math.floor(Math.random()*900+100)}`;
+            user.virtualCard.holderName = holderName || user.name.toUpperCase();
+        }
+
+        await user.save();
+        res.json({ message: 'Tarjeta virtual actualizada', virtualCard: user.virtualCard });
+    } catch (error) {
+        console.error('Error updating virtual card:', error);
+        res.status(500).json({ message: 'Error del servidor al actualizar tarjeta' });
+    }
+});
+
 export default router;

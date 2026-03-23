@@ -78,6 +78,14 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    virtualCard: {
+        active: { type: Boolean, default: false },
+        cardNumber: { type: String },
+        expiryDate: { type: String },
+        cvv: { type: String },
+        balance: { type: Number, default: 0 },
+        holderName: { type: String }
+    }
 });
 
 // Virtual for isAdmin

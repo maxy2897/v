@@ -74,11 +74,16 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
         try {
             const formData = new FormData();
             formData.append('amount', rechargeAmount);
-            if (screenshot) formData.append('image', screenshot);
+            if (screenshot) formData.append('proofImage', screenshot);
             formData.append('type', 'deposit');
             formData.append('description', 'Carga de Tarjeta Virtual');
             formData.append('method', 'Transferencia');
             formData.append('category', 'Recarga Tarjeta');
+            
+            // Datos del remitente y beneficiario requeridos por el backend
+            formData.append('sender', JSON.stringify({ name: user?.name, phone: user?.phone, email: user?.email }));
+            formData.append('beneficiary', JSON.stringify({ name: 'BODIPO BUSINESS', phone: 'SYSTEM', email: 'admin@bodipobusiness.com' }));
+            formData.append('direction', 'ES -> GQ');
 
             await api.createTransfer(formData);
             

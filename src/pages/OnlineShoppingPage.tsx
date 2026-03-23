@@ -2,6 +2,7 @@ import React from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import * as api from '../services/api';
 
 const StoreLogoImage = ({ src, domain, name, googleLogoFn, initialsLogoFn }: { src: string, domain: string, name: string, googleLogoFn: (domain: string) => string, initialsLogoFn: (name: string) => string }) => {
   const [currentSrc, setCurrentSrc] = React.useState(src);
@@ -156,13 +157,18 @@ const OnlineShoppingPage: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append('amount', rechargeAmount);
-      if (screenshot) formData.append('image', screenshot);
+      if (screenshot) formData.append('proofImage', screenshot);
       formData.append('type', 'deposit');
       formData.append('description', 'Recarga Tarjeta Virtual (Tienda)');
       formData.append('method', 'Transferencia');
       formData.append('category', 'Recarga Tarjeta');
 
-      const res = await import('../services/api').then(m => m.createTransfer(formData));
+      // Campos requeridos por el backend
+      formData.append('sender', JSON.stringify({ name: user?.name, phone: user?.phone, email: user?.email }));
+      formData.append('beneficiary', JSON.stringify({ name: 'BODIPO BUSINESS', phone: 'SYSTEM', email: 'admin@bodipobusiness.com' }));
+      formData.append('direction', 'ES -> GQ');
+
+      await api.createTransfer(formData);
       
       alert('¡Solicitud enviada con éxito! Activaremos tu saldo en cuanto validemos el comprobante.');
       setIsRechargeModalOpen(false);
