@@ -87,7 +87,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
   const handleProcessActivation = async (request: any) => {
     try {
       setVcSaving(request._id);
-      await updateUserVirtualCard(request.user._id, { balance: request.amount, active: true });
+      await updateUserVirtualCard(request.userId, { balance: request.amount, active: true });
       const token = user?.token || localStorage.getItem('token') || '';
       await fetch(`${BASE_URL}/api/transactions/${request._id}`, {
         method: 'PATCH',
