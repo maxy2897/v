@@ -21,6 +21,17 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
   const { theme, toggleTheme, language, setLanguage, t } = useSettings();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const userMenuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const navItems = [
     { path: '/calendario', label: t('nav.calendar') },
@@ -114,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                 {isAuthenticated && <NotificationBell />}
 
                 {isAuthenticated && user ? (
-                  <div className="relative">
+                  <div className="relative group shrink-0" ref={userMenuRef}>
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
                       className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white border-2 border-teal-500 hover:border-teal-600 transition-all shadow-md overflow-hidden relative"
@@ -126,9 +137,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-teal-700 font-bold text-xs">{user.name.charAt(0)}</div>
+                        <div className="w-full h-full flex items-center justify-center text-teal-700 font-bold text-xs">{user.name?.charAt(0)}</div>
                       )}
                     </button>
+                    
                     {(user.role !== 'user' || user.isVerified) && (
                       <div className="absolute -bottom-1 -right-1 z-10 bg-white rounded-full p-[1.5px] shadow-sm">
                         <svg width="14" height="14" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
