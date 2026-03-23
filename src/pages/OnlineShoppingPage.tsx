@@ -9,37 +9,39 @@ const OnlineShoppingPage: React.FC = () => {
   const eurRate = 655.957;
 
   const defaultStores = [
-    { name: 'Amazon', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg', url: 'https://amazon.es' },
-    { name: 'Zara', logo: 'https://static.cdnlogo.com/logos/z/41/zara.svg', url: 'https://zara.com' },
-    { name: 'AliExpress', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Aliexpress_logo.svg', url: 'https://aliexpress.com' },
-    { name: 'Shein', logo: 'https://logos-world.net/wp-content/uploads/2022/11/Shein-Logo.png', url: 'https://shein.com' },
-    { name: 'Temu', logo: 'https://logo-pk.com/logos/temu-logo.png', url: 'https://temu.com' },
-    { name: 'Nike', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/94/Logo_nike_black.png', url: 'https://nike.com' },
-    { name: 'IKEA', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg', url: 'https://ikea.com' },
-    { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg', url: 'https://apple.com' },
-    { name: 'H&M', logo: 'https://static.cdnlogo.com/logos/h/63/h-m.svg', url: 'https://hm.com' },
-    { name: 'Bershka', logo: 'https://static.cdnlogo.com/logos/b/70/bershka.svg', url: 'https://bershka.com' },
-    { name: 'Pull&Bear', logo: 'https://static.cdnlogo.com/logos/p/44/pull-bear.svg', url: 'https://pullandbear.com' },
-    { name: 'Stradivarius', logo: 'https://static.cdnlogo.com/logos/s/22/stradivarius.svg', url: 'https://stradivarius.com' },
-    { name: 'Mango', logo: 'https://static.cdnlogo.com/logos/m/8/mango.svg', url: 'https://mango.com' },
-    { name: 'Decathlon', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Decathlon_logo.svg', url: 'https://decathlon.com' },
-    { name: 'MediaMarkt', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/07/MediaMarkt_logo.svg', url: 'https://mediamarkt.es' },
-    { name: 'Sephora', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d4/Sephora_logo.svg', url: 'https://sephora.es' },
-    { name: 'Massimo Dutti', logo: 'https://static.cdnlogo.com/logos/m/92/massimo-dutti.svg', url: 'https://massimodutti.com' },
-    { name: 'El Corte Inglés', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/29/Logo_El_Corte_Ingle%CC%81s.svg', url: 'https://elcorteingles.es' },
-    { name: 'Booking', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Booking.com_logo.svg', url: 'https://booking.com' },
-    { name: 'Airbnb', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Belo.svg', url: 'https://airbnb.com' },
-    { name: 'Ebay', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.svg', url: 'https://ebay.com' },
-    { name: 'Adidas', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg', url: 'https://adidas.es' },
-    { name: 'Puma', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/88/Puma_complete_logo.svg', url: 'https://puma.com' },
-    { name: 'Asos', logo: 'https://static.cdnlogo.com/logos/a/82/asos.svg', url: 'https://asos.com' },
-    { name: 'Zalando', logo: 'https://static.cdnlogo.com/logos/z/4/zalando.svg', url: 'https://zalando.es' },
-    { name: 'Pandora', logo: 'https://static.cdnlogo.com/logos/p/62/pandora.svg', url: 'https://pandora.net' },
-    { name: 'Nespresso', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Nespresso_logo.svg', url: 'https://nespresso.com' },
-    { name: 'Fnac', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Fnac_Logo.svg', url: 'https://fnac.es' },
-    { name: 'Lego', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg', url: 'https://lego.com' },
-    { name: 'Disney Store', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Disney_Store_logo.svg', url: 'https://disneystore.es' },
+    { name: 'Amazon', domain: 'amazon.es', url: 'https://amazon.es' },
+    { name: 'Zara', domain: 'zara.com', url: 'https://zara.com' },
+    { name: 'AliExpress', domain: 'aliexpress.com', url: 'https://aliexpress.com' },
+    { name: 'Shein', domain: 'shein.com', url: 'https://shein.com' },
+    { name: 'Temu', domain: 'temu.com', url: 'https://temu.com' },
+    { name: 'Nike', domain: 'nike.com', url: 'https://nike.com' },
+    { name: 'IKEA', domain: 'ikea.com', url: 'https://ikea.com' },
+    { name: 'Apple', domain: 'apple.com', url: 'https://apple.com' },
+    { name: 'H&M', domain: 'hm.com', url: 'https://hm.com' },
+    { name: 'Bershka', domain: 'bershka.com', url: 'https://bershka.com' },
+    { name: 'Pull&Bear', domain: 'pullandbear.com', url: 'https://pullandbear.com' },
+    { name: 'Stradivarius', domain: 'stradivarius.com', url: 'https://stradivarius.com' },
+    { name: 'Mango', domain: 'mango.com', url: 'https://mango.com' },
+    { name: 'Decathlon', domain: 'decathlon.es', url: 'https://decathlon.es' },
+    { name: 'MediaMarkt', domain: 'mediamarkt.es', url: 'https://mediamarkt.es' },
+    { name: 'Sephora', domain: 'sephora.es', url: 'https://sephora.es' },
+    { name: 'Massimo Dutti', domain: 'massimodutti.com', url: 'https://massimodutti.com' },
+    { name: 'El Corte Inglés', domain: 'elcorteingles.es', url: 'https://elcorteingles.es' },
+    { name: 'Booking', domain: 'booking.com', url: 'https://booking.com' },
+    { name: 'Airbnb', domain: 'airbnb.com', url: 'https://airbnb.com' },
+    { name: 'Ebay', domain: 'ebay.es', url: 'https://ebay.es' },
+    { name: 'Adidas', domain: 'adidas.es', url: 'https://adidas.es' },
+    { name: 'Puma', domain: 'puma.com', url: 'https://puma.com' },
+    { name: 'Asos', domain: 'asos.com', url: 'https://asos.com' },
+    { name: 'Zalando', domain: 'zalando.es', url: 'https://zalando.es' },
+    { name: 'Pandora', domain: 'pandora.net', url: 'https://pandora.net' },
+    { name: 'Nespresso', domain: 'nespresso.com', url: 'https://nespresso.com' },
+    { name: 'Fnac', domain: 'fnac.es', url: 'https://fnac.es' },
+    { name: 'Lego', domain: 'lego.com', url: 'https://lego.com' },
+    { name: 'Disney Store', domain: 'disneystore.es', url: 'https://disneystore.es' },
   ];
+
+  const getLogo = (domain: string) => `https://logo.clearbit.com/${domain}?size=256`;
 
   const [clickCounts, setClickCounts] = React.useState<Record<string, number>>(() => {
     const saved = localStorage.getItem('shopping_frequencies');
@@ -53,14 +55,31 @@ const OnlineShoppingPage: React.FC = () => {
   };
 
   const stores = React.useMemo(() => {
-    const all = appConfig?.content?.onlineStores && appConfig.content.onlineStores.length > 0 
+    const rawStores = appConfig?.content?.onlineStores && appConfig.content.onlineStores.length > 0 
       ? appConfig.content.onlineStores 
       : defaultStores;
     
-    return [...all].sort((a, b) => (clickCounts[b.name] || 0) - (clickCounts[a.name] || 0));
+    // Normalizar para asegurar que todos tengan domain o logo
+    const normalized = rawStores.map((s: any) => ({
+      ...s,
+      domain: s.domain || (s.url ? new URL(s.url).hostname.replace('www.', '') : s.name.toLowerCase().replace(/\s/g, '') + '.com')
+    }));
+
+    return normalized.sort((a, b) => (clickCounts[b.name] || 0) - (clickCounts[a.name] || 0));
   }, [appConfig, clickCounts]);
 
-  const [isCardVisible, setIsCardVisible] = React.useState(false);
+  const [isRechargeModalOpen, setIsRechargeModalOpen] = React.useState(false);
+  const [rechargeAmount, setRechargeAmount] = React.useState('');
+  const [screenshot, setScreenshot] = React.useState<File | null>(null);
+
+  const handleRechargeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulación de envío
+    alert(`Solicitud enviada:\nMonto: ${rechargeAmount} FCFA\nComprobante: ${screenshot?.name || 'No adjunto'}\n\nRevisaremos tu envío pronto.`);
+    setIsRechargeModalOpen(false);
+    setRechargeAmount('');
+    setScreenshot(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-32 pb-20 relative">
@@ -101,7 +120,12 @@ const OnlineShoppingPage: React.FC = () => {
             <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden">
               {!user?.virtualCard?.active && (
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-20 flex items-center justify-center p-6 text-center">
-                  <div className="px-4 py-2 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">Activar para ver datos</div>
+                  <button 
+                    onClick={() => setIsRechargeModalOpen(true)}
+                    className="px-4 py-2 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-teal-500 transition-colors"
+                  >
+                    Activar para ver datos
+                  </button>
                 </div>
               )}
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
@@ -141,9 +165,12 @@ const OnlineShoppingPage: React.FC = () => {
             >
               <div className="relative h-12 md:h-16 w-full flex items-center justify-center mb-2">
                 <img
-                  src={store.logo}
+                  src={store.logo || getLogo(store.domain)}
                   alt={store.name}
                   className="max-h-full max-w-full object-contain transition-all group-hover:scale-110"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${store.name}&background=0D9488&color=fff&bold=true`;
+                  }}
                 />
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-teal-600 transition-colors">{store.name}</p>
@@ -210,80 +237,81 @@ const OnlineShoppingPage: React.FC = () => {
         </section>
       </div>
 
-      {/* Floating Card Widget */}
-      <div className="fixed bottom-8 right-28 z-[100] flex flex-col items-end gap-4">
-        <AnimatePresence>
-          {isCardVisible && (
+      {/* Recharge Modal */}
+      <AnimatePresence>
+        {isRechargeModalOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
             <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 50, scale: 0.9 }}
-              className="w-80 bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsRechargeModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-              
-              {/* Card Face */}
-              <div className={`relative transition-all duration-500 ${!user?.virtualCard?.active ? 'opacity-30 grayscale select-none' : ''}`}>
-                <div className="flex justify-between items-center mb-6">
-                  <img src="/images/virtual-card.png" className="w-12 h-12 object-contain rounded-lg" alt="Card" />
-                  <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[15px]' : ''}`}>
-                    <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Virtual Card</p>
-                    <p className="text-[10px] font-mono opacity-60">**** {user?.virtualCard?.number?.slice(-4) || '3238'}</p>
-                  </div>
-                </div>
-                <div className="space-y-4 font-mono tracking-widest">
-                  <div className={!user?.virtualCard?.active ? 'blur-[20px]' : ''}>
-                    <p className="text-[8px] opacity-40 uppercase mb-1">Número</p>
-                    <p className="text-xs font-black flex justify-between items-center">
-                      {user?.virtualCard?.number || '4918 5004 2135 3238'}
-                      {user?.virtualCard?.active && <button onClick={() => navigator.clipboard.writeText(user?.virtualCard?.number || '')} className="text-teal-400 text-[10px] hover:scale-110 transition-transform">📋</button>}
-                    </p>
-                  </div>
-                  <div className={`flex justify-between ${!user?.virtualCard?.active ? 'blur-[20px]' : ''}`}>
-                    <div>
-                      <p className="text-[8px] opacity-40 uppercase mb-1">EXP</p>
-                      <p className="text-[10px] font-black">{user?.virtualCard?.expiry || '04/2029'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[8px] opacity-40 uppercase mb-1">CVV</p>
-                      <p className="text-[10px] font-black">{user?.virtualCard?.cvv || '043'}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+              <h3 className="text-2xl font-black text-teal-900 dark:text-white uppercase italic tracking-tighter mb-2">Solicitar Activación</h3>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-8">Completa los datos de tu recarga</p>
 
-              {/* Status Section (Below the card) */}
-              <div className="mt-8 pt-6 border-t border-white/5">
-                {!user?.virtualCard?.active ? (
-                  <div className="text-center">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-gray-400">Tarjeta Inactiva</p>
-                    <button className="w-full px-6 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:bg-teal-500 transition-all active:scale-95">Solicitar Activación</button>
-                    <p className="text-[8px] font-bold text-gray-500 uppercase mt-4 leading-relaxed">Carga saldo para activar tu tarjeta y ver los datos completos.</p>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest mb-1">Saldo Disponible</p>
-                      <p className="text-xl font-black tracking-tight">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
-                      <p className="text-[11px] font-black text-teal-500 tracking-widest mt-1">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} €</p>
+              <form onSubmit={handleRechargeSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Monto a Recargar (FCFA)</label>
+                  <input
+                    type="number"
+                    required
+                    value={rechargeAmount}
+                    onChange={(e) => setRechargeAmount(e.target.value)}
+                    placeholder="Ej: 50000"
+                    className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-6 py-4 text-sm font-bold text-teal-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Comprobante de Pago</label>
+                  <div className="relative group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      required
+                      title="Subir comprobante de pago"
+                      aria-label="Subir captura de pantalla del comprobante"
+                      onChange={(e) => setScreenshot(e.target.files?.[0] || null)}
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="w-full bg-gray-50 dark:bg-gray-900 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-8 flex flex-col items-center justify-center text-center group-hover:border-teal-500 transition-all">
+                      <span className="text-2xl mb-2">📸</span>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                        {screenshot ? screenshot.name : 'Subir captura de pantalla'}
+                      </p>
                     </div>
-                    <div className="w-10 h-10 bg-teal-500/20 rounded-xl flex items-center justify-center text-teal-400 text-xl font-black">✓</div>
                   </div>
-                )}
-              </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsRechargeModalOpen(false)}
+                    className="flex-1 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-3 px-10 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-teal-500/20 hover:bg-teal-500 transition-all"
+                  >
+                    Enviar Solicitud
+                  </button>
+                </div>
+              </form>
             </motion.div>
-          )}
-        </AnimatePresence>
-        <button
-          onClick={() => setIsCardVisible(!isCardVisible)}
-          className="w-16 h-16 bg-teal-600 rounded-full shadow-2xl flex items-center justify-center text-3xl hover:scale-110 active:scale-95 transition-all text-white relative group"
-        >
-          <span className="group-hover:rotate-12 transition-transform">💳</span>
-          {!isCardVisible && (
-            <span className="absolute -top-1 -right-1 bg-white text-teal-600 p-1 rounded-full text-[10px] font-black animate-bounce shadow-sm">!</span>
-          )}
-        </button>
-      </div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
