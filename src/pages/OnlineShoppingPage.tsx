@@ -248,7 +248,7 @@ const OnlineShoppingPage: React.FC = () => {
                 initialsLogoFn={getInitialsLogo}
               />
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-teal-600 transition-colors">{store.name}</p>
-              {(clickCounts[store.name] || 0) > 0 && (
+              {(clickCounts[store.name] || 0) >= 5 && (
                 <div className="absolute top-4 right-6 bg-teal-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-lg">Frecuente</div>
               )}
             </motion.a>
