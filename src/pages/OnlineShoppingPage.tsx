@@ -32,6 +32,7 @@ const OnlineShoppingPage: React.FC = () => {
   const { user } = useAuth();
   const eurRate = 655.957;
   const [destination, setDestination] = React.useState('Malabo');
+  const [loading, setLoading] = React.useState(false);
 
   const defaultStores = [
     { name: 'Amazon', domain: 'amazon.es', url: 'https://amazon.es' },
@@ -149,7 +150,7 @@ const OnlineShoppingPage: React.FC = () => {
 
   const handleRechargeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const loadingToast = alert('Enviando solicitud...'); // Simplificado como alert para este contexto, pero funcional
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append('amount', rechargeAmount);
@@ -168,6 +169,8 @@ const OnlineShoppingPage: React.FC = () => {
     } catch (error: any) {
       console.error('Error al solicitar recarga:', error);
       alert(error.message || 'Error al enviar la solicitud.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -455,9 +458,10 @@ const OnlineShoppingPage: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="flex-3 px-10 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-teal-500/20 hover:bg-teal-500 transition-all"
+                    disabled={loading}
+                    className="flex-3 px-10 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-teal-500/20 hover:bg-teal-500 transition-all disabled:opacity-50"
                   >
-                    Enviar Solicitud
+                    {loading ? 'Enviando...' : 'Enviar Solicitud'}
                   </button>
                 </div>
               </form>

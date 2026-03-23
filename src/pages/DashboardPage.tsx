@@ -727,9 +727,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-3 px-10 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-teal-500/20 hover:bg-teal-500 transition-all"
+                                        disabled={loading}
+                                        className="flex-3 px-10 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-teal-500/20 hover:bg-teal-500 transition-all disabled:opacity-50"
                                     >
-                                        Enviar Solicitud
+                                        {loading ? 'Enviando...' : 'Enviar Solicitud'}
                                     </button>
                                 </div>
                             </form>
