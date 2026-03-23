@@ -3,16 +3,22 @@ import { useSettings } from '../context/SettingsContext';
 import { motion } from 'framer-motion';
 
 const OnlineShoppingPage: React.FC = () => {
-  const { t } = useSettings();
+  const { t, appConfig } = useSettings();
 
-  const stores = [
+  const defaultStores = [
     { name: 'Amazon', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg', url: 'https://amazon.es' },
-    { name: 'Zara', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Zara_Logo.svg', url: 'https://zara.com' },
-    { name: 'AliExpress', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/AliExpress_logo.svg', url: 'https://aliexpress.com' },
-    { name: 'Shein', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Shein_logo.svg', url: 'https://shein.com' },
+    { name: 'Zara', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Zara_Logo.svg/1280px-Zara_Logo.svg.png', url: 'https://zara.com' },
+    { name: 'AliExpress', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Aliexpress_logo.svg', url: 'https://aliexpress.com' },
+    { name: 'Shein', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Shein-Logo.svg/2560px-Shein-Logo.svg.png', url: 'https://shein.com' },
+    { name: 'Temu', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/22/Temu_logo.svg', url: 'https://temu.com' },
+    { name: 'Nike', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg', url: 'https://nike.com' },
     { name: 'IKEA', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg', url: 'https://ikea.com' },
     { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg', url: 'https://apple.com' },
   ];
+
+  const stores = appConfig?.content?.onlineStores && appConfig.content.onlineStores.length > 0 
+    ? appConfig.content.onlineStores 
+    : defaultStores;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-32 pb-20">

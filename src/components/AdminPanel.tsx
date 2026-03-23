@@ -1130,10 +1130,82 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.facebook_link')}</label>
+                          
                          <input type="text" title={t('admin.facebook_link')} placeholder="https://facebook.com/..." className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-sm" value={editConfig?.content?.social?.facebook || ''} onChange={e => setEditConfig({ ...editConfig, content: { ...editConfig?.content, social: { ...editConfig?.content?.social, facebook: e.target.value } } } as any)} />
                       </div>
                    </div>
-                   <button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="mt-6 w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
+                   
+                    <div className="mt-12 pt-12 border-t border-gray-100 italic-none">
+                       <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-4 border-l-4 border-teal-500 pl-4">Gestión de Tiendas de Compra</h3>
+                       <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-8 block font-black">Gestiona las tiendas que aparecen en la sección de Compras Online.</p>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                          {editConfig?.content?.onlineStores?.map((store: any, idx: number) => (
+                             <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 relative group animate-in zoom-in-95">
+                                <button
+                                   type="button"
+                                   onClick={() => {
+                                      const newStores = [...(editConfig?.content?.onlineStores || [])];
+                                      newStores.splice(idx, 1);
+                                      setEditConfig({ ...editConfig, content: { ...editConfig?.content, onlineStores: newStores } } as any);
+                                   }}
+                                   className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                >
+                                   ✕
+                                </button>
+                                <div className="flex items-center gap-4">
+                                   <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-2 border border-gray-100 shrink-0 shadow-sm">
+                                      <img src={store.logo} alt={store.name} className="max-h-full max-w-full object-contain" />
+                                   </div>
+                                   <div className="min-w-0">
+                                      <p className="text-xs font-black text-slate-900 truncate">{store.name}</p>
+                                      <p className="text-[10px] font-bold text-teal-600 truncate">{store.url}</p>
+                                   </div>
+                                </div>
+                             </div>
+                          ))}
+                          {(!editConfig?.content?.onlineStores || editConfig?.content?.onlineStores.length === 0) && (
+                             <div className="col-span-full py-10 text-center bg-gray-50/50 rounded-3xl border-2 border-dashed border-gray-100">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No hay tiendas añadidas</p>
+                             </div>
+                          )}
+                       </div>
+
+                       <div className="bg-gray-50/50 p-8 rounded-[2.5rem] border border-gray-100 shadow-inner">
+                          <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-6 italic">Añadir Nueva Tienda</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                             <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">Nombre</label>
+                                <input type="text" id="new-store-name" placeholder="Ej: Amazon" className="w-full p-4 bg-white rounded-2xl font-bold text-sm border border-transparent focus:border-teal-500/20 shadow-sm outline-none" />
+                             </div>
+                             <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">URL Logo</label>
+                                <input type="text" id="new-store-logo" placeholder="URL Logo (SVG preferible)" className="w-full p-4 bg-white rounded-2xl font-bold text-sm border border-transparent focus:border-teal-500/20 shadow-sm outline-none" />
+                             </div>
+                             <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">URL Tienda</label>
+                                <input type="text" id="new-store-url" placeholder="https://..." className="w-full p-4 bg-white rounded-2xl font-bold text-sm border border-transparent focus:border-teal-500/20 shadow-sm outline-none" />
+                             </div>
+                          </div>
+                          <button 
+                             type="button"
+                             onClick={() => {
+                                const nameEl = document.getElementById('new-store-name');
+                                const logoEl = document.getElementById('new-store-logo');
+                                const urlEl = document.getElementById('new-store-url');
+                                if (!nameEl.value || !logoEl.value || !urlEl.value) { alert('Completa todos los campos'); return; }
+                                const newStore = { name: nameEl.value, logo: logoEl.value, url: urlEl.value };
+                                setEditConfig({ ...editConfig, content: { ...editConfig?.content, onlineStores: [...(editConfig?.content?.onlineStores || []), newStore] } });
+                                nameEl.value = ''; logoEl.value = ''; urlEl.value = '';
+                             }}
+                             className="mt-6 px-10 py-4 bg-teal-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 transition-all shadow-xl shadow-teal-900/20"
+                          >
+                             Añadir Tienda
+                          </button>
+                       </div>
+                    </div>
+
+<button onClick={() => updateConfig?.(editConfig as any).then(() => alert(t('common.success')))} className="mt-6 w-full py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-700 shadow-xl shadow-teal-500/20 active:scale-95 transition-all">{t('admin.save_web_changes')}</button>
                 </div>
              </div>
           )}

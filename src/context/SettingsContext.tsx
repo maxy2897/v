@@ -47,6 +47,7 @@ export interface DynamicConfig {
             block3: { month: string; days: string };
             block4: { month: string; days: string };
         };
+        onlineStores?: { name: string; logo: string; url: string }[];
     };
     contact: {
         phones: { es: string; gq: string; cm: string };
