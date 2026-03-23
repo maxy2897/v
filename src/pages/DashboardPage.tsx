@@ -68,12 +68,34 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [rechargeAmount, setRechargeAmount] = useState('');
     const [screenshot, setScreenshot] = useState<File | null>(null);
 
-    const handleRechargeSubmit = (e: React.FormEvent) => {
+    const handleRechargeSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        alert(`Solicitud enviada:\nMonto: ${rechargeAmount} FCFA\nComprobante: ${screenshot?.name || 'No adjunto'}\n\nRevisaremos tu envío pronto.`);
-        setIsRechargeModalOpen(false);
-        setRechargeAmount('');
-        setScreenshot(null);
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append('amount', rechargeAmount);
+            if (screenshot) formData.append('image', screenshot);
+            formData.append('type', 'deposit');
+            formData.append('description', 'Carga de Tarjeta Virtual');
+            formData.append('method', 'Transferencia');
+            formData.append('category', 'Recarga Tarjeta');
+
+            await api.createTransfer(formData);
+            
+            alert('¡Solicitud enviada con éxito! Revisaremos tu comprobante y activaremos tu saldo en breve.');
+            setIsRechargeModalOpen(false);
+            setRechargeAmount('');
+            setScreenshot(null);
+            
+            // Recargar datos para ver si ya cambió algo (aunque suele ser manual por admin)
+            const transactionsData = await api.getUserTransactions();
+            setTransactions(transactionsData);
+        } catch (error: any) {
+            console.error('Error al solicitar recarga:', error);
+            alert(error.message || 'Error al enviar la solicitud. Por favor intenta de nuevo.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Read from session storage or query params to keep state
@@ -555,6 +577,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                     {user.virtualCard?.active ? 'Tarjeta Activa' : 'Tarjeta Inactiva'}
                                                 </div>
                                             </div>
+
+                                            <div className="bg-teal-50 border border-teal-100 p-5 rounded-3xl flex gap-4">
+                                                <span className="text-xl">💡</span>
+                                                <div>
+                                                    <p className="text-[10px] font-black text-teal-900 uppercase tracking-widest mb-1">¡Aumenta tu saldo!</p>
+                                                    <p className="text-[10px] font-bold text-teal-700 leading-normal">
+                                                        Recarga tu tarjeta ahora para disfrutar de compras sin límites en tus tiendas favoritas de España y el mundo.
+                                                    </p>
+                                                </div>
+                                            </div>
+
                                             <div className="space-y-4 pt-6 border-t border-gray-50">
                                                 <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
                                                     <div className="w-6 h-6 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 text-xs text-none">✓</div>

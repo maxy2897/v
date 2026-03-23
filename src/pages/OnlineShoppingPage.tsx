@@ -147,13 +147,28 @@ const OnlineShoppingPage: React.FC = () => {
   const [rechargeAmount, setRechargeAmount] = React.useState('');
   const [screenshot, setScreenshot] = React.useState<File | null>(null);
 
-  const handleRechargeSubmit = (e: React.FormEvent) => {
+  const handleRechargeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulación de envío
-    alert(`Solicitud enviada:\nMonto: ${rechargeAmount} FCFA\nComprobante: ${screenshot?.name || 'No adjunto'}\n\nRevisaremos tu envío pronto.`);
-    setIsRechargeModalOpen(false);
-    setRechargeAmount('');
-    setScreenshot(null);
+    const loadingToast = alert('Enviando solicitud...'); // Simplificado como alert para este contexto, pero funcional
+    try {
+      const formData = new FormData();
+      formData.append('amount', rechargeAmount);
+      if (screenshot) formData.append('image', screenshot);
+      formData.append('type', 'deposit');
+      formData.append('description', 'Recarga Tarjeta Virtual (Tienda)');
+      formData.append('method', 'Transferencia');
+      formData.append('category', 'Recarga Tarjeta');
+
+      const res = await import('../services/api').then(m => m.createTransfer(formData));
+      
+      alert('¡Solicitud enviada con éxito! Activaremos tu saldo en cuanto validemos el comprobante.');
+      setIsRechargeModalOpen(false);
+      setRechargeAmount('');
+      setScreenshot(null);
+    } catch (error: any) {
+      console.error('Error al solicitar recarga:', error);
+      alert(error.message || 'Error al enviar la solicitud.');
+    }
   };
 
   return (
@@ -227,7 +242,7 @@ const OnlineShoppingPage: React.FC = () => {
             <div className="w-72 md:w-80 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/30 p-4 rounded-2xl flex gap-3 text-left">
               <span className="text-teal-500 text-lg leading-none shrink-0">💡</span>
               <p className="text-[9px] text-teal-800 dark:text-teal-200 font-bold uppercase tracking-widest leading-normal">
-                Recomendación: Asegúrate de que tus compras no excedan el saldo actual que tienes recargado.
+                ¡Recarga tu tarjeta! Aumenta tu saldo ahora y disfruta de compras sin límites en tus tiendas favoritas.
               </p>
             </div>
           </motion.div>

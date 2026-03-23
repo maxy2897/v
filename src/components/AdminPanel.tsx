@@ -11,7 +11,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BASE_URL, updateShipmentStatus, createManifest, getManifest, updateManifestStatus } from '../services/api';
+import { BASE_URL, updateShipmentStatus, createManifest, getManifest, updateManifestStatus, updateUserVirtualCard } from '../services/api';
 
 interface Shipment {
   _id: string;
@@ -136,7 +136,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
   // Fetch data based on active tab
   useEffect(() => {
-    if (activeTab === 'transactions') fetchTransactions();
+    if (activeTab === 'transactions' || activeTab === 'virtual_card') fetchTransactions();
     if (activeTab === 'shipments') fetchShipments();
     if (activeTab === 'dashboard') fetchDashboardData();
     if (activeTab === 'users' && (['admin', 'admin_tech'].includes(role as string))) {
@@ -795,69 +795,59 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           
           {activeTab === 'virtual_card' && (() => {
             const VirtualCardManager = () => {
-              const [vcUsers, setVcUsers] = React.useState<any[]>([]);
+              const [vcRequests, setVcRequests] = React.useState<any[]>([]);
               const [vcLoading, setVcLoading] = React.useState(true);
-              const [vcEditing, setVcEditing] = React.useState<Record<string, string>>({});
               const [vcSaving, setVcSaving] = React.useState<string | null>(null);
+              const [viewingCapture, setViewingCapture] = React.useState<string | null>(null);
 
-              const fetchVcUsers = async () => {
+              const fetchRequests = async () => {
                 try {
                   setVcLoading(true);
-                  const userStr = localStorage.getItem('user');
-                  const token = userStr ? JSON.parse(userStr).token : '';
-                  const res = await fetch(`${BASE_URL}/api/admin/users`, {
+                  const token = user?.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${BASE_URL}/api/transactions`, {
                     headers: { Authorization: `Bearer ${token}` }
                   });
-                  if (!res.ok) throw new Error('Error al cargar usuarios');
+                  if (!res.ok) throw new Error('Error al cargar solicitudes');
                   const data = await res.json();
-                  setVcUsers(data.users || []);
+                  const txList = Array.isArray(data) ? data : (data.transactions || []);
+                  
+                  // Filtrar solo las recargas de tarjeta que no se han procesado aún
+                  const filtered = txList.filter((tx: any) => 
+                    (tx.category === 'Recarga Tarjeta' || tx.description?.includes('Tarjeta')) && 
+                    tx.status !== 'completed'
+                  );
+                  setVcRequests(filtered);
                 } catch (err: any) {
-                  alert(err.message || 'Error al cargar usuarios');
+                  alert(err.message || 'Error al cargar solicitudes');
                 } finally {
                   setVcLoading(false);
                 }
               };
 
-              React.useEffect(() => { fetchVcUsers(); }, []);
+              React.useEffect(() => { fetchRequests(); }, []);
 
-              const handleSaveBalance = async (userId: string) => {
-                const newBalance = parseFloat(vcEditing[userId] || '0');
-                if (isNaN(newBalance) || newBalance < 0) return alert('Monto inválido');
+              const handleProcessActivation = async (request: any) => {
                 try {
-                  setVcSaving(userId);
-                  const userStr = localStorage.getItem('user');
-                  const token = userStr ? JSON.parse(userStr).token : '';
-                  const res = await fetch(`${BASE_URL}/api/admin/users/${userId}/virtual-card`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ balance: newBalance })
+                  setVcSaving(request._id);
+                  // 1. Activar tarjeta y asignar saldo
+                  await updateUserVirtualCard(request.user._id, { 
+                    balance: request.amount, 
+                    active: true 
                   });
-                  if (!res.ok) throw new Error('Error al actualizar');
-                  const data = await res.json();
-                  setVcUsers(prev => prev.map(u => u._id === userId ? { ...u, virtualCard: data.user?.virtualCard || { ...u.virtualCard, balance: newBalance } } : u));
-                  setVcEditing(prev => { const n = {...prev}; delete n[userId]; return n; });
-                } catch (err: any) {
-                  alert(err.message || 'Error al actualizar saldo');
-                } finally {
-                  setVcSaving(null);
-                }
-              };
 
-              const handleToggleActive = async (userId: string, currentActive: boolean) => {
-                try {
-                  setVcSaving(userId);
-                  const userStr = localStorage.getItem('user');
-                  const token = userStr ? JSON.parse(userStr).token : '';
-                  const res = await fetch(`${BASE_URL}/api/admin/users/${userId}/virtual-card`, {
-                    method: 'PUT',
+                  // 2. Eliminar la solicitud/imagen del sistema (PATCH o DELETE según API)
+                  // Intentamos marcar como completada primero, lo cual debería filtrar la imagen en el dashboard
+                  const token = user?.token || localStorage.getItem('token') || '';
+                  await fetch(`${BASE_URL}/api/transactions/${request._id}`, {
+                    method: 'PATCH',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ active: !currentActive })
+                    body: JSON.stringify({ status: 'completed' })
                   });
-                  if (!res.ok) throw new Error('Error al actualizar');
-                  const data = await res.json();
-                  setVcUsers(prev => prev.map(u => u._id === userId ? { ...u, virtualCard: data.user?.virtualCard || { ...u.virtualCard, active: !currentActive } } : u));
+
+                  alert('¡Tarjeta activada y saldo cargado con éxito!');
+                  fetchRequests();
                 } catch (err: any) {
-                  alert(err.message || 'Error al cambiar estado');
+                  alert(err.message || 'Error al procesar la activación');
                 } finally {
                   setVcSaving(null);
                 }
@@ -866,7 +856,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
               if (vcLoading) return (
                 <div className="flex flex-col items-center justify-center h-[40vh] gap-4">
                   <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cargando usuarios...</p>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Buscando solicitudes...</p>
                 </div>
               );
 
@@ -874,95 +864,74 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 <div className="space-y-8 animate-in fade-in duration-500">
                   <div className="flex justify-between items-center mb-6">
                     <div>
-                      <h3 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">{t('admin.menu.virtual_card') || 'Gestión de Tarjetas Virtuales'}</h3>
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Edita el saldo y activa/desactiva tarjetas de cada usuario.</p>
+                      <h3 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Solicitudes de Activación</h3>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Revisa los comprobantes y activa las tarjetas virtuales.</p>
                     </div>
-                    <button onClick={fetchVcUsers} className="px-5 py-3 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-50 transition-all shadow-sm">
+                    <button onClick={fetchRequests} className="px-5 py-3 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-50 transition-all shadow-sm">
                       ↻ Actualizar
                     </button>
                   </div>
 
                   <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
                     <div className="p-8 border-b border-gray-50 bg-gray-50/50">
-                      <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Usuarios y Tarjetas Virtuales</h4>
+                      <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Pendientes de Procesar</h4>
                     </div>
                     <div className="divide-y divide-gray-50">
-                      {vcUsers.length === 0 && (
-                        <div className="p-12 text-center text-gray-400 font-bold text-sm">No hay usuarios registrados.</div>
+                      {vcRequests.length === 0 && (
+                        <div className="p-20 text-center flex flex-col items-center gap-4">
+                           <span className="text-3xl grayscale opacity-30">📭</span>
+                           <p className="text-gray-400 font-black uppercase text-[10px] tracking-widest italic">No hay solicitudes de activación pendientes.</p>
+                        </div>
                       )}
-                      {vcUsers.map((u) => {
-                        const card = u.virtualCard || {};
-                        const isActive = card.active ?? false;
-                        const balance = card.balance ?? 0;
-                        const isEditingThis = vcEditing[u._id] !== undefined;
-                        const isSavingThis = vcSaving === u._id;
-                        const EUR_RATE = 655.957;
+                      {vcRequests.map((req) => {
+                        const u = req.user || {};
+                        const isSavingThis = vcSaving === req._id;
+                        const captureUrl = req.image || req.proof || req.screenshot;
 
                         return (
-                          <div key={u._id} className="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:bg-gray-50/30 transition-all">
-                            {/* User Info */}
-                            <div className="flex items-center gap-4 min-w-[200px]">
-                              <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-700 font-black text-lg shrink-0">
+                          <div key={req._id} className="p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 hover:bg-gray-50/30 transition-all">
+                            {/* User & Request Info */}
+                            <div className="flex items-center gap-5 min-w-[280px]">
+                              <div className="w-14 h-14 bg-teal-50 rounded-[1.25rem] flex items-center justify-center text-teal-700 font-black text-xl shrink-0 shadow-inner">
                                 {u.name?.[0]?.toUpperCase() || '?'}
                               </div>
                               <div>
-                                <h5 className="font-black text-slate-900 text-sm leading-tight">{u.name}</h5>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate max-w-[180px]">{u.email}</p>
-                              </div>
-                            </div>
-
-                            {/* Balance Editor */}
-                            <div className="flex items-center gap-3 flex-1 max-w-xs">
-                              {isEditingThis ? (
-                                <div className="flex items-center gap-2 w-full">
-                                  <input
-                                    type="number"
-                                    value={vcEditing[u._id]}
-                                    onChange={(e) => setVcEditing(prev => ({ ...prev, [u._id]: e.target.value }))}
-                                    className="flex-1 px-4 py-2.5 bg-gray-50 border-2 border-teal-400 rounded-xl text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-teal-300 min-w-0"
-                                    placeholder="Monto FCFA"
-                                    min="0"
-                                    step="500"
-                                    aria-label="Nuevo saldo FCFA"
-                                  />
-                                  <button
-                                    onClick={() => handleSaveBalance(u._id)}
-                                    disabled={isSavingThis}
-                                    className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-500 transition-all disabled:opacity-50 shrink-0"
-                                  >
-                                    {isSavingThis ? '...' : 'Guardar'}
-                                  </button>
-                                  <button
-                                    onClick={() => setVcEditing(prev => { const n = {...prev}; delete n[u._id]; return n; })}
-                                    className="p-2.5 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-all shrink-0"
-                                  >✕</button>
+                                <h5 className="font-black text-slate-900 text-sm leading-tight mb-1">{u.name}</h5>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{u.email}</p>
+                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 rounded-lg border border-amber-100">
+                                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                   <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest">Solicita {req.amount?.toLocaleString()} FCFA</span>
                                 </div>
-                              ) : (
-                                <button
-                                  onClick={() => setVcEditing(prev => ({ ...prev, [u._id]: String(balance) }))}
-                                  className="flex flex-col items-start bg-gray-50 hover:bg-teal-50 border border-gray-100 hover:border-teal-200 px-4 py-3 rounded-2xl transition-all group w-full text-left"
-                                >
-                                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest group-hover:text-teal-500">Saldo</span>
-                                  <span className="text-lg font-black text-slate-900 tracking-tight">{balance.toLocaleString()} <span className="text-[11px] text-teal-600">FCFA</span></span>
-                                  <span className="text-[11px] font-black text-teal-500">≈ {(balance / EUR_RATE).toFixed(2)} €</span>
-                                </button>
-                              )}
+                              </div>
                             </div>
 
-                            {/* Status + Activate Toggle */}
+                            {/* Capture Preview */}
+                            <div className="flex-1 w-full max-w-[200px]">
+                               <div className="relative group cursor-pointer" onClick={() => setViewingCapture(captureUrl)}>
+                                  {captureUrl ? (
+                                    <div className="h-24 w-full rounded-2xl overflow-hidden border-2 border-dashed border-gray-200 group-hover:border-teal-400 transition-all bg-gray-50 flex items-center justify-center relative">
+                                       <img src={captureUrl.startsWith('http') ? captureUrl : `${BASE_URL}/${captureUrl}`} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Comprobante" />
+                                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                                          <span className="text-[9px] font-black text-white uppercase tracking-widest">Ver Captura</span>
+                                       </div>
+                                    </div>
+                                  ) : (
+                                    <div className="h-24 w-full rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300">
+                                       <span className="text-xl">📷</span>
+                                       <span className="text-[8px] font-black uppercase tracking-widest mt-1">Sin Imagen</span>
+                                    </div>
+                                  )}
+                               </div>
+                            </div>
+
+                            {/* Action Button */}
                             <div className="flex items-center gap-3 shrink-0">
-                              <div className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border ${isActive ? 'bg-teal-50 text-teal-700 border-teal-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
-                                {isActive ? '✓ Activa' : '✕ Inactiva'}
-                              </div>
                               <button
-                                onClick={() => handleToggleActive(u._id, isActive)}
+                                onClick={() => handleProcessActivation(req)}
                                 disabled={isSavingThis}
-                                className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-sm ${isActive
-                                  ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-100 hover:border-red-500'
-                                  : 'bg-teal-600 text-white hover:bg-teal-500 shadow-teal-500/20'
-                                }`}
+                                className="px-8 py-4 bg-teal-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-500 transition-all disabled:opacity-50 shadow-lg shadow-teal-500/20 active:scale-95"
                               >
-                                {isSavingThis ? '...' : isActive ? 'Desactivar' : 'Activar'}
+                                {isSavingThis ? '...' : 'Activar y Cargar Saldo'}
                               </button>
                             </div>
                           </div>
@@ -970,9 +939,35 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       })}
                     </div>
                   </div>
+
+                  {/* Capture Viewer Modal */}
+                  <AnimatePresence>
+                    {viewingCapture && (
+                      <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
+                         <motion.div 
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setViewingCapture(null)}
+                            className="absolute inset-0 bg-black/90 backdrop-blur-sm" 
+                         />
+                         <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                            className="relative max-w-4xl w-full bg-white rounded-[3rem] overflow-hidden shadow-2xl"
+                         >
+                            <div className="p-6 border-b flex justify-between items-center bg-gray-50">
+                               <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 italic">Comprobante de Pago</span>
+                               <button onClick={() => setViewingCapture(null)} className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-teal-900 border border-gray-100 hover:bg-gray-100 shadow-sm transition-all focus:outline-none">✕</button>
+                            </div>
+                            <div className="p-4 max-h-[80vh] overflow-auto flex items-center justify-center bg-transparent">
+                               <img src={viewingCapture.startsWith('http') ? viewingCapture : `${BASE_URL}/${viewingCapture}`} className="max-w-full h-auto rounded-xl" alt="Comprobante Completo" />
+                            </div>
+                         </motion.div>
+                      </div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             };
+
             return <VirtualCardManager />;
           })()}
 
