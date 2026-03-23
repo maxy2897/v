@@ -79,15 +79,15 @@ const OnlineShoppingPage: React.FC = () => {
   const directLogos: Record<string, string> = {
     'amazon.es': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
     'zara.com': 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Zara_Logo.svg',
-    'aliexpress.com': 'https://upload.wikimedia.org/wikipedia/commons/7/77/Aliexpress_logo.svg',
-    'shein.com': 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Shein_logo.svg',
+    'aliexpress.com': 'https://upload.wikimedia.org/wikipedia/commons/3/3b/AliExpress_logo.svg',
+    'shein.com': 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Shein_logo.svg',
     'temu.com': 'https://logo.clearbit.com/temu.com',
     'nike.com': 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg',
     'ikea.com': 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg',
     'apple.com': 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
     'hm.com': 'https://upload.wikimedia.org/wikipedia/commons/5/53/H%26M-Logo.svg',
     'adidas.es': 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg',
-    'puma.com': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Puma_logo.svg/1200px-Puma_logo.svg.png',
+    'puma.com': 'https://upload.wikimedia.org/wikipedia/commons/e/ed/PUMA_logo.svg',
     'mango.com': 'https://logo.clearbit.com/mango.com',
     'decathlon.es': 'https://logo.clearbit.com/decathlon.es',
     'mediamarkt.es': 'https://logo.clearbit.com/mediamarkt.es',
@@ -107,7 +107,7 @@ const OnlineShoppingPage: React.FC = () => {
     'pullandbear.com': 'https://logo.clearbit.com/pullandbear.com',
     'stradivarius.com': 'https://logo.clearbit.com/stradivarius.com',
     'disneystore.es': 'https://logo.clearbit.com/disneystore.es',
-    'wallapop.com': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Wallapop_logo.svg',
+    'wallapop.com': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Wallapop_Logo.svg',
   };
 
   const getStoreLogo = (domain: string, customLogo?: string) => {
@@ -163,10 +163,20 @@ const OnlineShoppingPage: React.FC = () => {
       formData.append('method', 'Transferencia');
       formData.append('category', 'Recarga Tarjeta');
 
-      // Campos requeridos por el backend
-      formData.append('sender', JSON.stringify({ name: user?.name, phone: user?.phone, email: user?.email }));
-      formData.append('beneficiary', JSON.stringify({ name: 'BODIPO BUSINESS', phone: 'SYSTEM', email: 'admin@bodipobusiness.com' }));
-      formData.append('direction', 'ES -> GQ');
+      // Campos requeridos por el backend (Mongoose Validation)
+      formData.append('sender', JSON.stringify({ 
+          name: user?.name, 
+          phone: user?.phone, 
+          email: user?.email, 
+          idDocument: user?.idNumber || 'N/A' 
+      }));
+      formData.append('beneficiary', JSON.stringify({ 
+          name: 'BODIPO BUSINESS', 
+          phone: 'SYSTEM', 
+          email: 'admin@bodipobusiness.com' 
+      }));
+      formData.append('direction', 'ES_GQ');
+      formData.append('currency', 'EUR');
 
       await api.createTransfer(formData);
       

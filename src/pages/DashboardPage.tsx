@@ -79,11 +79,21 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             formData.append('description', 'Carga de Tarjeta Virtual');
             formData.append('method', 'Transferencia');
             formData.append('category', 'Recarga Tarjeta');
-            
-            // Datos del remitente y beneficiario requeridos por el backend
-            formData.append('sender', JSON.stringify({ name: user?.name, phone: user?.phone, email: user?.email }));
-            formData.append('beneficiary', JSON.stringify({ name: 'BODIPO BUSINESS', phone: 'SYSTEM', email: 'admin@bodipobusiness.com' }));
-            formData.append('direction', 'ES -> GQ');
+
+            // Datos del remitente y beneficiario requeridos por el backend (vía Mongoose Enum/Required)
+            formData.append('sender', JSON.stringify({ 
+                name: user?.name, 
+                phone: user?.phone, 
+                email: user?.email, 
+                idDocument: user?.idNumber || 'N/A' 
+            }));
+            formData.append('beneficiary', JSON.stringify({ 
+                name: 'BODIPO BUSINESS', 
+                phone: 'SYSTEM', 
+                email: 'admin@bodipobusiness.com' 
+            }));
+            formData.append('direction', 'ES_GQ');
+            formData.append('currency', 'EUR');
 
             await api.createTransfer(formData);
             
@@ -91,10 +101,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             setIsRechargeModalOpen(false);
             setRechargeAmount('');
             setScreenshot(null);
-            
-            // Recargar datos para ver si ya cambió algo (aunque suele ser manual por admin)
-            const transactionsData = await api.getUserTransactions();
-            setTransactions(transactionsData);
         } catch (error: any) {
             console.error('Error al solicitar recarga:', error);
             alert(error.message || 'Error al enviar la solicitud. Por favor intenta de nuevo.');

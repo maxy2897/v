@@ -43,7 +43,11 @@ self.addEventListener('fetch', (event) => {
 
     // Network First, fallback a Cache para recursos estáticos
     event.respondWith(
-        fetch(event.request).catch(() => caches.match(event.request))
+        fetch(event.request).catch(async () => {
+            const cachedResponse = await caches.match(event.request);
+            if (cachedResponse) return cachedResponse;
+            return new Response('Red Error', { status: 408, statusText: 'Network error and not in cache' });
+        })
     );
 });
 
