@@ -251,17 +251,6 @@ const OnlineShoppingPage: React.FC = () => {
               )}
             </motion.a>
           ))}
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: stores.length * 0.05 }}
-            className="bg-teal-600 p-8 rounded-[2.5rem] shadow-xl shadow-teal-500/20 flex flex-col items-center justify-center text-center text-white relative overflow-hidden group cursor-pointer h-32 md:h-44"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-            <span className="text-3xl mb-2 group-hover:scale-125 transition-transform">➕</span>
-            <p className="text-[10px] font-black uppercase tracking-widest leading-tight">Muchas más Tiendas</p>
-          </motion.div>
         </div>
 
         <section className="mt-24 bg-white dark:bg-gray-800 rounded-[3rem] p-12 border border-black/[0.03] dark:border-white/[0.03] shadow-sm overflow-hidden relative">
@@ -289,19 +278,75 @@ const OnlineShoppingPage: React.FC = () => {
               </div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-900/50 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-800">
-              <h3 className="text-lg font-black text-[#00151a] dark:text-white uppercase italic mb-6">Nuestra Dirección en España</h3>
-              <div className="space-y-4">
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nombre / Cliente</p>
-                  <p className="font-bold text-sm text-[#00151a] dark:text-white">{user?.name || 'TU NOMBRE COMPLETO'} (BODIPO)</p>
+              <h3 className="text-lg font-black text-[#00151a] dark:text-white uppercase italic mb-6">Datos para tu Envío</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-6">Copia exactamente estos datos al realizar tu compra online para que el paquete llegue a nuestro almacén.</p>
+              
+              <div className="space-y-3">
+                <div className="flex flex-col md:flex-row gap-3">
+                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>Ubicación / País *</span>
+                      <button onClick={() => navigator.clipboard.writeText('Spain')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">Spain</p>
+                  </div>
+                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>Teléfono *</span>
+                      <button onClick={() => navigator.clipboard.writeText('641992110')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">641 99 21 10</p>
+                  </div>
                 </div>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Dirección Línea 1</p>
-                  <p className="font-bold text-sm text-[#00151a] dark:text-white">Calle de la Metalurgia, 14</p>
+
+                <div className="flex flex-col md:flex-row gap-3">
+                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50 border-l-2 border-l-teal-500">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>Nombre *</span>
+                      <button onClick={() => navigator.clipboard.writeText(`${user?.name || 'TU NOMBRE'} + DESTINO`)} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">{user?.name || 'TU NOMBRE'} + DESTINO</p>
+                    <p className="text-[9px] text-gray-400 mt-1 leading-tight font-medium">Ej: Juan Nsue + Malabo</p>
+                  </div>
+                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50 border-l-2 border-l-teal-500">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>Apellido *</span>
+                      <button onClick={() => navigator.clipboard.writeText('BodipoBusiness')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">BodipoBusiness</p>
+                  </div>
                 </div>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Localidad / CP</p>
-                  <p className="font-bold text-sm text-[#00151a] dark:text-white">Fuenlabrada, 28946 (Madrid)</p>
+
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
+                  <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                    <span>Calle & Número de Casa *</span>
+                    <button onClick={() => navigator.clipboard.writeText('Avenida de Daganzo 13')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                  </p>
+                  <p className="font-bold text-sm text-[#00151a] dark:text-white">Avenida de Daganzo 13</p>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-3">
+                  <div className="w-full md:w-1/3 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>Piso / Apt</span>
+                      <button onClick={() => navigator.clipboard.writeText('B')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">B</p>
+                  </div>
+                  <div className="w-full md:w-1/3 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>C. Postal *</span>
+                      <button onClick={() => navigator.clipboard.writeText('28806')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">28806</p>
+                  </div>
+                  <div className="w-full md:w-1/3 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
+                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>Provincia *</span>
+                      <button onClick={() => navigator.clipboard.writeText('Madrid')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                    </p>
+                    <p className="font-bold text-sm text-[#00151a] dark:text-white">Madrid</p>
+                  </div>
                 </div>
               </div>
             </div>
