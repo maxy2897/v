@@ -60,7 +60,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [loadingShipments, setLoadingShipments] = useState(true);
     const [loadingTransactions, setLoadingTransactions] = useState(true);
     const [notifications, setNotifications] = useState<Notification[]>([]);
-    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings' | 'help' | 'notifications'>('shipments');
+    const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings' | 'help' | 'notifications' | 'virtual_card'>('shipments');
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [isMobileMenu, setIsMobileMenu] = useState(true);
@@ -394,6 +394,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                     <nav className="flex-grow px-4 pb-8 space-y-1">
                         {[
                             { id: 'shipments', label: t('dashboard.my_buys_shipments'), icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg> },
+                            { id: 'virtual_card', label: 'Tarjeta Virtual', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg> },
                             { id: 'invoices', label: t('dashboard.my_invoices'), icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> },
                             { id: 'notifications', label: t('dashboard.notifications_inbox'), icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg> },
                             ...((user.role === 'admin' || user.role?.startsWith('admin_')) ? [{ id: 'admin', label: t('dashboard.admin_panel'), icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg> }] : []),
@@ -668,6 +669,220 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                             </div>
                                         </motion.div>
                                     ))
+                                )}
+                            </div>
+                        )}
+
+                        {/* Virtual Card View */}
+                        {activeTab === 'virtual_card' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                                {/* Card Display */}
+                                <div className="bg-white rounded-[3rem] p-10 shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-12 items-center">
+                                    <div className="w-full max-w-[400px] aspect-[1.6/1] rounded-[1.5rem] overflow-hidden shadow-2xl relative group shrink-0">
+                                        {!user.virtualCard?.active ? (
+                                            <div className="absolute inset-0 bg-[#00151a]/95 backdrop-blur-md z-10 flex flex-col items-center justify-center p-8 text-center">
+                                                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-3xl mb-4">🔒</div>
+                                                <h4 className="text-white font-black uppercase tracking-widest text-sm mb-2">Datos Protegidos</h4>
+                                                <p className="text-gray-400 text-[10px] font-bold uppercase leading-relaxed">Activa tu tarjeta realizando tu primera recarga para ver los detalles.</p>
+                                            </div>
+                                        ) : (
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-10"></div>
+                                        )}
+                                        <img 
+                                            src="/images/virtual-card.png" 
+                                            alt="Bodipo Virtual Card" 
+                                            className={`w-full h-full object-cover transition-all duration-700 ${!user.virtualCard?.active ? 'blur-lg scale-110' : 'group-hover:scale-105'}`}
+                                        />
+                                        {user.virtualCard?.active && (
+                                            <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white font-mono tracking-[0.2em] pointer-events-none">
+                                                <p className="text-lg font-black drop-shadow-lg mb-4">{user.virtualCard?.number || '4918 5004 2135 3238'}</p>
+                                                <div className="flex justify-between items-center text-[10px] font-black uppercase opacity-90 drop-shadow-md">
+                                                    <div>
+                                                        <span className="block text-[8px] opacity-60 mb-0.5">VÁLIDA HASTA</span>
+                                                        <span>{user.virtualCard?.expiry || '04/2029'}</span>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="block text-[8px] opacity-60 mb-0.5">CVV</span>
+                                                        <span>{user.virtualCard?.cvv || '043'}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 w-full space-y-6">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Saldo Disponible</p>
+                                            <h2 className="text-4xl font-black text-[#00151a] tracking-tighter">
+                                                {(user.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-600">FCFA</span>
+                                            </h2>
+                                        </div>
+                                        <div className="space-y-4 pt-6 border-t border-gray-50">
+                                            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                <div className="w-6 h-6 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 text-xs text-none">✓</div>
+                                                Compras seguras en Amazon, Zara, etc.
+                                            </div>
+                                            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                <div className="w-6 h-6 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 text-xs text-none">✓</div>
+                                                Gestión inmediata de tus envíos.
+                                            </div>
+                                            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                <div className="w-6 h-6 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 text-xs text-none">✓</div>
+                                                Control total de tus gastos.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Recharge Section */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <div className="bg-slate-950 rounded-[2.5rem] p-10 text-white relative overflow-hidden group shadow-2xl">
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-teal-500/20 transition-all duration-700"></div>
+                                        <h3 className="text-xl font-black uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-6">¿Cómo recargar?</h3>
+                                        <div className="space-y-8 relative z-10">
+                                            <div className="flex gap-6">
+                                                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 font-black text-teal-400">1</div>
+                                                <div>
+                                                    <p className="text-xs font-black uppercase tracking-widest text-teal-400 mb-1">Transferencia</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed">Envía el monto deseado a cualquiera de nuestras cuentas oficiales.</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-6">
+                                                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 font-black text-teal-400">2</div>
+                                                <div>
+                                                    <p className="text-xs font-black uppercase tracking-widest text-teal-400 mb-1">Carga el Recibo</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed">Sube una foto o captura del comprobante en el formulario de la derecha.</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-6">
+                                                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 font-black text-teal-400">3</div>
+                                                <div>
+                                                    <p className="text-xs font-black uppercase tracking-widest text-teal-400 mb-1">Activación</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase leading-relaxed">Un administrador verificará el depósito y activará/recargará tu tarjeta.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-[2.5rem] p-10 border border-gray-100 shadow-sm relative overflow-hidden">
+                                        <h3 className="text-xl font-black text-[#00151a] uppercase italic tracking-tighter mb-8 border-l-4 border-[#00151a] pl-6 italic-none">Solicitar Recarga</h3>
+                                        
+                                        <form className="space-y-6" onSubmit={(e) => {
+                                            e.preventDefault();
+                                            alert("Solicitud de recarga enviada correctamente. Se procesará en breve.");
+                                        }}>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Monto a Recargar (FCFA)</label>
+                                                <input 
+                                                    type="number" 
+                                                    placeholder="Ej: 50000" 
+                                                    required
+                                                    className="w-full p-5 bg-gray-50 border-none rounded-2xl font-black text-sm text-[#00151a] focus:ring-2 focus:ring-teal-500 transition-all"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Comprobante (Imagen)</label>
+                                                <div className="relative group">
+                                                    <input 
+                                                        type="file" 
+                                                        title="Seleccionar comprobante de recarga"
+                                                        placeholder="Sube tu recibo"
+                                                        required 
+                                                        accept="image/*"
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                        onChange={(e) => {
+                                                            const fileName = e.target.files?.[0]?.name;
+                                                            if (fileName) {
+                                                                const display = document.getElementById('file-name-display');
+                                                                if (display) display.innerText = fileName;
+                                                            }
+                                                        }}
+                                                    />
+                                                    <div className="w-full p-8 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center justify-center text-center group-hover:border-teal-400/50 group-hover:bg-teal-50/30 transition-all">
+                                                        <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl mb-3 text-none group-hover:scale-110 transition-transform">🖼️</div>
+                                                        <p id="file-name-display" className="text-[10px] font-black uppercase text-gray-400 group-hover:text-teal-600">Haz clic para subir o arrastra el archivo</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button 
+                                                type="submit"
+                                                className="w-full py-5 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-teal-600 transition-all shadow-xl shadow-gray-200 active:scale-95 translate-y-2"
+                                            >
+                                                Enviar Solicitud
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                {user.virtualCard?.pendingReload && (
+                                    <div className="bg-teal-50 border-2 border-teal-100 rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 bg-teal-600 text-white rounded-xl flex items-center justify-center text-xl text-none">⏳</div>
+                                            <div>
+                                                <p className="text-xs font-black text-teal-800 uppercase">Solicitud Pendiente</p>
+                                                <p className="text-[10px] font-bold text-teal-600 uppercase">Estamos verificando tu recarga de {user.virtualCard.pendingReload.amount.toLocaleString()} FCFA</p>
+                                            </div>
+                                        </div>
+                                        <button className="px-6 py-2.5 bg-white text-teal-600 border border-teal-100 rounded-xl text-[9px] font-black uppercase tracking-widest">Ver Detalles</button>
+                                    </div>
+                                )}
+                                
+                                {/* Report Purchase Section */}
+                                {user.virtualCard?.active && (
+                                    <div className="bg-slate-50 rounded-[3rem] p-10 border border-teal-100 shadow-sm relative overflow-hidden mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                                        <div className="absolute top-0 left-0 w-32 h-32 bg-teal-500/5 rounded-full -ml-16 -mt-16 blur-2xl"></div>
+                                        <div className="flex flex-col lg:flex-row gap-12 items-start">
+                                            <div className="lg:w-1/3">
+                                                <h3 className="text-xl font-black text-[#00151a] uppercase italic tracking-tighter mb-4 border-l-4 border-teal-500 pl-6 underline-none italic-none">Reportar Compra</h3>
+                                                <p className="text-[10px] text-gray-500 font-bold uppercase leading-relaxed">¿Ya realizaste tu compra? Sube el comprobante o captura de pantalla de la orden para que actualicemos tu saldo disponible.</p>
+                                            </div>
+                                            
+                                            <form className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => {
+                                                e.preventDefault();
+                                                alert("Reporte de compra enviado. Tu saldo se actualizará en cuanto el administrador verifique la factura.");
+                                            }}>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Monto Gastado (FCFA)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        placeholder="Ej: 15500" 
+                                                        required
+                                                        className="w-full p-5 bg-white border border-gray-100 rounded-2xl font-black text-sm text-[#00151a] focus:ring-2 focus:ring-teal-500 transition-all shadow-sm"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Factura / Captura</label>
+                                                    <div className="relative group">
+                                                        <input 
+                                                            type="file" 
+                                                            title="Subir factura de compra"
+                                                            required 
+                                                            accept="image/*"
+                                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                            onChange={(e) => {
+                                                                const fn = e.target.files?.[0]?.name;
+                                                                const el = document.getElementById('report-file-name');
+                                                                if (el) el.innerText = fn || 'Seleccionar archivo';
+                                                            }}
+                                                        />
+                                                        <div className="w-full p-5 bg-white border border-gray-100 rounded-2xl flex items-center gap-4 shadow-sm group-hover:bg-teal-50/50 transition-all px-6">
+                                                            <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-lg">📄</div>
+                                                            <p id="report-file-name" className="text-[10px] font-black uppercase text-gray-400 truncate">Sube tu factura</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button 
+                                                    type="submit"
+                                                    className="md:col-span-2 py-5 bg-teal-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#00151a] transition-all shadow-lg shadow-teal-500/10 active:scale-95 translate-y-2"
+                                                >
+                                                    Reportar y Actualizar Saldo
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         )}

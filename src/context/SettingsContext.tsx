@@ -397,6 +397,7 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.menu.notifications': 'Notificaciones',
         'admin.menu.pickup': 'Recogidas (Pickup)',
         'admin.menu.transactions': 'Transacciones',
+        'admin.menu.virtual_card': 'Tarjetas Virtuales',
 
         // Section Headers
         'admin.section.main': 'Principal',
@@ -1130,6 +1131,7 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.menu.notifications': 'Notifications',
         'admin.menu.pickup': 'Pickups',
         'admin.menu.transactions': 'Transactions',
+        'admin.menu.virtual_card': 'Virtual Cards',
 
         // Section Headers
         'admin.section.main': 'Main',
@@ -1811,6 +1813,7 @@ const translations: Record<Language, Record<string, string>> = {
         'admin.menu.notifications': 'Notifications',
         'admin.menu.pickup': 'Collectes (Pickup)',
         'admin.menu.transactions': 'Transactions',
+        'admin.menu.virtual_card': 'Cartes Virtuelles',
 
         // Section Headers
         'admin.section.main': 'Principal',

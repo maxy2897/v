@@ -66,9 +66,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     if (role === 'admin_local') {
       tabs.push('shipments', 'pos', 'notifications', 'pickup');
     } else if (role === 'admin_finance') {
-      tabs.push('shipments', 'transactions', 'reports', 'notifications', 'pos');
+      tabs.push('shipments', 'transactions', 'reports', 'notifications', 'pos', 'virtual_card');
     } else {
-      tabs.push('products', 'branding', 'reports', 'config', 'content', 'operational', 'manifests', 'transactions', 'shipments', 'notifications', 'pickup', 'pos');
+      tabs.push('products', 'branding', 'reports', 'config', 'content', 'operational', 'manifests', 'transactions', 'shipments', 'notifications', 'pickup', 'pos', 'virtual_card');
       if (['admin', 'admin_tech'].includes(role as string)) {
         tabs.push('users');
       }
@@ -659,7 +659,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                  {t('admin.menu.transactions')}
                </button>
              )}
-             {allowedTabs.includes('users') && (
+             {allowedTabs.includes('virtual_card') && (
+                <button onClick={() => setActiveTab('virtual_card')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'virtual_card' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                  Tarjetas Virtuales
+                </button>
+              )}
+              {allowedTabs.includes('users') && (
                <button onClick={() => setActiveTab('users')} className={`w-full px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-4 ${activeTab === 'users' ? 'bg-teal-500 text-white shadow-xl shadow-teal-500/20' : 'text-slate-400 hover:bg-teal-900/30 hover:text-white'}`}>
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                  {t('admin.menu.users')}
@@ -786,6 +792,106 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           )}
 
           {activeTab === 'dashboard' && renderDashboard()}
+          
+          {activeTab === 'virtual_card' && (
+            <div className="space-y-8 animate-in fade-in duration-500">
+               <div className="flex justify-between items-center mb-6">
+                  <div>
+                     <h3 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">{t('admin.menu.virtual_card') || 'Gestión de Tarjetas Virtuales'}</h3>
+                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Revisa y aprueba las solicitudes de recarga y activación.</p>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-1 gap-6">
+                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                     <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Solicitudes Pendientes</h4>
+                        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest">3 Pendientes</span>
+                     </div>
+                     
+                     <div className="divide-y divide-gray-50">
+                        {[
+                           { id: '1', user: 'Juan Nsue', amount: 50000, date: '2026-03-23', status: 'pending', receipt: '/images/money-bg.jpg' },
+                           { id: '2', user: 'Maria Oyono', amount: 125000, date: '2026-03-22', status: 'pending', receipt: '/images/money-bg.jpg' },
+                           { id: '3', user: 'Pedro Bakale', amount: 20000, date: '2026-03-22', status: 'pending', receipt: '/images/money-bg.jpg' }
+                        ].map((req) => (
+                           <div key={req.id} className="p-8 flex flex-col lg:flex-row items-center justify-between gap-8 hover:bg-gray-50/30 transition-all">
+                              <div className="flex items-center gap-6 w-full lg:w-auto">
+                                 <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-2xl shrink-0">👤</div>
+                                 <div>
+                                    <h5 className="text-lg font-black text-slate-900 leading-tight">{req.user}</h5>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{req.date}</p>
+                                 </div>
+                              </div>
+
+                              <div className="bg-gray-50 px-6 py-4 rounded-2xl text-center w-full lg:w-auto">
+                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Monto Solicitado</p>
+                                 <p className="text-xl font-black text-teal-600 tracking-tighter">{req.amount.toLocaleString()} FCFA</p>
+                              </div>
+
+                              <div className="flex items-center gap-4 w-full lg:w-auto">
+                                 <button className="flex-1 lg:flex-none px-6 py-4 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-100 transition-all flex items-center gap-2 justify-center">
+                                    <span>👁️</span> Ver Recibo
+                                 </button>
+                                 <button 
+                                    onClick={() => alert('Tarjeta Activada y Saldo Actualizado')}
+                                    className="flex-1 lg:flex-none px-8 py-4 bg-teal-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-teal-600 transition-all"
+                                 >
+                                    Aprobar y Activar
+                                 </button>
+                                 <button className="flex-1 lg:flex-none p-4 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all">
+                                    ✕
+                                 </button>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* Purchases validation section */}
+                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mt-8 animate-in delay-500">
+                     <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Compras por Validar</h4>
+                        <span className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-[9px] font-black uppercase tracking-widest">2 Reportes</span>
+                     </div>
+                     
+                     <div className="divide-y divide-gray-50">
+                        {[
+                           { id: 'c1', user: 'Juan Nsue', amount: 15500, store: 'Amazon', date: '2026-03-23', status: 'pending', receipt: '/images/money-bg.jpg' },
+                           { id: 'c2', user: 'Maria Oyono', amount: 42000, store: 'Shein', date: '2026-03-23', status: 'pending', receipt: '/images/money-bg.jpg' }
+                        ].map((shop) => (
+                           <div key={shop.id} className="p-8 flex flex-col lg:flex-row items-center justify-between gap-8 hover:bg-gray-50/30 transition-all">
+                              <div className="flex items-center gap-6 w-full lg:w-auto">
+                                 <div className="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-xl shrink-0">🛍️</div>
+                                 <div>
+                                    <h5 className="text-lg font-black text-slate-900 leading-tight">{shop.user}</h5>
+                                    <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">{shop.store} • {shop.date}</p>
+                                 </div>
+                              </div>
+
+                              <div className="bg-red-50/50 px-6 py-4 rounded-2xl text-center w-full lg:w-auto border border-red-100">
+                                 <p className="text-[9px] font-black text-red-400 uppercase tracking-widest mb-1 font-mono-none">Gasto Reportado</p>
+                                 <p className="text-xl font-black text-red-600 tracking-tighter">-{shop.amount.toLocaleString()} FCFA</p>
+                              </div>
+
+                              <div className="flex items-center gap-4 w-full lg:w-auto">
+                                 <button className="flex-1 lg:flex-none px-6 py-4 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-100 transition-all">
+                                    Ver Factura
+                                 </button>
+                                 <button 
+                                    onClick={() => alert('Gasto Confirmado. El saldo se ha actualizado automáticamente.')}
+                                    className="flex-1 lg:flex-none px-8 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-gray-200 hover:bg-teal-600 transition-all"
+                                 >
+                                    Validar y Restar Saldo
+                                 </button>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               </div>
+            </div>
+          )}
           
           {activeTab === 'products' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -1190,12 +1296,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                           <button 
                              type="button"
                              onClick={() => {
-                                const nameEl = document.getElementById('new-store-name');
-                                const logoEl = document.getElementById('new-store-logo');
-                                const urlEl = document.getElementById('new-store-url');
+                                const nameEl = document.getElementById('new-store-name') as HTMLInputElement;
+                                const logoEl = document.getElementById('new-store-logo') as HTMLInputElement;
+                                const urlEl = document.getElementById('new-store-url') as HTMLInputElement;
                                 if (!nameEl.value || !logoEl.value || !urlEl.value) { alert('Completa todos los campos'); return; }
                                 const newStore = { name: nameEl.value, logo: logoEl.value, url: urlEl.value };
-                                setEditConfig({ ...editConfig, content: { ...editConfig?.content, onlineStores: [...(editConfig?.content?.onlineStores || []), newStore] } });
+                                setEditConfig({ ...editConfig, content: { ...editConfig?.content, onlineStores: [...(editConfig?.content?.onlineStores || []), newStore] } } as any);
                                 nameEl.value = ''; logoEl.value = ''; urlEl.value = '';
                              }}
                              className="mt-6 px-10 py-4 bg-teal-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 transition-all shadow-xl shadow-teal-900/20"

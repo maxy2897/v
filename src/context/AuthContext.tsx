@@ -16,6 +16,19 @@ interface User {
     role?: string;
     token?: string;
     createdAt?: string;
+    virtualCard?: {
+        active: boolean;
+        balance: number;
+        number?: string;
+        cvv?: string;
+        expiry?: string;
+        pendingReload?: {
+            amount: number;
+            receiptImage: string;
+            status: 'pending' | 'approved' | 'rejected';
+            date: string;
+        };
+    };
 }
 
 interface AuthContextType {
