@@ -29,6 +29,7 @@ const MoneyTransferPage = lazy(() => import('./src/pages/MoneyTransferPage'));
 const DashboardPage = lazy(() => import('./src/pages/DashboardPage'));
 const PrivacyPage = lazy(() => import('./src/pages/PrivacyPage'));
 const NotificationsPage = lazy(() => import('./src/pages/NotificationsPage'));
+const OnlineShoppingPage = lazy(() => import('./src/pages/OnlineShoppingPage'));
 
 // Fallback loader for Suspense
 const PageLoader = () => (
@@ -88,6 +89,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/tienda" element={<AnimatedPage><StorePage products={products} /></AnimatedPage>} />
         <Route path="/acceso" element={<AnimatedPage><ClientPage onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/money-transfer" element={<AnimatedPage><MoneyTransferPage /></AnimatedPage>} />
+        <Route path="/compras-online" element={<AnimatedPage><OnlineShoppingPage /></AnimatedPage>} />
         <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
