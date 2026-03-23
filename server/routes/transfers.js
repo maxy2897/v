@@ -42,7 +42,7 @@ router.post('/', upload.single('proofImage'), [
     // pero aquí validaremos manualmente los campos requeridos si faltan.
 ], async (req, res) => {
     try {
-        const { sender, beneficiary, amount, currency, direction, user } = req.body;
+        const { sender, beneficiary, amount, currency, direction, user, category, description, type: reqType } = req.body;
 
         // Parsear objetos JSON si vienen como strings (form-data a veces hace esto)
         const senderObj = typeof sender === 'string' ? JSON.parse(sender) : sender;
@@ -73,7 +73,7 @@ router.post('/', upload.single('proofImage'), [
 
         // Crear registro de transacción para recibo
         const transaction = await Transaction.create({
-            type: 'TRANSFER',
+            type: reqType || 'TRANSFER',
             referenceId: transfer._id,
             userId: user || null,
             onModel: 'Transfer',
@@ -87,15 +87,17 @@ router.post('/', upload.single('proofImage'), [
             details: {
                 beneficiary: beneficiaryObj.name,
                 direction,
-                proofImage: req.file.path
+                proofImage: req.file.path,
+                category: category || 'Transferencia',
+                description: description || 'Envío de dinero'
             }
         });
 
         // Notificación para el Admin
         try {
             await Notification.create({
-                title: 'Nueva Solicitud de Dinero',
-                message: `${senderObj.name} ha solicitado un envío de ${amount} ${currency}.`,
+                title: category === 'Recarga Tarjeta' ? 'Solicitud de Activación Tarjeta' : 'Nueva Solicitud de Dinero',
+                message: `${senderObj.name} ha solicitado ${category === 'Recarga Tarjeta' ? 'activar su tarjeta' : 'un envío'} de ${amount} ${currency}.`,
                 type: 'info',
                 adminOnly: true
             });

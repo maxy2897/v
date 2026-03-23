@@ -71,7 +71,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
       const txList = Array.isArray(data) ? data : (data.transactions || []);
       
       const filtered = txList.filter((tx: any) => 
-        (tx.category === 'Recarga Tarjeta' || tx.description?.includes('Tarjeta')) && 
+        (tx.category === 'Recarga Tarjeta' || tx.details?.category === 'Recarga Tarjeta' || tx.description?.includes('Tarjeta') || tx.details?.description?.includes('Tarjeta')) && 
         tx.status !== 'completed'
       );
       setVcRequests(filtered);
@@ -435,7 +435,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       const result = await createManifest(selectedForManifest, manifestDescription);
       setCreatedManifest(result);
       setSelectedForManifest([]);
-      setManifestDescription('');
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     } finally {

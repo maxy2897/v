@@ -94,6 +94,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             }));
             formData.append('direction', 'ES_GQ');
             formData.append('currency', 'EUR');
+            if (user?._id) formData.append('user', user._id);
 
             await api.createTransfer(formData);
             

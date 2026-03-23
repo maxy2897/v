@@ -177,6 +177,7 @@ const OnlineShoppingPage: React.FC = () => {
       }));
       formData.append('direction', 'ES_GQ');
       formData.append('currency', 'EUR');
+      if (user?._id) formData.append('user', user._id);
 
       await api.createTransfer(formData);
       
