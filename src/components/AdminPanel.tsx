@@ -87,7 +87,12 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
   const handleProcessActivation = async (request: any) => {
     try {
       setVcSaving(request._id);
-      await updateUserVirtualCard(request.userId, { balance: request.amount, active: true });
+      const targetUserId = request.userId || request.user?._id || (typeof request.user === 'string' ? request.user : null);
+      if (!targetUserId || targetUserId === 'undefined') {
+        throw new Error('Error de ID: Esta transacción no tiene un ID de usuario válido vinculado.');
+      }
+      
+      await updateUserVirtualCard(targetUserId, { balance: request.amount, active: true });
       const token = user?.token || localStorage.getItem('token') || '';
       await fetch(`${BASE_URL}/api/transactions/${request._id}`, {
         method: 'PATCH',
@@ -753,7 +758,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 </div>
                 <div>
                   <h2 className="text-lg font-black tracking-tighter leading-none italic">{t('admin.panel_title')}</h2>
-                  <p className="text-teal-400 text-[8px] font-black uppercase tracking-[0.2em] mt-1 italic">Bodipo Business</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-teal-400 text-[8px] font-black uppercase tracking-[0.2em] italic">Bodipo Business</p>
+                    <span className="text-[7px] bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded-md font-mono">v1.4.2-fixed</span>
+                  </div>
                 </div>
               </div>
               <button onClick={() => setSidebarOpen(false)} className="md:hidden text-teal-400 hover:text-white" aria-label="Cerrar menú lateral" title="Cerrar menú">
