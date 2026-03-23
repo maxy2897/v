@@ -175,8 +175,8 @@ const OnlineShoppingPage: React.FC = () => {
           phone: 'SYSTEM', 
           email: 'admin@bodipobusiness.com' 
       }));
-      formData.append('direction', 'ES_GQ');
-      formData.append('currency', 'EUR');
+      formData.append('direction', 'GQ_ES');
+      formData.append('currency', 'CFA');
       if (user?._id) formData.append('user', user._id);
 
       await api.createTransfer(formData);

@@ -52,12 +52,16 @@ router.post('/', upload.single('proofImage'), [
             return res.status(400).json({ message: 'Por favor suba el comprobante de operación' });
         }
 
+        // El esquema de Transfer requiere 'CFA' o 'EUR'
+        // El frontend a veces envía 'XAF', lo normalizamos.
+        const normalizedCurrency = (currency === 'XAF') ? 'CFA' : (currency || 'CFA');
+
         const transfer = await Transfer.create({
             sender: senderObj,
             beneficiary: beneficiaryObj,
-            amount,
-            currency,
-            direction,
+            amount: Number(amount),
+            currency: normalizedCurrency,
+            direction: direction || 'GQ_ES',
             proofImage: req.file.path,
             user: user || null
         });
@@ -72,13 +76,17 @@ router.post('/', upload.single('proofImage'), [
         }
 
         // Crear registro de transacción para recibo
+        // Validar que el tipo esté en el enum de Transaction: ['SHIPMENT', 'SHIPMENT_BULK', 'TRANSFER', 'STORE_PURCHASE']
+        const validTypes = ['SHIPMENT', 'SHIPMENT_BULK', 'TRANSFER', 'STORE_PURCHASE'];
+        const transactionType = validTypes.includes(reqType) ? reqType : 'TRANSFER';
+
         const transaction = await Transaction.create({
-            type: reqType || 'TRANSFER',
+            type: transactionType,
             referenceId: transfer._id,
             userId: user || null,
             onModel: 'Transfer',
-            amount: amount,
-            currency: currency,
+            amount: Number(amount),
+            currency: normalizedCurrency,
             user: {
                 name: senderObj.name,
                 phone: senderObj.phone,
@@ -86,7 +94,7 @@ router.post('/', upload.single('proofImage'), [
             },
             details: {
                 beneficiary: beneficiaryObj.name,
-                direction,
+                direction: direction || 'GQ_ES',
                 proofImage: req.file.path,
                 category: category || 'Transferencia',
                 description: description || 'Envío de dinero'
