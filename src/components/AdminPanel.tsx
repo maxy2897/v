@@ -94,12 +94,17 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
       
       await updateUserVirtualCard(targetUserId, { balance: request.amount, active: true });
       const token = user?.token || localStorage.getItem('token') || '';
-      await fetch(`${BASE_URL}/api/transactions/${request._id}`, {
+      const resPatch = await fetch(`${BASE_URL}/api/transactions/${request._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status: 'completed' })
+        body: JSON.stringify({ 
+          status: 'completed',
+          deleteImage: true 
+        })
       });
-      alert('¡Tarjeta activada!');
+
+      if (!resPatch.ok) console.warn('No se pudo marcar la transaccion como completada en el DB.');
+      alert('¡Tarjeta activada y comprobante eliminado!');
       fetchRequests();
     } catch (err: any) {
       alert(err.message || 'Error al procesar');
@@ -142,7 +147,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
           {vcRequests.map((req) => {
             const u = req.user || {};
             const isSavingThis = vcSaving === req._id;
-            const captureUrl = req.image || req.proof || req.screenshot;
+            const captureUrl = req.image || req.proof || req.screenshot || req.details?.proofImage || req.details?.proof;
             return (
               <div key={req._id} className="p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 hover:bg-gray-50/30 transition-all">
                 <div className="flex items-center gap-5 min-w-[280px]">
@@ -154,7 +159,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{u.email}</p>
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 rounded-lg border border-amber-100">
                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                       <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest">Solicita {req.amount?.toLocaleString()} FCFA</span>
+                       <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest">Solicita {req.amount?.toLocaleString()} {req.currency || 'FCFA'}</span>
                     </div>
                   </div>
                 </div>
