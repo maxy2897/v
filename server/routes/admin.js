@@ -156,7 +156,7 @@ router.put('/users/:id/virtual-card', protect, async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        const { active, balance, cardNumber, expiryDate, cvv, holderName } = req.body;
+        const { active, balance, number: cardNumber, expiry: expiryDate, cvv, holderName } = req.body;
 
         // Si no existe el objeto virtualCard, inicializarlo
         if (!user.virtualCard) user.virtualCard = {};
@@ -165,9 +165,9 @@ router.put('/users/:id/virtual-card', protect, async (req, res) => {
         if (balance !== undefined) user.virtualCard.balance = (user.virtualCard.balance || 0) + Number(balance);
         
         // Generar datos aleatorios si se activa por primera vez y no se pasan
-        if (active && (!user.virtualCard.cardNumber || cardNumber)) {
-            user.virtualCard.cardNumber = cardNumber || `4532 ${Math.floor(Math.random()*9000+1000)} ${Math.floor(Math.random()*9000+1000)} ${Math.floor(Math.random()*9000+1000)}`;
-            user.virtualCard.expiryDate = expiryDate || "12/28";
+        if (active && (!user.virtualCard.number || cardNumber)) {
+            user.virtualCard.number = cardNumber || `4532 ${Math.floor(Math.random()*9000+1000)} ${Math.floor(Math.random()*9000+1000)} ${Math.floor(Math.random()*9000+1000)}`;
+            user.virtualCard.expiry = expiryDate || "12/28";
             user.virtualCard.cvv = cvv || `${Math.floor(Math.random()*900+100)}`;
             user.virtualCard.holderName = holderName || user.name.toUpperCase();
         }

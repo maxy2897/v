@@ -80,8 +80,8 @@ const UserSchema = new mongoose.Schema({
     },
     virtualCard: {
         active: { type: Boolean, default: false },
-        cardNumber: { type: String },
-        expiryDate: { type: String },
+        number: { type: String },
+        expiry: { type: String },
         cvv: { type: String },
         balance: { type: Number, default: 0 },
         holderName: { type: String }
