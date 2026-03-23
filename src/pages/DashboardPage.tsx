@@ -686,22 +686,22 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                             className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                                         />
                                         <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white font-mono tracking-[0.2em] pointer-events-none">
-                                            <p className={`text-lg font-black drop-shadow-lg mb-4 transition-all duration-500 ${!user.virtualCard?.active ? 'blur-[8px] select-none opacity-40' : ''}`}>
+                                            <p className={`text-lg font-black drop-shadow-lg mb-4 transition-all duration-500 ${!user.virtualCard?.active ? 'blur-[20px] select-none opacity-20' : ''}`}>
                                                 {user.virtualCard?.number || '4918 5004 2135 3238'}
                                             </p>
                                             <div className="flex justify-between items-center text-[10px] font-black uppercase opacity-90 drop-shadow-md">
-                                                <div className={!user.virtualCard?.active ? 'blur-[6px] opacity-40' : ''}>
+                                                <div className={!user.virtualCard?.active ? 'blur-[18px] opacity-20' : ''}>
                                                     <span className="block text-[8px] opacity-60 mb-0.5">VÁLIDA HASTA</span>
                                                     <span>{user.virtualCard?.expiry || '04/2029'}</span>
                                                 </div>
-                                                <div className={`text-right ${!user.virtualCard?.active ? 'blur-[6px] opacity-40' : ''}`}>
+                                                <div className={`text-right ${!user.virtualCard?.active ? 'blur-[18px] opacity-20' : ''}`}>
                                                     <span className="block text-[8px] opacity-60 mb-0.5">CVV</span>
                                                     <span>{user.virtualCard?.cvv || '043'}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         {!user.virtualCard?.active && (
-                                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] z-30 flex flex-col items-center justify-center p-8 text-center">
+                                            <div className="absolute inset-0 bg-black/80 backdrop-blur-[15px] z-30 flex flex-col items-center justify-center p-8 text-center">
                                                 <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20">🔒</div>
                                                 <p className="text-[10px] font-black uppercase tracking-widest text-white leading-relaxed">
                                                     Activa tu tarjeta para ver los datos
