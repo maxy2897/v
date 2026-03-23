@@ -6,13 +6,14 @@ import { useAuth } from '../context/AuthContext';
 const OnlineShoppingPage: React.FC = () => {
   const { t, appConfig } = useSettings();
   const { user } = useAuth();
+  const eurRate = 655.957;
 
   const defaultStores = [
     { name: 'Amazon', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg', url: 'https://amazon.es' },
     { name: 'Zara', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Zara_Logo.svg/1280px-Zara_Logo.svg.png', url: 'https://zara.com' },
     { name: 'AliExpress', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Aliexpress_logo.svg', url: 'https://aliexpress.com' },
-    { name: 'Shein', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Shein_logo.svg/2560px-Shein_logo.svg.png', url: 'https://shein.com' },
-    { name: 'Temu', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Temu_logo.svg/2560px-Temu_logo.svg.png', url: 'https://temu.com' },
+    { name: 'Shein', logo: 'https://cdn.icon-icons.com/icons2/2389/PNG/512/shein_logo_icon_145100.png', url: 'https://shein.com' },
+    { name: 'Temu', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Temu-Logo.png', url: 'https://temu.com' },
     { name: 'Nike', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg', url: 'https://nike.com' },
     { name: 'IKEA', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg', url: 'https://ikea.com' },
     { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg', url: 'https://apple.com' },
@@ -64,30 +65,57 @@ const OnlineShoppingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-32 pb-20 relative">
       <div className="max-w-7xl mx-auto px-4">
-        <header className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-block px-4 py-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6"
-          >
-            Servicio de Compras
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl font-black text-teal-900 dark:text-white tracking-tighter uppercase italic leading-none mb-6"
-          >
-            {t('nav.online_shopping')}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium"
-          >
-            Compra en tus tiendas favoritas de todo el mundo y nosotros nos encargamos de que tus paquetes lleguen a tu puerta en Guinea Ecuatorial.
-          </motion.p>
+        <header className="flex flex-col lg:flex-row items-center justify-between gap-12 mb-16 text-center lg:text-left">
+          <div className="flex-1">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="inline-block px-4 py-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6"
+            >
+              Servicio de Compras
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-7xl font-black text-teal-900 dark:text-white tracking-tighter uppercase italic leading-[0.9] mb-6"
+            >
+              {t('nav.online_shopping')}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-gray-500 dark:text-gray-400 max-w-xl font-medium"
+            >
+              Compra en tus tiendas favoritas de todo el mundo y nosotros nos encargamos de que tus paquetes lleguen a tu puerta en Guinea Ecuatorial.
+            </motion.p>
+          </div>
+
+          {user?.virtualCard?.active && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+              animate={{ opacity: 1, scale: 1, rotate: -2 }}
+              className="relative group shrink-0"
+            >
+              <div className="absolute -inset-4 bg-teal-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
+              <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                <div className="flex justify-between items-center mb-6">
+                  <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
+                  <div className="text-right">
+                    <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Tu Saldo</p>
+                    <p className="text-lg font-black tracking-tight">{(user.virtualCard.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
+                    <p className="text-[11px] font-black text-teal-500 tracking-widest mt-0.5">≈ {((user.virtualCard.balance || 0) / eurRate).toFixed(2)} €</p>
+                  </div>
+                </div>
+                <div className="flex justify-between items-end">
+                   <p className="text-[10px] font-mono tracking-widest opacity-60">**** **** **** {user.virtualCard.number?.slice(-4) || '3238'}</p>
+                   <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/10 text-[8px] font-black uppercase tracking-widest text-teal-400">Card Active</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </header>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -189,6 +217,7 @@ const OnlineShoppingPage: React.FC = () => {
                   <div className="text-right">
                     <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest">Saldo</p>
                     <p className="text-sm font-black tracking-tight">{(user.virtualCard.balance || 0).toLocaleString()} FCFA</p>
+                    <p className="text-[11px] font-black text-teal-500 tracking-widest mt-1">≈ {((user.virtualCard.balance || 0) / eurRate).toFixed(2)} €</p>
                   </div>
                 </div>
                 <div className="space-y-4 font-mono tracking-widest">
