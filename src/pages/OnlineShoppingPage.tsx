@@ -127,29 +127,31 @@ const OnlineShoppingPage: React.FC = () => {
             <div className="absolute -inset-4 bg-teal-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
             <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden">
               {!user?.virtualCard?.active && (
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-20 flex items-center justify-center p-6 text-center">
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-6 text-center">
+                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-xl mb-3 border border-white/20">🔒</div>
                   <button 
                     onClick={() => setIsRechargeModalOpen(true)}
-                    className="px-4 py-2 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-teal-500 transition-colors"
+                    className="px-5 py-2.5 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-teal-500 transition-all hover:scale-105"
                   >
-                    Activar para ver datos
+                    Activar Tarjeta
                   </button>
+                  <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mt-3 leading-tight">Carga saldo para desbloquear</p>
                 </div>
               )}
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
               <div className="flex justify-between items-center mb-6">
                 <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
-                <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[15px] opacity-20' : ''}`}>
+                <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[22px] opacity-10 select-none' : ''}`}>
                   <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Tu Saldo</p>
                   <p className="text-lg font-black tracking-tight">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
                   <p className="text-[11px] font-black text-teal-500 tracking-widest mt-0.5">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} €</p>
                 </div>
               </div>
               <div className="flex justify-between items-end">
-                 <p className={`text-[10px] font-mono tracking-widest opacity-60 ${!user?.virtualCard?.active ? 'blur-[15px] select-none' : ''}`}>
+                 <p className={`text-[10px] font-mono tracking-widest opacity-60 ${!user?.virtualCard?.active ? 'blur-[22px] select-none opacity-5' : ''}`}>
                     **** **** **** {user?.virtualCard?.number?.slice(-4) || '3238'}
                  </p>
-                 <div className={`px-3 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-white/5 border-white/10 text-teal-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                 <div className={`px-3 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-white/5 border-white/10 text-teal-400' : 'bg-red-500/10 border-red-500/20 text-red-400 opacity-20'}`}>
                     {user?.virtualCard?.active ? 'Card Active' : 'Inactive'}
                  </div>
               </div>

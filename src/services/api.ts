@@ -356,3 +356,28 @@ export const updatePassword = async (passwords: {
 
     return data;
 };
+
+// Obtener clave pública VAPID
+export const getVapidPublicKey = async () => {
+    const response = await fetch(`${API_URL}/notifications/vapid-key`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Error al obtener VAPID key');
+    return data.publicKey;
+};
+
+// Gestión Admin de Tarjetas Virtuales
+export const updateUserVirtualCard = async (userId: string, cardData: { balance?: number; active?: boolean }) => {
+    const response = await fetch(`${API_URL}/admin/users/${userId}/virtual-card`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(cardData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Error al actualizar tarjeta');
+    return data;
+};

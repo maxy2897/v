@@ -793,105 +793,189 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
           {activeTab === 'dashboard' && renderDashboard()}
           
-          {activeTab === 'virtual_card' && (
-            <div className="space-y-8 animate-in fade-in duration-500">
-               <div className="flex justify-between items-center mb-6">
-                  <div>
-                     <h3 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">{t('admin.menu.virtual_card') || 'Gestión de Tarjetas Virtuales'}</h3>
-                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Revisa y aprueba las solicitudes de recarga y activación.</p>
-                  </div>
-               </div>
+          {activeTab === 'virtual_card' && (() => {
+            const VirtualCardManager = () => {
+              const [vcUsers, setVcUsers] = React.useState<any[]>([]);
+              const [vcLoading, setVcLoading] = React.useState(true);
+              const [vcEditing, setVcEditing] = React.useState<Record<string, string>>({});
+              const [vcSaving, setVcSaving] = React.useState<string | null>(null);
 
-               <div className="grid grid-cols-1 gap-6">
+              const fetchVcUsers = async () => {
+                try {
+                  setVcLoading(true);
+                  const userStr = localStorage.getItem('user');
+                  const token = userStr ? JSON.parse(userStr).token : '';
+                  const res = await fetch(`${BASE_URL}/api/admin/users`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (!res.ok) throw new Error('Error al cargar usuarios');
+                  const data = await res.json();
+                  setVcUsers(data.users || []);
+                } catch (err: any) {
+                  alert(err.message || 'Error al cargar usuarios');
+                } finally {
+                  setVcLoading(false);
+                }
+              };
+
+              React.useEffect(() => { fetchVcUsers(); }, []);
+
+              const handleSaveBalance = async (userId: string) => {
+                const newBalance = parseFloat(vcEditing[userId] || '0');
+                if (isNaN(newBalance) || newBalance < 0) return alert('Monto inválido');
+                try {
+                  setVcSaving(userId);
+                  const userStr = localStorage.getItem('user');
+                  const token = userStr ? JSON.parse(userStr).token : '';
+                  const res = await fetch(`${BASE_URL}/api/admin/users/${userId}/virtual-card`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ balance: newBalance })
+                  });
+                  if (!res.ok) throw new Error('Error al actualizar');
+                  const data = await res.json();
+                  setVcUsers(prev => prev.map(u => u._id === userId ? { ...u, virtualCard: data.user?.virtualCard || { ...u.virtualCard, balance: newBalance } } : u));
+                  setVcEditing(prev => { const n = {...prev}; delete n[userId]; return n; });
+                } catch (err: any) {
+                  alert(err.message || 'Error al actualizar saldo');
+                } finally {
+                  setVcSaving(null);
+                }
+              };
+
+              const handleToggleActive = async (userId: string, currentActive: boolean) => {
+                try {
+                  setVcSaving(userId);
+                  const userStr = localStorage.getItem('user');
+                  const token = userStr ? JSON.parse(userStr).token : '';
+                  const res = await fetch(`${BASE_URL}/api/admin/users/${userId}/virtual-card`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ active: !currentActive })
+                  });
+                  if (!res.ok) throw new Error('Error al actualizar');
+                  const data = await res.json();
+                  setVcUsers(prev => prev.map(u => u._id === userId ? { ...u, virtualCard: data.user?.virtualCard || { ...u.virtualCard, active: !currentActive } } : u));
+                } catch (err: any) {
+                  alert(err.message || 'Error al cambiar estado');
+                } finally {
+                  setVcSaving(null);
+                }
+              };
+
+              if (vcLoading) return (
+                <div className="flex flex-col items-center justify-center h-[40vh] gap-4">
+                  <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cargando usuarios...</p>
+                </div>
+              );
+
+              return (
+                <div className="space-y-8 animate-in fade-in duration-500">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <h3 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">{t('admin.menu.virtual_card') || 'Gestión de Tarjetas Virtuales'}</h3>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Edita el saldo y activa/desactiva tarjetas de cada usuario.</p>
+                    </div>
+                    <button onClick={fetchVcUsers} className="px-5 py-3 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-50 transition-all shadow-sm">
+                      ↻ Actualizar
+                    </button>
+                  </div>
+
                   <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                     <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Solicitudes Pendientes</h4>
-                        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest">3 Pendientes</span>
-                     </div>
-                     
-                     <div className="divide-y divide-gray-50">
-                        {[
-                           { id: '1', user: 'Juan Nsue', amount: 50000, date: '2026-03-23', status: 'pending', receipt: '/images/money-bg.jpg' },
-                           { id: '2', user: 'Maria Oyono', amount: 125000, date: '2026-03-22', status: 'pending', receipt: '/images/money-bg.jpg' },
-                           { id: '3', user: 'Pedro Bakale', amount: 20000, date: '2026-03-22', status: 'pending', receipt: '/images/money-bg.jpg' }
-                        ].map((req) => (
-                           <div key={req.id} className="p-8 flex flex-col lg:flex-row items-center justify-between gap-8 hover:bg-gray-50/30 transition-all">
-                              <div className="flex items-center gap-6 w-full lg:w-auto">
-                                 <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-2xl shrink-0">👤</div>
-                                 <div>
-                                    <h5 className="text-lg font-black text-slate-900 leading-tight">{req.user}</h5>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{req.date}</p>
-                                 </div>
-                              </div>
+                    <div className="p-8 border-b border-gray-50 bg-gray-50/50">
+                      <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Usuarios y Tarjetas Virtuales</h4>
+                    </div>
+                    <div className="divide-y divide-gray-50">
+                      {vcUsers.length === 0 && (
+                        <div className="p-12 text-center text-gray-400 font-bold text-sm">No hay usuarios registrados.</div>
+                      )}
+                      {vcUsers.map((u) => {
+                        const card = u.virtualCard || {};
+                        const isActive = card.active ?? false;
+                        const balance = card.balance ?? 0;
+                        const isEditingThis = vcEditing[u._id] !== undefined;
+                        const isSavingThis = vcSaving === u._id;
+                        const EUR_RATE = 655.957;
 
-                              <div className="bg-gray-50 px-6 py-4 rounded-2xl text-center w-full lg:w-auto">
-                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Monto Solicitado</p>
-                                 <p className="text-xl font-black text-teal-600 tracking-tighter">{req.amount.toLocaleString()} FCFA</p>
+                        return (
+                          <div key={u._id} className="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:bg-gray-50/30 transition-all">
+                            {/* User Info */}
+                            <div className="flex items-center gap-4 min-w-[200px]">
+                              <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-700 font-black text-lg shrink-0">
+                                {u.name?.[0]?.toUpperCase() || '?'}
                               </div>
+                              <div>
+                                <h5 className="font-black text-slate-900 text-sm leading-tight">{u.name}</h5>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate max-w-[180px]">{u.email}</p>
+                              </div>
+                            </div>
 
-                              <div className="flex items-center gap-4 w-full lg:w-auto">
-                                 <button className="flex-1 lg:flex-none px-6 py-4 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-100 transition-all flex items-center gap-2 justify-center">
-                                    <span>👁️</span> Ver Recibo
-                                 </button>
-                                 <button 
-                                    onClick={() => alert('Tarjeta Activada y Saldo Actualizado')}
-                                    className="flex-1 lg:flex-none px-8 py-4 bg-teal-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-teal-600 transition-all"
-                                 >
-                                    Aprobar y Activar
-                                 </button>
-                                 <button className="flex-1 lg:flex-none p-4 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all">
-                                    ✕
-                                 </button>
+                            {/* Balance Editor */}
+                            <div className="flex items-center gap-3 flex-1 max-w-xs">
+                              {isEditingThis ? (
+                                <div className="flex items-center gap-2 w-full">
+                                  <input
+                                    type="number"
+                                    value={vcEditing[u._id]}
+                                    onChange={(e) => setVcEditing(prev => ({ ...prev, [u._id]: e.target.value }))}
+                                    className="flex-1 px-4 py-2.5 bg-gray-50 border-2 border-teal-400 rounded-xl text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-teal-300 min-w-0"
+                                    placeholder="Monto FCFA"
+                                    min="0"
+                                    step="500"
+                                    aria-label="Nuevo saldo FCFA"
+                                  />
+                                  <button
+                                    onClick={() => handleSaveBalance(u._id)}
+                                    disabled={isSavingThis}
+                                    className="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-500 transition-all disabled:opacity-50 shrink-0"
+                                  >
+                                    {isSavingThis ? '...' : 'Guardar'}
+                                  </button>
+                                  <button
+                                    onClick={() => setVcEditing(prev => { const n = {...prev}; delete n[u._id]; return n; })}
+                                    className="p-2.5 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-all shrink-0"
+                                  >✕</button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setVcEditing(prev => ({ ...prev, [u._id]: String(balance) }))}
+                                  className="flex flex-col items-start bg-gray-50 hover:bg-teal-50 border border-gray-100 hover:border-teal-200 px-4 py-3 rounded-2xl transition-all group w-full text-left"
+                                >
+                                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest group-hover:text-teal-500">Saldo</span>
+                                  <span className="text-lg font-black text-slate-900 tracking-tight">{balance.toLocaleString()} <span className="text-[11px] text-teal-600">FCFA</span></span>
+                                  <span className="text-[11px] font-black text-teal-500">≈ {(balance / EUR_RATE).toFixed(2)} €</span>
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Status + Activate Toggle */}
+                            <div className="flex items-center gap-3 shrink-0">
+                              <div className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border ${isActive ? 'bg-teal-50 text-teal-700 border-teal-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
+                                {isActive ? '✓ Activa' : '✕ Inactiva'}
                               </div>
-                           </div>
-                        ))}
-                     </div>
+                              <button
+                                onClick={() => handleToggleActive(u._id, isActive)}
+                                disabled={isSavingThis}
+                                className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-sm ${isActive
+                                  ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-100 hover:border-red-500'
+                                  : 'bg-teal-600 text-white hover:bg-teal-500 shadow-teal-500/20'
+                                }`}
+                              >
+                                {isSavingThis ? '...' : isActive ? 'Desactivar' : 'Activar'}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
+                </div>
+              );
+            };
+            return <VirtualCardManager />;
+          })()}
 
-                  {/* Purchases validation section */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mt-8 animate-in delay-500">
-                     <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Compras por Validar</h4>
-                        <span className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-[9px] font-black uppercase tracking-widest">2 Reportes</span>
-                     </div>
-                     
-                     <div className="divide-y divide-gray-50">
-                        {[
-                           { id: 'c1', user: 'Juan Nsue', amount: 15500, store: 'Amazon', date: '2026-03-23', status: 'pending', receipt: '/images/money-bg.jpg' },
-                           { id: 'c2', user: 'Maria Oyono', amount: 42000, store: 'Shein', date: '2026-03-23', status: 'pending', receipt: '/images/money-bg.jpg' }
-                        ].map((shop) => (
-                           <div key={shop.id} className="p-8 flex flex-col lg:flex-row items-center justify-between gap-8 hover:bg-gray-50/30 transition-all">
-                              <div className="flex items-center gap-6 w-full lg:w-auto">
-                                 <div className="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-xl shrink-0">🛍️</div>
-                                 <div>
-                                    <h5 className="text-lg font-black text-slate-900 leading-tight">{shop.user}</h5>
-                                    <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">{shop.store} • {shop.date}</p>
-                                 </div>
-                              </div>
-
-                              <div className="bg-red-50/50 px-6 py-4 rounded-2xl text-center w-full lg:w-auto border border-red-100">
-                                 <p className="text-[9px] font-black text-red-400 uppercase tracking-widest mb-1 font-mono-none">Gasto Reportado</p>
-                                 <p className="text-xl font-black text-red-600 tracking-tighter">-{shop.amount.toLocaleString()} FCFA</p>
-                              </div>
-
-                              <div className="flex items-center gap-4 w-full lg:w-auto">
-                                 <button className="flex-1 lg:flex-none px-6 py-4 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-gray-100 transition-all">
-                                    Ver Factura
-                                 </button>
-                                 <button 
-                                    onClick={() => alert('Gasto Confirmado. El saldo se ha actualizado automáticamente.')}
-                                    className="flex-1 lg:flex-none px-8 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-gray-200 hover:bg-teal-600 transition-all"
-                                 >
-                                    Validar y Restar Saldo
-                                 </button>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               </div>
-            </div>
-          )}
           
           {activeTab === 'products' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
