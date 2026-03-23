@@ -66,6 +66,7 @@ const OnlineShoppingPage: React.FC = () => {
     { name: 'Lego', domain: 'lego.com', url: 'https://lego.com' },
     { name: 'Disney Store', domain: 'disneystore.es', url: 'https://disneystore.es' },
     { name: 'Druni', domain: 'druni.es', url: 'https://druni.es' },
+    { name: 'Wallapop', domain: 'wallapop.com', url: 'https://wallapop.com' },
   ];
 
   // Logo sources in priority order: Clearbit (best quality) → Google Favicons → Initials
@@ -105,6 +106,7 @@ const OnlineShoppingPage: React.FC = () => {
     'pullandbear.com': 'https://logo.clearbit.com/pullandbear.com',
     'stradivarius.com': 'https://logo.clearbit.com/stradivarius.com',
     'disneystore.es': 'https://logo.clearbit.com/disneystore.es',
+    'wallapop.com': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Wallapop_logo.svg',
   };
 
   const getStoreLogo = (domain: string, customLogo?: string) => {
