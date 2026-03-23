@@ -41,7 +41,8 @@ const OnlineShoppingPage: React.FC = () => {
     { name: 'Disney Store', domain: 'disneystore.es', url: 'https://disneystore.es' },
   ];
 
-  const getLogo = (domain: string) => `https://logo.clearbit.com/${domain}?size=256`;
+  const getLogo = (domain: string) => `https://unavatar.io/${domain}`;
+  const getGoogleLogo = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
 
   const [clickCounts, setClickCounts] = React.useState<Record<string, number>>(() => {
     const saved = localStorage.getItem('shopping_frequencies');
@@ -60,10 +61,17 @@ const OnlineShoppingPage: React.FC = () => {
       : defaultStores;
     
     // Normalizar para asegurar que todos tengan domain o logo
-    const normalized = rawStores.map((s: any) => ({
-      ...s,
-      domain: s.domain || (s.url ? new URL(s.url).hostname.replace('www.', '') : s.name.toLowerCase().replace(/\s/g, '') + '.com')
-    }));
+    const normalized = rawStores.map((s: any) => {
+      let domain = s.domain;
+      if (!domain && s.url) {
+        try {
+          domain = new URL(s.url).hostname.replace('www.', '');
+        } catch (e) {
+          domain = s.name.toLowerCase().replace(/\s/g, '') + '.com';
+        }
+      }
+      return { ...s, domain: domain || s.name.toLowerCase().replace(/\s/g, '') + '.com' };
+    });
 
     return normalized.sort((a, b) => (clickCounts[b.name] || 0) - (clickCounts[a.name] || 0));
   }, [appConfig, clickCounts]);
@@ -169,7 +177,12 @@ const OnlineShoppingPage: React.FC = () => {
                   alt={store.name}
                   className="max-h-full max-w-full object-contain transition-all group-hover:scale-110"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${store.name}&background=0D9488&color=fff&bold=true`;
+                    const img = e.target as HTMLImageElement;
+                    if (img.src.includes('unavatar.io')) {
+                      img.src = getGoogleLogo(store.domain);
+                    } else if (img.src.includes('google.com')) {
+                      img.src = `https://ui-avatars.com/api/?name=${store.name}&background=0D9488&color=fff&bold=true`;
+                    }
                   }}
                 />
               </div>
