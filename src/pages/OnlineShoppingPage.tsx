@@ -31,6 +31,7 @@ const OnlineShoppingPage: React.FC = () => {
   const { t, appConfig } = useSettings();
   const { user } = useAuth();
   const eurRate = 655.957;
+  const [destination, setDestination] = React.useState('Malabo');
 
   const defaultStores = [
     { name: 'Amazon', domain: 'amazon.es', url: 'https://amazon.es' },
@@ -63,6 +64,7 @@ const OnlineShoppingPage: React.FC = () => {
     { name: 'Fnac', domain: 'fnac.es', url: 'https://fnac.es' },
     { name: 'Lego', domain: 'lego.com', url: 'https://lego.com' },
     { name: 'Disney Store', domain: 'disneystore.es', url: 'https://disneystore.es' },
+    { name: 'Druni', domain: 'druni.es', url: 'https://druni.es' },
   ];
 
   // Logo sources in priority order: Clearbit (best quality) → Google Favicons → Initials
@@ -303,10 +305,22 @@ const OnlineShoppingPage: React.FC = () => {
                   <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50 border-l-2 border-l-teal-500">
                     <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
                       <span>Nombre *</span>
-                      <button onClick={() => navigator.clipboard.writeText(`${user?.name || 'TU NOMBRE'} + DESTINO`)} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
+                      <button onClick={() => navigator.clipboard.writeText(`${user?.name || 'TU NOMBRE'} + ${destination}`)} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
                     </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">{user?.name || 'TU NOMBRE'} + DESTINO</p>
-                    <p className="text-[9px] text-gray-400 mt-1 leading-tight font-medium">Ej: Juan Nsue + Malabo</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-bold text-sm text-[#00151a] dark:text-white truncate">{user?.name || 'TU NOMBRE'} +</p>
+                      <select 
+                        value={destination} 
+                        onChange={(e) => setDestination(e.target.value)}
+                        className="bg-teal-50 text-teal-700 font-bold text-xs px-2 py-1 rounded-lg border-none outline-none cursor-pointer focus:ring-2 focus:ring-teal-500/50"
+                        title="Ciudad de destino"
+                        aria-label="Seleccionar ciudad de destino"
+                      >
+                        <option value="Malabo">Malabo</option>
+                        <option value="Bata">Bata</option>
+                      </select>
+                    </div>
+                    <p className="text-[9px] text-gray-400 mt-1 leading-tight font-medium">Copia y pega este texto completo</p>
                   </div>
                   <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50 border-l-2 border-l-teal-500">
                     <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
