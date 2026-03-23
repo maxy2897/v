@@ -149,6 +149,7 @@ const OnlineShoppingPage: React.FC = () => {
 
   const [isRechargeModalOpen, setIsRechargeModalOpen] = React.useState(false);
   const [rechargeAmount, setRechargeAmount] = React.useState('');
+  const [rechargeCurrency, setRechargeCurrency] = React.useState<'CFA' | 'EUR'>('CFA');
   const [screenshot, setScreenshot] = React.useState<File | null>(null);
 
   const handleRechargeSubmit = async (e: React.FormEvent) => {
@@ -159,7 +160,7 @@ const OnlineShoppingPage: React.FC = () => {
       formData.append('amount', rechargeAmount);
       if (screenshot) formData.append('proofImage', screenshot);
       formData.append('type', 'deposit');
-      formData.append('description', 'Recarga Tarjeta Virtual (Tienda)');
+      formData.append('description', `Recarga Tarjeta Virtual - Tienda (${rechargeCurrency})`);
       formData.append('method', 'Transferencia');
       formData.append('category', 'Recarga Tarjeta');
 
@@ -175,8 +176,10 @@ const OnlineShoppingPage: React.FC = () => {
           phone: 'SYSTEM', 
           email: 'admin@bodipobusiness.com' 
       }));
-      formData.append('direction', 'GQ_ES');
-      formData.append('currency', 'CFA');
+      
+      // Dirección: Si pagan en EUR es desde España (ES_GQ), si es CFA es desde Guinea (GQ_ES)
+      formData.append('direction', rechargeCurrency === 'EUR' ? 'ES_GQ' : 'GQ_ES');
+      formData.append('currency', rechargeCurrency);
       if (user?._id) formData.append('user', user._id);
 
       await api.createTransfer(formData);
@@ -434,14 +437,31 @@ const OnlineShoppingPage: React.FC = () => {
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-8">Completa los datos de tu recarga</p>
 
               <form onSubmit={handleRechargeSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setRechargeCurrency('CFA')}
+                    className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border-2 transition-all ${rechargeCurrency === 'CFA' ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-100 dark:border-gray-700 text-gray-400 hover:border-teal-100'}`}
+                  >
+                    🇬🇶 Guinea (CFA)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRechargeCurrency('EUR')}
+                    className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border-2 transition-all ${rechargeCurrency === 'EUR' ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-100 dark:border-gray-700 text-gray-400 hover:border-teal-100'}`}
+                  >
+                    🇪🇸 España (EUR)
+                  </button>
+                </div>
+
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Monto a Recargar (FCFA)</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Monto a Recargar ({rechargeCurrency})</label>
                   <input
                     type="number"
                     required
                     value={rechargeAmount}
                     onChange={(e) => setRechargeAmount(e.target.value)}
-                    placeholder="Ej: 50000"
+                    placeholder={`Ej: ${rechargeCurrency === 'CFA' ? '50000' : '50'}`}
                     className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-6 py-4 text-sm font-bold text-teal-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   />
                 </div>

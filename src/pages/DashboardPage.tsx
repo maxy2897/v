@@ -66,6 +66,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [isMobileMenu, setIsMobileMenu] = useState(true);
     const [isRechargeModalOpen, setIsRechargeModalOpen] = useState(false);
     const [rechargeAmount, setRechargeAmount] = useState('');
+    const [rechargeCurrency, setRechargeCurrency] = useState<'CFA' | 'EUR'>('CFA');
     const [screenshot, setScreenshot] = useState<File | null>(null);
 
     const handleRechargeSubmit = async (e: React.FormEvent) => {
@@ -76,7 +77,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
             formData.append('amount', rechargeAmount);
             if (screenshot) formData.append('proofImage', screenshot);
             formData.append('type', 'deposit');
-            formData.append('description', 'Carga de Tarjeta Virtual');
+            formData.append('description', `Recarga Tarjeta Virtual (${rechargeCurrency})`);
             formData.append('method', 'Transferencia');
             formData.append('category', 'Recarga Tarjeta');
 
@@ -92,8 +93,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                 phone: 'SYSTEM', 
                 email: 'admin@bodipobusiness.com' 
             }));
-            formData.append('direction', 'GQ_ES');
-            formData.append('currency', 'CFA');
+            
+            // Dirección: Si pagan en EUR es desde España (ES_GQ), si es CFA es desde Guinea (GQ_ES)
+            formData.append('direction', rechargeCurrency === 'EUR' ? 'ES_GQ' : 'GQ_ES');
+            formData.append('currency', rechargeCurrency);
             if (user?._id) formData.append('user', user._id);
 
             await api.createTransfer(formData);
@@ -1076,14 +1079,31 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-8">Completa los datos de tu recarga</p>
 
                             <form onSubmit={handleRechargeSubmit} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRechargeCurrency('CFA')}
+                                        className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border-2 transition-all ${rechargeCurrency === 'CFA' ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-100 text-gray-400 hover:border-teal-100'}`}
+                                    >
+                                        🇬🇶 Guinea (CFA)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRechargeCurrency('EUR')}
+                                        className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border-2 transition-all ${rechargeCurrency === 'EUR' ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-100 text-gray-400 hover:border-teal-100'}`}
+                                    >
+                                        🇪🇸 España (EUR)
+                                    </button>
+                                </div>
+
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Monto a Recargar (FCFA)</label>
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Monto a Recargar ({rechargeCurrency})</label>
                                     <input
                                         type="number"
                                         required
                                         value={rechargeAmount}
                                         onChange={(e) => setRechargeAmount(e.target.value)}
-                                        placeholder="Ej: 50000"
+                                        placeholder={`Ej: ${rechargeCurrency === 'CFA' ? '50000' : '50'}`}
                                         className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-teal-900 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                                     />
                                 </div>
