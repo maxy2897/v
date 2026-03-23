@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
+import { createTransfer } from '../services/api';
 
 const MoneyTransfer: React.FC = () => {
   const { t, appConfig } = useSettings();
+  const { user } = useAuth();
   const [direction, setDirection] = useState<'ES_GQ' | 'GQ_ES' | 'CM_GQ'>('ES_GQ');
   const [amount, setAmount] = useState<number>(0);
   const [formData, setFormData] = useState({
@@ -107,10 +110,10 @@ const MoneyTransfer: React.FC = () => {
       data.append('currency', direction === 'ES_GQ' ? 'EUR' : 'CFA');
       data.append('direction', direction);
       data.append('proofImage', file);
+      if (user?._id) data.append('user', user._id);
 
-      const res = await import('../services/api').then(module => module.createTransfer(data));
+      const res = await createTransfer(data);
 
-      // alert(t('transfer.alert.success')); // Removing alert to show success UI instead
       setSuccessTxId(res.transactionId);
 
       // Reset form

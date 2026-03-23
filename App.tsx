@@ -28,7 +28,8 @@ const ClientPage = lazy(() => import('./src/pages/ClientPage'));
 const MoneyTransferPage = lazy(() => import('./src/pages/MoneyTransferPage'));
 const DashboardPage = lazy(() => import('./src/pages/DashboardPage'));
 const PrivacyPage = lazy(() => import('./src/pages/PrivacyPage'));
-const NotificationsPage = lazy(() => import('./src/pages/NotificationsPage'));
+import NotificationsPage from './src/pages/NotificationsPage';
+// const NotificationsPage = lazy(() => import('./src/pages/NotificationsPage'));
 const OnlineShoppingPage = lazy(() => import('./src/pages/OnlineShoppingPage'));
 
 // Fallback loader for Suspense
