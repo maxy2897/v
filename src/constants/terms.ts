@@ -22,5 +22,9 @@ export const TERMS_AND_CONDITIONS = [
     {
         title: "6. Aduanas y Aranceles",
         content: "El usuario garantiza que el contenido de sus envíos es lícito y que la descripción proporcionada es veraz. Bodipo Business gestiona los trámites aduaneros estándar, pero el usuario es el responsable final del cumplimiento de las leyes de importación/exportación de cada país."
+    },
+    {
+        title: "7. Uso de la Tarjeta Virtual",
+        content: "El usuario se compromete a realizar compras con la Tarjeta Virtual cuyo importe total sea igual o inferior al saldo recargado y validado en su cuenta en el momento de la transacción. Queda estrictamente prohibido intentar realizar compras por montos superiores a la cantidad que se ha recargado. El incumplimiento de esta norma puede resultar en la suspensión temporal o permanente de la cuenta o tarjeta del usuario."
     }
 ];

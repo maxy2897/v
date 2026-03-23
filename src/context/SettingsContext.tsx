@@ -557,6 +557,8 @@ const translations: Record<Language, Record<string, string>> = {
         'terms.content.5': 'Las tarifas se calculan en base al peso real o volumétrico del envío, según el servicio seleccionado (Aéreo o Marítimo). Los pagos deben ser liquidados según las modalidades aceptadas (Transferencia, Ecobank o Efectivo en almacenes autorizados) antes de retirar la mercancía en destino.',
         'terms.title.6': '6. Aduanas y Aranceles',
         'terms.content.6': 'El usuario garantiza que el contenido de sus envíos es lícito y que la descripción proporcionada es veraz. Bodipo Business gestiona los trámites aduaneros estándar, pero el usuario es el responsable final del cumplimiento de las leyes de importación/exportación de cada país.',
+        'terms.title.7': '7. Uso de la Tarjeta Virtual',
+        'terms.content.7': 'El usuario se compromete a realizar compras con la Tarjeta Virtual cuyo importe total sea igual o inferior al saldo recargado y validado en su cuenta en el momento de la transacción. Queda estrictamente prohibido intentar realizar compras por montos superiores a la cantidad que se ha recargado. El incumplimiento de esta norma puede resultar en la suspensión temporal o permanente de la cuenta o tarjeta del usuario.',
 
         // Register
 
@@ -1066,6 +1068,8 @@ const translations: Record<Language, Record<string, string>> = {
         'terms.content.5': 'Rates are calculated based on the actual or volumetric weight of the shipment, depending on the selected service (Air or Sea). Payments must be settled according to accepted methods (Transfer, Ecobank, or Cash at authorized warehouses) before removing the goods at destination.',
         'terms.title.6': '6. Customs and Duties',
         'terms.content.6': 'The user guarantees that the content of their shipments is lawful and that the description provided is true. Bodipo Business manages standard customs procedures, but the user is ultimately responsible for compliance with the import/export laws of each country.',
+        'terms.title.7': '7. Use of the Virtual Card',
+        'terms.content.7': 'The user undertakes to make purchases with the Virtual Card whose total amount is equal to or less than the balance recharged and validated in their account at the time of the transaction. It is strictly prohibited to attempt to make purchases for amounts greater than the amount that has been recharged. Failure to comply with this rule may result in the temporary or permanent suspension of the user\'s account or card.',
 
         // Schedule
         'schedule.title': 'Shipping',
@@ -1730,6 +1734,8 @@ const translations: Record<Language, Record<string, string>> = {
         'terms.content.5': 'Les tarifs sont calculés sur la base du poids réel ou volumétrique de l\'envoi, selon le service sélectionné (Aérien ou Maritime). Les paiements doivent être réglés selon les modalités acceptées (Virement, Ecobank ou Espèces dans les entrepôts agréés) avant le retrait de la marchandise à destination.',
         'terms.title.6': '6. Douanes et Tarifs',
         'terms.content.6': 'L\'utilisateur garantit que le contenu de ses expéditions est licite et que la description fournie est véridique. Bodipo Business gère les procédures douanières standard, mais l\'utilisateur est l\'ultime responsable du respect des lois d\'importation/exportation de chaque pays.',
+        'terms.title.7': '7. Utilisation de la Carte Virtuelle',
+        'terms.content.7': 'L\'utilisateur s\'engage à effectuer des achats avec la Carte Virtuelle dont le montant total est égal ou inférieur au solde rechargé et validé sur son compte au moment de la transaction. Il est strictement interdit de tenter d\'effectuer des achats pour des montants supérieurs au montant qui a été rechargé. Le non-respect de cette règle peut entraîner la suspension temporaire ou permanente du compte ou de la carte de l\'utilisateur.',
 
         // Schedule
         'schedule.title': 'Calendrier des',

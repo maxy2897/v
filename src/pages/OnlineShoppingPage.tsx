@@ -192,7 +192,7 @@ const OnlineShoppingPage: React.FC = () => {
             className="relative group shrink-0"
           >
             <div className="absolute -inset-4 bg-teal-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
-            <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden">
+            <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden mb-4">
               {!user?.virtualCard?.active && (
                 <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-6 text-center">
                   <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-xl mb-3 border border-white/20">🔒</div>
@@ -219,9 +219,16 @@ const OnlineShoppingPage: React.FC = () => {
                     **** **** **** {user?.virtualCard?.number?.slice(-4) || '3238'}
                  </p>
                  <div className={`px-3 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-white/5 border-white/10 text-teal-400' : 'bg-red-500/10 border-red-500/20 text-red-400 opacity-20'}`}>
-                    {user?.virtualCard?.active ? 'Card Active' : 'Inactive'}
+                    {user?.virtualCard?.active ? 'Activa' : 'Inactiva'}
                  </div>
               </div>
+            </div>
+            
+            <div className="w-72 md:w-80 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/30 p-4 rounded-2xl flex gap-3 text-left">
+              <span className="text-teal-500 text-lg leading-none shrink-0">💡</span>
+              <p className="text-[9px] text-teal-800 dark:text-teal-200 font-bold uppercase tracking-widest leading-normal">
+                Recomendación: Asegúrate de que tus compras no excedan el saldo actual que tienes recargado.
+              </p>
             </div>
           </motion.div>
         </header>
