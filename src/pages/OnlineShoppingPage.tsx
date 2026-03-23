@@ -30,10 +30,22 @@ const StoreLogoImage = ({ src, domain, name, googleLogoFn, initialsLogoFn }: { s
 
 const OnlineShoppingPage: React.FC = () => {
   const { t, appConfig } = useSettings();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const eurRate = 655.957;
   const [destination, setDestination] = React.useState('Malabo');
   const [loading, setLoading] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  const handleRefreshUser = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshUser();
+    } catch (e) {
+      console.error('Error al refrescar:', e);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 1000);
+    }
+  };
 
   const defaultStores = [
     { name: 'Amazon', domain: 'amazon.es', url: 'https://amazon.es' },
@@ -108,6 +120,7 @@ const OnlineShoppingPage: React.FC = () => {
     'stradivarius.com': 'https://www.google.com/s2/favicons?domain=stradivarius.com&sz=128',
     'disneystore.es': 'https://www.google.com/s2/favicons?domain=disneystore.es&sz=128',
     'wallapop.com': 'https://www.google.com/s2/favicons?domain=wallapop.com&sz=128',
+    'druni.es': 'https://www.google.com/s2/favicons?domain=druni.es&sz=128',
   };
 
   const getStoreLogo = (domain: string, customLogo?: string) => {
@@ -247,7 +260,16 @@ const OnlineShoppingPage: React.FC = () => {
               )}
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
               <div className="flex justify-between items-center mb-6">
-                <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
+                <div className="flex items-center gap-3">
+                  <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
+                  <button 
+                    onClick={handleRefreshUser}
+                    title="Actualizar datos"
+                    className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs hover:bg-white/20 transition-all ${isRefreshing ? 'animate-spin' : ''}`}
+                  >
+                    🔄
+                  </button>
+                </div>
                 <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[22px] opacity-10 select-none' : ''}`}>
                   <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Tu Saldo</p>
                   <p className="text-lg font-black tracking-tight">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>

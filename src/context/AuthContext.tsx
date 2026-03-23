@@ -39,6 +39,7 @@ interface AuthContextType {
     registerWithSocial: (userData: any) => Promise<void>;
     logout: () => void;
     updateUser: (userData: any) => Promise<void>;
+    refreshUser: () => Promise<void>;
     isAuthenticated: boolean;
 }
 
@@ -122,14 +123,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const refreshUser = async () => {
+        try {
+            if (api.isAuthenticated()) {
+                const freshUser = await api.getCurrentUser();
+                const token = localStorage.getItem('token');
+                const fullUserData = { ...freshUser, token };
+                setUser(fullUserData as User);
+                localStorage.setItem('user', JSON.stringify(fullUserData));
+            }
+        } catch (error) {
+            console.error('Error refreshing user:', error);
+        }
+    };
+
     const value = {
         user,
         loading,
         login,
         register,
-        registerWithSocial, // Add this
+        registerWithSocial,
         logout,
         updateUser,
+        refreshUser,
         isAuthenticated: !!user,
     };
 
