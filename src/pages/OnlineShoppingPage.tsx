@@ -211,43 +211,58 @@ const OnlineShoppingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-32 pb-20 relative">
-      <div className="max-w-7xl mx-auto px-4">
-        <header className="flex flex-col lg:flex-row items-center justify-between gap-12 mb-16 text-center lg:text-left">
-          <div className="flex-1">
+    <div className="min-h-screen bg-[#fafbfc] dark:bg-gray-950 pt-16 sm:pt-24 pb-20 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+      <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] -ml-32"></div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <header className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 lg:gap-20 mb-20">
+          <div className="flex-1 text-left">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="inline-block px-4 py-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-teal-500/10 to-blue-500/10 dark:from-teal-400/5 dark:to-blue-400/5 border border-teal-100/50 dark:border-teal-800/30 text-teal-600 dark:text-teal-400 text-[9px] font-black uppercase tracking-[0.3em] mb-8"
             >
-              Servicio de Compras
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+              Servicio de Compras Global
             </motion.div>
+            
             <motion.h1
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-7xl font-black text-teal-900 dark:text-white tracking-tighter uppercase italic leading-[0.9] mb-6"
+              transition={{ type: "spring", stiffness: 100 }}
+              className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8 group"
             >
-              {t('nav.online_shopping')}
+              <span className="inline-block bg-gradient-to-r from-[#00151a] via-[#004d55] to-[#007e85] dark:from-white dark:via-teal-200 dark:to-teal-500 bg-clip-text text-transparent italic transition-all duration-500 group-hover:tracking-normal">
+                {t('nav.online_shopping').split(' ')[0]}
+              </span>
+              <br />
+              <span className="inline-block text-[#00151a] dark:text-white mt-2 relative">
+                {t('nav.online_shopping').split(' ')[1]}
+                <div className="absolute -bottom-2 left-0 w-24 h-2 bg-teal-500/20 rounded-full"></div>
+              </span>
             </motion.h1>
+
             <motion.p
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-gray-500 dark:text-gray-400 max-w-xl font-medium"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-gray-500 dark:text-gray-400 max-w-lg font-bold text-sm sm:text-base leading-relaxed uppercase tracking-wide opacity-80"
             >
-              Compra en tus tiendas favoritas de todo el mundo y nosotros nos encargamos de que tus paquetes lleguen a tu puerta en Guinea Ecuatorial.
+              Conectamos tus tiendas favoritas del mundo directamente con tu puerta en <span className="text-teal-600 dark:text-teal-400">Guinea Ecuatorial</span>. Tu solo compras, nosotros hacemos el resto.
             </motion.p>
           </div>
 
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            className="relative group shrink-0"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="relative lg:mt-10"
           >
-            <div className="absolute -inset-4 bg-teal-500/5 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/10 transition-all"></div>
+            {/* Pulsing Aura */}
+            <div className="absolute -inset-10 bg-teal-500/10 rounded-full blur-[80px] animate-pulse"></div>
             
-            <div className="w-[320px] sm:w-[400px] relative mb-4">
+            <div className="w-full max-w-[340px] sm:max-w-[420px] relative">
                <VirtualCard 
                  number={user?.virtualCard?.number}
                  expiry={user?.virtualCard?.expiry}
@@ -257,47 +272,43 @@ const OnlineShoppingPage: React.FC = () => {
                />
 
                {!user?.virtualCard?.active && (
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-[10px] z-30 flex flex-col items-center justify-center p-6 text-center rounded-[1.2rem] sm:rounded-[2rem]">
-                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-xl mb-3 border border-white/20">🔒</div>
+                <div className="absolute inset-0 bg-[#00151a]/60 backdrop-blur-[8px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[1.2rem] sm:rounded-[2rem] border border-white/5">
+                  <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20 shadow-2xl">🔒</div>
                   <button 
                     onClick={() => setIsRechargeModalOpen(true)}
-                    className="px-6 py-3 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-teal-500 transition-all hover:scale-105 active:scale-95"
+                    className="px-8 py-4 bg-teal-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(20,184,166,0.4)] hover:bg-teal-400 transition-all hover:scale-105 active:scale-95"
                   >
                     Activar Tarjeta
                   </button>
-                  <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mt-3 leading-tight">Carga saldo para desbloquear</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mt-4 leading-tight">Mínimo 5.000 FCFA para activar</p>
                 </div>
                )}
 
-               {/* Interaction Layer (Overlay buttons if needed) */}
-               <div className="absolute -top-3 -right-3 z-40">
-                  <button 
+               {/* Vibrant Animated Refresh Button */}
+               <div className="absolute -top-5 -right-5 z-40">
+                  <motion.button 
+                    whileHover={{ scale: 1.1, rotate: 180 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={handleRefreshUser}
                     title="Actualizar datos"
-                    className={`w-10 h-10 rounded-2xl bg-white shadow-xl flex items-center justify-center text-sm hover:scale-110 active:scale-90 transition-all ${isRefreshing ? 'animate-spin' : ''} border border-gray-100`}
+                    className={`relative w-14 h-14 rounded-3xl bg-teal-500 text-white shadow-[0_15px_45px_rgba(20,184,166,0.3)] flex items-center justify-center text-xl transition-all ${isRefreshing ? 'animate-spin' : ''} border-4 border-white dark:border-gray-900 group`}
                   >
-                    🔄
-                  </button>
+                    <div className="absolute inset-0 rounded-3xl bg-teal-500 animate-ping opacity-20 group-hover:opacity-40"></div>
+                    <span className="relative z-10">🔄</span>
+                  </motion.button>
                </div>
             </div>
 
-            <div className="flex justify-between items-center px-4 mb-4">
+            <div className="flex justify-between items-center px-6 mt-6 bg-white dark:bg-white/5 p-4 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5">
                 <div className={`text-left ${!user?.virtualCard?.active ? 'blur-[8px] opacity-20' : ''}`}>
-                  <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest leading-none mb-1">Saldo Disponible</p>
-                  <p className="text-xl font-black tracking-tight text-gray-900 dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
+                  <p className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Actual</p>
+                  <p className="text-2xl font-black tracking-tighter text-[#00151a] dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-xs">FCFA</span></p>
                 </div>
-                <div className="flex flex-col items-end gap-1.5">
-                   <div className={`px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-teal-50 border-teal-100 text-teal-600' : 'bg-red-50 border-red-100 text-red-400 opacity-40'}`}>
-                      {user?.virtualCard?.active ? 'Conectada' : 'Desconectada'}
+                <div className="flex flex-col items-end">
+                   <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest shadow-sm ${user?.virtualCard?.active ? 'bg-teal-500 text-white border-teal-400' : 'bg-gray-100 border-gray-200 text-gray-400'}`}>
+                      {user?.virtualCard?.active ? 'Activa' : 'Solicitar'}
                    </div>
                 </div>
-            </div>
-            
-            <div className="w-72 md:w-80 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/30 p-4 rounded-2xl flex gap-3 text-left">
-              <span className="text-teal-500 text-lg leading-none shrink-0">💡</span>
-              <p className="text-[9px] text-teal-800 dark:text-teal-200 font-bold uppercase tracking-widest leading-normal">
-                ¡Recarga tu tarjeta! Aumenta tu saldo ahora y disfruta de compras sin límites en tus tiendas favoritas.
-              </p>
             </div>
           </motion.div>
         </header>
