@@ -232,15 +232,14 @@ const OnlineShoppingPage: React.FC = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ type: "spring", stiffness: 100 }}
-              className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8 group"
+              className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-8"
             >
-              <span className="inline-block bg-gradient-to-r from-[#00151a] via-[#004d55] to-[#007e85] dark:from-white dark:via-teal-200 dark:to-teal-500 bg-clip-text text-transparent italic transition-all duration-500 group-hover:tracking-normal">
-                {t('nav.online_shopping').split(' ')[0]}
+              <span className="inline-block text-[#00151a] dark:text-white uppercase italic">
+                COMPRAS
               </span>
               <br />
-              <span className="inline-block text-[#00151a] dark:text-white mt-2 relative">
-                {t('nav.online_shopping').split(' ')[1]}
-                <div className="absolute -bottom-2 left-0 w-24 h-2 bg-teal-500/20 rounded-full"></div>
+              <span className="inline-block text-teal-600 dark:text-teal-400 italic uppercase">
+                ONLINE
               </span>
             </motion.h1>
 
@@ -248,9 +247,9 @@ const OnlineShoppingPage: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-gray-500 dark:text-gray-400 max-w-lg font-bold text-sm sm:text-base leading-relaxed uppercase tracking-wide opacity-80"
+              className="text-[#00151a] dark:text-gray-400 max-w-lg font-bold text-lg sm:text-2xl leading-[1.1] uppercase tracking-tighter italic opacity-95"
             >
-              Conectamos tus tiendas favoritas del mundo directamente con tu puerta en <span className="text-teal-600 dark:text-teal-400">Guinea Ecuatorial</span>. Tu solo compras, nosotros hacemos el resto.
+              Realiza tus compras en las mejores tiendas del mundo y nosotros <span className="text-teal-600 font-extrabold underline decoration-teal-500/30 underline-offset-4">te hacemos llegar tu compra</span>.
             </motion.p>
           </div>
 
