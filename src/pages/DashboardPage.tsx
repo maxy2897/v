@@ -9,6 +9,7 @@ import { PhoneInput } from '../components/PhoneInput';
 import { TERMS_AND_CONDITIONS } from '../constants/terms';
 import { getNotifications, markAsRead, markAllAsRead, subscribeToPush } from '../services/notificationsApi';
 import { motion, AnimatePresence } from 'framer-motion';
+import VirtualCard from '../components/VirtualCard';
 
 interface Notification {
     _id: string;
@@ -921,39 +922,26 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             {activeTab === 'virtual_card' && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     <div className="bg-white rounded-[3rem] p-10 shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-12 items-center">
-                                        <div className="w-full max-w-[400px] aspect-[1.6/1] rounded-[1.5rem] overflow-hidden shadow-2xl relative group shrink-0">
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-10"></div>
-                                            <img 
-                                                src="/images/virtual-card.png" 
-                                                alt="Bodipo Virtual Card" 
-                                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                                        <div className="w-full max-w-[450px] shrink-0 relative group">
+                                            <VirtualCard 
+                                                number={user.virtualCard?.number}
+                                                expiry={user.virtualCard?.expiry}
+                                                cvv={user.virtualCard?.cvv}
+                                                active={user.virtualCard?.active}
+                                                holderName={user.name?.toUpperCase()}
                                             />
-                                            <div className="absolute inset-0 z-20 p-8 flex flex-col justify-end text-white font-mono tracking-[0.2em] pointer-events-none">
-                                                <p className={`text-lg font-black drop-shadow-lg mb-4 transition-all duration-500 ${!user.virtualCard?.active ? 'blur-[20px] select-none opacity-20' : ''}`}>
-                                                    {user.virtualCard?.number || '4918 5004 2135 3238'}
-                                                </p>
-                                                <div className="flex justify-between items-center text-[10px] font-black uppercase opacity-90 drop-shadow-md">
-                                                    <div className={!user.virtualCard?.active ? 'blur-[18px] opacity-20' : ''}>
-                                                        <span className="block text-[8px] opacity-60 mb-0.5">VÁLIDA HASTA</span>
-                                                        <span>{user.virtualCard?.expiry || '04/2029'}</span>
-                                                    </div>
-                                                    <div className={`text-right ${!user.virtualCard?.active ? 'blur-[18px] opacity-20' : ''}`}>
-                                                        <span className="block text-[8px] opacity-60 mb-0.5">CVV</span>
-                                                        <span>{user.virtualCard?.cvv || '043'}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             {!user.virtualCard?.active && (
-                                                <div className="absolute inset-0 bg-black/80 backdrop-blur-[15px] z-30 flex flex-col items-center justify-center p-8 text-center">
+                                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[2rem]">
                                                     <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20">🔒</div>
                                                     <button 
                                                         onClick={() => setIsRechargeModalOpen(true)}
-                                                        className="px-6 py-3 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-teal-500 transition-all mb-4"
+                                                        className="px-8 py-4 bg-teal-600 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-teal-500 transition-all mb-4 hover:scale-105 active:scale-95"
                                                     >
                                                         Solicitar Activación
                                                     </button>
-                                                    <p className="text-[8px] font-black uppercase tracking-widest text-white/40 leading-relaxed">
-                                                        Carga saldo para activar tu tarjeta
+                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 leading-relaxed max-w-[180px]">
+                                                        Carga saldo para activar tu tarjeta virtual
                                                     </p>
                                                 </div>
                                             )}

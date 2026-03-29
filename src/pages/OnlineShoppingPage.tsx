@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import VirtualCard from '../components/VirtualCard';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../services/api';
 
@@ -240,50 +241,56 @@ const OnlineShoppingPage: React.FC = () => {
           </div>
 
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-            animate={{ opacity: 1, scale: 1, rotate: -2 }}
+            initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
             className="relative group shrink-0"
           >
-            <div className="absolute -inset-4 bg-teal-500/10 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
-            <div className="w-72 md:w-80 bg-slate-900 rounded-3xl p-6 shadow-2xl border border-white/10 text-white relative overflow-hidden mb-4">
-              {!user?.virtualCard?.active && (
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-6 text-center">
+            <div className="absolute -inset-4 bg-teal-500/5 rounded-[2.5rem] blur-2xl group-hover:bg-teal-500/10 transition-all"></div>
+            
+            <div className="w-[320px] sm:w-[400px] relative mb-4">
+               <VirtualCard 
+                 number={user?.virtualCard?.number}
+                 expiry={user?.virtualCard?.expiry}
+                 cvv={user?.virtualCard?.cvv}
+                 active={user?.virtualCard?.active}
+                 holderName={user?.name?.toUpperCase()}
+               />
+
+               {!user?.virtualCard?.active && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[10px] z-30 flex flex-col items-center justify-center p-6 text-center rounded-[1.2rem] sm:rounded-[2rem]">
                   <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-xl mb-3 border border-white/20">🔒</div>
                   <button 
                     onClick={() => setIsRechargeModalOpen(true)}
-                    className="px-5 py-2.5 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-teal-500 transition-all hover:scale-105"
+                    className="px-6 py-3 bg-teal-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-teal-500 transition-all hover:scale-105 active:scale-95"
                   >
                     Activar Tarjeta
                   </button>
                   <p className="text-[8px] font-black uppercase tracking-widest text-white/40 mt-3 leading-tight">Carga saldo para desbloquear</p>
                 </div>
-              )}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-3">
-                  <img src="/images/virtual-card.png" className="w-10 h-10 object-contain rounded-lg" alt="Card" />
+               )}
+
+               {/* Interaction Layer (Overlay buttons if needed) */}
+               <div className="absolute -top-3 -right-3 z-40">
                   <button 
                     onClick={handleRefreshUser}
                     title="Actualizar datos"
-                    className={`w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs hover:bg-white/20 transition-all ${isRefreshing ? 'animate-spin' : ''}`}
+                    className={`w-10 h-10 rounded-2xl bg-white shadow-xl flex items-center justify-center text-sm hover:scale-110 active:scale-90 transition-all ${isRefreshing ? 'animate-spin' : ''} border border-gray-100`}
                   >
                     🔄
                   </button>
+               </div>
+            </div>
+
+            <div className="flex justify-between items-center px-4 mb-4">
+                <div className={`text-left ${!user?.virtualCard?.active ? 'blur-[8px] opacity-20' : ''}`}>
+                  <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest leading-none mb-1">Saldo Disponible</p>
+                  <p className="text-xl font-black tracking-tight text-gray-900 dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
                 </div>
-                <div className={`text-right ${!user?.virtualCard?.active ? 'blur-[22px] opacity-10 select-none' : ''}`}>
-                  <p className="text-[8px] font-black text-teal-400 uppercase tracking-widest leading-none mb-1">Tu Saldo</p>
-                  <p className="text-lg font-black tracking-tight">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-[10px] opacity-60">FCFA</span></p>
-                  <p className="text-[11px] font-black text-teal-500 tracking-widest mt-0.5">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} €</p>
+                <div className="flex flex-col items-end gap-1.5">
+                   <div className={`px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-teal-50 border-teal-100 text-teal-600' : 'bg-red-50 border-red-100 text-red-400 opacity-40'}`}>
+                      {user?.virtualCard?.active ? 'Conectada' : 'Desconectada'}
+                   </div>
                 </div>
-              </div>
-              <div className="flex justify-between items-end">
-                 <p className={`text-[10px] font-mono tracking-widest opacity-60 ${!user?.virtualCard?.active ? 'blur-[22px] select-none opacity-5' : ''}`}>
-                    **** **** **** {user?.virtualCard?.number?.slice(-4) || '3238'}
-                 </p>
-                 <div className={`px-3 py-1 rounded-lg border text-[8px] font-black uppercase tracking-widest ${user?.virtualCard?.active ? 'bg-white/5 border-white/10 text-teal-400' : 'bg-red-500/10 border-red-500/20 text-red-400 opacity-20'}`}>
-                    {user?.virtualCard?.active ? 'Activa' : 'Inactiva'}
-                 </div>
-              </div>
             </div>
             
             <div className="w-72 md:w-80 bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/30 p-4 rounded-2xl flex gap-3 text-left">
