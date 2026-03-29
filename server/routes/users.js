@@ -87,6 +87,7 @@ router.put(
                     idNumber: updatedUser.idNumber,
                     gender: updatedUser.gender,
                     discountEligible: updatedUser.discountEligible,
+                    virtualCard: updatedUser.virtualCard,
                     role: updatedUser.role, // Asegurar que el rol siempre se devuelva
                 });
             } else {

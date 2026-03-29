@@ -171,7 +171,8 @@ router.put('/users/:id/virtual-card', protect, async (req, res) => {
             user.virtualCard.cvv = cvv || `${Math.floor(Math.random()*900+100)}`;
             user.virtualCard.holderName = holderName || user.name.toUpperCase();
         }
-
+        
+        user.markModified('virtualCard');
         await user.save();
         res.json({ message: 'Tarjeta virtual actualizada', virtualCard: user.virtualCard });
     } catch (error) {

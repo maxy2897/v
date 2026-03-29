@@ -63,6 +63,7 @@ router.post(
                     profileImage: user.profileImage,
                     idNumber: user.idNumber,
                     discountEligible: user.discountEligible,
+                    virtualCard: user.virtualCard,
                     role: user.role,
                     token: generateToken(user._id),
                 });
@@ -116,6 +117,7 @@ router.post(
                     profileImage: user.profileImage,
                     idNumber: user.idNumber,
                     discountEligible: user.discountEligible,
+                    virtualCard: user.virtualCard,
                     role: user.role,
                     token: generateToken(user._id),
                 });
@@ -152,6 +154,7 @@ router.post('/social-login', async (req, res) => {
                 profileImage: user.profileImage,
                 idNumber: user.idNumber,
                 discountEligible: user.discountEligible,
+                virtualCard: user.virtualCard,
                 role: user.role,
                 token: generateToken(user._id),
             });
@@ -176,6 +179,7 @@ router.post('/social-login', async (req, res) => {
                 profileImage: user.profileImage,
                 idNumber: user.idNumber,
                 discountEligible: user.discountEligible,
+                virtualCard: user.virtualCard,
                 role: user.role,
                 token: generateToken(user._id),
             });
@@ -204,6 +208,7 @@ router.get('/me', protect, async (req, res) => {
             profileImage: user.profileImage,
             idNumber: user.idNumber,
             discountEligible: user.discountEligible,
+            virtualCard: user.virtualCard,
             role: user.role,
         });
     } catch (error) {
