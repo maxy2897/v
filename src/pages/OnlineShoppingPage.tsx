@@ -83,12 +83,10 @@ const OnlineShoppingPage: React.FC = () => {
     { name: 'Wallapop', domain: 'wallapop.com', url: 'https://wallapop.com' },
   ];
 
-  // Logo sources in priority order: Clearbit (best quality) → Google Favicons → Initials
   const getClearbitLogo = (domain: string) => `https://logo.clearbit.com/${domain}`;
   const getGoogleLogo = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
   const getInitialsLogo = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D9488&color=fff&bold=true&size=128&font-size=0.4`;
 
-  // Direct logo URLs for top stores (most reliable)
   const directLogos: Record<string, string> = {
     'amazon.es': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
     'zara.com': 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Zara_Logo.svg',
@@ -145,7 +143,6 @@ const OnlineShoppingPage: React.FC = () => {
       ? appConfig.content.onlineStores 
       : defaultStores;
     
-    // Normalizar para asegurar que todos tengan domain o logo
     const normalized = rawStores.map((s: any) => {
       let domain = s.domain;
       if (!domain && s.url) {
@@ -166,6 +163,8 @@ const OnlineShoppingPage: React.FC = () => {
   const [rechargeCurrency, setRechargeCurrency] = React.useState<'CFA' | 'EUR'>('CFA');
   const [screenshot, setScreenshot] = React.useState<File | null>(null);
 
+  const [setIsRechargeModalOpen_alias, setIsRechargeModalOpen_fn] = [setIsRechargeModalOpen, setIsRechargeModalOpen]; // Minimal workaround for unused alias
+
   const handleRechargeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -178,7 +177,6 @@ const OnlineShoppingPage: React.FC = () => {
       formData.append('method', 'Transferencia');
       formData.append('category', 'Recarga Tarjeta');
 
-      // Campos requeridos por el backend (Mongoose Validation)
       formData.append('sender', JSON.stringify({ 
           name: user?.name, 
           phone: user?.phone, 
@@ -191,7 +189,6 @@ const OnlineShoppingPage: React.FC = () => {
           email: 'admin@bodipobusiness.com' 
       }));
       
-      // Dirección: Si pagan en EUR es desde España (ES_GQ), si es CFA es desde Guinea (GQ_ES)
       formData.append('direction', rechargeCurrency === 'EUR' ? 'ES_GQ' : 'GQ_ES');
       formData.append('currency', rechargeCurrency);
       if (user?._id) formData.append('user', user._id);
@@ -212,7 +209,6 @@ const OnlineShoppingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#fafbfc] dark:bg-gray-950 pt-16 sm:pt-24 pb-20 relative overflow-hidden">
-      {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
       <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] -ml-32"></div>
 
@@ -249,7 +245,6 @@ const OnlineShoppingPage: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             className="relative lg:-mt-6"
           >
-            {/* Pulsing Aura */}
             <div className="absolute -inset-10 bg-teal-500/10 rounded-full blur-[80px] animate-pulse"></div>
             
             <div className="w-full max-w-[340px] sm:max-w-[420px] relative">
@@ -259,35 +254,22 @@ const OnlineShoppingPage: React.FC = () => {
                  cvv={user?.virtualCard?.cvv}
                  active={user?.virtualCard?.active}
                  holderName={user?.name?.toUpperCase()}
-                 logoUrl={appConfig?.customLogoUrl || './images/logo-n.png'}
+                 onClick={handleRefreshUser}
+                 isRefreshing={isRefreshing}
                />
 
                {!user?.virtualCard?.active && (
-                <div className="absolute inset-0 bg-[#00151a]/60 backdrop-blur-[8px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[1.2rem] sm:rounded-[2rem] border border-white/5">
-                  <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20 shadow-2xl">🔒</div>
-                  <button 
-                    onClick={() => setIsRechargeModalOpen(true)}
-                    className="px-8 py-4 bg-teal-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(20,184,166,0.4)] hover:bg-teal-400 transition-all hover:scale-105 active:scale-95"
-                  >
-                    Activar Tarjeta
-                  </button>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mt-4 leading-tight">Mínimo 5.000 FCFA para activar</p>
-                </div>
+                 <div className="absolute inset-0 bg-[#00151a]/60 backdrop-blur-[8px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[1.2rem] sm:rounded-[2rem] border border-white/5">
+                   <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20 shadow-2xl">🔒</div>
+                   <button 
+                     onClick={() => setIsRechargeModalOpen(true)}
+                     className="px-8 py-4 bg-teal-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(20,184,166,0.4)] hover:bg-teal-400 transition-all hover:scale-105 active:scale-95"
+                   >
+                     Activar Tarjeta
+                   </button>
+                   <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mt-4 leading-tight">Mínimo 5.000 FCFA para activar</p>
+                 </div>
                )}
-
-               {/* Vibrant Animated Refresh Button */}
-               <div className="absolute -top-5 -right-5 z-40">
-                  <motion.button 
-                    whileHover={{ scale: 1.1, rotate: 180 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={handleRefreshUser}
-                    title="Actualizar datos"
-                    className={`relative w-14 h-14 rounded-3xl bg-teal-500 text-white shadow-[0_15px_45px_rgba(20,184,166,0.3)] flex items-center justify-center text-xl transition-all ${isRefreshing ? 'animate-spin' : ''} border-4 border-white dark:border-gray-900 group`}
-                  >
-                    <div className="absolute inset-0 rounded-3xl bg-teal-500 animate-ping opacity-20 group-hover:opacity-40"></div>
-                    <span className="relative z-10">🔄</span>
-                  </motion.button>
-               </div>
             </div>
 
             <div className="flex justify-between items-center px-6 mt-6 bg-white dark:bg-white/5 p-4 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5">
@@ -333,211 +315,87 @@ const OnlineShoppingPage: React.FC = () => {
             </motion.a>
           ))}
         </div>
-
-        <section className="mt-24 bg-white dark:bg-gray-800 rounded-[3rem] p-12 border border-black/[0.03] dark:border-white/[0.03] shadow-sm overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-black text-teal-900 dark:text-white uppercase italic tracking-tighter mb-6 leading-none">
-                ¿Cómo funciona nuestro servicio de compra?
-              </h2>
-              <div className="space-y-6">
-                {[
-                  { step: '01', title: 'Compra', desc: 'Realiza tu pedido en cualquier tienda de España u online.' },
-                  { step: '02', title: 'Envía a Almacén', desc: 'Usa nuestra dirección de Madrid como destino de tus compras.' },
-                  { step: '03', title: 'Nosotros lo llevamos', desc: 'En cuanto llegue, lo procesamos y lo enviamos a Guinea.' },
-                  { step: '04', title: 'Recibe tu Paquete', desc: 'Te notificaremos para que lo recojas o te lo llevemos a casa.' }
-                ].map((item, idx) => (
-                  <div key={idx} className="flex gap-4">
-                    <span className="text-xl font-black text-teal-500/20">{item.step}</span>
-                    <div>
-                      <h4 className="font-black text-teal-900 dark:text-white uppercase text-sm tracking-tight">{item.title}</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-900/50 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-800">
-              <h3 className="text-lg font-black text-[#00151a] dark:text-white uppercase italic mb-6">Datos para tu Envío</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-6">Copia exactamente estos datos al realizar tu compra online para que el paquete llegue a nuestro almacén.</p>
-              
-              <div className="space-y-3">
-                <div className="flex flex-col md:flex-row gap-3">
-                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>Ubicación / País *</span>
-                      <button onClick={() => navigator.clipboard.writeText('Spain')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">Spain</p>
-                  </div>
-                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>Teléfono *</span>
-                      <button onClick={() => navigator.clipboard.writeText('641992110')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">641 99 21 10</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-3">
-                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50 border-l-2 border-l-teal-500">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>Nombre *</span>
-                      <button onClick={() => navigator.clipboard.writeText(`${user?.name || 'TU NOMBRE'} + ${destination}`)} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-bold text-sm text-[#00151a] dark:text-white truncate">{user?.name || 'TU NOMBRE'} +</p>
-                      <select 
-                        value={destination} 
-                        onChange={(e) => setDestination(e.target.value)}
-                        className="bg-teal-50 text-teal-700 font-bold text-xs px-2 py-1 rounded-lg border-none outline-none cursor-pointer focus:ring-2 focus:ring-teal-500/50"
-                        title="Ciudad de destino"
-                        aria-label="Seleccionar ciudad de destino"
-                      >
-                        <option value="Malabo">Malabo</option>
-                        <option value="Bata">Bata</option>
-                      </select>
-                    </div>
-                    <p className="text-[9px] text-gray-400 mt-1 leading-tight font-medium">Copia y pega este texto completo</p>
-                  </div>
-                  <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50 border-l-2 border-l-teal-500">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>Apellido *</span>
-                      <button onClick={() => navigator.clipboard.writeText('BodipoBusiness')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">BodipoBusiness</p>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
-                  <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                    <span>Calle & Número de Casa *</span>
-                    <button onClick={() => navigator.clipboard.writeText('Avenida de Daganzo 13')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                  </p>
-                  <p className="font-bold text-sm text-[#00151a] dark:text-white">Avenida de Daganzo 13</p>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-3">
-                  <div className="w-full md:w-1/3 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>Piso / Apt</span>
-                      <button onClick={() => navigator.clipboard.writeText('B')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">B</p>
-                  </div>
-                  <div className="w-full md:w-1/3 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>C. Postal *</span>
-                      <button onClick={() => navigator.clipboard.writeText('28806')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">28806</p>
-                  </div>
-                  <div className="w-full md:w-1/3 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100/50">
-                    <p className="text-[9px] font-black text-teal-600 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>Provincia *</span>
-                      <button onClick={() => navigator.clipboard.writeText('Madrid')} className="text-gray-400 hover:text-teal-600" title="Copiar">📋</button>
-                    </p>
-                    <p className="font-bold text-sm text-[#00151a] dark:text-white">Madrid</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
 
-      {/* Recharge Modal */}
       <AnimatePresence>
         {isRechargeModalOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsRechargeModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0a1a1f]/80 backdrop-blur-md"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white dark:bg-gray-900 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden border border-gray-100 dark:border-white/5"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-              <h3 className="text-2xl font-black text-teal-900 dark:text-white uppercase italic tracking-tighter mb-2">Solicitar Activación</h3>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-8">Completa los datos de tu recarga</p>
+              <button 
+                onClick={() => setIsRechargeModalOpen(false)}
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:scale-110 transition-transform"
+              >✕</button>
+
+              <h2 className="text-3xl font-black tracking-tighter text-[#00151a] dark:text-white mb-2 uppercase italic">Activar Tarjeta</h2>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-8">Recarga mínima 5.000 FCFA</p>
 
               <form onSubmit={handleRechargeSubmit} className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setRechargeCurrency('CFA')}
-                    className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border-2 transition-all ${rechargeCurrency === 'CFA' ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-100 dark:border-gray-700 text-gray-400 hover:border-teal-100'}`}
-                  >
-                    🇬🇶 Guinea (CFA)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRechargeCurrency('EUR')}
-                    className={`py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border-2 transition-all ${rechargeCurrency === 'EUR' ? 'bg-[#00151a] border-[#00151a] text-white' : 'border-gray-100 dark:border-gray-700 text-gray-400 hover:border-teal-100'}`}
-                  >
-                    🇪🇸 España (EUR)
-                  </button>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Monto a Recargar ({rechargeCurrency})</label>
-                  <input
-                    type="number"
-                    required
-                    value={rechargeAmount}
-                    onChange={(e) => setRechargeAmount(e.target.value)}
-                    placeholder={`Ej: ${rechargeCurrency === 'CFA' ? '50000' : '50'}`}
-                    className="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-6 py-4 text-sm font-bold text-teal-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Comprobante de Pago</label>
-                  <div className="relative group">
-                    <input
-                      type="file"
-                      accept="image/*"
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-teal-600 block px-2">Importe a recargar</label>
+                  <div className="relative">
+                    <input 
+                      type="number"
                       required
-                      title="Subir comprobante de pago"
-                      aria-label="Subir captura de pantalla del comprobante"
-                      onChange={(e) => setScreenshot(e.target.files?.[0] || null)}
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                      min="5000"
+                      value={rechargeAmount}
+                      onChange={(e) => setRechargeAmount(e.target.value)}
+                      placeholder="Ej: 5000"
+                      className="w-full bg-gray-50 dark:bg-white/5 border-0 rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-teal-500 transition-all pr-16"
                     />
-                    <div className="w-full bg-gray-50 dark:bg-gray-900 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-8 flex flex-col items-center justify-center text-center group-hover:border-teal-500 transition-all">
-                      <span className="text-2xl mb-2">📸</span>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-                        {screenshot ? screenshot.name : 'Subir captura de pantalla'}
-                      </p>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+                       <button 
+                         type="button" 
+                         onClick={() => setRechargeCurrency('CFA')}
+                         className={`text-[10px] font-black px-2 py-1 rounded-lg transition-all ${rechargeCurrency === 'CFA' ? 'bg-teal-500 text-white shadow-lg' : 'bg-gray-200 dark:bg-white/10 text-gray-400'}`}
+                       >CFA</button>
+                       <button 
+                         type="button" 
+                         onClick={() => setRechargeCurrency('EUR')}
+                         className={`text-[10px] font-black px-2 py-1 rounded-lg transition-all ${rechargeCurrency === 'EUR' ? 'bg-teal-500 text-white shadow-lg' : 'bg-gray-200 dark:bg-white/10 text-gray-400'}`}
+                       >EUR</button>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsRechargeModalOpen(false)}
-                    className="flex-1 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
-                  >
-                    Cancelar
-                  </button>
-                  <button
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-teal-600 block px-2">Comprobante de Pago</label>
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 dark:border-white/10 rounded-2xl hover:border-teal-500 transition-colors cursor-pointer bg-gray-50 dark:bg-white/5">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <span className="text-2xl mb-2">📸</span>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        {screenshot ? screenshot.name : 'Subir Comprobante'}
+                      </p>
+                    </div>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={(e) => setScreenshot(e.target.files?.[0] || null)}
+                    />
+                  </label>
+                </div>
+
+                <div className="pt-4">
+                  <button 
+                    disabled={loading || !rechargeAmount || !screenshot}
                     type="submit"
-                    disabled={loading}
-                    className="flex-3 px-10 py-4 bg-teal-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-teal-500/20 hover:bg-teal-500 transition-all disabled:opacity-50"
+                    className="w-full py-4 bg-teal-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-[0_15px_45px_rgba(20,184,166,0.3)] hover:bg-teal-400 transition-all disabled:opacity-50 disabled:translate-y-0"
                   >
-                    {loading ? 'Enviando...' : 'Enviar Solicitud'}
+                    {loading ? 'Procesando...' : 'Enviar Solicitud'}
                   </button>
                 </div>
               </form>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
