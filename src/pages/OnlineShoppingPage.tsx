@@ -243,11 +243,11 @@ const OnlineShoppingPage: React.FC = () => {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="relative lg:-mt-6"
+            className="relative lg:-mt-6 flex-1 flex justify-center lg:justify-end"
           >
             <div className="absolute -inset-10 bg-teal-500/10 rounded-full blur-[80px] animate-pulse"></div>
             
-            <div className="w-full max-w-[340px] lg:max-w-[850px] relative transition-all duration-300">
+            <div className="w-full max-w-[340px] lg:max-w-[1100px] relative transition-all duration-300">
                <VirtualCard 
                  number={user?.virtualCard?.number}
                  expiry={user?.virtualCard?.expiry}
