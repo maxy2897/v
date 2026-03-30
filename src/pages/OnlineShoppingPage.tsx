@@ -259,6 +259,7 @@ const OnlineShoppingPage: React.FC = () => {
                  cvv={user?.virtualCard?.cvv}
                  active={user?.virtualCard?.active}
                  holderName={user?.name?.toUpperCase()}
+                 logoUrl={appConfig?.customLogoUrl || './images/logo-n.png'}
                />
 
                {!user?.virtualCard?.active && (
