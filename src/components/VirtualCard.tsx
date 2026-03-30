@@ -16,19 +16,16 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
   active = false
 }) => {
   return (
-    <div className="relative w-full aspect-[1.6/1] rounded-[1.2rem] sm:rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-500 group select-none">
-      {/* Dynamic Background with Gradients and Glassmorphism */}
-      <div className="absolute inset-0 bg-[#001a1f]"></div>
+    <div className="relative w-full aspect-[1.6/1] rounded-[1.2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 group select-none">
+      {/* Dynamic Background: Deep Navy/Teal Solid Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#011a1f] via-[#012d35] to-[#011a1f]"></div>
       
-      {/* Complex secondary backgrounds for texture */}
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-500/30 via-transparent to-blue-600/30"></div>
-      <div className="absolute -top-1/2 -left-1/4 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50 group-hover:opacity-80 transition-opacity duration-1000"></div>
-      
-      {/* Subtle Pattern */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+      {/* Carbon fiber-ish texture */}
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 
-      {/* Frosted Layer */}
-      <div className="absolute inset-0 backdrop-blur-[2px] border border-white/10 rounded-[2rem]"></div>
+      {/* Subtle border for structure */}
+      <div className="absolute inset-0 border border-white/10 rounded-[1.2rem] sm:rounded-[2.5rem]"></div>
       
       {/* Content Container */}
       <div className="absolute inset-0 p-6 sm:p-9 flex flex-col justify-between z-20 text-white">

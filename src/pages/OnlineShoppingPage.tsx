@@ -291,8 +291,9 @@ const OnlineShoppingPage: React.FC = () => {
 
             <div className="flex justify-between items-center px-6 mt-6 bg-white dark:bg-white/5 p-4 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5">
                 <div className={`text-left ${!user?.virtualCard?.active ? 'blur-[8px] opacity-20' : ''}`}>
-                  <p className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Actual</p>
+                  <p className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Disponible</p>
                   <p className="text-2xl font-black tracking-tighter text-[#00151a] dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-xs">FCFA</span></p>
+                  <p className="text-[10px] font-black text-teal-600/60 tracking-wider">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} <span className="text-[8px]">EUR</span></p>
                 </div>
                 <div className="flex flex-col items-end">
                    <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest shadow-sm ${user?.virtualCard?.active ? 'bg-teal-500 text-white border-teal-400' : 'bg-gray-100 border-gray-200 text-gray-400'}`}>
