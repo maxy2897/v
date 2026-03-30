@@ -11,84 +11,89 @@ interface VirtualCardProps {
 const VirtualCard: React.FC<VirtualCardProps> = ({
   number = '4918 5004 2135 3238',
   expiry = '04/2029',
-  cvv = '043',
   holderName = 'CLIENTE B. BUSINESS',
   active = false
 }) => {
   return (
-    <div className="relative w-full aspect-[1.6/1] rounded-[1.2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 group select-none">
-      {/* Dynamic Background: Deep Navy/Teal Solid Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#011a1f] via-[#012d35] to-[#011a1f]"></div>
+    <div className="relative w-full aspect-[1.6/1] rounded-[1.2rem] sm:rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-500 group select-none">
+      {/* Background: BBVA Style Blue Gradient with Light Beam */}
+      <div className="absolute inset-0 bg-[#004481]"></div>
+      <div 
+        className="absolute inset-0 opacity-40 bg-gradient-to-br from-transparent via-[#00a1df]/30 to-transparent skew-x-[-20deg] scale-[2] translate-x-[-10%]"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 50%, transparent)' }}
+      ></div>
       
-      {/* Carbon fiber-ish texture */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-
-      {/* Subtle border for structure */}
-      <div className="absolute inset-0 border border-white/10 rounded-[1.2rem] sm:rounded-[2.5rem]"></div>
+      {/* Structural Elements */}
+      <div className="absolute inset-0 border border-white/10 rounded-[1.2rem] sm:rounded-[2rem]"></div>
       
       {/* Content Container */}
-      <div className="absolute inset-0 p-6 sm:p-9 flex flex-col justify-between z-20 text-white">
-        {/* Header: Logo and Brand */}
+      <div className="absolute inset-0 p-6 sm:p-10 flex flex-col justify-between z-20 text-white font-sans">
+        
+        {/* Header: Logo and Card Type */}
         <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
-             <div className="flex flex-col">
-                <span className="logo-font text-[22px] sm:text-[32px] leading-none text-white tracking-widest drop-shadow-md">bb</span>
-                <div className="flex flex-col -mt-1">
-                   <span className="text-[7px] sm:text-[9px] font-black leading-none tracking-[0.35em] text-teal-400 drop-shadow-sm uppercase">BODIPO</span>
-                   <span className="text-[7px] sm:text-[9px] font-black leading-none tracking-[0.35em] text-white/80 drop-shadow-sm uppercase mt-0.5">BUSINESS</span>
-                </div>
-             </div>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-[20px] sm:text-[34px] font-black italic tracking-tighter leading-none">bb</span>
+              <span className="text-[12px] sm:text-[20px] font-bold tracking-tight leading-none uppercase">BODIPO</span>
+            </div>
+            <span className="text-[6px] sm:text-[10px] font-bold tracking-[0.3em] uppercase opacity-60 ml-0.5">BUSINESS</span>
           </div>
-          <div className="flex flex-col items-end">
-            <span className="text-[11px] sm:text-[14px] font-black italic text-teal-400 drop-shadow-lg uppercase tracking-[0.25em]">Virtual Card</span>
-            <div className="mt-1 h-0.5 w-12 bg-gradient-to-r from-transparent to-teal-500 rounded-full"></div>
-          </div>
+          <span className="text-[10px] sm:text-[14px] font-medium opacity-90">Virtual</span>
         </div>
 
-        {/* Card Number: Main Focus - Optimized size & tracking to fit all digits */}
-        <div className="mt-auto mb-6 sm:mb-8">
+        {/* Chip and Contactless Waves */}
+        <div className="flex items-center gap-4 -mt-2">
+           <div className="relative w-7 h-5 sm:w-12 sm:h-9 bg-gradient-to-br from-[#c0c0c0] via-[#e8e8e8] to-[#999999] rounded-sm sm:rounded-md overflow-hidden border border-black/10">
+              <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-black/20"></div>
+              <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-black/20"></div>
+              <div className="absolute inset-1.5 border border-black/10 rounded-[1px]"></div>
+           </div>
+           <div className="flex gap-0.5 sm:gap-1 opacity-70">
+              <div className="w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full border-r-[2px] sm:border-r-[3px] border-white/80 scale-y-[0.5] -rotate-12"></div>
+              <div className="w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full border-r-[2px] sm:border-r-[3px] border-white/80 scale-y-[1] -rotate-12"></div>
+              <div className="w-1.5 h-1.5 sm:w-3 sm:h-3 rounded-full border-r-[2px] sm:border-r-[3px] border-white/80 scale-y-[1.5] -rotate-12"></div>
+           </div>
+        </div>
+
+        {/* Card Number: BBVA Style spacing and font */}
+        <div className="mt-2 sm:mt-4">
           <div className="relative">
-            <p className={`text-[15px] sm:text-[22px] font-mono tracking-[0.15em] sm:tracking-[0.2em] font-medium drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] transition-all duration-700 ease-out flex justify-center gap-2 sm:gap-4 ${!active ? 'blur-[14px] opacity-10 select-none' : 'opacity-100'}`}>
+            <p className={`text-[17px] sm:text-[30px] font-medium tracking-[0.1em] sm:tracking-[0.18em] transition-all duration-700 ease-out flex justify-start gap-4 sm:gap-8 ${!active ? 'blur-[16px] opacity-10 select-none' : 'opacity-100'}`}>
               {number.split(' ').map((chunk, i) => (
                 <span key={i} className="inline-block">{chunk}</span>
               ))}
             </p>
             {!active && (
-               <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 italic">Bloqueada</span>
+               <div className="absolute inset-0 flex items-center justify-start ml-2">
+                  <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.5em] text-white/30 italic">Bloqueada</span>
                </div>
             )}
           </div>
         </div>
 
-        {/* Footer: Date, CVV and Holder */}
-        <div className="flex justify-between items-end">
-          <div className="flex gap-8">
-             <div className={`transition-all duration-700 ${!active ? 'blur-[10px] opacity-10' : 'opacity-100'}`}>
-               <span className="block text-[6px] sm:text-[8px] font-black text-teal-400/70 uppercase tracking-[0.2em] mb-1">VÁLIDA HASTA</span>
-               <span className="text-[11px] sm:text-[14px] font-mono font-bold tracking-[0.1em] text-white/90 drop-shadow-md">{expiry}</span>
-             </div>
-             <div className={`transition-all duration-700 ${!active ? 'blur-[10px] opacity-10' : 'opacity-100'}`}>
-                <span className="block text-[6px] sm:text-[8px] font-black text-teal-400/70 uppercase tracking-[0.2em] mb-1">CVV CODE</span>
-                <span className="text-[11px] sm:text-[14px] font-mono font-bold tracking-[0.1em] text-white/90 drop-shadow-md">{cvv}</span>
-             </div>
+        {/* Footer: Expiry and Holder Name */}
+        <div className="flex justify-between items-end mt-auto">
+          <div className={`transition-all duration-700 ${!active ? 'blur-[12px] opacity-10' : 'opacity-100'}`}>
+            <div className="flex flex-col">
+               <div className="flex items-center gap-4 mb-1">
+                 <span className="text-[7px] sm:text-[10px] font-bold opacity-60 leading-none">VÁLIDA HASTA</span>
+                 <span className="text-[14px] sm:text-[20px] font-medium leading-none">{expiry}</span>
+               </div>
+               <span className="text-[12px] sm:text-[20px] font-medium uppercase tracking-wider">{holderName}</span>
+            </div>
           </div>
           
-          <div className="flex flex-col items-end">
-             <div className="h-6 sm:h-9 opacity-90 drop-shadow-lg text-white font-italic font-black italic text-xl">
+          {/* Visa Logo style */}
+          <div className="h-6 sm:h-10">
+             <span className="text-[24px] sm:text-[42px] font-black italic tracking-tighter opacity-100 drop-shadow-sm italic" style={{ fontFamily: 'sans-serif' }}>
                 VISA
-             </div>
-             <span className="text-[7px] sm:text-[9px] font-bold text-white/40 tracking-[0.1em] italic uppercase mt-1">{holderName}</span>
+             </span>
           </div>
         </div>
       </div>
 
-      {/* Animated Shine Effect */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none"></div>
-      
-      {/* Bottom corner branding */}
-      <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl"></div>
+      {/* Subtle shine on hover */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-30"></div>
     </div>
   );
 };
