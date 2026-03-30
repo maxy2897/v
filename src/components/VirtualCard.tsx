@@ -16,16 +16,19 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
   active = false
 }) => {
   return (
-    <div className="relative w-full aspect-[1.6/1] rounded-[1.2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 group select-none">
-      {/* Dynamic Background: Deep Navy/Teal Solid Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#00151a] via-[#012d35] to-[#00151a]"></div>
+    <div className="relative w-full aspect-[1.6/1] rounded-[1.2rem] sm:rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-500 group select-none">
+      {/* Dynamic Background with Gradients and Glassmorphism */}
+      <div className="absolute inset-0 bg-[#001a1f]"></div>
       
-      {/* Carbon fiber-ish texture or subtle pattern (opacity kept low for clean look) */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+      {/* Complex secondary backgrounds for texture */}
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-500/30 via-transparent to-blue-600/30"></div>
+      <div className="absolute -top-1/2 -left-1/4 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50 group-hover:opacity-80 transition-opacity duration-1000"></div>
+      
+      {/* Subtle Pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
 
-      {/* Subtle border for structure */}
-      <div className="absolute inset-0 border border-white/10 rounded-[1.2rem] sm:rounded-[2.5rem]"></div>
+      {/* Frosted Layer */}
+      <div className="absolute inset-0 backdrop-blur-[2px] border border-white/10 rounded-[2rem]"></div>
       
       {/* Content Container */}
       <div className="absolute inset-0 p-6 sm:p-9 flex flex-col justify-between z-20 text-white">
@@ -35,8 +38,8 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
              <div className="flex flex-col">
                 <span className="logo-font text-[22px] sm:text-[32px] leading-none text-white tracking-widest drop-shadow-md">bb</span>
                 <div className="flex flex-col -mt-1">
-                   <span className="text-[7px] sm:text-[9px] font-black leading-none tracking-[0.35em] text-teal-500 drop-shadow-sm uppercase">BODIPO</span>
-                   <span className="text-[7px] sm:text-[9px] font-black leading-none tracking-[0.35em] text-white/50 drop-shadow-sm uppercase mt-0.5">BUSINESS</span>
+                   <span className="text-[7px] sm:text-[9px] font-black leading-none tracking-[0.35em] text-teal-400 drop-shadow-sm uppercase">BODIPO</span>
+                   <span className="text-[7px] sm:text-[9px] font-black leading-none tracking-[0.35em] text-white/80 drop-shadow-sm uppercase mt-0.5">BUSINESS</span>
                 </div>
              </div>
           </div>
@@ -46,7 +49,7 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
           </div>
         </div>
 
-        {/* Card Number: Main Focus */}
+        {/* Card Number */}
         <div className="mt-auto mb-6 sm:mb-8">
           <div className="relative">
             <p className={`text-[18px] sm:text-[28px] font-mono tracking-[0.25em] sm:tracking-[0.32em] font-medium drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] transition-all duration-700 ease-out flex justify-between ${!active ? 'blur-[14px] opacity-10 select-none' : 'opacity-100'}`}>
@@ -76,12 +79,8 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
           </div>
           
           <div className="flex flex-col items-end">
-             <div className="h-6 sm:h-9 opacity-90 drop-shadow-lg">
-                <svg viewBox="0 0 100 30" width="80" height="24" className="sm:w-[100px] sm:h-[30px]">
-                    <text x="0" y="25" fontFamily="Arial" fontWeight="900" fontSize="24" fill="white" fontStyle="italic">VISA</text>
-                    <path d="M70 5 L95 5 L95 25 L70 25 Z" fill="white" fillOpacity="0.1" />
-                    <rect x="75" y="10" width="15" height="10" rx="2" fill="white" fillOpacity="0.8" />
-                </svg>
+             <div className="h-6 sm:h-9 opacity-90 drop-shadow-lg text-white font-italic font-black italic text-xl">
+                VISA
              </div>
              <span className="text-[7px] sm:text-[9px] font-bold text-white/40 tracking-[0.1em] italic uppercase mt-1">{holderName}</span>
           </div>

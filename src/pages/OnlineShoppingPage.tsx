@@ -232,7 +232,7 @@ const OnlineShoppingPage: React.FC = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ type: "spring", stiffness: 100 }}
-              className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-8"
+              className="text-6xl md:text-[7rem] font-black tracking-tighter leading-[0.8] mb-4"
             >
               <span className="inline-block text-[#00151a] dark:text-white uppercase italic">
                 COMPRAS
@@ -242,21 +242,12 @@ const OnlineShoppingPage: React.FC = () => {
                 ONLINE
               </span>
             </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-[#00151a] dark:text-gray-400 max-w-lg font-bold text-lg sm:text-2xl leading-[1.1] uppercase tracking-tighter italic opacity-95"
-            >
-              Realiza tus compras en las mejores tiendas del mundo y nosotros <span className="text-teal-600 font-extrabold underline decoration-teal-500/30 underline-offset-4">te hacemos llegar tu compra</span>.
-            </motion.p>
           </div>
 
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="relative lg:mt-10"
+            className="relative lg:-mt-6"
           >
             {/* Pulsing Aura */}
             <div className="absolute -inset-10 bg-teal-500/10 rounded-full blur-[80px] animate-pulse"></div>
@@ -312,7 +303,7 @@ const OnlineShoppingPage: React.FC = () => {
           </motion.div>
         </header>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 -mt-8">
           {stores.map((store, index) => (
             <motion.a
               key={store.name}
