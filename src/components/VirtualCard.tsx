@@ -46,10 +46,10 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
           </div>
         </div>
 
-        {/* Card Number */}
+        {/* Card Number: Main Focus - Optimized size & tracking to fit all digits */}
         <div className="mt-auto mb-6 sm:mb-8">
           <div className="relative">
-            <p className={`text-[18px] sm:text-[28px] font-mono tracking-[0.25em] sm:tracking-[0.32em] font-medium drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] transition-all duration-700 ease-out flex justify-between ${!active ? 'blur-[14px] opacity-10 select-none' : 'opacity-100'}`}>
+            <p className={`text-[15px] sm:text-[22px] font-mono tracking-[0.15em] sm:tracking-[0.2em] font-medium drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] transition-all duration-700 ease-out flex justify-center gap-2 sm:gap-4 ${!active ? 'blur-[14px] opacity-10 select-none' : 'opacity-100'}`}>
               {number.split(' ').map((chunk, i) => (
                 <span key={i} className="inline-block">{chunk}</span>
               ))}
