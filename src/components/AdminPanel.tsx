@@ -139,7 +139,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       {/* ... (rest of JSX) ... */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -993,7 +993,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 relative">
+        <main className="flex-1 p-4 md:p-8 pb-32 relative">
           {/* Debug Indicator - Will be invisible but useful for trace */}
           <div className="hidden" data-tab={activeTab} data-role={role}></div>
 
