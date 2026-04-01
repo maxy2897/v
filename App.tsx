@@ -207,16 +207,17 @@ const AppContent: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
                 <div className="col-span-1 lg:col-span-1">
                   <div className="flex items-center space-x-4 mb-8">
-                    <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
+                    <div className="flex items-center justify-center shrink-0">
                       {config.customLogoUrl && (
                         <img
                           src={config.customLogoUrl}
-                          className="h-10 object-contain"
+                          className="h-14 lg:h-16 object-contain"
+                          style={{ filter: 'drop-shadow(1px 1px 0 white) drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white)' }}
                           alt="Logo"
                         />
                       )}
                       {!config.customLogoUrl && (
-                        <span className="logo-font text-4xl logo-color leading-none select-none pt-1">{config.logoText}</span>
+                        <span className="logo-font text-4xl text-teal-400 leading-none select-none drop-shadow-[0_0_2px_rgba(255,255,255,1)]">{config.logoText}</span>
                       )}
                     </div>
                     <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
