@@ -228,7 +228,7 @@ const OnlineShoppingPage: React.FC = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ type: "spring", stiffness: 100 }}
-              className="text-6xl md:text-[7rem] font-black tracking-tighter leading-[0.8] mb-4"
+              className="text-5xl md:text-[5.6rem] font-black tracking-tighter leading-[0.8] mb-4"
             >
               <span className="inline-block text-[#00151a] dark:text-white uppercase italic">
                 COMPRAS
@@ -243,11 +243,11 @@ const OnlineShoppingPage: React.FC = () => {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="relative lg:-mt-6 flex-1 flex justify-center lg:justify-end"
+            className="relative lg:-mt-6 flex-1 w-full flex flex-col items-center gap-8"
           >
-            <div className="absolute -inset-10 bg-teal-500/10 rounded-full blur-[80px] animate-pulse"></div>
+            <div className="absolute -inset-20 bg-teal-500/5 rounded-full blur-[100px] animate-pulse"></div>
             
-            <div className="w-full max-w-[340px] lg:max-w-[1100px] relative transition-all duration-300">
+            <div className="w-full max-w-[500px] relative transition-all duration-500">
                <VirtualCard 
                  number={user?.virtualCard?.number}
                  expiry={user?.virtualCard?.expiry}
@@ -259,28 +259,28 @@ const OnlineShoppingPage: React.FC = () => {
                />
 
                {!user?.virtualCard?.active && (
-                 <div className="absolute inset-0 bg-[#00151a]/60 backdrop-blur-[8px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[1.2rem] sm:rounded-[2rem] border border-white/5">
-                   <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20 shadow-2xl">🔒</div>
+                 <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-4 sm:p-8 text-center rounded-[1.2rem] sm:rounded-[2.5rem] border border-white/5">
+                   <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/10 rounded-full flex items-center justify-center text-xl sm:text-2xl mb-2 sm:mb-4 border border-white/20 shadow-2xl">🔒</div>
                    <button 
                      onClick={() => setIsRechargeModalOpen(true)}
-                     className="px-8 py-4 bg-teal-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(20,184,166,0.4)] hover:bg-teal-400 transition-all hover:scale-105 active:scale-95"
+                     className="px-4 py-3 sm:px-8 sm:py-4 bg-teal-500 text-white rounded-xl sm:rounded-2xl text-[9px] sm:text-[11px] font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(20,184,166,0.4)] hover:bg-teal-400 transition-all hover:scale-105 active:scale-95"
                    >
                      Activar Tarjeta
                    </button>
-                   <p className="text-[9px] font-black uppercase tracking-widest text-white/50 mt-4 leading-tight">Mínimo 5.000 FCFA para activar</p>
+                   <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-white/50 mt-2 sm:mt-4 leading-tight">Mínimo 5.000 FCFA para activar</p>
                  </div>
                )}
             </div>
 
-            <div className="flex justify-between items-center px-6 mt-6 bg-white dark:bg-white/5 p-4 rounded-3xl shadow-sm border border-gray-100 dark:border-white/5">
+            <div className="w-full max-w-[500px] flex justify-between items-center px-8 py-6 bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5">
                 <div className={`text-left ${!user?.virtualCard?.active ? 'blur-[8px] opacity-20' : ''}`}>
-                  <p className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Disponible</p>
-                  <p className="text-2xl font-black tracking-tighter text-[#00151a] dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-xs">FCFA</span></p>
-                  <p className="text-[10px] font-black text-teal-600/60 tracking-wider">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} <span className="text-[8px]">EUR</span></p>
+                  <p className="text-[9px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Disponible</p>
+                  <p className="text-3xl font-black tracking-tighter text-[#00151a] dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-sm">FCFA</span></p>
+                  <p className="text-xs font-black text-teal-600/60 tracking-wider">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} <span className="text-[10px]">EUR</span></p>
                 </div>
                 <div className="flex flex-col items-end">
-                   <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest shadow-sm ${user?.virtualCard?.active ? 'bg-teal-500 text-white border-teal-400' : 'bg-gray-100 border-gray-200 text-gray-400'}`}>
-                      {user?.virtualCard?.active ? 'Activa' : 'Solicitar'}
+                   <div className={`px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest shadow-sm ${user?.virtualCard?.active ? 'bg-teal-500 text-white border-teal-400' : 'bg-gray-100 border-gray-200 text-gray-400'}`}>
+                      {user?.virtualCard?.active ? 'Tarjeta Activa' : 'Solicitar'}
                    </div>
                 </div>
             </div>
