@@ -744,6 +744,19 @@ const translations: Record<Language, Record<string, string>> = {
         'card.locked': 'BLOQUEADA',
         'card.premium': 'Crédito Premium',
         'card.member': 'Miembro Digital',
+
+        // About Us
+        'about.title': 'Sobre Nosotros',
+        'about.subtitle': 'Bodipo Business Team',
+        'about.history_badge': 'Nuestra Historia',
+        'about.history_title': 'Conectando continentes con excelencia logística',
+        'about.history_p1': 'Bodipo Business nació de una visión clara: eliminar las barreras logísticas que separaban a las familias y empresarios entre Europa y África Central. Lo que comenzó como un pequeño enlace estratégico en España, se ha convertido hoy en una red multinacional de confianza.',
+        'about.history_p2': 'Nuestra trayectoria está marcada por el compromiso inquebrantable con la seguridad y la puntualidad. Hemos operado bajo la premisa de que cada paquete, transferencia o trámite representa los sueños y el esfuerzo de nuestros clientes.',
+        'about.team_badge': 'Nuestro Equipo',
+        'about.team_title': 'Personas que hacen posible lo imposible',
+        'about.member_nguema_role': 'Director de Relaciones Institucionales',
+        'about.member_nguema_bio1': 'En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.',
+        'about.member_nguema_bio2': 'Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales.',
     },
     en: {
         // Navigation
@@ -1419,6 +1432,19 @@ const translations: Record<Language, Record<string, string>> = {
         'card.locked': 'LOCKED',
         'card.premium': 'Premium Credit',
         'card.member': 'Digital Member',
+
+        // About Us
+        'about.title': 'About Us',
+        'about.subtitle': 'Bodipo Business Team',
+        'about.history_badge': 'Our History',
+        'about.history_title': 'Connecting continents with logistical excellence',
+        'about.history_p1': 'Bodipo Business was born from a clear vision: to eliminate the logistical barriers that separated families and entrepreneurs between Europe and Central Africa. What started as a small strategic link in Spain has become today a trusted multinational network.',
+        'about.history_p2': 'Our trajectory is marked by an unwavering commitment to safety and punctuality. We have operated under the premise that every package, transfer or procedure represents the dreams and effort of our customers.',
+        'about.team_badge': 'Our Team',
+        'about.team_title': 'People who make the impossible possible',
+        'about.member_nguema_role': 'Director of Institutional Relations',
+        'about.member_nguema_bio1': 'In this directorate, strategic projects are designed, analyzed and managed, guaranteeing their proper execution in accordance with the guidelines established by the external client and the business cabinet.',
+        'about.member_nguema_bio2': 'Likewise, he is responsible for the planning and proposal of the human and material resources necessary for the development of each approved project, ensuring an efficient allocation aligned with the organizational objectives.',
     },
     fr: {
         // Navigation
@@ -2111,6 +2137,19 @@ const translations: Record<Language, Record<string, string>> = {
         'card.locked': 'VERROUILLÉ',
         'card.premium': 'Crédit Premium',
         'card.member': 'Membre Numérique',
+
+        // About Us
+        'about.title': 'À propos de nous',
+        'about.subtitle': 'Bodipo Business Team',
+        'about.history_badge': 'Notre Histoire',
+        'about.history_title': 'Connecter les continents avec une excellence logistique',
+        'about.history_p1': 'Bodipo Business est né d\'une vision claire : éliminer les barrières logistiques qui séparaient les familles et les entrepreneurs entre l\'Europe et l\'Afrique centrale. Ce qui a commencé como un pequeño enlace estratégico en España, se ha convertido hoy en una red multinacional de confianza.',
+        'about.history_p2': 'Notre trajectoire est marquée par un engagement indéfectible envers la sécurité et la ponctualité. Nous avons opéré sous la prémisse que chaque colis, transfert ou procédure représente les rêves et l\'effort de nos clients.',
+        'about.team_badge': 'Notre Équipe',
+        'about.team_title': 'Des personnes qui rendent l\'impossible possible',
+        'about.member_nguema_role': 'Directeur des Relations Institutionnelles',
+        'about.member_nguema_bio1': 'Dans cette direction, les projets stratégiques sont conçus, analysés et gérés, garantissant leur bonne exécution conformément aux directives établies par le client externe et le cabinet d\'affaires.',
+        'about.member_nguema_bio2': 'De même, il est responsable de la planification et de la proposition des ressources humaines et matérielles nécessaires au développement de chaque projet approuvé, assurant une allocation efficace et alignée sur les objectifs organisationnels.',
     }
 };
 

@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSettings } from '../context/SettingsContext';
 
 interface TeamMember {
   id: string;
   name: string;
-  role: string;
-  bio: string[];
+  roleKey: string;
+  bioKeys: string[];
   image: string;
   email?: string;
   linkedin?: string;
@@ -15,11 +16,8 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
     name: "D. V. Nguema Elebiyo Mangue",
-    role: "Director de Relaciones Institucionales",
-    bio: [
-      "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
-      "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."
-    ],
+    roleKey: "about.member_nguema_role",
+    bioKeys: ["about.member_nguema_bio1", "about.member_nguema_bio2"],
     image: "./images/dv-nguema.jpg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
@@ -32,6 +30,8 @@ interface AboutTeamPanelProps {
 }
 
 const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
+  const { t } = useSettings();
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -47,12 +47,12 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </div>
-              Volver
+              {t('dashboard.back_to_menu')}
             </button>
             
             <div className="text-center absolute left-1/2 -translate-x-1/2">
-              <h2 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tighter">Sobre Nosotros</h2>
-              <p className="text-teal-500 text-[9px] font-black uppercase tracking-[0.3em] mt-1">Bodipo Business Team</p>
+              <h2 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tighter">{t('about.title')}</h2>
+              <p className="text-teal-500 text-[9px] font-black uppercase tracking-[0.3em] mt-1">{t('about.subtitle')}</p>
             </div>
 
             <div className="w-20 hidden lg:block" /> 
@@ -69,17 +69,13 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                   className="grid lg:grid-cols-2 gap-16 items-center"
                 >
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-600 mb-4 animate-pulse">Nuestra Historia</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-600 mb-4 animate-pulse">{t('about.history_badge')}</p>
                     <h1 className="text-4xl lg:text-6xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter mb-8 leading-none">
-                      Conectando continentes con <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">excelencia logística</span>
+                      {t('about.history_title')}
                     </h1>
-                    <div className="space-y-6 text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-                      <p>
-                        Bodipo Business nació de una visión clara: eliminar las barreras logísticas que separaban a las familias y empresarios entre Europa y África Central. Lo que comenzó como un pequeño enlace estratégico en España, se ha convertido hoy en una red multinacional de confianza.
-                      </p>
-                      <p>
-                        Nuestra trayectoria está marcada por el compromiso inquebrantable con la seguridad y la puntualidad. Hemos operado bajo la premisa de que cada paquete, transferencia o trámite representa los sueños y el esfuerzo de nuestros clientes.
-                      </p>
+                    <div className="space-y-6 text-gray-500 dark:text-gray-400 font-medium leading-relaxed text-sm lg:text-base">
+                      <p>{t('about.history_p1')}</p>
+                      <p>{t('about.history_p2')}</p>
                     </div>
                   </div>
                   <div className="relative group">
@@ -88,10 +84,8 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                          src="./images/hero-home.jpg" 
                          alt="Logistic Operations" 
                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                         onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200';
-                         }}
                        />
+                       <div className="absolute inset-0 bg-teal-500/10 mix-blend-multiply transition-opacity group-hover:opacity-0" />
                     </div>
                     <div className="absolute -top-6 -right-6 w-32 h-32 bg-teal-500/20 rounded-full blur-2xl -z-10"></div>
                   </div>
@@ -101,8 +95,10 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
               {/* Team Section */}
               <section>
                 <div className="text-center mb-24">
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-600 mb-4">Nuestro Equipo</p>
-                  <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter">Expertos que hacen <span className="text-teal-400 italic">posible</span> lo imposible</h2>
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-600 mb-4">{t('about.team_badge')}</p>
+                  <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter">
+                    {t('about.team_title')}
+                  </h2>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-16">
@@ -141,11 +137,11 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                       
                       <div className="space-y-3">
                         <h3 className="text-2xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter group-hover:text-teal-600 transition-colors">{member.name}</h3>
-                        <p className="text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-[0.3em] mb-6">{member.role}</p>
+                        <p className="text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-[0.3em] mb-6">{t(member.roleKey)}</p>
                         <div className="max-w-sm mx-auto">
-                          {member.bio.map((p, i) => (
+                          {member.bioKeys.map((key, i) => (
                             <p key={i} className="text-gray-500 dark:text-gray-400 text-xs font-medium leading-relaxed italic mb-4 last:mb-0">
-                              {p}
+                              {t(key)}
                             </p>
                           ))}
                         </div>
@@ -159,7 +155,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
           </div>
           
           <div className="bg-[#00151a] py-6 text-center border-t border-white/5 shrink-0">
-             <p className="text-[8px] font-black uppercase tracking-[0.5em] text-white/30">Bodipo Business S.A. © 2026 - Conectando Sueños Internacionales</p>
+             <p className="text-[8px] font-black uppercase tracking-[0.5em] text-white/30">Bodipo Business S.A. © 2026 - {t('footer.rights')}</p>
           </div>
         </div>
       )}
