@@ -74,8 +74,7 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
              <div className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 shrink-0">
                 <img 
                    src={logoUrl} 
-                   className="w-full h-full object-contain" 
-                   style={{ filter: 'drop-shadow(1px 1px 0 white) drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white)' }}
+                   className="w-full h-full object-contain logo-white-outline" 
                    alt="Logo" 
                 />
              </div>
