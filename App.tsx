@@ -16,6 +16,7 @@ const ForgotPasswordModal = lazy(() => import('./src/components/ForgotPasswordMo
 const ContactModal = lazy(() => import('./src/components/ContactModal'));
 const AdminPanel = lazy(() => import('./src/components/AdminPanel'));
 const SettingsModal = lazy(() => import('./src/components/SettingsModal'));
+const AboutPage = lazy(() => import('./src/pages/AboutPage'));
 const AboutUsModal = lazy(() => import('./src/components/AboutUsModal'));
 
 // Lazy loaded Pages
@@ -95,6 +96,7 @@ const AnimatedRoutes: React.FC<{
         <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
+        <Route path="/sobre-nosotros" element={<AnimatedPage><AboutPage config={config} onOpenRegister={onOpenRegister} onOpenContact={onOpenContact} onOpenSettings={onOpenSettings} /></AnimatedPage>} />
         <Route path="/admin" element={
           <AnimatedPage>
             <AdminPanel 
@@ -118,7 +120,7 @@ const AppContent: React.FC = () => {
   const [resetEmail, setResetEmail] = useState<string | undefined>(undefined);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isAboutUsOpen, setIsAboutUsOpen] = useState(false);
+  // Removed isAboutUsOpen state
   const navigate = useNavigate();
 
   // Dynamic State
@@ -230,8 +232,8 @@ const AppContent: React.FC = () => {
                   <div className="flex flex-col gap-4 mb-12">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Sobre Nosotros</p>
                     <div className="flex items-center gap-4">
-                      <button 
-                        onClick={() => setIsAboutUsOpen(true)}
+                      <Link 
+                        to="/sobre-nosotros"
                         className="group relative"
                       >
                         <div className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
@@ -247,11 +249,11 @@ const AppContent: React.FC = () => {
                         <div className="absolute -bottom-1 -right-1 bg-[#007e85] text-white p-1.5 rounded-full shadow-lg scale-0 group-hover:scale-100 transition-transform z-10">
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
-                      </button>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors">D. V. Nguema</span>
-                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1">Director Institucional</span>
-                      </div>
+                      </Link>
+                      <Link to="/sobre-nosotros" className="flex flex-col group/text">
+                        <span className="text-sm font-black uppercase tracking-tight text-white group-hover/text:text-teal-400 transition-colors">D. V. Nguema</span>
+                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover/text:text-teal-400/50">Director Institucional</span>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -340,7 +342,6 @@ const AppContent: React.FC = () => {
           )}
           {isContactOpen && <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
           <AIChat config={config} />
-          {isAboutUsOpen && <AboutUsModal isOpen={isAboutUsOpen} onClose={() => setIsAboutUsOpen(false)} />}
           {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
         </Suspense>
       </div>
