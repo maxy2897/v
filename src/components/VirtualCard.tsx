@@ -65,8 +65,8 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
         {/* Header Section */}
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 drop-shadow-2xl">
-             <div className="bg-white/20 backdrop-blur-md p-0.5 sm:p-1 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 overflow-hidden shadow-sm">
-                <img src={logoUrl} className="w-[85%] h-[85%] object-contain filter drop-shadow-md" alt="Logo" />
+             <div className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 shrink-0">
+                <img src={logoUrl} className="w-full h-full object-contain filter drop-shadow-[0_0_1.5px_rgba(255,255,255,1)] drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]" alt="Logo" />
              </div>
              <div className="flex flex-col leading-none">
                 <span className="text-[8px] sm:text-[10px] md:text-[12px] font-black uppercase tracking-[0.2em] text-white">BODIPO</span>
