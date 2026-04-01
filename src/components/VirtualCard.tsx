@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 interface VirtualCardProps {
   number?: string;
@@ -19,6 +20,23 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
   onClick,
   isRefreshing = false
 }) => {
+  const { t } = useSettings();
+  const [logoUrl, setLogoUrl] = useState('./images/logo-n.png');
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('bb_config');
+      if (saved) {
+        const config = JSON.parse(saved);
+        if (config.customLogoUrl) {
+          setLogoUrl(config.customLogoUrl);
+        }
+      }
+    } catch (e) {
+      //
+    }
+  }, []);
+
   return (
     <div 
       onClick={onClick}
@@ -47,8 +65,8 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
         {/* Header Section */}
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 drop-shadow-2xl">
-             <div className="bg-white/5 backdrop-blur-md p-1.5 sm:p-2 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10">
-                <span className="logo-font text-[16px] sm:text-[22px] md:text-[28px] text-teal-400 leading-none select-none">bb</span>
+             <div className="bg-white/20 backdrop-blur-md p-0.5 sm:p-1 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 overflow-hidden shadow-sm">
+                <img src={logoUrl} className="w-[85%] h-[85%] object-contain filter drop-shadow-md" alt="Logo" />
              </div>
              <div className="flex flex-col leading-none">
                 <span className="text-[8px] sm:text-[10px] md:text-[12px] font-black uppercase tracking-[0.2em] text-white">BODIPO</span>
@@ -66,10 +84,10 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
                </div>
             ) : (
               <div className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white/5 backdrop-blur-md border border-white/10 rounded-full">
-                <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/80">Premium Credit</p>
+                <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/80">{t('card.premium')}</p>
               </div>
             )}
-            <div className="text-[5px] sm:text-[7px] md:text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1 mr-1">Digital Member</div>
+            <div className="text-[5px] sm:text-[7px] md:text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1 mr-1">{t('card.member')}</div>
           </div>
         </div>
 
@@ -83,7 +101,7 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
               </p>
               {!active && (
                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[7px] sm:text-[10px] md:text-[14px] font-black uppercase tracking-[0.6em] text-teal-400/40 italic animate-pulse">LOCKED</span>
+                    <span className="text-[7px] sm:text-[10px] md:text-[14px] font-black uppercase tracking-[0.6em] text-teal-400/40 italic animate-pulse">{t('card.locked')}</span>
                  </div>
               )}
            </div>
@@ -93,18 +111,18 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
         <div className="flex justify-between items-end w-full">
            <div className={`flex flex-col gap-1.5 sm:gap-3 transition-all duration-700 ${!active ? 'blur-[10px] opacity-10' : 'opacity-100'} min-w-0 pr-4`}>
               <div className="flex flex-col min-w-0">
-                <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-0.5">Card Holder</p>
+                <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-0.5">{t('card.holder')}</p>
                 <p className="text-[8px] sm:text-[11px] md:text-[14px] font-black uppercase tracking-widest text-white truncate drop-shadow-sm leading-tight">{holderName}</p>
               </div>
               <div className="inline-flex flex-col bg-white/5 backdrop-blur-md px-2 py-1 sm:px-3 sm:py-1.5 rounded-md border border-white/5 self-start">
-                 <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-0.5">CVV Code</p>
+                 <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-0.5">{t('card.cvv')}</p>
                  <p className="text-[8px] sm:text-[12px] md:text-[14px] font-mono font-black text-white leading-tight">{cvv}</p>
               </div>
            </div>
            
            <div className={`flex flex-col items-end gap-1.5 sm:gap-2 transition-all duration-700 ${!active ? 'blur-[10px] opacity-10' : 'opacity-100'} shrink-0`}>
               <div className="text-right">
-                 <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-0.5">Valid Thru</p>
+                 <p className="text-[5px] sm:text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-teal-400/60 mb-0.5">{t('card.valid_thru')}</p>
                  <p className="text-[8px] sm:text-[12px] md:text-[14px] font-black tracking-widest text-white leading-tight">{expiry}</p>
               </div>
               <div className="relative group/visa mt-1">

@@ -736,6 +736,14 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.loc.yaounde': 'Universidad Católica, Yaoundé 🇨🇲',
         'footer.loc.gq': 'Malabo & Bata, G.E. 🇬🇶',
         'footer.copyright': '© 2026 BODIPO BUSINESS S.L.',
+
+        // Virtual Card
+        'card.holder': 'Titular',
+        'card.cvv': 'Código CVV',
+        'card.valid_thru': 'Válida Hasta',
+        'card.locked': 'BLOQUEADA',
+        'card.premium': 'Crédito Premium',
+        'card.member': 'Miembro Digital',
     },
     en: {
         // Navigation
@@ -1403,6 +1411,14 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.loc.yaounde': 'Catholic University, Yaoundé 🇨🇲',
         'footer.loc.gq': 'Malabo & Bata, E.G. 🇬🇶',
         'footer.copyright': '© 2026 BODIPO BUSINESS S.L.',
+
+        // Virtual Card
+        'card.holder': 'Card Holder',
+        'card.cvv': 'CVV Code',
+        'card.valid_thru': 'Valid Thru',
+        'card.locked': 'LOCKED',
+        'card.premium': 'Premium Credit',
+        'card.member': 'Digital Member',
     },
     fr: {
         // Navigation
@@ -2087,6 +2103,14 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.loc.yaounde': 'Université Catholique, Yaoundé 🇨🇲',
         'footer.loc.gq': 'Malabo & Bata, G.E. 🇬🇶',
         'footer.copyright': '© 2026 BODIPO BUSINESS S.L.',
+
+        // Virtual Card
+        'card.holder': 'Titulaire',
+        'card.cvv': 'Code CVV',
+        'card.valid_thru': 'Valable Jusqu\'au',
+        'card.locked': 'VERROUILLÉ',
+        'card.premium': 'Crédit Premium',
+        'card.member': 'Membre Numérique',
     }
 };
 
