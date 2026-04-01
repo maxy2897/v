@@ -32,7 +32,7 @@ const StoreLogoImage = ({ src, domain, name, googleLogoFn, initialsLogoFn }: { s
 const OnlineShoppingPage: React.FC = () => {
   const { t, appConfig } = useSettings();
   const { user, refreshUser } = useAuth();
-  const eurRate = 655.957;
+  const eurRate = appConfig?.rates?.exchange?.eur_xaf || 655.957;
   const [destination, setDestination] = React.useState('Malabo');
   const [loading, setLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);

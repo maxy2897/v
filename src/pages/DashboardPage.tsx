@@ -51,7 +51,7 @@ interface DashboardPageProps {
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdmin, onOpenForgotPassword }) => {
     const { user, logout, updateUser, isAuthenticated, loading: authLoading } = useAuth();
-    const { t, language } = useSettings();
+    const { t, language, appConfig } = useSettings();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -953,7 +953,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                     {(user.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-600">FCFA</span>
                                                 </h2>
                                                 <p className="text-lg font-black text-teal-500 tracking-tight mt-1">
-                                                    ≈ {((user.virtualCard?.balance || 0) / 655.957).toFixed(2)} <span className="text-sm opacity-70">€</span>
+                                                    ≈ {((user.virtualCard?.balance || 0) / (appConfig?.rates?.exchange?.eur_xaf || 655.957)).toFixed(2)} <span className="text-sm opacity-70">€</span>
                                                 </p>
                                                 <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${ user.virtualCard?.active ? 'bg-teal-50 text-teal-700 border-teal-100' : 'bg-red-50 text-red-500 border-red-100' }`}>
                                                     <span className={`w-1.5 h-1.5 rounded-full ${ user.virtualCard?.active ? 'bg-teal-500' : 'bg-red-400' }`}></span>
