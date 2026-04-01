@@ -18,7 +18,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     name: "D. V. Nguema Elebiyo Mangue",
     roleKey: "about.member_nguema_role",
     bioKeys: ["about.member_nguema_bio1", "about.member_nguema_bio2"],
-    image: "./images/dv-nguema.jpg",
+    image: "./images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
   }
