@@ -62,6 +62,18 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
     const [loadingTransactions, setLoadingTransactions] = useState(true);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'settings' | 'help' | 'notifications' | 'virtual_card'>('shipments');
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const handleRefreshUser = async () => {
+        setIsRefreshing(true);
+        try {
+            await refreshUser();
+        } catch (e) {
+            console.error('Error al refrescar:', e);
+        } finally {
+            setTimeout(() => setIsRefreshing(false), 1000);
+        }
+    };
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
     const [isMobileMenu, setIsMobileMenu] = useState(true);
@@ -929,6 +941,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                 cvv={user.virtualCard?.cvv}
                                                 active={user.virtualCard?.active}
                                                 holderName={user.name?.toUpperCase()}
+                                                onClick={handleRefreshUser}
+                                                isRefreshing={isRefreshing}
                                             />
                                             
                                             {!user.virtualCard?.active && (

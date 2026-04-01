@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import VirtualCard from '../components/VirtualCard';
@@ -32,6 +33,7 @@ const StoreLogoImage = ({ src, domain, name, googleLogoFn, initialsLogoFn }: { s
 const OnlineShoppingPage: React.FC = () => {
   const { t, appConfig } = useSettings();
   const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
   const eurRate = appConfig?.rates?.exchange?.eur_xaf || 655.957;
   const [destination, setDestination] = React.useState('Malabo');
   const [loading, setLoading] = React.useState(false);
@@ -262,7 +264,13 @@ const OnlineShoppingPage: React.FC = () => {
                  <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-4 sm:p-8 text-center rounded-[1.2rem] sm:rounded-[2.5rem] border border-white/5">
                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/10 rounded-full flex items-center justify-center text-xl sm:text-2xl mb-2 sm:mb-4 border border-white/20 shadow-2xl">🔒</div>
                    <button 
-                     onClick={() => setIsRechargeModalOpen(true)}
+                     onClick={() => {
+                       if (!user) {
+                         if (window.confirm('Para activar tu tarjeta virtual, primero debes iniciar sesión o registrarte. ¿Quieres ir a la página de acceso ahora?')) { navigate('/acceso'); }
+                         return;
+                       }
+                       setIsRechargeModalOpen(true);
+                     }}
                      className="px-4 py-3 sm:px-8 sm:py-4 bg-teal-500 text-white rounded-xl sm:rounded-2xl text-[9px] sm:text-[11px] font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(20,184,166,0.4)] hover:bg-teal-400 transition-all hover:scale-105 active:scale-95"
                    >
                      Activar Tarjeta

@@ -53,8 +53,9 @@ interface AdminPanelProps {
   setConfig: (config: AppConfig) => void;
 }
 
-const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirtualCard: any }> = ({ BASE_URL, user, updateUserVirtualCard }) => {
+const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirtualCard: any; appConfig: any }> = ({ BASE_URL, user, updateUserVirtualCard, appConfig }) => {
   const [vcRequests, setVcRequests] = React.useState<any[]>([]);
+  const [activeCards, setActiveCards] = React.useState<any[]>([]);
   const [vcLoading, setVcLoading] = React.useState(true);
   const [vcSaving, setVcSaving] = React.useState<string | null>(null);
   const [viewingCapture, setViewingCapture] = React.useState<string | null>(null);
@@ -63,6 +64,8 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
     try {
       setVcLoading(true);
       const token = user?.token || localStorage.getItem('token') || '';
+      
+      // Fetch Transactions
       const res = await fetch(`${BASE_URL}/api/transactions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -75,6 +78,18 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
         tx.status !== 'completed'
       );
       setVcRequests(filtered);
+
+      // Fetch Users for Active Cards view
+      const resUsers = await fetch(`${BASE_URL}/api/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (resUsers.ok) {
+        const userData = await resUsers.json();
+        const usersList = userData.users || [];
+        const active = usersList.filter((u: any) => u.virtualCard?.active === true || (u.virtualCard?.balance > 0));
+        setActiveCards(active);
+      }
+
     } catch (err: any) {
       alert(err.message || 'Error al cargar solicitudes');
     } finally {
@@ -92,7 +107,10 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
         throw new Error('Error de ID: Esta transacción no tiene un ID de usuario válido vinculado.');
       }
       
-      await updateUserVirtualCard(targetUserId, { balance: request.amount, active: true });
+      const eurRate = appConfig?.rates?.exchange?.eur_xaf || 655.957;
+      const finalAmount = request.currency === 'EUR' ? (request.amount * eurRate) : request.amount;
+      
+      await updateUserVirtualCard(targetUserId, { balance: finalAmount, active: true });
       const token = user?.token || localStorage.getItem('token') || '';
       const resPatch = await fetch(`${BASE_URL}/api/transactions/${request._id}`, {
         method: 'PATCH',
@@ -186,6 +204,47 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
               </div>
             );
           })}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mt-12">
+        <div className="p-8 border-b border-gray-50 bg-teal-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex flex-col">
+            <h4 className="text-[11px] font-black text-teal-900 uppercase tracking-widest">Tarjetas Activas y Saldos</h4>
+            <div className="mt-2 flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                <p className="text-[10px] font-black text-teal-700 uppercase tracking-widest">{activeCards.filter(u => u.virtualCard?.active).length} activas</p>
+              </div>
+              <div className="flex items-center gap-2 border-l border-teal-200 pl-4">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                <p className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Saldo Total: {activeCards.reduce((acc, u) => acc + (u.virtualCard?.balance || 0), 0).toLocaleString()} FCFA</p>
+              </div>
+            </div>
+          </div>
+          <span className="px-3 py-1 bg-white rounded-lg text-[9px] font-black text-teal-600 border border-teal-100">{activeCards.length} Usuarios con Tarjeta</span>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {activeCards.length === 0 && (
+            <div className="p-12 text-center text-gray-300 font-black uppercase text-[10px] tracking-widest italic">No hay tarjetas activas en el sistema.</div>
+          )}
+          {activeCards.map((u) => (
+             <div key={u._id} className="p-6 flex items-center justify-between hover:bg-gray-50/30 transition-all">
+                <div className="flex items-center gap-4">
+                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-700 font-black text-lg border border-gray-100 shadow-sm">{u.name?.[0]?.toUpperCase() || 'U'}</div>
+                   <div>
+                      <h5 className="font-black text-slate-900 text-sm leading-tight">{u.name}</h5>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{u.email}</p>
+                   </div>
+                </div>
+                <div className="text-right">
+                   <p className="text-xs font-black text-teal-600 tracking-tighter">{(u.virtualCard?.balance || 0).toLocaleString()} <span className="text-[9px]">FCFA</span></p>
+                   <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${u.virtualCard?.active ? 'bg-teal-50 text-teal-600' : 'bg-gray-100 text-gray-400'}`}>
+                      {u.virtualCard?.active ? 'ACTIVA' : 'INACTIVA'}
+                   </div>
+                </div>
+             </div>
+          ))}
         </div>
       </div>
 
@@ -948,7 +1007,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           {activeTab === 'dashboard' && renderDashboard()}
           
           {activeTab === 'virtual_card' && (
-            <VirtualCardManager BASE_URL={BASE_URL} user={user} updateUserVirtualCard={updateUserVirtualCard} />
+            <VirtualCardManager BASE_URL={BASE_URL} user={user} updateUserVirtualCard={updateUserVirtualCard} appConfig={appConfig} />
           )}
 
           

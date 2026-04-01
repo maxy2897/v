@@ -11,6 +11,12 @@ interface VirtualCardProps {
   isRefreshing?: boolean;
 }
 
+const formatCardNumber = (num: string) => {
+  if (!num) return "4918 5004 2135 3238";
+  const clean = num.toString().replace(/\s/g, '');
+  return clean.match(/.{1,4}/g)?.join(' ') || num;
+};
+
 const VirtualCard: React.FC<VirtualCardProps> = ({
   number = '4918 5004 2135 3238',
   expiry = '04/2029',
@@ -21,7 +27,7 @@ const VirtualCard: React.FC<VirtualCardProps> = ({
   isRefreshing = false
 }) => {
   const { t } = useSettings();
-  const [logoUrl, setLogoUrl] = useState('./images/logo-n.png');
+  const [logoUrl, setLogoUrl] = useState('/images/logo-n.png');
 
   useEffect(() => {
     try {
