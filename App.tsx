@@ -14,9 +14,9 @@ const RegisterModal = lazy(() => import('./src/components/RegisterModal'));
 const LoginModal = lazy(() => import('./src/components/LoginModal'));
 const ForgotPasswordModal = lazy(() => import('./src/components/ForgotPasswordModal'));
 const ContactModal = lazy(() => import('./src/components/ContactModal'));
+const AdminPanel = lazy(() => import('./src/components/AdminPanel'));
 const SettingsModal = lazy(() => import('./src/components/SettingsModal'));
 const AboutTeamPanel = lazy(() => import('./src/components/AboutTeamPanel'));
-// Removed AboutUsModal and AboutPage
 
 // Lazy loaded Pages
 const HomePage = lazy(() => import('./src/pages/HomePage'));
