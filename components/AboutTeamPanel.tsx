@@ -14,8 +14,8 @@ interface TeamMember {
 const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
-    name: "D. V. Nguema Elebiyo Mangue",
-    role: "Director de Relaciones Institucionales",
+    name: "D. V. Nguema",
+    role: "Director Institucional",
     bio: [
       "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
       "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."

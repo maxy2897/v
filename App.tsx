@@ -185,7 +185,7 @@ const App: React.FC = () => {
                             alt="Director" 
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200';
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
                             }}
                           />
                         </div>
