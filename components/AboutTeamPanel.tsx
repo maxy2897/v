@@ -20,7 +20,7 @@ const TEAM_MEMBERS: TeamMember[] = [
       "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
       "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."
     ],
-    image: "./images/dv-nguema.jpeg",
+    image: "/images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
   }
@@ -81,7 +81,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                   <div className="relative group">
                     <div className="aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-2xl relative z-10 border-4 border-white dark:border-gray-800">
                        <img 
-                         src="./images/hero-home.jpg" 
+                         src="/images/hero-home.jpg" 
                          alt="Logistic Operations" 
                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                        />
