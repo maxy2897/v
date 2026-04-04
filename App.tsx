@@ -284,7 +284,7 @@ const AppContent: React.FC = () => {
               <div className="pt-16 border-t border-white/5 mt-16">
                 <div className="flex flex-col gap-16">
                   <div className="flex flex-col gap-6">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80 text-center lg:text-left">Nuestro Equipo</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80 text-center lg:text-left">{t('about.team_badge')}</p>
                     <div className="flex flex-wrap items-center justify-center lg:justify-start gap-10">
                       {/* Member 1: Nguema */}
                       <button 
@@ -294,7 +294,7 @@ const AppContent: React.FC = () => {
                         <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
                           <img 
                             src="./images/dv-nguema.jpeg" 
-                            alt="Director" 
+                            alt={t('about.member_nguema_name')} 
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
@@ -302,7 +302,9 @@ const AppContent: React.FC = () => {
                           />
                         </div>
                         <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D. V. Nguema</span>
+                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
+                            {t('about.member_nguema_name').split(' ').slice(0, 2).join(' ')}
+                          </span>
                           <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
                         </div>
                       </button>
@@ -317,7 +319,7 @@ const AppContent: React.FC = () => {
                         <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
                           <img 
                             src="./images/da-martin.jpg" 
-                            alt="Product Design" 
+                            alt={t('about.member_martin_name')} 
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
@@ -325,7 +327,9 @@ const AppContent: React.FC = () => {
                           />
                         </div>
                         <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.A. Martin</span>
+                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
+                            {t('about.member_martin_name').split(' ').slice(0, 2).join(' ')}
+                          </span>
                           <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
                         </div>
                       </button>
@@ -340,7 +344,7 @@ const AppContent: React.FC = () => {
                         <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
                           <img 
                             src="./images/dr-nguema.jpg" 
-                            alt="Legal Affairs" 
+                            alt={t('about.member_dr_name')} 
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
@@ -348,7 +352,9 @@ const AppContent: React.FC = () => {
                           />
                         </div>
                         <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.R. NGUEMA</span>
+                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
+                            {t('about.member_dr_name')}
+                          </span>
                           <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
                         </div>
                       </button>

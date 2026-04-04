@@ -4,7 +4,7 @@ import { useSettings } from '../context/SettingsContext';
 
 interface TeamMember {
   id: string;
-  name: string;
+  nameKey: string;
   roleKey: string;
   bioKeys: string[];
   image: string;
@@ -15,7 +15,7 @@ interface TeamMember {
 const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
-    name: "D. V. Nguema Elebiyo Mangue",
+    nameKey: "about.member_nguema_name",
     roleKey: "about.member_nguema_role",
     bioKeys: ["about.member_nguema_bio1", "about.member_nguema_bio2"],
     image: "./images/dv-nguema.jpeg",
@@ -24,7 +24,7 @@ const TEAM_MEMBERS: TeamMember[] = [
   },
   {
     id: '2',
-    name: "D.A. MARTIN NDONG",
+    nameKey: "about.member_martin_name",
     roleKey: "about.member_martin_role",
     bioKeys: ["about.member_martin_bio1", "about.member_martin_bio2"],
     image: "./images/da-martin.jpg",
@@ -33,7 +33,7 @@ const TEAM_MEMBERS: TeamMember[] = [
   },
   {
     id: '3',
-    name: "D.R. NGUEMA",
+    nameKey: "about.member_dr_name",
     roleKey: "about.member_dr_role",
     bioKeys: ["about.member_dr_bio1", "about.member_dr_bio2"],
     image: "./images/dr-nguema.jpg",
@@ -131,7 +131,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                       <div className="relative w-full aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl mb-8 bg-gray-100 dark:bg-gray-800 border-2 border-transparent group-hover:border-teal-500/30 transition-all">
                         <img 
                           src={member.image} 
-                          alt={member.name}
+                          alt={t(member.nameKey)}
                           className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800';
@@ -154,7 +154,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                       </div>
                       
                       <div className="space-y-3">
-                        <h3 className="text-2xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter group-hover:text-teal-600 transition-colors">{member.name}</h3>
+                        <h3 className="text-2xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter group-hover:text-teal-600 transition-colors">{t(member.nameKey)}</h3>
                         <p className="text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-[0.3em] mb-6">{t(member.roleKey)}</p>
                         <div className="max-w-sm mx-auto">
                           {member.bioKeys.map((key, i) => (
