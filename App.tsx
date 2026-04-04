@@ -160,7 +160,7 @@ const App: React.FC = () => {
 
             <footer className="bg-[#00151a] py-24 text-white">
               <div className="max-w-7xl mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 mb-20">
                   <div className="col-span-1 lg:col-span-1">
                     <div className="flex items-center space-x-4 mb-8">
                       <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
@@ -175,78 +175,6 @@ const App: React.FC = () => {
                     <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
                       Logística de excelencia conectando España 🇪🇸, Camerún 🇨🇲 y Guinea Ecuatorial 🇬🇶. Operaciones diarias con los más altos estándares de seguridad.
                     </p>
-
-                    <div className="flex flex-col gap-4 mb-8">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Nuestro Equipo</p>
-                      <div className="flex flex-wrap items-center gap-6">
-                        {/* Member 1: Nguema */}
-                        <button
-                          onClick={() => setIsAboutOpen(true)}
-                          className="flex items-center gap-3 group"
-                        >
-                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                            <img
-                              src="./images/dv-nguema.jpeg"
-                              alt="Director"
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
-                              }}
-                            />
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D. V. Nguema</span>
-                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
-                          </div>
-                        </button>
-
-                        <div className="w-px h-8 bg-gray-800" />
-
-                        {/* Member 2: Martin Ndong */}
-                        <button
-                          onClick={() => setIsAboutOpen(true)}
-                          className="flex items-center gap-3 group"
-                        >
-                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                            <img
-                              src="./images/da-martin.jpg"
-                              alt="Product Design"
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
-                              }}
-                            />
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.A. Martin</span>
-                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
-                          </div>
-                        </button>
-
-                        <div className="w-px h-8 bg-gray-800" />
-
-                        {/* Member 3: D.R. Nguema */}
-                        <button
-                          onClick={() => setIsAboutOpen(true)}
-                          className="flex items-center gap-3 group"
-                        >
-                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                            <img
-                              src="./images/dr-nguema.jpg"
-                              alt="Legal Affairs"
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
-                              }}
-                            />
-                          </div>
-                          <div className="flex flex-col text-left">
-                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.R. NGUEMA</span>
-                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
 
                     <button
                       onClick={handleAdminLogin}
@@ -307,7 +235,84 @@ const App: React.FC = () => {
                       <li>Universidad Católica, Yaoundé 🇨🇲</li>
                       <li>Malabo & Bata, G.E. 🇬🇶</li>
                     </ul>
-                    <div className="pt-4">
+                  </div>
+                </div>
+
+                <div className="pt-20 border-t border-gray-800/50">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
+                    <div className="flex flex-col gap-6">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Nuestro Equipo</p>
+                      <div className="flex flex-wrap items-center gap-10">
+                        {/* Member 1: Nguema */}
+                        <button
+                          onClick={() => setIsAboutOpen(true)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                            <img
+                              src="./images/dv-nguema.jpeg"
+                              alt="Director"
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D. V. Nguema</span>
+                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
+                          </div>
+                        </button>
+
+                        <div className="w-px h-8 bg-gray-800 hidden lg:block" />
+
+                        {/* Member 2: Martin Ndong */}
+                        <button
+                          onClick={() => setIsAboutOpen(true)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                            <img
+                              src="./images/da-martin.jpg"
+                              alt="Product Design"
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.A. Martin</span>
+                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
+                          </div>
+                        </button>
+
+                        <div className="w-px h-8 bg-gray-800 hidden lg:block" />
+
+                        {/* Member 3: D.R. Nguema */}
+                        <button
+                          onClick={() => setIsAboutOpen(true)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                            <img
+                              src="./images/dr-nguema.jpg"
+                              alt="Legal Affairs"
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.R. NGUEMA</span>
+                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 lg:pt-0">
                       <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.A.</p>
                     </div>
                   </div>
