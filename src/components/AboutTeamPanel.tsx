@@ -96,7 +96,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
               <section>
                 <div className="text-center mb-24">
                   <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-600 mb-4">{t('about.team_badge')}</p>
-                  <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter">
+                  <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tight [word-spacing:0.15em]">
                     {t('about.team_title')}
                   </h2>
                 </div>

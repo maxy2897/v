@@ -50,7 +50,7 @@ interface DashboardPageProps {
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdmin, onOpenForgotPassword }) => {
-    const { user, logout, updateUser, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, logout, updateUser, isAuthenticated, loading: authLoading, refreshUser } = useAuth();
     const { t, language, appConfig } = useSettings();
     const navigate = useNavigate();
     const location = useLocation();

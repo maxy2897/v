@@ -20,7 +20,7 @@ const TEAM_MEMBERS: TeamMember[] = [
       "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
       "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."
     ],
-    image: "/images/dv-nguema.jpg",
+    image: "/images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
   }

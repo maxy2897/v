@@ -236,7 +236,7 @@ const AppContent: React.FC = () => {
                       >
                         <div className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
                           <img 
-                            src="/images/dv-nguema.jpg" 
+                            src="./images/dv-nguema.jpeg" 
                             alt="Director" 
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                             onError={(e) => {
