@@ -760,6 +760,8 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_martin_role': 'Product Design',
         'about.member_martin_bio1': 'Desde esta división en Bodipo Business, lideramos de forma integral la estrategia de imagen y comunicación visual de la compañía. Nuestro enfoque combina la creatividad publicitaria con una identidad de marca moderna y eficiente, asegurando que cada campaña y elemento gráfico proyecte nuestra solidez y liderazgo en el mercado global.',
         'about.member_martin_bio2': 'Somos los responsables de definir la estética y el impacto visual que nos conecta con nuestros clientes en todo el mundo. Transformamos la visión de negocio en experiencias publicitarias innovadoras y profesionales, garantizando que la presencia de marca de Bodipo Business sea siempre impecable, coherente y de alto nivel',
+        'about.member_drn_role': 'Director de Asuntos Jurídicos y Legales',
+        'about.member_drn_bio1': 'Representa de forma legal a la empresa, defendiendo y garantizando jurídicamente los intereses de la misma. Asesora y da consejos legales, fortaleciendo así la estabilidad y situación legal de la compañía dentro del ordenamiento jurídico vigente.',
     },
     en: {
         // Navigation
@@ -1451,6 +1453,8 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_nguema_role': 'Director of Institutional Relations',
         'about.member_nguema_bio1': 'In this directorate, strategic projects are designed, analyzed and managed, guaranteeing their proper execution in accordance with the guidelines established by the external client and the business cabinet.',
         'about.member_nguema_bio2': 'Likewise, he is responsible for the planning and proposal of the human and material resources necessary for the development of each approved project, ensuring an efficient allocation aligned with the organizational objectives.',
+        'about.member_drn_role': 'Director of Legal Affairs',
+        'about.member_drn_bio1': 'Legally represents the company, defending and legally guaranteeing its interests. Provides legal advice and counsel, thereby strengthening the stability and legal standing of the company within the current legal framework.',
     },
     fr: {
         // Navigation
@@ -2156,6 +2160,11 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_nguema_role': 'Directeur des Relations Institutionnelles',
         'about.member_nguema_bio1': 'Dans cette direction, les projets stratégiques sont conçus, analysés et gérés, garantissant leur bonne exécution conformément aux directives établies par le client externe et le cabinet d\'affaires.',
         'about.member_nguema_bio2': 'De même, il est responsable de la planification et de la proposition des ressources humaines et matérielles nécessaires au développement de chaque projet approuvé, assurant une allocation efficace et alignée sur les objectifs organisationnels.',
+        'about.member_martin_role': 'Product Design',
+        'about.member_martin_bio1': 'Depuis cette division chez Bodipo Business, nous dirigeons de manière intégrale la stratégie d\'image et de communication visuelle de l\'entreprise. Notre approche combine la créativité publicitaire avec une identité de marque moderne et efficace.',
+        'about.member_martin_bio2': 'Nous sommes responsables de définir l\'esthétique et l\'impact visuel qui nous connecte avec nos clients dans le monde entier, garantissant que la présence de marque de Bodipo Business soit toujours impeccable et cohérente.',
+        'about.member_drn_role': 'Directeur des Affaires Juridiques et Légales',
+        'about.member_drn_bio1': 'Représente légalement l\'entreprise, défendant et garantissant juridiquement ses intérêts. Conseille et apporte des avis juridiques, renforçant ainsi la stabilité et la situation légale de la société dans le cadre juridique en vigueur.',
     }
 };
 

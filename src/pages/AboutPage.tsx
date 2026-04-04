@@ -33,6 +33,13 @@ const TEAM_MEMBERS: TeamMember[] = [
     image: "/images/da-martin.jpg",
     email: "antoniomartinndongedo@gmail.com",
     linkedin: "https://www.linkedin.com/in/antonio-martin-ndong-edo-76223a29a"
+  },
+  {
+    id: '3',
+    name: "D.R. NGUEMA",
+    roleKey: "about.member_drn_role",
+    bioKeys: ["about.member_drn_bio1"],
+    image: "/images/dr-nguema.jpg",
   }
 ];
 
