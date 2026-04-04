@@ -81,7 +81,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                   <div className="relative group">
                     <div className="rounded-[2.5rem] overflow-hidden shadow-2xl relative z-10 border-4 border-white dark:border-gray-800 bg-[#00151a]">
                        <img 
-                         src="/images/earth-bodipo.jpg" 
+                         src="./images/earth-bodipo.jpg" 
                          alt="Logistic Operations" 
                          className="w-full h-auto max-h-[600px] object-contain group-hover:scale-105 transition-transform duration-1000"
                        />
