@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSettings } from '../context/SettingsContext';
+import { useSettings } from '../src/context/SettingsContext';
 
 interface TeamMember {
   id: string;

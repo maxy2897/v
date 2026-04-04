@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
+import Header from '../../components/Header';
 import { AppConfig } from '../../types';
 import { useSettings } from '../context/SettingsContext';
 
