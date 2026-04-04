@@ -760,6 +760,9 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_martin_role': 'Product Design',
         'about.member_martin_bio1': 'Desde esta división en Bodipo Business, lideramos de forma integral la estrategia de imagen y comunicación visual de la compañía. Nuestro enfoque combina la creatividad publicitaria con una identidad de marca moderna y eficiente, asegurando que cada campaña y elemento gráfico proyecte nuestra solidez y liderazgo en el mercado global.',
         'about.member_martin_bio2': 'Somos los responsables de definir la estética y el impacto visual que nos conecta con nuestros clientes en todo el mundo. Transformamos la visión de negocio en experiencias publicitarias innovadoras y profesionales, garantizando que la presencia de marca de Bodipo Business sea siempre impecable, coherente y de alto nivel',
+        'about.member_dr_role': 'Gestión de Asuntos Jurídicos',
+        'about.member_dr_bio1': 'Desde Bodipo Business, como responsables de Asuntos Jurídicos, lideramos integralmente la estrategia legal y administrativa del gabinete.',
+        'about.member_dr_bio2': 'Nuestra área es la encargada de asegurar la máxima ética corporativa y el cumplimiento de las normativas vigentes en España, Guinea Ecuatorial y Camerún.',
     },
     en: {
         // Navigation
@@ -1451,6 +1454,9 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_nguema_role': 'Director of Institutional Relations',
         'about.member_nguema_bio1': 'In this directorate, strategic projects are designed, analyzed and managed, guaranteeing their proper execution in accordance with the guidelines established by the external client and the business cabinet.',
         'about.member_nguema_bio2': 'Likewise, he is responsible for the planning and proposal of the human and material resources necessary for the development of each approved project, ensuring an efficient allocation aligned with the organizational objectives.',
+        'about.member_dr_role': 'Legal Affairs Management',
+        'about.member_dr_bio1': 'At Bodipo Business, as heads of Legal Affairs, we comprehensively lead the legal and administrative strategy of the cabinet.',
+        'about.member_dr_bio2': 'Our area is responsible for ensuring maximum corporate ethics and compliance with current regulations in Spain, Equatorial Guinea and Cameroon.',
     },
     fr: {
         // Navigation

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSettings } from '../context/SettingsContext';
+import { useSettings } from '../src/context/SettingsContext';
 
 interface TeamMember {
   id: string;
@@ -34,10 +34,9 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '3',
     name: "D.R. NGUEMA",
-    roleKey: "about.member_dr_role",
-    bioKeys: ["about.member_dr_bio1", "about.member_dr_bio2"],
+    roleKey: "about.member_drn_role",
+    bioKeys: ["about.member_drn_bio1"],
     image: "./images/dr-nguema.jpg",
-    email: "legal@bodipo-business.com"
   }
 ];
 
