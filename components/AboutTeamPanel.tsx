@@ -95,7 +95,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
               <section>
                 <div className="text-center mb-20">
                   <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-600 mb-4">Nuestro Equipo</p>
-                  <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter">Personas que hacen <span className="text-teal-400 italic font-serif">posible</span> lo imposible</h2>
+                  <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tight [word-spacing:0.15em]">Personas que hacen <span className="text-teal-400 italic font-serif">posible</span> lo imposible</h2>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-16">

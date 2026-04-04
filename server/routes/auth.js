@@ -132,4 +132,42 @@ router.get('/me', protect, async (req, res) => {
     }
 });
 
+// @route   POST /api/auth/admin-login
+// @desc    Autenticar administrador con contraseña y devolver JWT con rol admin
+// @access  Public
+router.post(
+    '/admin-login',
+    [
+        body('password').notEmpty().withMessage('La contraseña es requerida'),
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { password } = req.body;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+
+        if (!adminPassword) {
+            console.error('ADMIN_PASSWORD no está configurada en las variables de entorno');
+            return res.status(500).json({ message: 'Error de configuración del servidor' });
+        }
+
+        if (password !== adminPassword) {
+            return res.status(401).json({ message: 'Contraseña de administrador incorrecta' });
+        }
+
+        // Generar JWT con rol admin (expira en 8 horas)
+        const token = jwt.sign(
+            { role: 'admin' },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' }
+        );
+
+        res.json({ token, role: 'admin' });
+    }
+);
+
 export default router;
+

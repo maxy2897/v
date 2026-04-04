@@ -6,6 +6,7 @@ import AIChat from './components/AIChat';
 import RegisterModal from './components/RegisterModal';
 import LoginModal from './components/LoginModal';
 import AdminPanel from './components/AdminPanel';
+import AdminLoginModal from './components/AdminLoginModal';
 import { Product, AppConfig } from './types';
 import AnimatedPage from './src/components/AnimatedPage';
 import AboutTeamPanel from './components/AboutTeamPanel';
@@ -103,7 +104,8 @@ const App: React.FC = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [adminAuth, setAdminAuth] = useState(false);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem('bb_admin_token'));
   const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   // Dynamic State
@@ -126,17 +128,17 @@ const App: React.FC = () => {
   }, [config]);
 
   const handleAdminLogin = () => {
-    if (adminAuth) {
+    if (adminToken) {
       setIsAdminOpen(true);
-      return;
+    } else {
+      setIsAdminLoginOpen(true);
     }
-    const pass = prompt('Introduce la contraseña de administrador:');
-    if (pass === 'admin2026') {
-      setAdminAuth(true);
-      setIsAdminOpen(true);
-    } else if (pass !== null) {
-      alert('Contraseña incorrecta');
-    }
+  };
+
+  const handleAdminAuthSuccess = (token: string) => {
+    localStorage.setItem('bb_admin_token', token);
+    setAdminToken(token);
+    setIsAdminOpen(true);
   };
 
   return (
@@ -181,7 +183,7 @@ const App: React.FC = () => {
                       >
                         <div className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
                           <img 
-                            src="/images/dv-nguema.jpeg" 
+                            src="./images/dv-nguema.jpeg" 
                             alt="Director" 
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                             onError={(e) => {
@@ -278,6 +280,11 @@ const App: React.FC = () => {
             setConfig={setConfig}
           />
           <AboutTeamPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+          <AdminLoginModal
+            isOpen={isAdminLoginOpen}
+            onClose={() => setIsAdminLoginOpen(false)}
+            onSuccess={handleAdminAuthSuccess}
+          />
           <AIChat config={config} />
         </div>
       </AuthProvider>
