@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { AppConfig } from '../../types';
+import { useSettings } from '../context/SettingsContext';
 
 interface TeamMember {
   id: string;
   name: string;
-  role: string;
-  bio: string[];
+  roleKey: string;
+  bioKeys: string[];
   image: string;
   email?: string;
   linkedin?: string;
@@ -18,14 +19,18 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
     name: "D. V. Nguema Elebiyo Mangue",
-    role: "Director de Relaciones Institucionales",
-    bio: [
-      "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
-      "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."
-    ],
+    roleKey: "about.member_nguema_role",
+    bioKeys: ["about.member_nguema_bio1", "about.member_nguema_bio2"],
     image: "/images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
+  },
+  {
+    id: '2',
+    name: "D.A. MARTIN NDONG",
+    roleKey: "about.member_martin_role",
+    bioKeys: ["about.member_martin_bio1", "about.member_martin_bio2"],
+    image: "/images/da-martin.jpg"
   }
 ];
 
@@ -38,6 +43,8 @@ interface AboutPageProps {
 }
 
 const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOpenSettings, config }) => {
+  const { t } = useSettings();
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 selection:bg-teal-100 selection:text-teal-900 transition-colors duration-300">
       <Header 
@@ -120,7 +127,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOp
                   />
                   <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end">
                     <h3 className="text-xl font-black text-white uppercase tracking-tight mb-1">{member.name}</h3>
-                    <p className="text-teal-400 text-xs font-bold uppercase tracking-widest">{member.role}</p>
+                    <p className="text-teal-400 text-xs font-bold uppercase tracking-widest">{t(member.roleKey)}</p>
                   </div>
                 </div>
                 
@@ -138,9 +145,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOp
                     )}
                   </div>
                   <div className="space-y-4">
-                    {member.bio.map((p, i) => (
+                    {member.bioKeys.map((key, i) => (
                       <p key={i} className="text-gray-500 dark:text-gray-400 text-xs font-medium leading-relaxed italic">
-                        {p}
+                        {t(key)}
                       </p>
                     ))}
                   </div>

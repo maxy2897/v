@@ -21,6 +21,13 @@ const TEAM_MEMBERS: TeamMember[] = [
     image: "./images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
+  },
+  {
+    id: '2',
+    name: "D.A. MARTIN NDONG",
+    roleKey: "about.member_martin_role",
+    bioKeys: ["about.member_martin_bio1", "about.member_martin_bio2"],
+    image: "./images/da-martin.jpg"
   }
 ];
 

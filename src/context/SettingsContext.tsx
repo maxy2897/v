@@ -757,6 +757,9 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_nguema_role': 'Director de Relaciones Institucionales',
         'about.member_nguema_bio1': 'En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.',
         'about.member_nguema_bio2': 'Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales.',
+        'about.member_martin_role': 'Product Design',
+        'about.member_martin_bio1': 'Desde esta división en Bodipo Business, lideramos de forma integral la estrategia de imagen y comunicación visual de la compañía. Nuestro enfoque combina la creatividad publicitaria con una identidad de marca moderna y eficiente, asegurando que cada campaña y elemento gráfico proyecte nuestra solidez y liderazgo en el mercado global.',
+        'about.member_martin_bio2': 'Somos los responsables de definir la estética y el impacto visual que nos conecta con nuestros clientes en todo el mundo. Transformamos la visión de negocio en experiencias publicitarias innovadoras y profesionales, garantizando que la presencia de marca de Bodipo Business sea siempre impecable, coherente y de alto nivel',
     },
     en: {
         // Navigation
@@ -1442,6 +1445,9 @@ const translations: Record<Language, Record<string, string>> = {
         'about.history_p2': 'Our trajectory is marked by an unwavering commitment to safety and punctuality. We have operated under the premise that every package, transfer or procedure represents the dreams and effort of our customers.',
         'about.team_badge': 'Our Team',
         'about.team_title': 'People who make the impossible possible',
+        'about.member_martin_role': 'Product Design',
+        'about.member_martin_bio1': 'From this division at Bodipo Business, we comprehensively lead the company\'s image and visual communication strategy. Our approach combines advertising creativity with a modern and efficient brand identity, ensuring that every campaign and graphic element projects our strength and leadership in the global market.',
+        'about.member_martin_bio2': 'We are responsible for defining the aesthetics and visual impact that connects us with our customers worldwide. We transform business vision into innovative and professional advertising experiences, ensuring that Bodipo Business\'s brand presence is always impeccable, consistent and of a high standard.',
         'about.member_nguema_role': 'Director of Institutional Relations',
         'about.member_nguema_bio1': 'In this directorate, strategic projects are designed, analyzed and managed, guaranteeing their proper execution in accordance with the guidelines established by the external client and the business cabinet.',
         'about.member_nguema_bio2': 'Likewise, he is responsible for the planning and proposal of the human and material resources necessary for the development of each approved project, ensuring an efficient allocation aligned with the organizational objectives.',

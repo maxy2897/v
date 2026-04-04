@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSettings } from '../context/SettingsContext';
 
 interface TeamMember {
   id: string;
   name: string;
-  role: string;
-  bio: string[];
+  roleKey: string;
+  bioKeys: string[];
   image: string;
   email?: string;
   linkedin?: string;
@@ -15,14 +16,18 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
     name: "D. V. Nguema Elebiyo Mangue",
-    role: "Director de Relaciones Institucionales",
-    bio: [
-      "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
-      "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."
-    ],
+    roleKey: "about.member_nguema_role",
+    bioKeys: ["about.member_nguema_bio1", "about.member_nguema_bio2"],
     image: "/images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
+  },
+  {
+    id: '2',
+    name: "D.A. MARTIN NDONG",
+    roleKey: "about.member_martin_role",
+    bioKeys: ["about.member_martin_bio1", "about.member_martin_bio2"],
+    image: "./images/da-martin.jpg"
   }
 ];
 
@@ -32,6 +37,8 @@ interface AboutUsModalProps {
 }
 
 const AboutUsModal: React.FC<AboutUsModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useSettings();
+  
   return (
     <AnimatePresence>
       {isOpen && (
@@ -71,22 +78,22 @@ const AboutUsModal: React.FC<AboutUsModalProps> = ({ isOpen, onClose }) => {
                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
                <div className="absolute bottom-6 left-6 text-white md:hidden">
                   <h3 className="text-xl font-black uppercase tracking-tight">{TEAM_MEMBERS[0].name}</h3>
-                  <p className="text-teal-400 text-xs font-bold uppercase tracking-widest">{TEAM_MEMBERS[0].role}</p>
+                  <p className="text-teal-400 text-xs font-bold uppercase tracking-widest">{t(TEAM_MEMBERS[0].roleKey)}</p>
                </div>
             </div>
 
             <div className="w-full md:w-3/5 p-8 md:p-12 overflow-y-auto bg-white dark:bg-gray-900 flex flex-col">
                <div className="mb-8 hidden md:block">
                   <h2 className="text-3xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter mb-2">{TEAM_MEMBERS[0].name}</h2>
-                  <p className="text-teal-600 dark:text-teal-400 font-bold uppercase tracking-[0.2em] text-xs">{TEAM_MEMBERS[0].role}</p>
+                  <p className="text-teal-600 dark:text-teal-400 font-bold uppercase tracking-[0.2em] text-xs">{t(TEAM_MEMBERS[0].roleKey)}</p>
                </div>
 
                <div className="space-y-6">
                   <div className="prose prose-teal dark:prose-invert">
                     <p className="text-[10px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest mb-4">Sobre el Director</p>
-                    {TEAM_MEMBERS[0].bio.map((paragraph, i) => (
+                    {TEAM_MEMBERS[0].bioKeys.map((key, i) => (
                       <p key={i} className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-medium">
-                        {paragraph}
+                        {t(key)}
                       </p>
                     ))}
                   </div>
