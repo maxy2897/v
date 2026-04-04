@@ -12,6 +12,7 @@ import AnimatedPage from './src/components/AnimatedPage';
 import AboutTeamPanel from './components/AboutTeamPanel';
 
 import { AuthProvider } from './src/context/AuthContext';
+import { SettingsProvider } from './src/context/SettingsContext';
 
 // Pages
 import HomePage from './src/pages/HomePage';
@@ -144,194 +145,197 @@ const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
-        <ScrollToTop />
-        <div className="min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white">
-          <Header
-            onOpenRegister={() => setIsRegisterOpen(true)}
-            onOpenLogin={() => setIsLoginOpen(true)}
-            config={config}
-          />
+        <SettingsProvider>
+          <ScrollToTop />
+          <div className="min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white">
+            <Header
+              onOpenRegister={() => setIsRegisterOpen(true)}
+              onOpenLogin={() => setIsLoginOpen(true)}
+              config={config}
+            />
 
-          <main className="flex-grow">
-            <AnimatedRoutes onOpenRegister={() => setIsRegisterOpen(true)} products={products} />
-          </main>
+            <main className="flex-grow">
+              <AnimatedRoutes onOpenRegister={() => setIsRegisterOpen(true)} products={products} />
+            </main>
 
-          <footer className="bg-[#00151a] py-24 text-white">
-            <div className="max-w-7xl mx-auto px-4">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
-                <div className="col-span-1 lg:col-span-1">
-                  <div className="flex items-center space-x-4 mb-8">
-                    <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
-                      {config.customLogoUrl ? (
-                        <img src={config.customLogoUrl} alt="Bodipo Business Logo" className="h-10 object-contain" />
-                      ) : (
-                        <span className="logo-font text-4xl logo-color leading-none select-none pt-1">{config.logoText}</span>
-                      )}
+            <footer className="bg-[#00151a] py-24 text-white">
+              <div className="max-w-7xl mx-auto px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
+                  <div className="col-span-1 lg:col-span-1">
+                    <div className="flex items-center space-x-4 mb-8">
+                      <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center border-[4px] border-white shadow-lg">
+                        {config.customLogoUrl ? (
+                          <img src={config.customLogoUrl} alt="Bodipo Business Logo" className="h-10 object-contain" />
+                        ) : (
+                          <span className="logo-font text-4xl logo-color leading-none select-none pt-1">{config.logoText}</span>
+                        )}
+                      </div>
+                      <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
                     </div>
-                    <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
+                    <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
+                      Logística de excelencia conectando España 🇪🇸, Camerún 🇨🇲 y Guinea Ecuatorial 🇬🇶. Operaciones diarias con los más altos estándares de seguridad.
+                    </p>
+
+                    <div className="flex flex-col gap-4 mb-8">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Nuestro Equipo</p>
+                      <div className="flex flex-wrap items-center gap-6">
+                        {/* Member 1: Nguema */}
+                        <button
+                          onClick={() => setIsAboutOpen(true)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                            <img
+                              src="./images/dv-nguema.jpeg"
+                              alt="Director"
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D. V. Nguema</span>
+                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
+                          </div>
+                        </button>
+
+                        <div className="w-px h-8 bg-gray-800" />
+
+                        {/* Member 2: Martin Ndong */}
+                        <button
+                          onClick={() => setIsAboutOpen(true)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                            <img
+                              src="./images/da-martin.jpg"
+                              alt="Product Design"
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.A. Martin</span>
+                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
+                          </div>
+                        </button>
+
+                        <div className="w-px h-8 bg-gray-800" />
+
+                        {/* Member 3: D.R. Nguema */}
+                        <button
+                          onClick={() => setIsAboutOpen(true)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                            <img
+                              src="./images/dr-nguema.jpg"
+                              alt="Legal Affairs"
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.R. NGUEMA</span>
+                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleAdminLogin}
+                      className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 hover:opacity-100 hover:text-teal-400 transition-all flex items-center gap-2"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                      Acceso Admin
+                    </button>
                   </div>
-                  <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
-                    Logística de excelencia conectando España 🇪🇸, Camerún 🇨🇲 y Guinea Ecuatorial 🇬🇶. Operaciones diarias con los más altos estándares de seguridad.
-                  </p>
 
-                  <div className="flex flex-col gap-4 mb-8">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Nuestro Equipo</p>
-                    <div className="flex flex-wrap items-center gap-6">
-                      {/* Member 1: Nguema */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/dv-nguema.jpeg" 
-                            alt="Director" 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
-                            }}
-                          />
+                  <div className="space-y-6">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Contacto Directo</p>
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                          <span className="text-sm">🇪🇸</span>
                         </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D. V. Nguema</span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">España</p>
+                          <p className="text-sm font-bold">+34 641 992 110</p>
                         </div>
-                      </button>
-
-                      <div className="w-px h-8 bg-gray-800" />
-
-                      {/* Member 2: Martin Ndong */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/da-martin.jpg" 
-                            alt="Product Design" 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.A. Martin</span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
-                        </div>
-                      </button>
-
-                      <div className="w-px h-8 bg-gray-800" />
-
-                      {/* Member 3: D.R. Nguema */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/dr-nguema.jpg" 
-                            alt="Legal Affairs" 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.R. NGUEMA</span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleAdminLogin}
-                    className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 hover:opacity-100 hover:text-teal-400 transition-all flex items-center gap-2"
-                  >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    Acceso Admin
-                  </button>
-                </div>
-
-                <div className="space-y-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Contacto Directo</p>
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                        <span className="text-sm">🇪🇸</span>
                       </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">España</p>
-                        <p className="text-sm font-bold">+34 641 992 110</p>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                          <span className="text-sm">🇨🇲</span>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Camerún</p>
+                          <p className="text-sm font-bold">+237 658 497 349</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start space-x-4">
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                        <span className="text-sm">🇨🇲</span>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Camerún</p>
-                        <p className="text-sm font-bold">+237 658 497 349</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-4">
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                        <span className="text-sm">🇬🇶</span>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Guinea Ecuatorial</p>
-                        <p className="text-sm font-bold">+240 222 667 763</p>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                          <span className="text-sm">🇬🇶</span>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Guinea Ecuatorial</p>
+                          <p className="text-sm font-bold">+240 222 667 763</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="space-y-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Servicios Logísticos</p>
-                  <ul className="space-y-3 text-sm font-medium text-gray-400">
-                    <li><a href="/tarifas" className="hover:text-white transition-colors">Calculadora de Tarifas</a></li>
-                    <li><a href="/calendario" className="hover:text-white transition-colors">Calendario Mensual</a></li>
-                    <li><a href="/rastreo" className="hover:text-white transition-colors">Rastreo en Tiempo Real</a></li>
-                    <li><a href="/servicios" className="hover:text-white transition-colors">Asesor de Servicios</a></li>
-                  </ul>
-                </div>
+                  <div className="space-y-6">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Servicios Logísticos</p>
+                    <ul className="space-y-3 text-sm font-medium text-gray-400">
+                      <li><a href="/tarifas" className="hover:text-white transition-colors">Calculadora de Tarifas</a></li>
+                      <li><a href="/calendario" className="hover:text-white transition-colors">Calendario Mensual</a></li>
+                      <li><a href="/rastreo" className="hover:text-white transition-colors">Rastreo en Tiempo Real</a></li>
+                      <li><a href="/servicios" className="hover:text-white transition-colors">Asesor de Servicios</a></li>
+                    </ul>
+                  </div>
 
-                <div className="space-y-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Bodipo S.A.</p>
-                  <ul className="space-y-3 text-sm font-medium text-gray-400">
-                    <li>Alcalá de Henares, Madrid 🇪🇸</li>
-                    <li>Universidad Católica, Yaoundé 🇨🇲</li>
-                    <li>Malabo & Bata, G.E. 🇬🇶</li>
-                  </ul>
-                  <div className="pt-4">
-                    <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.A.</p>
+                  <div className="space-y-6">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">Bodipo S.A.</p>
+                    <ul className="space-y-3 text-sm font-medium text-gray-400">
+                      <li>Alcalá de Henares, Madrid 🇪🇸</li>
+                      <li>Universidad Católica, Yaoundé 🇨🇲</li>
+                      <li>Malabo & Bata, G.E. 🇬🇶</li>
+                    </ul>
+                    <div className="pt-4">
+                      <p className="text-[10px] font-black text-teal-500/50 uppercase tracking-widest">© 2026 BODIPOBUSINESS S.A.</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </footer>
+            </footer>
 
-          <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
-          <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-          <AdminPanel
-            isOpen={isAdminOpen}
-            onClose={() => setIsAdminOpen(false)}
-            products={products}
-            setProducts={setProducts}
-            config={config}
-            setConfig={setConfig}
-          />
-          <AboutTeamPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
-          <AdminLoginModal
-            isOpen={isAdminLoginOpen}
-            onClose={() => setIsAdminLoginOpen(false)}
-            onSuccess={handleAdminAuthSuccess}
-          />
-          <AIChat config={config} />
-        </div>
+            <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
+            <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+            <AdminPanel
+              isOpen={isAdminOpen}
+              onClose={() => setIsAdminOpen(false)}
+              products={products}
+              setProducts={setProducts}
+              config={config}
+              setConfig={setConfig}
+            />
+            <AboutTeamPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+            <AdminLoginModal
+              isOpen={isAdminLoginOpen}
+              onClose={() => setIsAdminLoginOpen(false)}
+              onSuccess={handleAdminAuthSuccess}
+            />
+            <AIChat config={config} />
+          </div>
+        </SettingsProvider>
       </AuthProvider>
+
     </Router>
   );
 };
