@@ -79,11 +79,11 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                   <div className="relative group">
-                    <div className="aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-2xl relative z-10 border-4 border-white dark:border-gray-800">
+                    <div className="rounded-[2.5rem] overflow-hidden shadow-2xl relative z-10 border-4 border-white dark:border-gray-800 bg-[#00151a]">
                        <img 
-                         src="./images/hero-home.jpg" 
+                         src="/images/earth-bodipo.jpg" 
                          alt="Logistic Operations" 
-                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                         className="w-full h-auto max-h-[600px] object-contain group-hover:scale-105 transition-transform duration-1000"
                        />
                        <div className="absolute inset-0 bg-teal-500/10 mix-blend-multiply transition-opacity group-hover:opacity-0" />
                     </div>
