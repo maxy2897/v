@@ -220,6 +220,29 @@ const App: React.FC = () => {
                           <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
                         </div>
                       </button>
+
+                      <div className="w-px h-8 bg-gray-800" />
+
+                      {/* Member 3: D.R. Nguema */}
+                      <button 
+                        onClick={() => setIsAboutOpen(true)}
+                        className="flex items-center gap-3 group"
+                      >
+                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                          <img 
+                            src="./images/dr-nguema.jpg" 
+                            alt="Legal Affairs" 
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                            }}
+                          />
+                        </div>
+                        <div className="flex flex-col text-left">
+                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.R. NGUEMA</span>
+                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
+                        </div>
+                      </button>
                     </div>
                   </div>
 
