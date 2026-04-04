@@ -1,14 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import Header from '../../components/Header';
+import Header from '../components/Header';
 import { AppConfig } from '../../types';
+import { useSettings } from '../context/SettingsContext';
 
 interface TeamMember {
   id: string;
   name: string;
-  role: string;
-  bio: string[];
+  roleKey: string;
+  bioKeys: string[];
   image: string;
   email?: string;
   linkedin?: string;
@@ -18,29 +19,38 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
     name: "D. V. Nguema Elebiyo Mangue",
-    role: "Director de Relaciones Institucionales",
-    bio: [
-      "En esta dirección se diseñan, analizan y gestionan los proyectos estratégicos, garantizando su adecuada ejecución conforme a las directrices establecidas por el cliente externo y el gabinete empresarial.",
-      "Asimismo, es responsable de la planificación y propuesta de los recursos humanos y materiales necesarios para el desarrollo de cada proyecto aprobado, asegurando una asignación eficiente y alineada con los objetivos organizacionales."
-    ],
+    roleKey: "about.member_nguema_role",
+    bioKeys: ["about.member_nguema_bio1", "about.member_nguema_bio2"],
     image: "/images/dv-nguema.jpeg",
     email: "nguemaelebiyo@gmail.com",
     linkedin: "https://www.linkedin.com/in/vistremundo-nguema-elebiyo-mangue-5149a0216/"
+  },
+  {
+    id: '2',
+    name: "D.A. MARTIN NDONG",
+    roleKey: "about.member_martin_role",
+    bioKeys: ["about.member_martin_bio1", "about.member_martin_bio2"],
+    image: "/images/da-martin.jpg"
   }
 ];
 
 interface AboutPageProps {
   onOpenRegister?: () => void;
   onOpenLogin?: () => void;
+  onOpenContact?: () => void;
+  onOpenSettings?: () => void;
   config: AppConfig;
 }
 
-const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, config }) => {
+const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOpenSettings, config }) => {
+  const { t } = useSettings();
+
   return (
-    <div className="min-h-screen bg-white selection:bg-teal-100 selection:text-teal-900 transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-gray-900 selection:bg-teal-100 selection:text-teal-900 transition-colors duration-300">
       <Header 
         onOpenRegister={onOpenRegister || (() => {})} 
         onOpenLogin={onOpenLogin || (() => {})} 
+        onOpenSettings={onOpenSettings || (() => {})}
         config={config} 
       />
 
@@ -60,11 +70,11 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
             className="grid lg:grid-cols-2 gap-16 items-center"
           >
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-500 mb-4">Nuestra Historia</p>
-              <h1 className="text-4xl lg:text-6xl font-black text-[#00151a] uppercase tracking-tighter mb-8 leading-none">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-500 mb-4 animate-pulse">Nuestra Historia</p>
+              <h1 className="text-4xl lg:text-6xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter mb-8 leading-none">
                 Conectando continentes con <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">excelencia logística</span>
               </h1>
-              <div className="space-y-6 text-gray-500 font-medium leading-relaxed">
+              <div className="space-y-6 text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
                 <p>
                   Bodipo Business nació de una visión clara: eliminar las barreras logísticas que separaban a las familias y empresarios entre Europa y África Central. Lo que comenzó como un pequeño enlace estratégico en España, se ha convertido hoy en una red multinacional de confianza.
                 </p>
@@ -77,7 +87,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square rounded-[3rem] bg-teal-50 overflow-hidden shadow-2xl relative z-10 p-4 border border-teal-100/20">
+              <div className="aspect-square rounded-[3rem] bg-teal-50 dark:bg-teal-900/10 overflow-hidden shadow-2xl relative z-10 p-4 border border-teal-100/20">
                  <img 
                    src="/images/hero-home.jpg" 
                    alt="Logistic Operations" 
@@ -94,7 +104,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
         <section id="equipo">
           <div className="text-center mb-20">
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-teal-500 mb-4">Nuestro Equipo</p>
-            <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] uppercase tracking-tighter">Personas que hacen <span className="text-teal-400 italic">posible</span> lo imposible</h2>
+            <h2 className="text-3xl lg:text-5xl font-black text-[#00151a] dark:text-white uppercase tracking-tighter">Personas que hacen <span className="text-teal-400 italic">posible</span> lo imposible</h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -106,7 +116,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
                 viewport={{ once: true }}
                 className="group"
               >
-                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl mb-6 bg-gray-100">
+                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl mb-6 bg-gray-100 dark:bg-gray-800">
                   <img 
                     src={member.image} 
                     alt={member.name}
@@ -117,7 +127,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
                   />
                   <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end">
                     <h3 className="text-xl font-black text-white uppercase tracking-tight mb-1">{member.name}</h3>
-                    <p className="text-teal-400 text-xs font-bold uppercase tracking-widest">{member.role}</p>
+                    <p className="text-teal-400 text-xs font-bold uppercase tracking-widest">{t(member.roleKey)}</p>
                   </div>
                 </div>
                 
@@ -135,9 +145,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
                     )}
                   </div>
                   <div className="space-y-4">
-                    {member.bio.map((p, i) => (
-                      <p key={i} className="text-gray-500 text-xs font-medium leading-relaxed italic">
-                        {p}
+                    {member.bioKeys.map((key, i) => (
+                      <p key={i} className="text-gray-500 dark:text-gray-400 text-xs font-medium leading-relaxed italic">
+                        {t(key)}
                       </p>
                     ))}
                   </div>
@@ -148,7 +158,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, conf
         </section>
       </main>
 
-      <footer className="py-12 border-t border-gray-100 text-center text-gray-400 text-[10px] font-black uppercase tracking-[0.4em]">
+      <footer className="py-12 border-t border-gray-100 dark:border-gray-800 text-center text-gray-400 text-[10px] font-black uppercase tracking-[0.4em]">
          {config.logoText} © 2026 Bodipo Business S.A.
       </footer>
     </div>
