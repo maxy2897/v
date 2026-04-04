@@ -40,17 +40,18 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
           <div className="bg-[#00151a] p-6 lg:p-8 flex items-center justify-between shadow-2xl relative z-10 shrink-0">
             <button 
               onClick={onClose}
-              className="flex items-center gap-3 text-white/70 hover:text-teal-400 transition-all font-black uppercase tracking-[0.2em] text-[10px] group"
+              className="group"
+              aria-label="Volver"
+              title="Volver"
             >
               <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-teal-500 transition-colors">
-                <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-white/70 group-hover:text-teal-400 transform group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </div>
-              Volver
             </button>
             
-            <div className="text-center">
+            <div className="text-center absolute left-1/2 -translate-x-1/2">
               <h2 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tighter">Sobre Nosotros</h2>
               <p className="text-teal-500 text-[9px] font-black uppercase tracking-[0.3em] mt-1">Bodipo Business Team</p>
             </div>
