@@ -175,13 +175,14 @@ const App: React.FC = () => {
                   </p>
 
                   <div className="flex flex-col gap-4 mb-8">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Sobre Nosotros</p>
-                    <div className="flex items-center gap-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80">Nuestro Equipo</p>
+                    <div className="flex flex-wrap items-center gap-6">
+                      {/* Member 1: Nguema */}
                       <button 
                         onClick={() => setIsAboutOpen(true)}
-                        className="group relative"
+                        className="flex items-center gap-3 group"
                       >
-                        <div className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
                           <img 
                             src="./images/dv-nguema.jpeg" 
                             alt="Director" 
@@ -191,13 +192,33 @@ const App: React.FC = () => {
                             }}
                           />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 bg-[#007e85] text-white p-1 rounded-full shadow-lg scale-0 group-hover:scale-100 transition-transform">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div className="flex flex-col text-left">
+                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D. V. Nguema</span>
+                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
                         </div>
                       </button>
-                      <button onClick={() => setIsAboutOpen(true)} className="flex flex-col group/text text-left">
-                        <span className="text-sm font-black uppercase tracking-tight text-white group-hover/text:text-teal-400 transition-colors">D. V. Nguema</span>
-                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover/text:text-teal-400/50">Director Institucional</span>
+
+                      <div className="w-px h-8 bg-gray-800" />
+
+                      {/* Member 2: Martin Ndong */}
+                      <button 
+                        onClick={() => setIsAboutOpen(true)}
+                        className="flex items-center gap-3 group"
+                      >
+                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
+                          <img 
+                            src="./images/da-martin.jpg" 
+                            alt="Product Design" 
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400';
+                            }}
+                          />
+                        </div>
+                        <div className="flex flex-col text-left">
+                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">D.A. Martin</span>
+                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
+                        </div>
                       </button>
                     </div>
                   </div>
