@@ -30,7 +30,9 @@ const TEAM_MEMBERS: TeamMember[] = [
     name: "D.A. MARTIN NDONG",
     roleKey: "about.member_martin_role",
     bioKeys: ["about.member_martin_bio1", "about.member_martin_bio2"],
-    image: "/images/da-martin.jpg"
+    image: "/images/da-martin.jpg",
+    email: "antoniomartinndongedo@gmail.com",
+    linkedin: "https://www.linkedin.com/in/antonio-martin-ndong-edo-76223a29a"
   }
 ];
 
