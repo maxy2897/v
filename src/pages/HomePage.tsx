@@ -15,11 +15,20 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             {/* Global base background specifically for home page to ensure seamless transitions between sections if they have gaps */}
             
             {/* Hero Section */}
-            <section className="relative pt-12 pb-16 overflow-hidden bg-white">
-                <div className="absolute top-0 left-0 w-full h-full bg-white -z-10"></div>
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-teal-50/20 to-transparent -z-10"></div>
+            <section className="relative pt-12 pb-16 overflow-hidden min-h-[85vh] flex items-center">
+                <div 
+                  className="absolute inset-0 z-0" 
+                  style={{
+                    backgroundImage: 'url("https://images.unsplash.com/photo-1586528116311-ad8ed7c80a71?auto=format&fit=crop&q=80")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundAttachment: 'fixed'
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-95 backdrop-blur-lg"></div>
+                </div>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
                         <motion.div
                             initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -28,11 +37,11 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
                             className="lg:col-span-7 space-y-8"
                         >
-                            <h1 className="text-5xl md:text-7xl font-black text-[#00151a] tracking-tighter leading-[0.9]">
+                            <h1 className="text-5xl md:text-7xl font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.9]">
                                 {t('home.hero.title')}
                             </h1>
 
-                            <p className="text-xl text-gray-500 max-w-xl leading-relaxed font-medium">
+                            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-xl leading-relaxed font-medium">
                                 {t('home.hero.subtitle')}
                             </p>
 
@@ -56,13 +65,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.2 }}
                             className="lg:col-span-5 mt-16 lg:mt-0 relative"
                         >
-                            <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-[#00151a]">
+                            <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.25)] bg-[#00151a]">
                                 <img
                                     className="w-full h-[500px] object-cover scale-110 transition-transform duration-700 hover:scale-125"
                                     src={appConfig?.content?.hero?.heroImage || "./images/hero-home.jpg"}
                                     alt="Carga BodipoBusiness"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#00151a] via-transparent to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#00151a] via-[#00151a]/40 to-transparent"></div>
                                 <div className="absolute bottom-10 left-10 text-white">
                                     <div className="flex items-center space-x-3 mb-2">
                                         <div className="w-8 h-px bg-teal-500"></div>
@@ -78,26 +87,38 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
 
             {/* Money Transfer Section */}
-            <section className="py-12 bg-white relative overflow-hidden">
+            <section className="py-16 md:py-24 relative overflow-hidden">
+                <div 
+                  className="absolute inset-0 z-0" 
+                  style={{
+                    backgroundImage: 'url("https://images.unsplash.com/photo-1616803140344-6682afb13cda?auto=format&fit=crop&q=80")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundAttachment: 'fixed'
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
+                </div>
+
                 <motion.div
                     initial={{ opacity: 0, y: 60, scale: 0.98 }}
                     whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ type: "spring", stiffness: 80, damping: 25 }}
-                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                    className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
                 >
-                    <div className="bg-[#00151a] rounded-[3rem] overflow-hidden relative shadow-2xl">
-                        <div className="absolute top-0 right-0 w-1/2 h-full bg-teal-500/10 -z-0"></div>
+                    <div className="bg-[#00151a] rounded-[3rem] overflow-hidden relative shadow-2xl border border-white/10 backdrop-blur-md">
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-teal-500/10 z-0"></div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
                             <div className="p-12 md:p-20 flex flex-col justify-center">
-                                <div className="inline-flex items-center space-x-2 bg-teal-500/10 px-4 py-2 rounded-full mb-8 w-fit">
+                                <div className="inline-flex items-center space-x-2 bg-teal-500/20 px-4 py-2 rounded-full mb-8 w-fit backdrop-blur-md">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('home.money.badge')}</span>
                                 </div>
                                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none mb-8">
                                     {t('home.money.title')} <br />
                                     <span className="text-teal-400">{t('home.money.title_highlight')}</span>
                                 </h2>
-                                <p className="text-gray-400 text-lg font-medium leading-relaxed mb-12 max-w-md">
+                                <p className="text-gray-300 text-lg font-medium leading-relaxed mb-12 max-w-md">
                                     {t('home.money.desc')}
                                 </p>
                                 <Link
@@ -111,7 +132,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 </Link>
                             </div>
                             <div className="relative h-[400px] lg:h-auto overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] to-transparent z-10 lg:block hidden"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#00151a] via-[#00151a]/50 to-transparent z-10 lg:block hidden"></div>
                                 <img
                                     src={appConfig?.content?.hero?.moneyTransferImage || "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"}
                                     alt="Money Transfer"
@@ -124,18 +145,30 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </section>
 
             {/* Social Media Section */}
-            <section className="py-12 bg-white">
+            <section className="py-16 md:py-24 relative overflow-hidden">
+                <div 
+                  className="absolute inset-0 z-0" 
+                  style={{
+                    backgroundImage: 'url("https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundAttachment: 'fixed'
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
+                </div>
+
                 <motion.div
                     initial={{ opacity: 0, y: 40, scale: 0.95 }}
                     whileInView={{ opacity: 1, y: 0, scale: 1 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+                    className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
                 >
-                    <p className="text-[#00151a] font-bold text-xs uppercase tracking-[0.2em] mb-8">
+                    <p className="text-[#00151a] dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-8 bg-white/80 dark:bg-black/60 inline-block px-6 py-3 rounded-full backdrop-blur-md shadow-lg">
                         {t('home.social.follow')}
                     </p>
-                    <div className="flex justify-center space-x-8">
+                    <div className="flex justify-center space-x-6 md:space-x-10">
                         {/* TikTok */}
                         <a
                             href={appConfig?.content?.social?.tiktok || "https://www.tiktok.com/@b.businnes?is_from_webapp=1&sender_device=pc"}
@@ -144,8 +177,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             className="group"
                             title="Visítanos en TikTok"
                         >
-                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-black text-white transition-all duration-300 shadow-lg shadow-gray-300/50 group-hover:scale-110 group-hover:shadow-2xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-black text-white transition-all duration-300 shadow-xl shadow-gray-400/50 group-hover:-translate-y-2 group-hover:scale-110 group-hover:shadow-2xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
                                 </svg>
                             </div>
@@ -159,8 +192,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             className="group"
                             title="Únete a nuestro canal de WhatsApp"
                         >
-                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#25D366] text-white transition-all duration-300 shadow-lg shadow-green-200/50 group-hover:scale-110 group-hover:shadow-green-300/50 group-hover:shadow-2xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-[#25D366] text-white transition-all duration-300 shadow-xl shadow-green-300/50 group-hover:-translate-y-2 group-hover:scale-110 group-hover:shadow-green-400/50 group-hover:shadow-2xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
                                     <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
                                 </svg>
@@ -175,8 +208,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             className="group"
                             title="Síguenos en Instagram"
                         >
-                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#515BD4] text-white transition-all duration-300 shadow-lg shadow-pink-200/50 group-hover:scale-110 group-hover:shadow-pink-300/50 group-hover:shadow-2xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#515BD4] text-white transition-all duration-300 shadow-xl shadow-pink-300/50 group-hover:-translate-y-2 group-hover:scale-110 group-hover:shadow-pink-400/50 group-hover:shadow-2xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
                                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                                     <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
@@ -192,8 +225,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             className="group"
                             title="Síguenos en Facebook"
                         >
-                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#1877F2] text-white transition-all duration-300 shadow-lg shadow-blue-200/50 group-hover:scale-110 group-hover:shadow-blue-300/50 group-hover:shadow-2xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-[#1877F2] text-white transition-all duration-300 shadow-xl shadow-blue-300/50 group-hover:-translate-y-2 group-hover:scale-110 group-hover:shadow-blue-400/50 group-hover:shadow-2xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
                                 </svg>
                             </div>
