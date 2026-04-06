@@ -97,7 +97,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/40 backdrop-blur-lg"></div>
+                  <div className="absolute inset-0 bg-white/5 dark:bg-gray-900/5 backdrop-blur-md"></div>
                 </div>
 
                 <motion.div
@@ -155,7 +155,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/40 backdrop-blur-lg"></div>
+                  <div className="absolute inset-0 bg-white/5 dark:bg-gray-900/5 backdrop-blur-md"></div>
                 </div>
 
                 <motion.div

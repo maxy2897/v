@@ -113,7 +113,7 @@ const ShippingSchedule: React.FC = () => {
             </h2>
           </div>
 
-          <div className="bg-white px-6 py-4 rounded-2xl shadow-sm border border-gray-100 shrink-0 lg:ml-auto">
+          <div className="bg-white/10 dark:bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl shadow-sm border border-white/10 shrink-0 lg:ml-auto">
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">{t('schedule.current_month_label')}</p>
             <p className="text-xl font-black text-[#00151a] uppercase leading-none">{currentMonth}</p>
           </div>
@@ -122,7 +122,7 @@ const ShippingSchedule: React.FC = () => {
         {/* Panel Centralizado - Ubicado en el "espacio" pero más abajo */}
         <div className="flex justify-center mb-16 mt-4">
            {nextShipment && (
-              <div className="bg-teal-50/80 border border-teal-100 rounded-2xl p-5 flex items-center gap-5 shadow-sm relative overflow-hidden w-full max-w-lg">
+              <div className="bg-teal-50/10 dark:bg-teal-900/10 backdrop-blur-md border border-teal-100/20 rounded-2xl p-5 flex items-center gap-5 shadow-sm relative overflow-hidden w-full max-w-lg">
                  <div className="absolute top-0 right-0 w-32 h-32 bg-teal-400/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm shrink-0 border border-teal-100/50 z-10">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -144,7 +144,7 @@ const ShippingSchedule: React.FC = () => {
               key={idx}
               className={`relative p-8 rounded-[2.5rem] transition-all duration-500 overflow-hidden border ${ship.highlight
                 ? 'bg-[#00151a] text-white shadow-2xl shadow-teal-900/40 scale-105 z-10 border-transparent'
-                : 'bg-white text-[#00151a] border-gray-100 hover:border-teal-200 shadow-sm'
+                : 'bg-white/10 dark:bg-white/5 backdrop-blur-md text-[#00151a] dark:text-white border-white/10 hover:border-teal-200/50 shadow-sm'
                 }`}
             >
               {ship.highlight && (
@@ -230,7 +230,7 @@ const ShippingSchedule: React.FC = () => {
           </div>
         </div>
         {/* Resumen Anual - MOVIDO AQUÍ */}
-        <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-[3rem] p-8 md:p-12 border border-teal-100 dark:border-white/5 shadow-sm mb-16">
+        <div className="bg-white/5 dark:bg-gray-900/5 backdrop-blur-md rounded-[3rem] p-8 md:p-12 border border-white/5 shadow-sm mb-16">
           <div className="flex items-center space-x-4 mb-10">
             <div className="w-10 h-10 bg-[#005f6b] rounded-xl flex items-center justify-center text-white">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>

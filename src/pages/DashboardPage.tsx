@@ -414,7 +414,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                 <div className="flex flex-col md:flex-row min-h-screen">
 
                     {/* Wallapop Sidebar */}
-                    <aside className={`w-full md:w-[320px] bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-r border-gray-100 dark:border-white/5 flex-col pt-24 shrink-0 ${!isMobileMenu ? 'hidden md:flex' : 'flex'}`}>
+                    <aside className={`w-full md:w-[320px] bg-white/10 dark:bg-gray-900/10 backdrop-blur-md border-r border-white/10 flex-col pt-24 shrink-0 ${!isMobileMenu ? 'hidden md:flex' : 'flex'}`}>
                         {/* User Card */}
                         <div className="px-8 mb-10">
                             <div className="flex items-center gap-4 mb-4">
