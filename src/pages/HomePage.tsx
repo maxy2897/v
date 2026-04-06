@@ -241,38 +241,27 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ type: "spring", stiffness: 90, damping: 20 }}
-                className="py-20 relative overflow-hidden"
+                className="py-8 bg-[#00151a] relative overflow-hidden"
             >
-                <div 
-                  className="absolute inset-0 z-0" 
-                  style={{
-                    backgroundImage: 'url("https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80")',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundAttachment: 'fixed'
-                  }}
-                >
-                  <div className="absolute inset-0 bg-[#00151a] bg-opacity-95 backdrop-blur-lg"></div>
-                </div>
-
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-white/5 backdrop-blur-md p-10 rounded-[2rem] border border-white/10 shadow-2xl">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="text-center md:text-left">
-                            <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-3">
+                            <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter mb-2">
                                 {t('home.member.title')}
                             </h3>
-                            <p className="text-teal-400 font-bold uppercase text-[11px] tracking-widest">
+                            <p className="text-teal-400 font-bold uppercase text-[10px] tracking-widest">
                                 {t('home.member.subtitle')}
                             </p>
                         </div>
                         <Link
                             to="/acceso"
-                            className="bg-white text-[#00151a] px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest hover:bg-teal-50 hover:scale-105 transition-all shadow-xl shadow-white/10"
+                            className="bg-white text-[#00151a] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-teal-50 transition-all"
                         >
                             {t('home.member.cta')}
                         </Link>
                     </div>
                 </div>
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-teal-900/20 to-transparent"></div>
             </motion.section>
         </div>
     );
