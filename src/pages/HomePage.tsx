@@ -19,7 +19,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("/images/bg/hero-map.png")',
+                    backgroundImage: 'url("/images/bg/hero-map-v3.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
@@ -37,7 +37,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
                             className="lg:col-span-7 space-y-8"
                         >
-                            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.8] mb-4">
+                            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.8] mb-4">
                                 {t('home.hero.title')}
                             </h1>
 
@@ -91,7 +91,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("/images/bg/money-net.png")',
+                    backgroundImage: 'url("/images/bg/global-bg-v3.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
@@ -149,7 +149,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("/images/bg/social-net.png")',
+                    backgroundImage: 'url("/images/bg/global-bg-v3.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'

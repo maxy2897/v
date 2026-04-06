@@ -174,16 +174,15 @@ const AppContent: React.FC = () => {
   // Dynamic Background Image for global container
   const getGlobalBackgroundImage = (path: string) => {
     switch(path) {
-      case '/calendario': return 'url("/images/bg/calendar-net.png")';
-      case '/tarifas': return 'url("/images/bg/hero-map.png")'; // Using map for rates too as it looks premium
-      case '/rastreo': return 'url("/images/bg/tracking-net.png")';
-      case '/tienda': return 'url("/images/bg/store-net.png")';
-      case '/acceso': return 'url("/images/bg/hero-map.png")';
-      case '/money-transfer': return 'url("/images/bg/money-net.png")';
-      case '/compras-online': return 'url("/images/bg/store-net.png")';
-      case '/dashboard': return 'url("/images/bg/hero-map.png")';
-      case '/admin': return 'url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80")';
-      default: return 'url("https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80")'; // fallback global
+      case '/calendario': return 'url("/images/bg/global-bg-v3.png")';
+      case '/tarifas': return 'url("/images/bg/global-bg-v3.png")';
+      case '/rastreo': return 'url("/images/bg/global-bg-v3.png")';
+      case '/tienda': return 'url("/images/bg/global-bg-v3.png")';
+      case '/acceso': return 'url("/images/bg/global-bg-v3.png")';
+      case '/money-transfer': return 'url("/images/bg/global-bg-v3.png")';
+      case '/compras-online': return 'url("/images/bg/global-bg-v3.png")';
+      case '/dashboard': return 'url("/images/bg/global-bg-v3.png")';
+      default: return 'url("/images/bg/global-bg-v3.png")'; // fallback global
     }
   };
 
@@ -233,7 +232,7 @@ const AppContent: React.FC = () => {
         </main>
 
         {!isAdminRoute && (
-          <footer className="bg-[#00151a] py-12 text-white">
+          <footer className="bg-[#00151a] py-12 text-white relative z-50">
             <div className="max-w-7xl mx-auto px-4">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
                 <div className="col-span-1 lg:col-span-1">
