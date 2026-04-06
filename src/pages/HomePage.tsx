@@ -25,7 +25,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px]"></div>
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-95 backdrop-blur-lg"></div>
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -97,7 +97,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm"></div>
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
                 </div>
 
                 <motion.div
@@ -155,7 +155,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[4px]"></div>
+                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
                 </div>
 
                 <motion.div
@@ -165,7 +165,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     transition={{ type: "spring", stiffness: 100, damping: 20 }}
                     className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
                 >
-                    <p className="text-[#00151a] dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-8 bg-white/50 dark:bg-black/50 inline-block px-4 py-2 rounded-full backdrop-blur-md">
+                    <p className="text-[#00151a] dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-8 bg-white/80 dark:bg-black/60 inline-block px-6 py-3 rounded-full backdrop-blur-md shadow-lg">
                         {t('home.social.follow')}
                     </p>
                     <div className="flex justify-center space-x-6 md:space-x-10">
@@ -252,7 +252,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-[#00151a]/90 backdrop-blur-[3px]"></div>
+                  <div className="absolute inset-0 bg-[#00151a] bg-opacity-95 backdrop-blur-lg"></div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

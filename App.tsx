@@ -199,7 +199,7 @@ const AppContent: React.FC = () => {
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
         </div>
       )}
       
