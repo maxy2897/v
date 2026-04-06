@@ -109,9 +109,9 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-transparent py-20">
+        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-transparent py-20 [clip-path:inset(0)]">
             {/* Background elements */}
-            <div className="absolute inset-0 z-[-1] bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]"></div>
+            <div className="fixed inset-0 z-[-1] bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
 
             <div className="max-w-2xl w-full mx-4">
                 <motion.div

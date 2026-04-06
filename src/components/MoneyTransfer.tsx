@@ -190,9 +190,9 @@ const MoneyTransfer: React.FC = () => {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="transferencias"
-      className="py-12 relative overflow-hidden"
+      className="py-12 relative overflow-hidden [clip-path:inset(0)]"
     >
-      <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]"></div>
+      <div className="fixed inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-full mb-6">

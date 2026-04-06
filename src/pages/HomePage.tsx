@@ -15,8 +15,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             {/* Global base background specifically for home page to ensure seamless transitions between sections if they have gaps */}
             
             {/* Hero Section */}
-            <section className="relative pt-12 pb-16 overflow-hidden min-h-[85vh] flex items-center">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]">
+            <section className="relative pt-12 pb-16 overflow-hidden min-h-[85vh] flex items-center [clip-path:inset(0)]">
+                <div className="fixed inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none">
                   <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
@@ -79,8 +79,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
 
             {/* Money Transfer Section */}
-            <section className="py-16 md:py-24 relative overflow-hidden">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]">
+            <section className="py-16 md:py-24 relative overflow-hidden [clip-path:inset(0)]">
+                <div className="fixed inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none">
                   <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
@@ -129,8 +129,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </section>
 
             {/* Social Media Section */}
-            <section className="py-16 md:py-24 relative overflow-hidden">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]">
+            <section className="py-16 md:py-24 relative overflow-hidden [clip-path:inset(0)]">
+                <div className="fixed inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none">
                   <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
