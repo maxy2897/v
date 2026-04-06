@@ -3,7 +3,7 @@ import ShippingSchedule from '../components/ShippingSchedule';
 
 const CalendarPage: React.FC = () => {
     return (
-        <div className="py-12 bg-gray-50">
+        <div className="py-12 bg-transparent">
             <ShippingSchedule />
         </div>
     );

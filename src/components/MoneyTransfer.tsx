@@ -190,7 +190,7 @@ const MoneyTransfer: React.FC = () => {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="transferencias"
-      className="py-12 bg-white"
+      className="py-12 bg-transparent"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">

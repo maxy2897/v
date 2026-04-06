@@ -174,14 +174,14 @@ const AppContent: React.FC = () => {
   // Dynamic Background Image for global container
   const getGlobalBackgroundImage = (path: string) => {
     switch(path) {
-      case '/calendario': return 'url("https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&q=80")';
-      case '/tarifas': return 'url("https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80")';
-      case '/rastreo': return 'url("https://images.unsplash.com/photo-1551281622-d04b37d7a7ff?auto=format&fit=crop&q=80")';
-      case '/tienda': return 'url("https://images.unsplash.com/photo-1472851294502-8ce3b4845a47?auto=format&fit=crop&q=80")';
-      case '/acceso': return 'url("https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80")';
-      case '/money-transfer': return 'url("https://images.unsplash.com/photo-1616803140344-6682afb13cda?auto=format&fit=crop&q=80")';
-      case '/compras-online': return 'url("https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80")';
-      case '/dashboard': return 'url("https://images.unsplash.com/photo-1551281622-d04b37d7a7ff?auto=format&fit=crop&q=80")';
+      case '/calendario': return 'url("/images/bg/calendar-net.png")';
+      case '/tarifas': return 'url("/images/bg/hero-map.png")'; // Using map for rates too as it looks premium
+      case '/rastreo': return 'url("/images/bg/tracking-net.png")';
+      case '/tienda': return 'url("/images/bg/store-net.png")';
+      case '/acceso': return 'url("/images/bg/hero-map.png")';
+      case '/money-transfer': return 'url("/images/bg/money-net.png")';
+      case '/compras-online': return 'url("/images/bg/store-net.png")';
+      case '/dashboard': return 'url("/images/bg/hero-map.png")';
       case '/admin': return 'url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80")';
       default: return 'url("https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80")'; // fallback global
     }
@@ -199,7 +199,7 @@ const AppContent: React.FC = () => {
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
+          <div className="absolute inset-0 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl"></div>
         </div>
       )}
       

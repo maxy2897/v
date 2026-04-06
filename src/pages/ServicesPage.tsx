@@ -5,9 +5,9 @@ const ServicesPage: React.FC = () => {
     return (
         <>
             {/* Info Almacén Section */}
-            <section className="py-20 bg-white border-y border-gray-50">
+            <section className="py-20 bg-transparent">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white rounded-[3rem] p-12 md:p-20 shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-[3rem] p-12 md:p-20 shadow-sm border border-gray-100 dark:border-white/5 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#00151a]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                             <div>

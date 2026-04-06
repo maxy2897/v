@@ -19,13 +19,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("https://images.unsplash.com/photo-1586528116311-ad8ed7c80a71?auto=format&fit=crop&q=80")',
+                    backgroundImage: 'url("/images/bg/hero-map.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-95 backdrop-blur-lg"></div>
+                  <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -37,7 +37,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
                             className="lg:col-span-7 space-y-8"
                         >
-                            <h1 className="text-5xl md:text-7xl font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.9]">
+                            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.8] mb-4">
                                 {t('home.hero.title')}
                             </h1>
 
@@ -91,13 +91,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("https://images.unsplash.com/photo-1616803140344-6682afb13cda?auto=format&fit=crop&q=80")',
+                    backgroundImage: 'url("/images/bg/money-net.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
+                  <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/40 backdrop-blur-lg"></div>
                 </div>
 
                 <motion.div
@@ -149,13 +149,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80")',
+                    backgroundImage: 'url("/images/bg/social-net.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-95 dark:bg-opacity-95 backdrop-blur-lg"></div>
+                  <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/40 backdrop-blur-lg"></div>
                 </div>
 
                 <motion.div

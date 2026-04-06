@@ -52,7 +52,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[300] flex flex-col bg-white dark:bg-gray-900 overflow-hidden">
+        <div className="fixed inset-0 z-[300] flex flex-col bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg overflow-hidden">
           {/* Header */}
           <div className="bg-[#00151a] p-6 lg:p-8 flex items-center justify-between shadow-2xl relative z-10 shrink-0">
             <button 

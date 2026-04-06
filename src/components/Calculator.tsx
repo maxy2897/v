@@ -291,7 +291,7 @@ const Calculator: React.FC = () => {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="calculadora"
-      className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 p-4 md:p-12 relative overflow-hidden"
+      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 dark:border-white/5 p-4 md:p-12 relative overflow-hidden"
     >
       <AnimatePresence>
         {notification && (

@@ -6,7 +6,7 @@ const PrivacyPage: React.FC = () => {
     const { t } = useSettings();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50 py-20 px-4">
+        <div className="min-h-screen bg-transparent py-20 px-4">
             <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
                 {/* Header */}
                 <div className="bg-[#00151a] p-12 text-center">

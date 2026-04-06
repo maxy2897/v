@@ -109,7 +109,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-white/50">
+        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-transparent">
             {/* Background Elements */}
             <div className="absolute top-0 right-0 w-2/3 h-full bg-teal-50/30 -z-10 skew-x-12 transform translate-x-20"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl -z-10 -translate-x-1/2 translate-y-1/2"></div>
