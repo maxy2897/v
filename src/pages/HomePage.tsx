@@ -29,11 +29,11 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
                             className="lg:col-span-7 space-y-8"
                         >
-                            <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.8] mb-4">
+                            <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] font-black text-[#00151a] tracking-tighter leading-[0.8] mb-4">
                                 {t('home.hero.title')}
                             </h1>
 
-                            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-xl leading-relaxed font-medium">
+                            <p className="text-xl text-gray-700 max-w-xl leading-relaxed font-medium">
                                 {t('home.hero.subtitle')}
                             </p>
 
@@ -141,7 +141,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     transition={{ type: "spring", stiffness: 100, damping: 20 }}
                     className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
                 >
-                    <p className="text-[#00151a] dark:text-white font-bold text-xs uppercase tracking-[0.2em] mb-8 bg-white/80 dark:bg-black/60 inline-block px-6 py-3 rounded-full backdrop-blur-md shadow-lg">
+                    <p className="text-[#00151a] font-bold text-xs uppercase tracking-[0.2em] mb-8 bg-white/80 inline-block px-6 py-3 rounded-full backdrop-blur-md shadow-lg">
                         {t('home.social.follow')}
                     </p>
                     <div className="flex justify-center space-x-6 md:space-x-10">

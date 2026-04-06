@@ -219,7 +219,7 @@ const OnlineShoppingPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-teal-500/10 to-blue-500/10 dark:from-teal-400/5 dark:to-blue-400/5 border border-teal-100/50 dark:border-teal-800/30 text-teal-600 dark:text-teal-400 text-[9px] font-black uppercase tracking-[0.3em] mb-8"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-teal-500/10 to-blue-500/10 border border-teal-100/50 text-teal-600 text-[9px] font-black uppercase tracking-[0.3em] mb-8"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
               Servicio de Compras Global
@@ -231,11 +231,11 @@ const OnlineShoppingPage: React.FC = () => {
               transition={{ type: "spring", stiffness: 100 }}
               className="text-5xl md:text-[5.6rem] font-black tracking-tighter leading-[0.8] mb-4"
             >
-              <span className="inline-block text-[#00151a] dark:text-white uppercase italic">
+              <span className="inline-block text-[#00151a] uppercase italic">
                 COMPRAS
               </span>
               <br />
-              <span className="inline-block text-teal-600 dark:text-teal-400 italic uppercase">
+              <span className="inline-block text-teal-600 italic uppercase">
                 ONLINE
               </span>
             </motion.h1>
@@ -282,7 +282,7 @@ const OnlineShoppingPage: React.FC = () => {
             <div className="w-full max-w-[500px] flex justify-between items-center px-8 py-6 bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5">
                 <div className={`text-left ${!user?.virtualCard?.active ? 'blur-[8px] opacity-20' : ''}`}>
                   <p className="text-[9px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Disponible</p>
-                  <p className="text-3xl font-black tracking-tighter text-[#00151a] dark:text-white">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-sm">FCFA</span></p>
+                  <p className="text-3xl font-black tracking-tighter text-[#00151a]">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-sm">FCFA</span></p>
                   <p className="text-xs font-black text-teal-600/60 tracking-wider">≈ {((user?.virtualCard?.balance || 0) / eurRate).toFixed(2)} <span className="text-[10px]">EUR</span></p>
                 </div>
                 <div className="flex flex-col items-end">

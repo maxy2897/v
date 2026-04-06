@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-white/10 backdrop-blur-lg border-b border-white/10">
+      <header className="bg-white/10 dark:bg-[#00151a] backdrop-blur-lg dark:backdrop-blur-none border-b border-white/10 dark:border-teal-900/30 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
