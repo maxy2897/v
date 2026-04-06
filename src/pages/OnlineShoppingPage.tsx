@@ -210,10 +210,9 @@ const OnlineShoppingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent pt-16 sm:pt-24 pb-20 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
-      <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] -ml-32"></div>
-
+    <div className="min-h-screen bg-transparent pt-24 sm:pt-32 pb-20 relative overflow-hidden">
+      <div className="absolute inset-0 z-0 bg-[url('/images/bg/store-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2]"></div>
+      
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <header className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 lg:gap-20 mb-20">
           <div className="flex-1 text-left">
