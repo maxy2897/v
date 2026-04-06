@@ -171,38 +171,10 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname === '/admin';
 
-  // Dynamic Background Image for global container
-  const getGlobalBackgroundImage = (path: string) => {
-    switch(path) {
-      case '/calendario': return 'url("/images/bg/hero-map-v3.png")';
-      case '/tarifas': return 'url("/images/bg/hero-map-v3.png")';
-      case '/rastreo': return 'url("/images/bg/hero-map-v3.png")';
-      case '/tienda': return 'url("/images/bg/hero-map-v3.png")';
-      case '/acceso': return 'url("/images/bg/hero-map-v3.png")';
-      case '/money-transfer': return 'url("/images/bg/hero-map-v3.png")';
-      case '/compras-online': return 'url("/images/bg/hero-map-v3.png")';
-      case '/dashboard': return 'url("/images/bg/hero-map-v3.png")';
-      default: return 'url("/images/bg/hero-map-v3.png")'; // fallback global
-    }
-  };
-
   return (
     <>
       <ScrollToTop />
-      {location.pathname !== '/' && (
-        <div 
-          className="fixed inset-0 z-[-1] transition-all duration-1000" 
-          style={{
-            backgroundImage: getGlobalBackgroundImage(location.pathname),
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          <div className="absolute inset-0 bg-transparent"></div>
-        </div>
-      )}
-      
-      <div className={`min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-transparent dark:text-white transition-colors duration-300`}>
+      <div className={`min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300`}>
         {!isAdminRoute && (
           <Header
             onOpenRegister={() => setIsRegisterOpen(true)}

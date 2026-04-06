@@ -100,8 +100,17 @@ const ShippingSchedule: React.FC = () => {
     .sort((a, b) => a.dist - b.dist);
 
   return (
-    <section id="calendario" className="pt-10 pb-24 bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="calendario" className="pt-10 pb-24 relative overflow-hidden">
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{ 
+          backgroundImage: 'url("/images/bg/calendar-net-v2.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'blur(3px) brightness(1.2)'
+        }}
+      ></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-2 gap-6 w-full">
           <div className="max-w-xl shrink-0 pt-2">
             <div className="inline-flex items-center space-x-2 bg-teal-50 px-3 py-1 rounded-full mb-4">
@@ -144,7 +153,7 @@ const ShippingSchedule: React.FC = () => {
               key={idx}
               className={`relative p-8 rounded-[2.5rem] transition-all duration-500 overflow-hidden border ${ship.highlight
                 ? 'bg-[#00151a] text-white shadow-2xl shadow-teal-900/40 scale-105 z-10 border-transparent'
-                : 'bg-transparent text-[#00151a] dark:text-white border-white/10 hover:border-teal-200/50 shadow-sm'
+                : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-[#00151a] dark:text-white border-white/20 hover:border-teal-200/50 shadow-sm'
                 }`}
             >
               {ship.highlight && (

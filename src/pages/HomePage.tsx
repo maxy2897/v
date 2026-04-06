@@ -22,7 +22,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundImage: 'url("/images/bg/hero-map-v3.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundAttachment: 'fixed'
+                    backgroundAttachment: 'fixed',
+                    filter: 'blur(3px) brightness(1.2)'
                   }}
                 >
                   <div className="absolute inset-0 bg-transparent"></div>
@@ -91,10 +92,11 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("/images/bg/hero-map-v3.png")',
+                    backgroundImage: 'url("/images/bg/money-net-v2.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundAttachment: 'fixed'
+                    backgroundAttachment: 'fixed',
+                    filter: 'blur(3px) brightness(1.2)'
                   }}
                 >
                   <div className="absolute inset-0 bg-transparent"></div>

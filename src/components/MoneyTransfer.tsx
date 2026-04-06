@@ -190,9 +190,18 @@ const MoneyTransfer: React.FC = () => {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="transferencias"
-      className="py-12 bg-transparent"
+      className="py-12 relative overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{ 
+          backgroundImage: 'url("/images/bg/money-net-v2.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          filter: 'blur(3px) brightness(1.2)'
+        }}
+      ></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-teal-50 px-4 py-2 rounded-full mb-6">
             <span className="relative flex h-2 w-2">
@@ -207,7 +216,7 @@ const MoneyTransfer: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Calculadora y Formulario */}
-          <div className="lg:col-span-7 bg-transparent rounded-[3rem] border border-white/5 p-8 md:p-12 shadow-sm">
+          <div className="lg:col-span-7 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-[3rem] border border-gray-100 p-8 md:p-12 shadow-xl">
             <div className="flex bg-gray-50 p-1 rounded-2xl mb-10 overflow-x-auto">
               <button
                 onClick={() => setDirection('ES_GQ')}
