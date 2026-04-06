@@ -207,7 +207,7 @@ const MoneyTransfer: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Calculadora y Formulario */}
-          <div className="lg:col-span-7 bg-white rounded-[3rem] border border-gray-100 p-8 md:p-12 shadow-sm">
+          <div className="lg:col-span-7 bg-transparent rounded-[3rem] border border-white/5 p-8 md:p-12 shadow-sm">
             <div className="flex bg-gray-50 p-1 rounded-2xl mb-10 overflow-x-auto">
               <button
                 onClick={() => setDirection('ES_GQ')}

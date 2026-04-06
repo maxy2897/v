@@ -174,15 +174,15 @@ const AppContent: React.FC = () => {
   // Dynamic Background Image for global container
   const getGlobalBackgroundImage = (path: string) => {
     switch(path) {
-      case '/calendario': return 'url("/images/bg/global-bg-v3.png")';
-      case '/tarifas': return 'url("/images/bg/global-bg-v3.png")';
-      case '/rastreo': return 'url("/images/bg/global-bg-v3.png")';
-      case '/tienda': return 'url("/images/bg/global-bg-v3.png")';
-      case '/acceso': return 'url("/images/bg/global-bg-v3.png")';
-      case '/money-transfer': return 'url("/images/bg/global-bg-v3.png")';
-      case '/compras-online': return 'url("/images/bg/global-bg-v3.png")';
-      case '/dashboard': return 'url("/images/bg/global-bg-v3.png")';
-      default: return 'url("/images/bg/global-bg-v3.png")'; // fallback global
+      case '/calendario': return 'url("/images/bg/hero-map-v3.png")';
+      case '/tarifas': return 'url("/images/bg/hero-map-v3.png")';
+      case '/rastreo': return 'url("/images/bg/hero-map-v3.png")';
+      case '/tienda': return 'url("/images/bg/hero-map-v3.png")';
+      case '/acceso': return 'url("/images/bg/hero-map-v3.png")';
+      case '/money-transfer': return 'url("/images/bg/hero-map-v3.png")';
+      case '/compras-online': return 'url("/images/bg/hero-map-v3.png")';
+      case '/dashboard': return 'url("/images/bg/hero-map-v3.png")';
+      default: return 'url("/images/bg/hero-map-v3.png")'; // fallback global
     }
   };
 
@@ -198,11 +198,11 @@ const AppContent: React.FC = () => {
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute inset-0 bg-white/5 dark:bg-gray-900/5 backdrop-blur-md"></div>
+          <div className="absolute inset-0 bg-transparent"></div>
         </div>
       )}
       
-      <div className={`min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 ${location.pathname === '/' ? 'bg-white dark:bg-gray-900' : 'bg-transparent'} dark:text-white transition-colors duration-300`}>
+      <div className={`min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-transparent dark:text-white transition-colors duration-300`}>
         {!isAdminRoute && (
           <Header
             onOpenRegister={() => setIsRegisterOpen(true)}

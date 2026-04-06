@@ -25,7 +25,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
+                  <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -37,7 +37,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.8 }}
                             className="lg:col-span-7 space-y-8"
                         >
-                            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.8] mb-4">
+                            <h1 className="text-5xl md:text-7xl lg:text-[6.5rem] font-black text-[#00151a] dark:text-white tracking-tighter leading-[0.8] mb-4">
                                 {t('home.hero.title')}
                             </h1>
 
@@ -91,13 +91,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("/images/bg/global-bg-v3.png")',
+                    backgroundImage: 'url("/images/bg/hero-map-v3.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/5 dark:bg-gray-900/5 backdrop-blur-md"></div>
+                  <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
                 <motion.div
@@ -149,13 +149,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 <div 
                   className="absolute inset-0 z-0" 
                   style={{
-                    backgroundImage: 'url("/images/bg/global-bg-v3.png")',
+                    backgroundImage: 'url("/images/bg/hero-map-v3.png")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed'
                   }}
                 >
-                  <div className="absolute inset-0 bg-white/5 dark:bg-gray-900/5 backdrop-blur-md"></div>
+                  <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
                 <motion.div
