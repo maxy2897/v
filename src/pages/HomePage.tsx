@@ -16,7 +16,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             
             {/* Hero Section */}
             <section className="relative pt-12 pb-16 overflow-hidden min-h-[85vh] flex items-center">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]">
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center sm:bg-fixed blur-[3px] brightness-[1.2]">
                   <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
@@ -80,7 +80,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* Money Transfer Section */}
             <section className="py-16 md:py-24 relative overflow-hidden">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]">
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center sm:bg-fixed blur-[3px] brightness-[1.2]">
                   <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 
@@ -130,7 +130,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* Social Media Section */}
             <section className="py-16 md:py-24 relative overflow-hidden">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2]">
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center sm:bg-fixed blur-[3px] brightness-[1.2]">
                   <div className="absolute inset-0 bg-transparent"></div>
                 </div>
 

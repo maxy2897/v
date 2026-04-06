@@ -210,7 +210,7 @@ const OnlineShoppingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent pt-24 sm:pt-32 pb-20 relative overflow-hidden">
+    <div className="min-h-[100dvh] transition-colors bg-transparent pt-24 sm:pt-32 pb-20 relative overflow-hidden">
       <div className="absolute inset-0 z-0 bg-[url('/images/bg/store-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2]"></div>
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
