@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-teal-50/95 backdrop-blur-md border-b border-teal-100 shadow-sm">
+      <header className="bg-white/10 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -88,7 +88,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     {item.path === hoveredPath && (
                       <motion.div
                         layoutId="bubble"
-                        className="absolute inset-0 bg-teal-200/50 rounded-full -z-10"
+                        className="absolute inset-0 bg-transparent border-2 border-[#00151a] rounded-full -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
