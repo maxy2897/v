@@ -766,6 +766,10 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_dr_role': 'Gestión de Asuntos Jurídicos',
         'about.member_dr_bio1': 'Desde Bodipo Business, como responsables de Asuntos Jurídicos, lideramos integralmente la estrategia legal y administrativa del gabinete.',
         'about.member_dr_bio2': 'Nuestra área es la encargada de asegurar la máxima ética corporativa y el cumplimiento de las normativas vigentes en España, Guinea Ecuatorial y Camerún.',
+        'about.member_evangelina_name': 'Dña. EVANGELINA ROSARIO MOKUY',
+        'about.member_evangelina_role': 'SECRETARIA Y RESPONSABLE FINANCIERA',
+        'about.member_evangelina_bio1': 'Desde su posición como Secretaria y Responsable Financiera, gestiona de manera integral la organización administrativa del gabinete, garantizando la eficiencia en los procesos internos y la correcta coordinación de las actividades diarias.',
+        'about.member_evangelina_bio2': 'Asimismo, lidera la planificación, control y supervisión de los recursos financieros, asegurando una gestión transparente, rigurosa y alineada con los objetivos estratégicos de la empresa. Su labor es clave para mantener el equilibrio económico, el cumplimiento de las obligaciones contables y la optimización de los recursos disponibles.',
     },
     en: {
         // Navigation
@@ -1463,6 +1467,10 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_dr_bio1': 'At Bodipo Business, as heads of Legal Affairs, we comprehensively lead the legal and administrative strategy of the cabinet.',
         'about.member_dr_bio2': 'Our area is responsible for ensuring maximum corporate ethics and compliance with current regulations in Spain, Equatorial Guinea and Cameroon.',
         'about.member_dr_name': 'Mr. D.R. NGUEMA',
+        'about.member_evangelina_name': 'Mrs. EVANGELINA ROSARIO MOKUY',
+        'about.member_evangelina_role': 'SECRETARY AND FINANCIAL MANAGER',
+        'about.member_evangelina_bio1': 'From her position as Secretary and Financial Manager, she comprehensively manages the administrative organization of the office, guaranteeing efficiency in internal processes and the correct coordination of daily activities.',
+        'about.member_evangelina_bio2': 'Likewise, she leads the planning, control and supervision of financial resources, ensuring transparent, rigorous management aligned with the company\'s strategic objectives.',
     },
     fr: {
         // Navigation
@@ -2168,6 +2176,10 @@ const translations: Record<Language, Record<string, string>> = {
         'about.member_nguema_role': 'Directeur des Relations Institutionnelles',
         'about.member_nguema_bio1': 'Dans cette direction, les projets stratégiques sont conçus, analysés et gérés, garantissant leur bonne exécution conformément aux directives établies par le client externe et le cabinet d\'affaires.',
         'about.member_nguema_bio2': 'De même, il est responsable de la planification et de la proposition des ressources humaines et matérielles nécessaires au développement de chaque projet approuvé, assurant une allocation efficace et alignée sur les objectifs organisationnels.',
+        'about.member_evangelina_name': 'Mme EVANGELINA ROSARIO MOKUY',
+        'about.member_evangelina_role': 'SECRÉTAIRE ET RESPONSABLE FINANCIÈRE',
+        'about.member_evangelina_bio1': 'Depuis son poste de secrétaire et responsable financière, elle gère de manière exhaustive l\'organisation administrative du cabinet, garantissant l\'efficacité des processus internes et la coordination correcte des activités quotidiennes.',
+        'about.member_evangelina_bio2': 'De même, elle dirige la planification, le contrôle et la supervision des ressources financières, assurant une gestion transparente, rigoureuse et alignée sur les objectifs stratégiques de l\'entreprise.',
     }
 };
 

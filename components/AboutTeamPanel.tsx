@@ -34,9 +34,17 @@ const TEAM_MEMBERS: TeamMember[] = [
   {
     id: '3',
     name: "D.R. NGUEMA",
-    roleKey: "about.member_drn_role",
-    bioKeys: ["about.member_drn_bio1"],
+    roleKey: "about.member_dr_role",
+    bioKeys: ["about.member_dr_bio1", "about.member_dr_bio2"],
     image: "./images/dr-nguema.jpg",
+  },
+  {
+    id: '4',
+    name: "Dña. EVANGELINA ROSARIO MOKUY",
+    roleKey: "about.member_evangelina_role",
+    bioKeys: ["about.member_evangelina_bio1", "about.member_evangelina_bio2"],
+    image: "./images/evangelina-mokuy.jpg",
+    email: "evangelinarosario16@gmail.com",
   }
 ];
 
