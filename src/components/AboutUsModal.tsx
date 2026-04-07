@@ -30,6 +30,22 @@ const TEAM_MEMBERS: TeamMember[] = [
     image: "./images/da-martin.jpg",
     email: "antoniomartinndongedo@gmail.com",
     linkedin: "https://www.linkedin.com/in/antonio-martin-ndong-edo-76223a29a"
+  },
+  {
+    id: '3',
+    name: "D.R. NGUEMA",
+    roleKey: "about.member_dr_role",
+    bioKeys: ["about.member_dr_bio1", "about.member_dr_bio2"],
+    image: "./images/dr-nguema.jpg",
+  },
+  {
+    id: '4',
+    name: "Dña. EVANGELINA ROSARIO MOKUY",
+    roleKey: "about.member_evangelina_role",
+    bioKeys: ["about.member_evangelina_bio1", "about.member_evangelina_bio2"],
+    image: "./images/evangelina-mokuy.jpg",
+    email: "evangelinarosario16@gmail.com",
+    linkedin: "https://www.linkedin.com/in/evangelina-rosario-mokuy-b64816281/"
   }
 ];
 
