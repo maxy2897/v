@@ -40,10 +40,23 @@ const app = express();
 app.set('trust proxy', 1);
 
 // CORS Configuration
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    process.env.FRONTEND_URL // URL de producción (Render/Vercel)
+];
+
 const corsOptions = {
     origin: (origin, callback) => {
-        // TEMPORAL: Permitir todo
-        callback(null, true);
+        // Permitir peticiones sin origen (como apps móviles o curl)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            callback(new Error('No permitido por CORS'));
+        }
     },
     credentials: true,
     optionsSuccessStatus: 200

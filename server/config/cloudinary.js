@@ -9,9 +9,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Configurar Cloudinary
 const cloudinaryConfig = {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dbrig81ou',
-    api_key: process.env.CLOUDINARY_API_KEY || '856675229911861',
-    api_secret: process.env.CLOUDINARY_API_SECRET || 'vzvSGxUz_seTZceaQzU6nXaC7Io',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true
 };
 

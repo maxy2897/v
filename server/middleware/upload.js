@@ -1,4 +1,5 @@
 import multer from 'multer';
+import crypto from 'crypto';
 
 // Configurar multer para subida de imágenes
 const storage = multer.diskStorage({
@@ -6,7 +7,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const uniqueSuffix = crypto.randomUUID ? crypto.randomUUID() : crypto.randomBytes(16).toString('hex');
         const ext = file.originalname.split('.').pop();
         cb(null, file.fieldname + '-' + uniqueSuffix + '.' + ext);
     }

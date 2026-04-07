@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { encrypt, decrypt } from '../utils/encryption.js';
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -49,6 +50,8 @@ const UserSchema = new mongoose.Schema({
     idNumber: {
         type: String,
         trim: true,
+        set: encrypt,
+        get: decrypt
     },
     discountEligible: {
         type: Boolean,
@@ -80,12 +83,15 @@ const UserSchema = new mongoose.Schema({
     },
     virtualCard: {
         active: { type: Boolean, default: false },
-        number: { type: String },
-        expiry: { type: String },
-        cvv: { type: String },
+        number: { type: String, set: encrypt, get: decrypt },
+        expiry: { type: String, set: encrypt, get: decrypt },
+        cvv: { type: String, set: encrypt, get: decrypt },
         balance: { type: Number, default: 0 },
         holderName: { type: String }
     }
+}, {
+    toJSON: { getters: true },
+    toObject: { getters: true }
 });
 
 // Virtual for isAdmin

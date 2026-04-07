@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { encrypt, decrypt } from '../utils/encryption.js';
 
 const ShipmentSchema = new mongoose.Schema({
     user: {
@@ -27,7 +28,7 @@ const ShipmentSchema = new mongoose.Schema({
     sender: {
         name: { type: String },
         phone: { type: String },
-        idNumber: { type: String },
+        idNumber: { type: String, set: encrypt, get: decrypt },
         email: { type: String }
     },
     weight: {
@@ -62,6 +63,9 @@ const ShipmentSchema = new mongoose.Schema({
         location: String,
         date: { type: Date, default: Date.now }
     }]
+}, {
+    toJSON: { getters: true },
+    toObject: { getters: true }
 });
 
 // Actualizar updatedAt antes de guardar

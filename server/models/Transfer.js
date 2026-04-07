@@ -1,17 +1,18 @@
 import mongoose from 'mongoose';
+import { encrypt, decrypt } from '../utils/encryption.js';
 
 const TransferSchema = new mongoose.Schema({
     sender: {
         name: { type: String, required: true },
-        idDocument: { type: String, required: true },
+        idDocument: { type: String, required: true, set: encrypt, get: decrypt },
         phone: { type: String, required: true }
     },
     beneficiary: {
         name: { type: String, required: true },
-        idDocument: { type: String }, // Optional depending on direction
+        idDocument: { type: String, set: encrypt, get: decrypt }, // Optional depending on direction
         phone: { type: String }, // Optional depending on direction
-        iban: { type: String }, // For GQ_ES
-        bizum: { type: String } // For GQ_ES
+        iban: { type: String, set: encrypt, get: decrypt }, // For GQ_ES
+        bizum: { type: String, set: encrypt, get: decrypt } // For GQ_ES
     },
     amount: { type: Number, required: true },
     currency: { type: String, enum: ['EUR', 'CFA'], required: true },
@@ -35,6 +36,9 @@ const TransferSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toJSON: { getters: true },
+    toObject: { getters: true }
 });
 
 export default mongoose.model('Transfer', TransferSchema);

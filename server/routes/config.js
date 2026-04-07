@@ -2,13 +2,17 @@ import express from 'express';
 import { protect, admin, tech } from '../middleware/auth.js';
 import Config from '../models/Config.js';
 import { v2 as cloudinary } from 'cloudinary';
+import { v4 as uuidv4 } from 'uuid';
 
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dbrig81ou',
-    api_key: process.env.CLOUDINARY_API_KEY || '856675229911861',
-    api_secret: process.env.CLOUDINARY_API_SECRET || 'vzvSGxUz_seTZceaQzU6nXaC7lo'
-});
+// Configurar Cloudinary
+const cloudinaryConfig = {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+};
+
+cloudinary.config(cloudinaryConfig);
 
 const router = express.Router();
 
