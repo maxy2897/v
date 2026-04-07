@@ -48,6 +48,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     bioKeys: ["about.member_evangelina_bio1", "about.member_evangelina_bio2"],
     image: "/images/evangelina-mokuy.jpg",
     email: "evangelinarosario16@gmail.com",
+    linkedin: "https://www.linkedin.com/in/evangelina-rosario-mokuy-b64816281/"
   }
 ];
 
