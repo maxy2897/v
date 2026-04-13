@@ -81,10 +81,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`relative px-3 py-1.5 transition-all duration-300 z-10 whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r ${
+                    className={`relative px-3 py-1.5 transition-all duration-300 z-10 whitespace-nowrap ${
                       location.pathname === item.path 
-                        ? 'from-teal-600 to-teal-800 drop-shadow-sm font-extrabold' 
-                        : 'from-teal-800 to-[#00151a] hover:from-teal-600 hover:to-teal-800'
+                        ? 'text-teal-900 font-black' 
+                        : 'text-teal-800 hover:text-teal-600'
                     }`}
                     onMouseEnter={() => setHoveredPath(item.path)}
                   >

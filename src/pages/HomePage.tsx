@@ -16,14 +16,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">
-                {/* Fondo de Mapa como en la imagen */}
-                <div className="absolute inset-0 z-0 pointer-events-none">
-                    <div 
-                        className="w-full h-full bg-cover bg-center bg-fixed opacity-[0.06] grayscale"
-                        style={{ backgroundImage: "url('/images/bg/hero-map-v3.png')" }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f4fcfb]/50 to-[#f4fcfb]"></div>
-                </div>
+                {/* Fondo limpio como en las demas paginas */}
+                <div className="absolute inset-0 z-0 bg-transparent pointer-events-none"></div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
@@ -130,9 +124,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </section>
 
             {/* Money Transfer restyled to match aesthetic */}
-            <section className="py-24 relative bg-[#000d0f]/30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-gradient-to-br from-[#001a22] to-[#000d11] rounded-[4rem] overflow-hidden relative border border-white/5 shadow-3xl">
+            <section className="py-24 relative overflow-hidden">
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="bg-[#001a22]/80 backdrop-blur-md rounded-[4rem] overflow-hidden relative border border-white/5 shadow-3xl">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
                             <div className="p-12 md:p-24 flex flex-col justify-center space-y-10">
                                 <span className="px-5 py-2 rounded-full border border-teal-500/30 text-teal-400 text-[10px] font-black uppercase tracking-widest w-fit backdrop-blur-md bg-teal-500/5">
@@ -156,12 +151,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 </Link>
                             </div>
                             <div className="relative h-[500px] lg:h-auto">
-                                <img
-                                    src="https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"
-                                    alt="Money Transfer"
-                                    className="w-full h-full object-cover brightness-75 grayscale-[0.2]"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#001a22] via-transparent to-transparent hidden lg:block"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#001a22]/80 via-transparent to-transparent hidden lg:block z-10"></div>
                             </div>
                         </div>
                     </div>
