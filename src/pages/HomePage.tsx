@@ -39,26 +39,26 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 Deja tus gestiones en nuestras manos y olvídate del estrés.
                             </p>
 
-                            <div className="flex flex-wrap gap-4 pt-2">
-                                <Link to="/tarifas" className="px-10 py-4 bg-[#1b3d41] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                <Link to="/tarifas" className="px-10 py-4 bg-[#1b3d41] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10 w-full sm:w-auto text-center">
                                     REALIZAR ENVÍO
                                 </Link>
                                 <button 
                                     onClick={onOpenContact}
-                                    className="px-10 py-4 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95"
+                                    className="px-10 py-4 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 w-full sm:w-auto text-center"
                                 >
                                     CONTACTAR
                                 </button>
                             </div>
 
                             {/* Review Cards (Floating style from image) */}
-                            <div className="flex flex-wrap gap-4 pt-6">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-6">
                                 <motion.div 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-[260px] shadow-2xl"
+                                    className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-full sm:w-[260px] shadow-2xl"
                                 >
-                                    <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm" alt="María R." />
+                                    <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="María R." />
                                     <div>
                                         <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
                                         <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
@@ -70,9 +70,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-[260px] shadow-2xl"
+                                    className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-full sm:w-[260px] shadow-2xl"
                                 >
-                                    <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm" alt="Martín G." />
+                                    <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="Martín G." />
                                     <div>
                                         <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
                                         <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>

@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50 shadow-md">
-      <header className="bg-white/60 backdrop-blur-[16px] border-b border-white/40 transition-all duration-300">
+      <header className="bg-white/30 backdrop-blur-xl border-b border-white/40 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -210,19 +210,19 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
         </div>
         
         {/* Banner Superior de Seguridad Unificado */}
-        <div className="border-t border-teal-900/10 py-2.5 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 text-[10px] md:text-sm font-bold tracking-normal text-teal-900">
-                <div className="flex items-center gap-2 text-base font-black">
+        <div className="border-t border-teal-900/10 py-2.5 px-4 sm:px-6 lg:px-8 bg-white/20 md:bg-transparent overflow-x-auto whitespace-nowrap hide-scrollbar">
+            <div className="max-w-7xl mx-auto flex items-center md:justify-between gap-6 md:gap-4 text-[10px] md:text-sm font-bold tracking-normal text-teal-900 w-max md:w-full">
+                <div className="flex items-center gap-2 text-sm md:text-base font-black">
                      Seguridad y Confianza Garantizada
                 </div>
                 <div className="flex items-center gap-2">
-                     <span className="text-teal-400 text-lg">💳</span> Pagos Seguros SSL
+                     <span className="text-teal-500 text-base md:text-lg">💳</span> Pagos Seguros SSL
                 </div>
                 <div className="flex items-center gap-2">
-                     <span className="text-teal-400 text-lg">🛡️</span> Entregas Certificadas
+                     <span className="text-teal-500 text-base md:text-lg">🛡️</span> Entregas Certificadas
                 </div>
-                <div className="flex items-center gap-2">
-                     <span className="text-teal-400 text-lg">🕒</span> Atención 24/7
+                <div className="flex items-center gap-2 pr-4 md:pr-0">
+                     <span className="text-teal-500 text-base md:text-lg">🕒</span> Atención 24/7
                 </div>
             </div>
         </div>
