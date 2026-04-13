@@ -52,7 +52,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             className="lg:col-span-7 space-y-6"
                         >
                             <h1 
-                                className="text-6xl md:text-8xl lg:text-[7rem] font-['Montserrat'] bg-clip-text text-transparent bg-gradient-to-b from-[#0a1b1d] to-[#040e0f] drop-shadow-[0_0_20px_rgba(200,250,245,0.7)] tracking-tighter leading-[0.9] font-black [-webkit-text-stroke:3px_#f0fdfc]"
+                                className="text-5xl md:text-6xl lg:text-7xl font-['Montserrat'] bg-clip-text text-transparent bg-gradient-to-b from-[#0a1b1d] to-[#040e0f] drop-shadow-[0_0_20px_rgba(200,250,245,0.7)] tracking-tighter leading-[0.9] font-black [-webkit-text-stroke:2px_#f0fdfc]"
                             >
                                 Servicio<br />
                                 Internacional
@@ -112,11 +112,14 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ duration: 0.8, delay: 0.2 }}
                             className="lg:col-span-5 mt-16 lg:mt-0 relative"
                         >
-                            <div className="relative rounded-[2.5rem] overflow-hidden bg-[#102425] shadow-2xl aspect-[4/5] object-cover border-4 border-[#102425]">
+                            <div className="relative rounded-[2.5rem] overflow-hidden bg-[#102425] shadow-2xl h-[500px] lg:h-[600px] w-full border-4 border-[#102425]">
                                 <img
                                     className="w-full h-full object-cover"
                                     src="./images/equipo-bodipo.png"
                                     alt="Equipo BodipoBusiness"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200'
+                                    }}
                                 />
                                 
                                 {/* Gradient Overlay */}
@@ -158,14 +161,6 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                             </span>
                                         </div>
                                     </div>
-                                    {/* Chat Notification Icon */}
-                                    <button aria-label="Notificaciones de chat" className="bg-[#122c2f] p-3 rounded-full border border-teal-500/30 text-teal-300 relative shadow-lg">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                        </svg>
-                                        <span className="absolute top-1 right-1 w-2 h-2 bg-teal-400 rounded-full animate-ping"></span>
-                                        <span className="absolute top-1 right-1 w-2 h-2 bg-teal-400 rounded-full"></span>
-                                    </button>
                                 </div>
                             </div>
                         </motion.div>
