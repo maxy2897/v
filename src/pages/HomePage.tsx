@@ -61,7 +61,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     >
                                         <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="María R." />
                                         <div>
-                                            <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
+                                            <p className="text-[12px] font-bold text-gray-900 mb-0.5">Reseña</p>
                                             <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
                                             <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - María R.</p>
                                         </div>
@@ -75,7 +75,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     >
                                         <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="Martín G." />
                                         <div>
-                                            <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
+                                            <p className="text-[12px] font-bold text-gray-900 mb-0.5">Reseña</p>
                                             <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
                                             <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - Martín G.</p>
                                         </div>
@@ -104,13 +104,11 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 {/* Floating Logos Overlay from Screenshot */}
                                 <div className="absolute bottom-6 left-0 right-0 px-6 xl:px-8 z-20 flex flex-col gap-6">
                                     <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
-                                        <div className="flex items-center bg-white/95 p-1.5 sm:p-2 px-3 sm:px-4 rounded-xl backdrop-blur-sm shadow-2xl hover:scale-105 transition-transform h-8 sm:h-10 md:h-12 border border-white/20">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Royal_Air_Maroc_Logo.svg/512px-Royal_Air_Maroc_Logo.svg.png" alt="Royal Air Maroc" className="h-full object-contain drop-shadow-sm" onError={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
-                                            <span className="hidden text-red-700 font-black text-[10px] sm:text-xs tracking-tighter uppercase italic">Royal Air Maroc</span>
+                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-12 sm:h-16 md:h-20">
+                                            <img src="/images/logos/ram-logo.png" alt="Royal Air Maroc" className="h-full object-contain filter drop-shadow-xl scale-125" />
                                         </div>
-                                        <div className="flex items-center bg-white/95 p-1.5 sm:p-2 px-3 sm:px-4 rounded-xl backdrop-blur-sm shadow-2xl hover:scale-105 transition-transform h-8 sm:h-10 md:h-12 border border-white/20">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Ethiopian_Airlines_Logo.svg/512px-Ethiopian_Airlines_Logo.svg.png" alt="Ethiopian Airlines" className="h-full object-contain rounded-sm" onError={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
-                                            <span className="hidden text-[#006b3a] font-black text-[10px] sm:text-xs md:text-sm tracking-tighter leading-none">Ethiopian<br/><span className="text-[#e21836]">Airlines</span></span>
+                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-12 sm:h-16 md:h-20">
+                                            <img src="/images/logos/ethiopian-logo.png" alt="Ethiopian Airlines" className="h-full object-contain filter drop-shadow-xl" />
                                         </div>
                                     </div>
 
@@ -157,7 +155,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 >
                                     <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="María R." />
                                     <div>
-                                        <p className="text-xs font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
+                                        <p className="text-xs font-bold text-gray-900 mb-0.5">Reseña</p>
                                         <div className="flex gap-0.5 mb-1 text-[10px] text-yellow-400">⭐⭐⭐⭐⭐</div>
                                         <p className="text-[11px] leading-snug font-medium text-gray-700">"Excelente servicio para mi negocio." - María R.</p>
                                     </div>
@@ -172,7 +170,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 >
                                     <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="Martín G." />
                                     <div>
-                                        <p className="text-xs font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
+                                        <p className="text-xs font-bold text-gray-900 mb-0.5">Reseña</p>
                                         <div className="flex gap-0.5 mb-1 text-[10px] text-yellow-400">⭐⭐⭐⭐⭐</div>
                                         <p className="text-[11px] leading-snug font-medium text-gray-700">"Excelente servicio para mi negocio." - Martín G.</p>
                                     </div>
