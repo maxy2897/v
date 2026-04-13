@@ -74,15 +74,17 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
               {/* Desktop Nav */}
               <nav
-                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-bold uppercase tracking-wider text-white shrink-0"
+                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-black uppercase tracking-wider shrink-0"
                 onMouseLeave={() => setHoveredPath(location.pathname)}
               >
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`relative px-3 py-1.5 transition-colors duration-300 z-10 whitespace-nowrap ${
-                      location.pathname === item.path ? 'text-teal-400' : 'hover:text-teal-400'
+                    className={`relative px-3 py-1.5 transition-all duration-300 z-10 whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r ${
+                      location.pathname === item.path 
+                        ? 'from-teal-300 to-teal-500 drop-shadow-md' 
+                        : 'from-teal-400 to-[#1b4e4d] hover:from-teal-300 hover:to-teal-500 drop-shadow-sm'
                     }`}
                     onMouseEnter={() => setHoveredPath(item.path)}
                   >
