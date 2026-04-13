@@ -97,11 +97,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             <div className="relative rounded-[2.5rem] overflow-hidden bg-transparent shadow-2xl h-[550px] lg:h-[650px] w-full border-2 border-white/10 group">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src="./images/foto-original.png"
+                                    src="/images/foto-original.jpg"
                                     alt="Equipo BodipoBusiness"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200'
-                                    }}
                                 />
                                 
                                 {/* Gradient Overlay */}

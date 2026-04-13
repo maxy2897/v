@@ -43,8 +43,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
   ];
 
   return (
-    <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-[#00151a]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
+    <div className="flex flex-col w-full sticky top-0 z-50 shadow-md">
+      <header className="bg-gradient-to-r from-[#00332c]/70 via-[#00151a]/70 to-black/70 backdrop-blur-[16px] border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
