@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
               {/* Desktop Nav */}
               <nav
-                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-bold uppercase tracking-wider text-gray-300 shrink-0"
+                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-bold uppercase tracking-wider text-white shrink-0"
                 onMouseLeave={() => setHoveredPath(location.pathname)}
               >
                 {navItems.map((item) => (
@@ -110,12 +110,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                       )}
                     </button>
-                    <div className="flex items-center text-[10px] font-bold uppercase gap-1">
-                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-400' : 'text-gray-400'}`}>ES</button>
-                      <span className="text-gray-500">|</span>
-                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-400' : 'text-gray-400'}`}>EN</button>
-                      <span className="text-gray-500">|</span>
-                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-400' : 'text-gray-400'}`}>FR</button>
+                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 text-white">
+                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-400' : 'opacity-70 hover:opacity-100'}`}>ES</button>
+                      <span className="text-white/30">|</span>
+                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-400' : 'opacity-70 hover:opacity-100'}`}>EN</button>
+                      <span className="text-white/30">|</span>
+                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-400' : 'opacity-70 hover:opacity-100'}`}>FR</button>
                     </div>
                   </div>
                 </div>

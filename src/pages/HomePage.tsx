@@ -35,10 +35,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">
                 {/* Fondo de Mapa como en la imagen */}
                 <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-                    <img 
-                        src="./images/bg/hero-map-v3.png" 
-                        alt="World Map Background" 
-                        className="w-full h-full object-cover mix-blend-overlay"
+                    <div 
+                        className="w-full h-full bg-cover bg-center bg-fixed mix-blend-overlay"
+                        style={{ backgroundImage: "url('./images/bg/hero-map-v3.png')" }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-[#00151a]/50 via-transparent to-[#00151a]"></div>
                 </div>
@@ -112,9 +111,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ duration: 0.8, delay: 0.2 }}
                             className="lg:col-span-5 mt-16 lg:mt-0 relative"
                         >
-                            <div className="relative rounded-[2.5rem] overflow-hidden bg-transparent shadow-2xl h-[500px] lg:h-[600px] w-full border-2 border-white/10">
+                            <div className="relative rounded-[2.5rem] overflow-hidden bg-transparent shadow-2xl h-[550px] lg:h-[650px] w-full border-2 border-white/10 group">
                                 <img
-                                    className="w-full h-full object-cover object-bottom"
+                                    className="w-full h-full object-cover object-top"
                                     src="./images/equipo-bodipo.png"
                                     alt="Equipo BodipoBusiness"
                                     onError={(e) => {
@@ -123,42 +122,24 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 />
                                 
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0e2122] via-[#0e2122]/30 to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#00151a]/95 via-[#00151a]/50 to-transparent"></div>
 
-                                {/* Floating Icons */}
-                                <div className="absolute bottom-28 left-6 right-6 flex items-center justify-between text-white drop-shadow-xl">
-                                    <div className="flex flex-col items-center">
-                                        <div className="flex items-center gap-1 mb-1">
-                                            <span className="text-lg">🛡️</span>
-                                        </div>
-                                        <span className="text-[10px] font-bold uppercase leading-tight text-center max-w-[80px]">Pagos Seguros<br/>SSL</span>
-                                    </div>
-                                    <div className="flex flex-col items-center">
-                                        <div className="flex items-center gap-1 mb-1">
-                                            <span className="text-lg">📦</span>
-                                        </div>
-                                        <span className="text-[10px] font-bold uppercase leading-tight text-center max-w-[80px]">Entregas<br/>Certificadas</span>
-                                    </div>
-                                    <div className="flex items-center justify-center font-extrabold italic text-xl tracking-tighter">
-                                        DHL
-                                    </div>
-                                    <div className="flex items-center flex-col justify-center">
-                                        <span className="font-black text-lg leading-tight">FedEx</span>
-                                        <span className="text-[7px] uppercase tracking-widest">Logística</span>
-                                    </div>
-                                </div>
-
-                                {/* Spain -> Guinea Label in Hero Image Overlay */}
-                                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between border-t border-white/20 pt-4">
-                                    <div className="flex flex-col space-y-1">
+                                {/* Floating Logos Overlay from Screenshot */}
+                                <div className="absolute bottom-6 left-0 right-0 px-6 xl:px-8 z-20">
+                                    <div className="flex flex-wrap items-center justify-between gap-4 text-white">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-0.5 w-6 bg-teal-400"></div>
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#72ccc1]">Servicios Destacados</span>
+                                            <svg className="w-6 h-6 md:w-8 md:h-8 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                                            <span className="text-[10px] md:text-sm font-bold leading-tight">Pagos<br/>Seguros<br/>SSL</span>
                                         </div>
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-2xl md:text-3xl font-black font-['Montserrat'] tracking-tight flex items-center gap-3">
-                                                🇪🇸 España <span className="text-white text-xl">➔</span> Guinea
-                                            </span>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs md:text-base font-bold leading-tight">Entregas<br/>Certificadas</span>
+                                        </div>
+                                        <div className="font-extrabold italic text-xl md:text-3xl tracking-tighter shrink-0 border-y-2 border-white/20 py-0.5">
+                                            DHL
+                                        </div>
+                                        <div className="flex flex-col items-center shrink-0">
+                                            <span className="font-black text-lg md:text-3xl tracking-tighter leading-none">FedEx<span className="text-[8px] md:text-xs align-top font-bold">®</span></span>
+                                            <span className="text-[7px] md:text-[9px] font-medium tracking-widest mt-0.5">Logística</span>
                                         </div>
                                     </div>
                                 </div>
