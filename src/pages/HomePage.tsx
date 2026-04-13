@@ -14,7 +14,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
     return (
         <div className="relative font-['Poppins'] bg-[#133c3e] text-white overflow-hidden selection:bg-teal-500/30">
             {/* 1. Banner Superior de Seguridad (Estilo Exacto Imagen) */}
-            <div className="bg-[#1b4e4d] border-b border-[#256360] py-3 px-4 sm:px-6 lg:px-8">
+            <div className="bg-transparent border-b border-white/10 backdrop-blur-sm py-3 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-4 text-[11px] md:text-sm font-bold tracking-normal text-white">
                     <div className="flex items-center gap-2 text-lg">
                          Seguridad y Confianza Garantizada
@@ -112,9 +112,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ duration: 0.8, delay: 0.2 }}
                             className="lg:col-span-5 mt-16 lg:mt-0 relative"
                         >
-                            <div className="relative rounded-[2.5rem] overflow-hidden bg-[#102425] shadow-2xl h-[500px] lg:h-[600px] w-full border-4 border-[#102425]">
+                            <div className="relative rounded-[2.5rem] overflow-hidden bg-transparent shadow-2xl h-[500px] lg:h-[600px] w-full border-2 border-white/10">
                                 <img
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover object-bottom"
                                     src="./images/equipo-bodipo.png"
                                     alt="Equipo BodipoBusiness"
                                     onError={(e) => {

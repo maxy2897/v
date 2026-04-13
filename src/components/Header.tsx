@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
+      <header className="bg-white/5 dark:bg-[#00151a]/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -58,10 +58,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   )}
                 </div>
                 <div className="flex flex-col -space-y-0.5 xl:-space-y-1">
-                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter text-[#00151a] uppercase group-hover:text-[#007e85] transition-colors shadow-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter text-white uppercase group-hover:text-teal-400 transition-colors drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
                     Bodipo
                   </span>
-                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] text-[#007e85] uppercase">
+                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] text-teal-400 uppercase">
                     Business
                   </span>
                 </div>
@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
               {/* Desktop Nav */}
               <nav
-                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-bold uppercase tracking-wider text-gray-900 shrink-0"
+                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-bold uppercase tracking-wider text-gray-300 shrink-0"
                 onMouseLeave={() => setHoveredPath(location.pathname)}
               >
                 {navItems.map((item) => (
@@ -82,15 +82,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     key={item.path}
                     to={item.path}
                     className={`relative px-3 py-1.5 transition-colors duration-300 z-10 whitespace-nowrap ${
-                      item.path === '/calendario' ? 'border border-gray-900 rounded-full ' : ''
-                    }${location.pathname === item.path ? 'text-[#007e85]' : 'hover:text-[#007e85]'
-                      }`}
+                      location.pathname === item.path ? 'text-teal-400' : 'hover:text-teal-400'
+                    }`}
                     onMouseEnter={() => setHoveredPath(item.path)}
                   >
-                    {item.path === hoveredPath && item.path !== '/calendario' && (
+                    {item.path === hoveredPath && (
                       <motion.div
                         layoutId="bubble"
-                        className="absolute inset-0 bg-transparent border-b-2 border-[#007e85] -z-10"
+                        className="absolute inset-0 bg-white/10 border border-white/20 rounded-full -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -98,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   </Link>
                 ))}
 
-                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-gray-300 shrink-0">
+                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-white/20 shrink-0">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={toggleTheme}
@@ -112,11 +111,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                       )}
                     </button>
                     <div className="flex items-center text-[10px] font-bold uppercase gap-1">
-                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-600' : 'text-gray-600'}`}>ES</button>
-                      <span className="text-gray-300">|</span>
-                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-600' : 'text-gray-600'}`}>EN</button>
-                      <span className="text-gray-300">|</span>
-                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-600' : 'text-gray-600'}`}>FR</button>
+                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-400' : 'text-gray-400'}`}>ES</button>
+                      <span className="text-gray-500">|</span>
+                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-400' : 'text-gray-400'}`}>EN</button>
+                      <span className="text-gray-500">|</span>
+                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-400' : 'text-gray-400'}`}>FR</button>
                     </div>
                   </div>
                 </div>
