@@ -238,6 +238,8 @@ const AppContent: React.FC = () => {
                       <div>
                         <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.spain')}</p>
                         <p className="text-sm font-bold">{appConfig?.contact?.phones?.es || '+34 641 992 110'}</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-teal-400 mt-2">Email</p>
+                        <p className="text-sm font-bold">info@bodipobusiness.com</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-4">
@@ -274,9 +276,8 @@ const AppContent: React.FC = () => {
                 <div className="space-y-6">
                   <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.locations')}</p>
                   <ul className="space-y-3 text-sm font-medium text-gray-400">
-                    <li>{appConfig?.contact?.addresses?.es || t('footer.loc.madrid')}</li>
-                    <li>{t('footer.loc.yaounde')}</li>
-                    <li>{appConfig?.contact?.addresses?.gq || t('footer.loc.gq')}</li>
+                    <li>Calle Madrid, 10, Local - España</li>
+                    <li>Malabo / Bata - Guinea Ecuatorial</li>
                   </ul>
                 </div>
               </div>
