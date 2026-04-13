@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-white/5 dark:bg-[#00151a]/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
+      <header className="bg-transparent transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -57,11 +57,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block animate-[spinY_10s_linear_infinite] [transform-style:preserve-3d]">{config.logoText}</span>
                   )}
                 </div>
-                <div className="flex flex-col -space-y-0.5 xl:-space-y-1">
-                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter text-white uppercase group-hover:text-teal-400 transition-colors drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
+                <div className="flex flex-col -space-y-0.5 xl:-space-y-1 pointer-events-none">
+                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter uppercase transition-colors drop-shadow-sm bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-[#1b4e4d]">
                     Bodipo
                   </span>
-                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] text-teal-400 uppercase">
+                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-[#1b4e4d]">
                     Business
                   </span>
                 </div>
@@ -112,12 +112,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                       )}
                     </button>
-                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 text-white">
-                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-400' : 'opacity-70 hover:opacity-100'}`}>ES</button>
-                      <span className="text-white/30">|</span>
-                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-400' : 'opacity-70 hover:opacity-100'}`}>EN</button>
-                      <span className="text-white/30">|</span>
-                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-400' : 'opacity-70 hover:opacity-100'}`}>FR</button>
+                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-[#1b4e4d]">
+                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'from-teal-300 to-teal-500 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>ES</button>
+                      <span className="text-teal-900/30 px-1">|</span>
+                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'from-teal-300 to-teal-500 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>EN</button>
+                      <span className="text-teal-900/30 px-1">|</span>
+                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'from-teal-300 to-teal-500 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>FR</button>
                     </div>
                   </div>
                 </div>

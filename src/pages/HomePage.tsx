@@ -14,7 +14,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
     return (
         <div className="relative font-['Poppins'] bg-[#133c3e] text-white overflow-hidden selection:bg-teal-500/30">
             {/* 1. Banner Superior de Seguridad (Estilo Exacto Imagen) */}
-            <div className="bg-transparent border-b border-white/10 backdrop-blur-sm py-3 px-4 sm:px-6 lg:px-8">
+            <div className="bg-transparent py-3 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-4 text-[11px] md:text-sm font-bold tracking-normal text-white">
                     <div className="flex items-center gap-2 text-lg">
                          Seguridad y Confianza Garantizada
@@ -113,8 +113,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                         >
                             <div className="relative rounded-[2.5rem] overflow-hidden bg-transparent shadow-2xl h-[550px] lg:h-[650px] w-full border-2 border-white/10 group">
                                 <img
-                                    className="w-full h-full object-cover object-top"
-                                    src="./images/equipo-bodipo.png"
+                                    className="w-full h-full object-cover"
+                                    src="./images/foto-original.png"
                                     alt="Equipo BodipoBusiness"
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200'
