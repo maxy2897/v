@@ -131,16 +131,14 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                         <span className="text-[9px] font-black uppercase tracking-tighter leading-none text-white/80">Entregas<br/>Certificadas</span>
                                     </div>
                                     
-                                    {/* Partner 1: Royal Air Maroc */}
-                                    <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs">🇲🇦</div>
-                                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none text-white transition-colors group-hover:text-teal-400">Royal Air<br/>Maroc</span>
+                                    {/* Partner 1: Royal Air Maroc (Logo only) */}
+                                    <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10 opacity-80 mix-blend-screen grayscale contrast-200">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/10007/10007490.png" className="w-20 h-8 object-contain" alt="RAM" />
                                     </div>
 
-                                    {/* Partner 2: Ethiopian Airlines */}
-                                    <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs">🇪🇹</div>
-                                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none text-white transition-colors group-hover:text-teal-400">Ethiopian<br/>Airlines</span>
+                                    {/* Partner 2: Ethiopian Airlines (Logo only) */}
+                                    <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10 opacity-80 mix-blend-screen grayscale contrast-150">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/2610/2610931.png" className="w-20 h-8 object-contain" alt="Ethiopian" />
                                     </div>
                                 </div>
 
