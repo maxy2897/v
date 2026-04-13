@@ -16,9 +16,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">
-                {/* Fondo de Mapa estilo páginas internas */}
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] opacity-20 pointer-events-none"></div>
-                <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#f4fcfb]/50 to-[#f4fcfb] pointer-events-none"></div>
+                {/* Fondo de Mapa con mayor visibilidad */}
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[2px] opacity-60 pointer-events-none"></div>
+                <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-transparent to-[#f4fcfb] pointer-events-none"></div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
