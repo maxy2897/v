@@ -13,23 +13,6 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
     return (
         <div className="relative font-['Poppins'] bg-[#133c3e] text-white overflow-hidden selection:bg-teal-500/30">
-            {/* 1. Banner Superior de Seguridad (Estilo Exacto Imagen) */}
-            <div className="bg-transparent py-3 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-4 text-[11px] md:text-sm font-bold tracking-normal text-white">
-                    <div className="flex items-center gap-2 text-lg">
-                         Seguridad y Confianza Garantizada
-                    </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-teal-200">💳</span> Pagos Seguros SSL
-                    </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-teal-200">🛡️</span> Entregas Certificadas
-                    </div>
-                    <div className="flex items-center gap-2">
-                         <span className="text-teal-200">🕒</span> Atención 24/7
-                    </div>
-                </div>
-            </div>
 
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">

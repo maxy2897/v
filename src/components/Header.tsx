@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-transparent transition-all duration-300">
+      <header className="bg-[#00151a]/60 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -207,6 +207,24 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Banner Superior de Seguridad Unificado */}
+        <div className="border-t border-white/5 py-2.5 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 text-[10px] md:text-sm font-bold tracking-normal text-white">
+                <div className="flex items-center gap-2 text-base font-black">
+                     Seguridad y Confianza Garantizada
+                </div>
+                <div className="flex items-center gap-2">
+                     <span className="text-teal-400 text-lg">💳</span> Pagos Seguros SSL
+                </div>
+                <div className="flex items-center gap-2">
+                     <span className="text-teal-400 text-lg">🛡️</span> Entregas Certificadas
+                </div>
+                <div className="flex items-center gap-2">
+                     <span className="text-teal-400 text-lg">🕒</span> Atención 24/7
+                </div>
+            </div>
         </div>
       </header>
 
