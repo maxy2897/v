@@ -17,7 +17,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center [clip-path:inset(0)]">
                 {/* Fondo de Mapa con mayor visibilidad y efecto parallax nativo */}
-                <div className="fixed inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center blur-[2px] opacity-60 pointer-events-none"></div>
+                <div className="fixed inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center opacity-100 pointer-events-none transition-all duration-700"></div>
                 <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-transparent to-[#f4fcfb] pointer-events-none"></div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
@@ -105,12 +105,12 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 <div className="absolute bottom-6 left-0 right-0 px-6 xl:px-8 z-20 flex flex-col gap-6">
                                     <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
                                         <div className="flex items-center bg-white/95 p-1.5 sm:p-2 px-3 sm:px-4 rounded-xl backdrop-blur-sm shadow-2xl hover:scale-105 transition-transform h-8 sm:h-10 md:h-12 border border-white/20">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Royal_Air_Maroc_Logo.svg" alt="Royal Air Maroc" className="h-full object-contain drop-shadow-sm" onError={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Royal_Air_Maroc_Logo.svg/512px-Royal_Air_Maroc_Logo.svg.png" alt="Royal Air Maroc" className="h-full object-contain drop-shadow-sm" onError={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
                                             <span className="hidden text-red-700 font-black text-[10px] sm:text-xs tracking-tighter uppercase italic">Royal Air Maroc</span>
                                         </div>
                                         <div className="flex items-center bg-white/95 p-1.5 sm:p-2 px-3 sm:px-4 rounded-xl backdrop-blur-sm shadow-2xl hover:scale-105 transition-transform h-8 sm:h-10 md:h-12 border border-white/20">
-                                            <img src="https://logo.clearbit.com/ethiopianairlines.com" alt="Ethiopian Airlines" className="h-full object-contain rounded-sm shadow-sm" />
-                                            <span className="text-[#006b3a] font-black text-[10px] sm:text-xs md:text-sm tracking-tighter leading-none ml-2.5">Ethiopian<br/><span className="text-[#e21836]">Airlines</span></span>
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Ethiopian_Airlines_Logo.svg/512px-Ethiopian_Airlines_Logo.svg.png" alt="Ethiopian Airlines" className="h-full object-contain rounded-sm" onError={(e) => { e.currentTarget.style.display='none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+                                            <span className="hidden text-[#006b3a] font-black text-[10px] sm:text-xs md:text-sm tracking-tighter leading-none">Ethiopian<br/><span className="text-[#e21836]">Airlines</span></span>
                                         </div>
                                     </div>
 
@@ -210,13 +210,13 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     </svg>
                                 </Link>
                             </div>
-                            <div className="relative h-[500px] lg:h-auto">
+                             <div className="relative h-[550px] lg:h-auto overflow-hidden">
                                 <img
                                     src="https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"
                                     alt="Money Transfer"
-                                    className="w-full h-full object-cover brightness-75 grayscale-[0.2]"
+                                    className="w-full h-full object-cover brightness-90 saturate-[0.8] relative z-0"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#001a22]/90 via-[#001a22]/30 to-transparent hidden lg:block z-10"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#001a22] via-[#001a22]/40 to-transparent hidden lg:block z-10"></div>
                             </div>
                         </div>
                     </div>
