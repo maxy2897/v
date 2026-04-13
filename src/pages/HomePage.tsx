@@ -104,10 +104,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 {/* Floating Logos Overlay from Screenshot */}
                                 <div className="absolute bottom-6 left-0 right-0 px-6 xl:px-8 z-20 flex flex-col gap-6">
                                     <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
-                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-14 sm:h-20 md:h-24">
+                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-16 sm:h-28 md:h-32">
                                             <img src="/images/logos/ram-logo.png" alt="Royal Air Maroc" className="h-full object-contain filter drop-shadow-xl scale-125" />
                                         </div>
-                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-14 sm:h-20 md:h-24">
+                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-16 sm:h-28 md:h-32">
                                             <img src="/images/logos/ethiopian-logo.png" alt="Ethiopian Airlines" className="h-full object-contain filter drop-shadow-xl" />
                                         </div>
                                     </div>
