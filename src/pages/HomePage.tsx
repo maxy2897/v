@@ -17,12 +17,12 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">
                 {/* Fondo de Mapa como en la imagen */}
-                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+                <div className="absolute inset-0 z-0 pointer-events-none">
                     <div 
-                        className="w-full h-full bg-cover bg-center bg-fixed mix-blend-multiply filter invert-[0.2]"
-                        style={{ backgroundImage: "url('./images/bg/hero-map-v3.png')" }}
+                        className="w-full h-full bg-cover bg-center bg-fixed opacity-[0.06] grayscale"
+                        style={{ backgroundImage: "url('/images/bg/hero-map-v3.png')" }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#f4fcfb]/50 via-transparent to-[#f4fcfb]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f4fcfb]/50 to-[#f4fcfb]"></div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
