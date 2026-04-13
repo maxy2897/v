@@ -12,21 +12,21 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
     const { t, appConfig } = useSettings();
 
     return (
-        <div className="relative font-['Poppins'] bg-[#00151a] text-white overflow-hidden selection:bg-teal-500/30">
+        <div className="relative font-['Poppins'] bg-[#133c3e] text-white overflow-hidden selection:bg-teal-500/30">
             {/* 1. Banner Superior de Seguridad (Estilo Exacto Imagen) */}
-            <div className="bg-[#000d0f] border-b border-white/5 py-3 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-4 text-[10px] md:text-xs font-bold tracking-widest text-teal-400 uppercase">
-                    <div className="flex items-center gap-2">
+            <div className="bg-[#1b4e4d] border-b border-[#256360] py-3 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto flex flex-wrap justify-center md:justify-between items-center gap-4 text-[11px] md:text-sm font-bold tracking-normal text-white">
+                    <div className="flex items-center gap-2 text-lg">
                          Seguridad y Confianza Garantizada
                     </div>
-                    <div className="flex items-center gap-2 text-white/80">
-                         <span className="text-teal-400">🛡️</span> Pagos Seguros SSL
+                    <div className="flex items-center gap-2">
+                         <span className="text-teal-200">💳</span> Pagos Seguros SSL
                     </div>
-                    <div className="flex items-center gap-2 text-white/80">
-                         <span className="text-teal-400">✅</span> Entregas Certificadas
+                    <div className="flex items-center gap-2">
+                         <span className="text-teal-200">🛡️</span> Entregas Certificadas
                     </div>
-                    <div className="flex items-center gap-2 text-white/80">
-                         <span className="text-teal-400">📞</span> Atención 24/7
+                    <div className="flex items-center gap-2">
+                         <span className="text-teal-200">🕒</span> Atención 24/7
                     </div>
                 </div>
             </div>
@@ -44,34 +44,36 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-                    <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
+                    <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
-                            className="lg:col-span-7 space-y-8"
+                            className="lg:col-span-7 space-y-6"
                         >
-                            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-['Montserrat'] font-black tracking-tighter leading-[0.85] text-white">
+                            <h1 
+                                className="text-6xl md:text-8xl lg:text-[7rem] font-['Montserrat'] bg-clip-text text-transparent bg-gradient-to-b from-[#0a1b1d] to-[#040e0f] drop-shadow-[0_0_20px_rgba(200,250,245,0.7)] tracking-tighter leading-[0.9] font-black [-webkit-text-stroke:3px_#f0fdfc]"
+                            >
                                 Servicio<br />
-                                <span className="text-teal-400 drop-shadow-[0_0_15px_rgba(45,212,191,0.3)]">Internacional</span>
+                                Internacional
                             </h1>
 
-                            <p className="text-lg md:text-xl text-gray-300 max-w-xl leading-relaxed font-medium">
+                            <p className="text-xl md:text-2xl text-white max-w-2xl leading-relaxed font-semibold">
                                 Deja tus gestiones en nuestras manos y olvídate del estrés.
                             </p>
 
                             {/* Review Cards (Floating style from image) */}
-                            <div className="flex flex-wrap gap-4 pt-4">
+                            <div className="flex flex-wrap gap-4 pt-2">
                                 <motion.div 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-3xl flex items-center gap-4 max-w-sm"
+                                    className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-[260px] shadow-2xl"
                                 >
-                                    <img src="https://i.pravatar.cc/150?u=maria" className="w-12 h-12 rounded-full border-2 border-teal-500/30" alt="María R." />
+                                    <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm" alt="María R." />
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-teal-400 mb-1">Testimonios Reales</p>
-                                        <div className="flex gap-0.5 mb-1 text-[10px]">⭐⭐⭐⭐⭐</div>
-                                        <p className="text-xs italic text-gray-300">"Excelente servicio para mi negocio." - María R.</p>
+                                        <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
+                                        <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
+                                        <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - María R.</p>
                                     </div>
                                 </motion.div>
 
@@ -79,24 +81,24 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-3xl flex items-center gap-4 max-w-sm"
+                                    className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-[260px] shadow-2xl"
                                 >
-                                    <img src="https://i.pravatar.cc/150?u=marta" className="w-12 h-12 rounded-full border-2 border-teal-500/30" alt="Marta G." />
+                                    <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm" alt="Martín G." />
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-teal-400 mb-1">Testimonio Reales</p>
-                                        <div className="flex gap-0.5 mb-1 text-[10px]">⭐⭐⭐⭐⭐</div>
-                                        <p className="text-xs italic text-gray-300">"Excelente servicio para mi negocio." - Marta G.</p>
+                                        <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonio Reales</p>
+                                        <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
+                                        <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - Martín G.</p>
                                     </div>
                                 </motion.div>
                             </div>
 
-                            <div className="flex flex-wrap gap-5 pt-8">
-                                <Link to="/tarifas" className="px-12 py-5 bg-gradient-to-r from-teal-600 to-teal-500 text-[#00151a] rounded-2xl font-['Montserrat'] font-black text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-teal-500/20 active:scale-95">
+                            <div className="flex flex-wrap gap-4 pt-6">
+                                <Link to="/tarifas" className="px-10 py-4 bg-[#1b3d41] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10">
                                     REALIZAR ENVÍO
                                 </Link>
                                 <button 
                                     onClick={onOpenContact}
-                                    className="px-12 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-['Montserrat'] font-black text-sm uppercase tracking-widest hover:bg-white/10 transition-all backdrop-blur-md active:scale-95"
+                                    className="px-10 py-4 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95"
                                 >
                                     CONTACTAR
                                 </button>
@@ -110,51 +112,60 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                             transition={{ duration: 0.8, delay: 0.2 }}
                             className="lg:col-span-5 mt-16 lg:mt-0 relative"
                         >
-                            <div className="relative rounded-[3rem] overflow-hidden bg-gray-900 border border-white/10 shadow-3xl aspect-[4/5] md:aspect-auto">
+                            <div className="relative rounded-[2.5rem] overflow-hidden bg-[#102425] shadow-2xl aspect-[4/5] object-cover border-4 border-[#102425]">
                                 <img
-                                    className="w-full h-full object-cover brightness-90"
+                                    className="w-full h-full object-cover"
                                     src="./images/equipo-bodipo.png"
                                     alt="Equipo BodipoBusiness"
                                 />
                                 
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#00151a] via-transparent to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0e2122] via-[#0e2122]/30 to-transparent"></div>
 
-                                {/* Floating Icons (Replaced DHL/FedEx with RAM/Ethiopian Airlines names/flags as requested) */}
-                                <div className="absolute bottom-24 left-8 right-8 grid grid-cols-2 gap-4">
-                                    <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-                                        <span className="text-xl">🛡️</span>
-                                        <span className="text-[9px] font-black uppercase tracking-tighter leading-none text-white/80">Pagos Seguros<br/>SSL</span>
+                                {/* Floating Icons */}
+                                <div className="absolute bottom-28 left-6 right-6 flex items-center justify-between text-white drop-shadow-xl">
+                                    <div className="flex flex-col items-center">
+                                        <div className="flex items-center gap-1 mb-1">
+                                            <span className="text-lg">🛡️</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold uppercase leading-tight text-center max-w-[80px]">Pagos Seguros<br/>SSL</span>
                                     </div>
-                                    <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-                                        <span className="text-xl">✅</span>
-                                        <span className="text-[9px] font-black uppercase tracking-tighter leading-none text-white/80">Entregas<br/>Certificadas</span>
+                                    <div className="flex flex-col items-center">
+                                        <div className="flex items-center gap-1 mb-1">
+                                            <span className="text-lg">📦</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold uppercase leading-tight text-center max-w-[80px]">Entregas<br/>Certificadas</span>
                                     </div>
-                                    
-                                    {/* Partner 1: Royal Air Maroc (Logo only) */}
-                                    <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10 opacity-80 mix-blend-screen grayscale contrast-200">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/10007/10007490.png" className="w-20 h-8 object-contain" alt="RAM" />
+                                    <div className="flex items-center justify-center font-extrabold italic text-xl tracking-tighter">
+                                        DHL
                                     </div>
-
-                                    {/* Partner 2: Ethiopian Airlines (Logo only) */}
-                                    <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md p-3 rounded-2xl border border-white/10 opacity-80 mix-blend-screen grayscale contrast-150">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/2610/2610931.png" className="w-20 h-8 object-contain" alt="Ethiopian" />
+                                    <div className="flex items-center flex-col justify-center">
+                                        <span className="font-black text-lg leading-tight">FedEx</span>
+                                        <span className="text-[7px] uppercase tracking-widest">Logística</span>
                                     </div>
                                 </div>
 
                                 {/* Spain -> Guinea Label in Hero Image Overlay */}
-                                <div className="absolute bottom-10 left-8 right-8">
-                                    <div className="flex flex-col space-y-2">
-                                        <div className="flex items-center gap-2 mb-1">
+                                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between border-t border-white/20 pt-4">
+                                    <div className="flex flex-col space-y-1">
+                                        <div className="flex items-center gap-2">
                                             <div className="h-0.5 w-6 bg-teal-400"></div>
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-teal-400">Servicios Destacados</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#72ccc1]">Servicios Destacados</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-2xl md:text-3xl font-black font-['Montserrat'] tracking-tighter flex items-center gap-2">
-                                                🇪🇸 España <span className="text-teal-400 text-xl">➔</span> Guinea 🇬🇶
+                                            <span className="text-2xl md:text-3xl font-black font-['Montserrat'] tracking-tight flex items-center gap-3">
+                                                🇪🇸 España <span className="text-white text-xl">➔</span> Guinea
                                             </span>
                                         </div>
                                     </div>
+                                    {/* Chat Notification Icon */}
+                                    <button aria-label="Notificaciones de chat" className="bg-[#122c2f] p-3 rounded-full border border-teal-500/30 text-teal-300 relative shadow-lg">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
+                                        <span className="absolute top-1 right-1 w-2 h-2 bg-teal-400 rounded-full animate-ping"></span>
+                                        <span className="absolute top-1 right-1 w-2 h-2 bg-teal-400 rounded-full"></span>
+                                    </button>
                                 </div>
                             </div>
                         </motion.div>

@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50">
-      <header className="bg-white/5 dark:bg-[#00151a]/70 backdrop-blur-xl border-b border-white/5 dark:border-teal-900/20 transition-all duration-300">
+      <header className="bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -74,21 +74,23 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
               {/* Desktop Nav */}
               <nav
-                className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 text-[9px] xl:text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-400 shrink-0"
+                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-bold uppercase tracking-wider text-gray-900 shrink-0"
                 onMouseLeave={() => setHoveredPath(location.pathname)}
               >
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`relative px-2 py-2 transition-colors duration-300 z-10 whitespace-nowrap ${location.pathname === item.path ? 'text-[#007e85]' : 'hover:text-[#007e85]'
+                    className={`relative px-3 py-1.5 transition-colors duration-300 z-10 whitespace-nowrap ${
+                      item.path === '/calendario' ? 'border border-gray-900 rounded-full ' : ''
+                    }${location.pathname === item.path ? 'text-[#007e85]' : 'hover:text-[#007e85]'
                       }`}
                     onMouseEnter={() => setHoveredPath(item.path)}
                   >
-                    {item.path === hoveredPath && (
+                    {item.path === hoveredPath && item.path !== '/calendario' && (
                       <motion.div
                         layoutId="bubble"
-                        className="absolute inset-0 bg-transparent border-2 border-[#00151a] rounded-full -z-10"
+                        className="absolute inset-0 bg-transparent border-b-2 border-[#007e85] -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -96,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   </Link>
                 ))}
 
-                <div className="flex items-center space-x-2 ml-2 pl-2 border-l border-gray-100 shrink-0">
+                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-gray-300 shrink-0">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={toggleTheme}
@@ -109,12 +111,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                       )}
                     </button>
-                    <div className="flex items-center text-[9px] font-black uppercase gap-0.5">
-                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-600' : 'text-gray-400'}`}>ES</button>
+                    <div className="flex items-center text-[10px] font-bold uppercase gap-1">
+                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'text-teal-600' : 'text-gray-600'}`}>ES</button>
                       <span className="text-gray-300">|</span>
-                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-600' : 'text-gray-400'}`}>EN</button>
+                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-teal-600' : 'text-gray-600'}`}>EN</button>
                       <span className="text-gray-300">|</span>
-                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-600' : 'text-gray-400'}`}>FR</button>
+                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-teal-600' : 'text-gray-600'}`}>FR</button>
                     </div>
                   </div>
                 </div>
