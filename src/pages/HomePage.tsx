@@ -39,8 +39,20 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 Deja tus gestiones en nuestras manos y olvídate del estrés.
                             </p>
 
-                            {/* Review Cards (Floating style from image) */}
                             <div className="flex flex-wrap gap-4 pt-2">
+                                <Link to="/tarifas" className="px-10 py-4 bg-[#1b3d41] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10">
+                                    REALIZAR ENVÍO
+                                </Link>
+                                <button 
+                                    onClick={onOpenContact}
+                                    className="px-10 py-4 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95"
+                                >
+                                    CONTACTAR
+                                </button>
+                            </div>
+
+                            {/* Review Cards (Floating style from image) */}
+                            <div className="flex flex-wrap gap-4 pt-6">
                                 <motion.div 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -62,23 +74,11 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 >
                                     <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm" alt="Martín G." />
                                     <div>
-                                        <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonio Reales</p>
+                                        <p className="text-[12px] font-bold text-gray-900 mb-0.5">Testimonios Reales</p>
                                         <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
                                         <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - Martín G.</p>
                                     </div>
                                 </motion.div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-4 pt-6">
-                                <Link to="/tarifas" className="px-10 py-4 bg-[#1b3d41] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10">
-                                    REALIZAR ENVÍO
-                                </Link>
-                                <button 
-                                    onClick={onOpenContact}
-                                    className="px-10 py-4 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95"
-                                >
-                                    CONTACTAR
-                                </button>
                             </div>
                         </motion.div>
 
