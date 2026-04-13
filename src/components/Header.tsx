@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50 shadow-md">
-      <header className="bg-gradient-to-r from-[#00332c]/70 via-[#00151a]/70 to-black/70 backdrop-blur-[16px] border-b border-white/10 transition-all duration-300">
+      <header className="bg-white/80 backdrop-blur-[16px] border-b border-white/40 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -58,10 +58,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   )}
                 </div>
                 <div className="flex flex-col -space-y-0.5 xl:-space-y-1 pointer-events-none">
-                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter uppercase transition-colors drop-shadow-sm bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-[#1b4e4d]">
+                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter uppercase transition-colors drop-shadow-sm bg-clip-text text-transparent bg-gradient-to-r from-teal-800 to-[#00151a]">
                     Bodipo
                   </span>
-                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-[#1b4e4d]">
+                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-teal-800 to-[#00151a]">
                     Business
                   </span>
                 </div>
@@ -83,15 +83,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     to={item.path}
                     className={`relative px-3 py-1.5 transition-all duration-300 z-10 whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r ${
                       location.pathname === item.path 
-                        ? 'from-teal-300 to-teal-500 drop-shadow-md' 
-                        : 'from-teal-400 to-[#1b4e4d] hover:from-teal-300 hover:to-teal-500 drop-shadow-sm'
+                        ? 'from-teal-600 to-teal-800 drop-shadow-sm font-extrabold' 
+                        : 'from-teal-800 to-[#00151a] hover:from-teal-600 hover:to-teal-800'
                     }`}
                     onMouseEnter={() => setHoveredPath(item.path)}
                   >
                     {item.path === hoveredPath && (
                       <motion.div
                         layoutId="bubble"
-                        className="absolute inset-0 bg-white/10 border border-white/20 rounded-full -z-10"
+                        className="absolute inset-0 bg-teal-50 border border-teal-900/10 rounded-full -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -99,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   </Link>
                 ))}
 
-                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-white/20 shrink-0">
+                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-teal-900/20 shrink-0">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={toggleTheme}
@@ -112,12 +112,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                       )}
                     </button>
-                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-[#1b4e4d]">
-                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'from-teal-300 to-teal-500 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>ES</button>
+                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 bg-clip-text text-transparent bg-gradient-to-r from-teal-800 to-[#1b4e4d]">
+                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>ES</button>
                       <span className="text-teal-900/30 px-1">|</span>
-                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'from-teal-300 to-teal-500 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>EN</button>
+                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>EN</button>
                       <span className="text-teal-900/30 px-1">|</span>
-                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'from-teal-300 to-teal-500 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>FR</button>
+                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>FR</button>
                     </div>
                   </div>
                 </div>
@@ -210,8 +210,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
         </div>
         
         {/* Banner Superior de Seguridad Unificado */}
-        <div className="border-t border-white/5 py-2.5 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 text-[10px] md:text-sm font-bold tracking-normal text-white">
+        <div className="border-t border-teal-900/10 py-2.5 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 text-[10px] md:text-sm font-bold tracking-normal text-teal-900">
                 <div className="flex items-center gap-2 text-base font-black">
                      Seguridad y Confianza Garantizada
                 </div>

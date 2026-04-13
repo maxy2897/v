@@ -12,17 +12,17 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
     const { t, appConfig } = useSettings();
 
     return (
-        <div className="relative font-['Poppins'] bg-[#133c3e] text-white overflow-hidden selection:bg-teal-500/30">
+        <div className="relative font-['Poppins'] bg-[#f4fcfb] text-[#00151a] overflow-hidden selection:bg-teal-500/30">
 
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">
                 {/* Fondo de Mapa como en la imagen */}
-                <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
                     <div 
-                        className="w-full h-full bg-cover bg-center bg-fixed mix-blend-overlay"
+                        className="w-full h-full bg-cover bg-center bg-fixed mix-blend-multiply filter invert-[0.2]"
                         style={{ backgroundImage: "url('./images/bg/hero-map-v3.png')" }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#00151a]/50 via-transparent to-[#00151a]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#f4fcfb]/50 via-transparent to-[#f4fcfb]"></div>
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
@@ -40,7 +40,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
                                 Internacional
                             </h1>
 
-                            <p className="text-xl md:text-2xl text-white max-w-2xl leading-relaxed font-semibold">
+                            <p className="text-xl md:text-2xl text-teal-950 max-w-2xl leading-relaxed font-semibold">
                                 Deja tus gestiones en nuestras manos y olvídate del estrés.
                             </p>
 
