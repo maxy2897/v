@@ -16,8 +16,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
             {/* 2. Sección Hero */}
             <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center">
-                {/* Fondo limpio como en las demas paginas */}
-                <div className="absolute inset-0 z-0 bg-transparent pointer-events-none"></div>
+                {/* Fondo de Mapa estilo páginas internas */}
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center bg-fixed blur-[3px] opacity-20 pointer-events-none"></div>
+                <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#f4fcfb]/50 to-[#f4fcfb] pointer-events-none"></div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
                     <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
@@ -124,8 +125,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </section>
 
             {/* Money Transfer restyled to match aesthetic */}
-            <section className="py-24 relative overflow-hidden">
-                <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
+            <section className="py-24 relative overflow-hidden bg-[#000d0f]">
+                <div className="absolute inset-0 z-0 bg-[url('/images/bg/money-net-v2.png')] bg-cover bg-center bg-fixed blur-[3px] brightness-[1.2] pointer-events-none"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="bg-[#001a22]/80 backdrop-blur-md rounded-[4rem] overflow-hidden relative border border-white/5 shadow-3xl">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
