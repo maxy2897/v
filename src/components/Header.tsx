@@ -210,8 +210,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
         </div>
         
         {/* Banner Superior de Seguridad Unificado */}
-        <div className="border-t border-teal-900/10 py-2.5 px-4 sm:px-6 lg:px-8 bg-white/20 md:bg-transparent overflow-x-auto whitespace-nowrap hide-scrollbar">
-            <div className="max-w-7xl mx-auto flex items-center md:justify-between gap-6 md:gap-4 text-[10px] md:text-sm font-bold tracking-normal text-teal-900 w-max md:w-full">
+        <div className="border-t border-teal-900/10 py-2.5 px-0 sm:px-6 lg:px-8 bg-white/20 md:bg-transparent overflow-hidden whitespace-nowrap w-full">
+            <div className="max-w-7xl mx-auto flex items-center md:justify-between gap-10 md:gap-4 text-[10px] md:text-sm font-bold tracking-normal text-teal-900 w-max md:w-full animate-marquee md:!animate-none">
                 <div className="flex items-center gap-2 text-sm md:text-base font-black">
                      Seguridad y Confianza Garantizada
                 </div>
