@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 import { getProducts } from './src/services/productsApi';
 import { Product, AppConfig } from './types';
+import PullToRefresh from './src/components/PullToRefresh';
 
 // Lazy loaded components and modals to optimize bundle size
 const AIChat = lazy(() => import('./src/components/AIChat'));
@@ -171,10 +172,16 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname === '/admin';
 
+  const handleRefresh = async () => {
+    await new Promise(resolve => setTimeout(resolve, 800));
+    window.location.reload();
+  };
+
   return (
     <>
       <ScrollToTop />
-      <div className={`min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300`}>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className={`min-h-screen flex flex-col selection:bg-teal-100 selection:text-teal-900 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300`}>
         {!isAdminRoute && (
           <Header
             onOpenRegister={() => setIsRegisterOpen(true)}
@@ -432,6 +439,7 @@ const AppContent: React.FC = () => {
           {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
         </Suspense>
       </div>
+      </PullToRefresh>
     </>
   );
 };
