@@ -101,7 +101,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
       {/* Contenido envuelto que se desplaza hacia abajo */}
       <div 
         style={{ 
-          transform: `translateY(${pullDivY}px)`,
+          transform: pullDivY > 0 ? `translateY(${pullDivY}px)` : 'none',
           transition: refreshing || pullDivY === 0 ? 'transform 0.3s ease-out' : 'none'
         }}
       >
