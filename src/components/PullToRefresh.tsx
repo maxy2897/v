@@ -98,13 +98,8 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
         </div>
       </div>
       
-      {/* Contenido envuelto que se desplaza hacia abajo */}
-      <div 
-        style={{ 
-          transform: pullDivY > 0 ? `translateY(${pullDivY}px)` : 'none',
-          transition: refreshing || pullDivY === 0 ? 'transform 0.3s ease-out' : 'none'
-        }}
-      >
+      {/* Contenido envuelto estático (sin transform para evitar parpadeos y rotura de position:fixed) */}
+      <div className="w-full">
         {children}
       </div>
     </div>
