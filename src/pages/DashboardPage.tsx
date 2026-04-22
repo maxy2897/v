@@ -1046,7 +1046,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                             <span className="w-8 h-8 rounded-full bg-white text-[#007e85] flex items-center justify-center font-black text-xs shadow-sm">{index + 1}</span>
                                                             <h4 className="font-black text-[#00151a] uppercase text-[11px] tracking-widest">{t(`terms.title.${index + 1}`) || term.title}</h4>
                                                         </div>
-                                                        <p className="text-sm leading-relaxed text-gray-500 font-medium">{t(`terms.content.${index + 1}`) || term.content}</p>
+                                                        <p className="text-sm leading-[1.8] text-gray-500 font-medium text-justify">{t(`terms.content.${index + 1}`) || term.content}</p>
                                                     </section>
                                                 ))}
                                             </div>

@@ -318,8 +318,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                   <div className="max-h-[60vh] overflow-y-auto pr-4 space-y-6 scrollbar-thin scrollbar-thumb-teal-500">
                     {TERMS_AND_CONDITIONS.map((term, index) => (
                       <div key={index}>
-                        <h4 className="font-black text-teal-700 uppercase text-[10px] tracking-widest mb-2">{term.title}</h4>
-                        <p className="text-sm text-gray-600 leading-relaxed">{term.content}</p>
+                        <h4 className="font-black text-teal-700 uppercase text-[10px] tracking-widest mb-2">{t(`terms.title.${index + 1}`) || term.title}</h4>
+                        <p className="text-sm text-gray-600 leading-[1.8] text-justify">{t(`terms.content.${index + 1}`) || term.content}</p>
                       </div>
                     ))}
                   </div>
