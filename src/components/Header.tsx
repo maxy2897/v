@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
   return (
     <div className="flex flex-col w-full sticky top-0 z-50 shadow-md">
       <header className="bg-white/30 backdrop-blur-xl border-b border-white/40 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 xl:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
 
@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
               {/* Desktop Nav */}
               <nav
-                className="hidden lg:flex items-center space-x-1 xl:space-x-3 text-[10px] xl:text-xs font-black uppercase tracking-wider shrink-0"
+                className="hidden xl:flex items-center space-x-3 text-xs font-black uppercase tracking-wider shrink-0"
                 onMouseLeave={() => setHoveredPath(location.pathname)}
               >
                 {navItems.map((item) => (
@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
               </nav>
 
               {/* Common Actions (Bell, Auth/User) */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 {isAuthenticated && <NotificationBell />}
 
                 {isAuthenticated && user ? (
@@ -182,11 +182,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     )}
                   </div>
                 ) : (
-                  <div className="hidden md:flex items-center gap-2">
-                    <button onClick={onOpenLogin} className="bg-white text-[#00151a] px-4 py-2 rounded-full hover:bg-gray-50 border-2 border-[#00151a] text-xs font-bold">
+                  <div className="hidden md:flex items-center gap-2 shrink-0">
+                    <button onClick={onOpenLogin} className="bg-white text-[#00151a] px-4 py-2 rounded-full hover:bg-gray-50 border-2 border-[#00151a] text-xs font-bold whitespace-nowrap">
                       {t('nav.login')}
                     </button>
-                    <button onClick={onOpenRegister} className="bg-[#00151a] text-white px-4 py-2 rounded-full hover:bg-[#007e85] shadow-lg text-xs font-bold">
+                    <button onClick={onOpenRegister} className="bg-[#00151a] text-white px-4 py-2 rounded-full hover:bg-[#007e85] shadow-lg text-xs font-bold whitespace-nowrap">
                       {t('nav.register')}
                     </button>
                   </div>
@@ -195,7 +195,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                 {/* Mobile Menu Toggle */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="lg:hidden p-2 text-[#00151a]"
+                  className="xl:hidden p-2 text-[#00151a] shrink-0"
                   aria-label="Toggle mobile menu"
                 >
                   {mobileMenuOpen ? (
@@ -210,7 +210,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
         </div>
         
         {/* Banner Superior de Seguridad Unificado */}
-        <div className="border-t border-teal-900/10 py-2.5 px-0 sm:px-6 lg:px-8 bg-white/20 md:bg-transparent overflow-hidden whitespace-nowrap w-full flex">
+        <div className="border-t border-teal-900/10 py-2.5 px-0 sm:px-6 xl:px-8 bg-white/20 md:bg-transparent overflow-hidden whitespace-nowrap w-full flex">
             <div className="max-w-7xl mx-auto flex items-center text-[10px] md:text-sm font-bold tracking-normal text-teal-900 w-max md:w-full animate-marquee md:!animate-none">
                 
                 {/* Primer set de elementos */}
@@ -258,14 +258,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm xl:hidden"
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 z-50 w-[70%] max-w-sm bg-white p-6 lg:hidden overflow-y-auto shadow-2xl border-l border-teal-100"
+              className="fixed inset-y-0 right-0 z-50 w-[70%] max-w-sm bg-white p-6 xl:hidden overflow-y-auto shadow-2xl border-l border-teal-100"
             >
               <div className="flex flex-col h-full">
                 <div className="flex justify-between items-center mb-8">
