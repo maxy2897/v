@@ -534,6 +534,7 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.faq_a3': 'Sí, disponemos de una sección de Money Transfer con tasas competitivas.',
         'dashboard.vip_contact_desc': '¿Tienes un caso especial? Hablemos por WhatsApp.',
         'dashboard.change_photo_error': 'Error al procesar la imagen',
+        'dashboard.legal_contract': 'Contrato Legal',
         'dashboard.help_center': 'Centro de Ayuda',
         'dashboard.terms_desc': 'Aquí podrás consultar las condiciones de uso, gestión de datos y protección al cliente.',
         'dashboard.help_center_desc': '¿Tienes alguna duda con tu paquete? Estamos aquí para ayudarte las 24 horas.',
@@ -1785,6 +1786,7 @@ const translations: Record<Language, Record<string, string>> = {
         'dashboard.chat_direct_24_7': 'Chat Direct 24/7',
         'dashboard.profile.updated_success': 'Profil mis à jour avec succès',
         'dashboard.profile.update_error': 'Erreur lors de la mise à jour du profil',
+        'dashboard.legal_contract': 'Contrat Légal',
 
         'terms.title.1': 'Conditions Générales',
         'terms.content.1': 'Les présentes Conditions Générales s\'appliquent au moment où BODIPO BUSINESS (ci-après BODIPO) accepte l\'expédition, sauf accords ou conditions spécifiés dans un autre contrat de prestations de services de logistique et de transport.',
