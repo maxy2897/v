@@ -283,7 +283,7 @@ const AppContent: React.FC = () => {
                 <div className="space-y-6">
                   <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.locations')}</p>
                   <ul className="space-y-3 text-sm font-medium text-gray-400">
-                    <li>Calle Madrid, 10, Local - España</li>
+                    <li>Avenida de Daganzo 13, B - Madrid</li>
                     <li>Malabo / Bata - Guinea Ecuatorial</li>
                   </ul>
                 </div>
