@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
               <Link to="/" className="flex items-center space-x-2 group relative z-20">
                 <div className="flex items-center justify-center w-12 h-12 md:w-20 md:h-20 xl:w-28 xl:h-28 bg-transparent rounded-full group-hover:scale-110 transition-transform p-1">
                   {config.customLogoUrl ? (
-                    <img src={config.customLogoUrl} className="h-full w-full object-contain filter drop-shadow-md" alt="Logo" />
+                    <img src={config.customLogoUrl} className="h-full w-full object-contain drop-shadow-[0_0_1px_rgba(255,255,255,1)] drop-shadow-[0_0_4px_rgba(255,255,255,0.65)]" alt="Logo" />
                   ) : (
                     <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block">{config.logoText}</span>
                   )}
