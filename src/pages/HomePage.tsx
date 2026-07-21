@@ -36,16 +36,16 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
   return (
     <main className="overflow-hidden bg-[#f5f1e8] text-[#06272b]">
-      <section className="relative isolate min-h-[720px] bg-[#06272b]">
-        <div className="absolute inset-0 overflow-hidden">
-          <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#06272b]/95 via-[#06272b]/72 to-[#06272b]/25" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#06272b]/70 via-transparent to-[#06272b]/20" />
+      <section className="relative isolate min-h-[900px] bg-[#06272b]">
+        <div className="absolute inset-0 overflow-hidden opacity-35 lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[52%] lg:opacity-100">
+          <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-contain object-center" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06272b] via-[#06272b]/45 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06272b]/35 via-transparent to-[#06272b]/15" />
         </div>
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
         <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
 
-        <div className="relative mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.02fr_.98fr] lg:px-10">
+        <div className="relative mx-auto grid min-h-[900px] max-w-7xl content-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[.48fr_.52fr] lg:px-10">
           <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 max-w-2xl">
             <div className="mb-8 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
               <span className="h-px w-12 bg-[#ffbd59]" />
@@ -67,7 +67,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, delay: .15 }} className="relative z-20 lg:ml-auto lg:w-[440px] lg:translate-y-24">
+          <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, delay: .15 }} className="relative z-20 max-w-[520px] lg:col-start-1 lg:row-start-2 lg:w-full">
             <div className="border border-white/15 bg-[#f5f1e8] p-7 shadow-[0_28px_80px_rgba(0,0,0,.28)] sm:p-9">
               <div className="flex items-start justify-between gap-5">
                 <div>
@@ -96,7 +96,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 lg:px-10 lg:pt-40">
+      <section className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 lg:px-10 lg:pt-24">
         <div className="grid gap-10 border-b border-[#cfc8bc] pb-14 lg:grid-cols-[.75fr_1.25fr] lg:items-end">
           <div>
             <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">El ecosistema Bodipo</p>
