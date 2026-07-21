@@ -26,7 +26,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
   const navigate = useNavigate();
   const [trackingId, setTrackingId] = useState('');
   const hero = appConfig?.content?.hero;
-  const heroImage = hero?.heroImage || '/images/foto-original.jpg';
+  const heroImage = '/images/bodipo-world-hero.jpg';
 
   const submitTracking = (event: React.FormEvent) => {
     event.preventDefault();
@@ -37,10 +37,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
   return (
     <main className="overflow-hidden bg-[#f5f1e8] text-[#06272b]">
       <section className="relative isolate min-h-[720px] bg-[#06272b]">
-        <div className="absolute inset-y-0 right-0 hidden w-[54%] overflow-hidden lg:block">
-          <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#06272b] via-[#06272b]/25 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#06272b]/60 to-transparent" />
+        <div className="absolute inset-0 overflow-hidden">
+          <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover object-center" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06272b]/95 via-[#06272b]/72 to-[#06272b]/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06272b]/70 via-transparent to-[#06272b]/20" />
         </div>
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
         <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
