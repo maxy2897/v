@@ -8,22 +8,16 @@ interface HomePageProps {
   onOpenContact: () => void;
 }
 
-const actions = [
-  { title: 'Tarifas y tiempos', subtitle: 'Calcula tu envío', to: '/tarifas', icon: 'M4 3h16v18H4zM8 7h8M8 12h2m4 0h2M8 16h2m4 0h2' },
-  { title: 'Seguimiento', subtitle: 'Localiza tu paquete', to: '/rastreo', featured: true, icon: 'M10 18a8 8 0 1 1 5.3-2m5.7 5-5.2-5.2M9 8h5v5H9z' },
-  { title: 'Realizar un envío', subtitle: 'Empieza ahora', to: '/tarifas', icon: 'm21 8-9-5-9 5 9 5 9-5ZM3 8v8l9 5 9-5V8m-9 5v8' },
+const operations = [
+  { number: '01', title: 'Próximas salidas', text: 'Planifica con fechas, rutas y disponibilidad actualizadas.', to: '/calendario', action: 'Ver calendario' },
+  { number: '02', title: 'Compras online', text: 'Recibe tus compras internacionales con acompañamiento local.', to: '/compras-online', action: 'Empezar a comprar' },
+  { number: '03', title: 'Money Transfer', text: 'Transferencias claras, seguras y pensadas para tu día a día.', to: '/money-transfer', action: 'Enviar dinero' },
+  { number: '04', title: 'Tienda Bodipo', text: 'Una selección de productos y oportunidades para nuestra comunidad.', to: '/tienda', action: 'Visitar tienda' },
 ];
 
-const services = [
-  { title: 'Próximas salidas', text: 'Consulta nuestro calendario de envíos.', to: '/calendario', icon: 'M3 5h18v16H3zM8 3v4m8-4v4M3 10h18' },
-  { title: 'Compras online', text: 'Compra en tus tiendas favoritas sin fronteras.', to: '/compras-online', icon: 'M3 4h2l2.4 11.2h11L21 8H6M9 20h.01M19 20h.01' },
-  { title: 'Money Transfer', text: 'Envía dinero de forma sencilla y segura.', to: '/money-transfer', icon: 'M7 7h11l-3-3m3 3-3 3m2 7H6l3 3m-3-3 3-3M12 3a9 9 0 1 0 9 9' },
-  { title: 'Tienda Bodipo', text: 'Productos y oportunidades seleccionadas.', to: '/tienda', icon: 'M3 10h18l-2-6H5l-2 6Zm2 0v10h14V10M9 20v-6h6v6' },
-];
-
-const LineIcon = ({ path, className = 'h-9 w-9' }: { path: string; className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d={path} />
+const Arrow = () => (
+  <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <path d="M3 10h13m-5-5 5 5-5 5" />
   </svg>
 );
 
@@ -41,67 +35,104 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
   };
 
   return (
-    <main className="bg-white text-[#00151a]">
-      <section className="relative min-h-[610px] overflow-hidden bg-[#00151a]">
-        <img src={heroImage} alt="Servicio logístico de Bodipo Business" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#00151a]/95 via-[#00151a]/72 to-[#00151a]/35" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#00151a]/75 via-transparent to-black/15" />
+    <main className="overflow-hidden bg-[#f5f1e8] text-[#06272b]">
+      <section className="relative isolate min-h-[720px] bg-[#06272b]">
+        <div className="absolute inset-y-0 right-0 hidden w-[54%] overflow-hidden lg:block">
+          <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06272b] via-[#06272b]/25 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#06272b]/60 to-transparent" />
+        </div>
+        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
+        <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
 
-        <div className="relative mx-auto flex min-h-[610px] max-w-7xl flex-col items-center justify-center px-4 pb-12 pt-16 text-center sm:px-6 lg:px-8">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }} className="max-w-4xl text-white">
-            <span className="mb-4 inline-flex rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[.22em] backdrop-blur-sm">Logística, comercio y servicios</span>
-            <h1 className="text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">{hero?.title || 'Conectamos lo que importa'}</h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/85 sm:text-xl">{hero?.subtitle || 'Soluciones de envío y servicios internacionales pensados para acercarte a nuevas oportunidades.'}</p>
+        <div className="relative mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.02fr_.98fr] lg:px-10">
+          <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 max-w-2xl">
+            <div className="mb-8 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
+              <span className="h-px w-12 bg-[#ffbd59]" />
+              Desde Guinea Ecuatorial al mundo
+            </div>
+            <h1 className="max-w-xl text-5xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-7xl">
+              {hero?.title || 'Movemos oportunidades.'}
+            </h1>
+            <p className="mt-7 max-w-lg text-lg leading-relaxed text-[#c8dad7]">
+              {hero?.subtitle || 'Envíos, comercio y servicios financieros conectados por un equipo que conoce tu realidad.'}
+            </p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-7 py-4 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
+                Calcular un envío <Arrow />
+              </Link>
+              <button onClick={onOpenContact} className="group inline-flex items-center gap-3 border border-white/30 px-7 py-4 text-xs font-black uppercase tracking-[.13em] text-white transition hover:border-white hover:bg-white hover:text-[#06272b]">
+                Hablar con Bodipo <Arrow />
+              </button>
+            </div>
           </motion.div>
 
-          <div className="mt-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden shadow-2xl sm:grid-cols-3">
-            {actions.map((action) => (
-              <Link key={action.title} to={action.to} className={`group flex min-h-32 items-center justify-center gap-4 border-b border-gray-200 px-5 py-6 text-left transition sm:flex-col sm:gap-2 sm:border-b-0 sm:border-r sm:text-center last:border-0 ${action.featured ? 'bg-[#007e85] text-white hover:bg-[#006a70]' : 'bg-white text-[#00151a] hover:bg-teal-50'}`}>
-                <LineIcon path={action.icon} />
-                <div><strong className="block text-sm font-black uppercase tracking-wide">{action.title}</strong><span className={`mt-1 block text-xs ${action.featured ? 'text-white/75' : 'text-gray-500'}`}>{action.subtitle}</span></div>
-              </Link>
-            ))}
+          <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, delay: .15 }} className="relative z-20 lg:ml-auto lg:w-[440px] lg:translate-y-24">
+            <div className="border border-white/15 bg-[#f5f1e8] p-7 shadow-[0_28px_80px_rgba(0,0,0,.28)] sm:p-9">
+              <div className="flex items-start justify-between gap-5">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[.25em] text-[#007e85]">Centro de seguimiento</p>
+                  <h2 className="mt-2 text-2xl font-black tracking-tight">¿Dónde está tu envío?</h2>
+                </div>
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#06272b] text-[#ffbd59]">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" /></svg>
+                </span>
+              </div>
+              <form onSubmit={submitTracking} className="mt-8">
+                <label htmlFor="home-tracking" className="text-xs font-bold text-[#48625f]">Introduce tu número de seguimiento</label>
+                <div className="mt-3 border-b-2 border-[#06272b] pb-2">
+                  <input id="home-tracking" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())} placeholder="Ej. BOD-2026-0001" className="w-full bg-transparent py-3 font-mono text-lg font-bold uppercase outline-none placeholder:text-[#93a5a2]" />
+                </div>
+                <button type="submit" className="group mt-6 flex w-full items-center justify-between bg-[#007e85] px-6 py-4 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-[#06272b]">
+                  Consultar recorrido <Arrow />
+                </button>
+              </form>
+              <div className="mt-7 grid grid-cols-2 gap-3 border-t border-[#d8d3c9] pt-6 text-xs">
+                <Link to="/tarifas" className="group font-black uppercase tracking-wider text-[#48625f] hover:text-[#007e85]">Tarifas <span aria-hidden="true">↗</span></Link>
+                <Link to="/calendario" className="group text-right font-black uppercase tracking-wider text-[#48625f] hover:text-[#007e85]">Salidas <span aria-hidden="true">↗</span></Link>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 lg:px-10 lg:pt-40">
+        <div className="grid gap-10 border-b border-[#cfc8bc] pb-14 lg:grid-cols-[.75fr_1.25fr] lg:items-end">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">El ecosistema Bodipo</p>
+            <h2 className="mt-4 text-4xl font-black leading-none tracking-[-.035em] sm:text-6xl">Una cuenta.<br />Más caminos.</h2>
           </div>
-
-          <form onSubmit={submitTracking} className="mt-5 flex w-full max-w-3xl flex-col gap-3 sm:flex-row sm:gap-0" aria-label="Seguimiento de envíos">
-            <label htmlFor="home-tracking" className="sr-only">Número de seguimiento</label>
-            <input id="home-tracking" value={trackingId} onChange={(e) => setTrackingId(e.target.value.toUpperCase())} placeholder="NÚMERO DE SEGUIMIENTO" className="min-h-16 flex-1 border-0 bg-white px-6 text-base font-semibold uppercase text-[#00151a] outline-none ring-[#007e85] placeholder:text-gray-400 focus:ring-4" />
-            <button type="submit" className="min-h-16 bg-[#f59e0b] px-9 text-sm font-black uppercase tracking-[.12em] text-[#00151a] transition hover:bg-amber-400">Buscar</button>
-          </form>
-        </div>
-      </section>
-
-      <section className="px-4 py-10 sm:px-6">
-        <Link to="/calendario" className="mx-auto flex max-w-5xl items-start gap-4 border-l-4 border-[#f59e0b] bg-amber-50 px-5 py-5 text-sm text-gray-700 transition hover:bg-amber-100 sm:items-center">
-          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f59e0b] font-black text-[#00151a] sm:mt-0">!</span>
-          <span><strong className="text-[#00151a]">Planifica tu próximo envío.</strong> Consulta fechas de salida, destinos y disponibilidad en nuestro calendario.</span>
-          <span className="ml-auto hidden font-black text-[#007e85] sm:block">Ver calendario →</span>
-        </Link>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <p className="text-xs font-black uppercase tracking-[.25em] text-[#007e85]">Todo en un solo lugar</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">Gestiona tus operaciones</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-gray-600">Accede rápidamente a los servicios de Bodipo Business y elige la solución que necesitas.</p>
+          <p className="max-w-xl text-lg leading-relaxed text-[#48625f] lg:ml-auto">
+            Hemos reunido las operaciones que más utilizas para que puedas pasar de planificar a actuar sin perder tiempo.
+          </p>
         </div>
 
-        <div className="mt-14 grid gap-px overflow-hidden border border-gray-200 bg-gray-200 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((service) => (
-            <Link key={service.title} to={service.to} className="group bg-white px-7 py-10 text-center transition hover:bg-teal-50">
-              <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#007e85] text-[#007e85] transition group-hover:bg-[#007e85] group-hover:text-white"><LineIcon path={service.icon} /></span>
-              <h3 className="mt-6 text-base font-black uppercase tracking-wide">{service.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">{service.text}</p>
-              <span className="mt-5 inline-block text-xs font-black uppercase tracking-widest text-[#007e85]">Acceder →</span>
-            </Link>
+        <div className="grid lg:grid-cols-2">
+          {operations.map((operation, index) => (
+            <motion.div key={operation.number} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .25 }} transition={{ delay: index * .08 }}>
+              <Link to={operation.to} className={`group block min-h-[280px] border-[#cfc8bc] py-10 transition hover:bg-white/70 lg:p-12 ${index % 2 === 0 ? 'lg:border-r' : ''} ${index < 2 ? 'border-b' : ''}`}>
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-sm font-bold text-[#007e85]">{operation.number}</span>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#8ba09d] transition group-hover:border-[#007e85] group-hover:bg-[#007e85] group-hover:text-white"><Arrow /></span>
+                </div>
+                <h3 className="mt-12 text-2xl font-black tracking-tight sm:text-3xl">{operation.title}</h3>
+                <p className="mt-4 max-w-sm leading-relaxed text-[#5d716e]">{operation.text}</p>
+                <span className="mt-8 inline-block text-[11px] font-black uppercase tracking-[.18em] text-[#007e85]">{operation.action}</span>
+              </Link>
+            </motion.div>
           ))}
         </div>
+      </section>
 
-        <div className="mt-16 flex flex-col items-center justify-between gap-7 bg-[#00151a] px-7 py-10 text-white sm:flex-row sm:px-12">
-          <div><p className="text-xs font-black uppercase tracking-[.2em] text-teal-300">¿Necesitas ayuda?</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">Te ayudamos a elegir la mejor solución.</h2></div>
-          <div className="flex shrink-0 flex-wrap gap-3">
-            <button onClick={onOpenContact} className="border border-white/40 px-6 py-3 text-xs font-black uppercase tracking-wider transition hover:bg-white hover:text-[#00151a]">Contactar</button>
-            <button onClick={onOpenRegister} className="bg-[#f59e0b] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#00151a] transition hover:bg-amber-400">Crear cuenta</button>
+      <section className="bg-[#007e85] text-white">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[.24em] text-[#b9eee8]">Tu próximo paso</p>
+            <h2 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">La distancia no debería limitar tus oportunidades.</h2>
+          </div>
+          <div className="flex flex-wrap gap-3 lg:justify-end">
+            <button onClick={onOpenRegister} className="bg-[#ffbd59] px-7 py-4 text-xs font-black uppercase tracking-[.14em] text-[#06272b] transition hover:bg-white">Crear una cuenta</button>
+            <button onClick={onOpenContact} className="border border-white/40 px-7 py-4 text-xs font-black uppercase tracking-[.14em] transition hover:bg-white hover:text-[#06272b]">Contactar</button>
           </div>
         </div>
       </section>
