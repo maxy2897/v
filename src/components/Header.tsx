@@ -45,19 +45,19 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
 
-              <Link to="/" className="flex items-center space-x-2 group relative z-20">
-                <div className="flex items-center justify-center w-14 h-14 md:w-[72px] md:h-[72px] bg-transparent rounded-full transition-transform p-0.5">
+              <Link to="/" className="flex items-center gap-3 group relative z-20">
+                <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-transparent rounded-full overflow-visible">
                   {config.customLogoUrl ? (
-                    <img src={config.customLogoUrl} className="h-full w-full object-contain drop-shadow-[0_0_1px_rgba(255,255,255,1)] drop-shadow-[0_0_4px_rgba(255,255,255,0.65)]" alt="Logo" />
+                    <img src={config.customLogoUrl} className="h-full w-full scale-[1.45] object-contain drop-shadow-[0_0_1px_rgba(255,255,255,1)] drop-shadow-[0_0_4px_rgba(255,255,255,0.65)]" alt="Logo" />
                   ) : (
                     <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block">{config.logoText}</span>
                   )}
                 </div>
                 <div className="flex flex-col justify-center leading-none pointer-events-none text-white">
-                  <span className="text-lg md:text-2xl font-black tracking-tight uppercase drop-shadow-sm">
+                  <span className="text-base md:text-xl font-black tracking-tight uppercase drop-shadow-sm">
                     Bodipo
                   </span>
-                  <span className="mt-1 text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">
+                  <span className="mt-1 text-base md:text-xl font-black tracking-tight uppercase">
                     Business
                   </span>
                 </div>
