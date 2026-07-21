@@ -67,8 +67,7 @@ const Tracking: React.FC = () => {
   };
 
   return (
-    <section id="rastreo" className="py-20 relative overflow-hidden [clip-path:inset(0)]">
-      <div className="fixed inset-0 z-0 bg-[url('/images/bg/tracking-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
+    <section id="rastreo" className="py-20 relative overflow-hidden bg-white [clip-path:inset(0)]">
       <div className="max-w-4xl mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 60, scale: 0.98 }}

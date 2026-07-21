@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { dirname, join } from 'path';
 import fs from 'fs';
 import connectDB from './config/db.js';
@@ -57,6 +59,25 @@ const corsOptions = {
         } else {
             callback(new Error('No permitido por CORS'));
         }
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false
+});
+const sensitiveLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: { message: 'Demasiados intentos. Int?ntalo de nuevo m?s tarde.' }
+});
+app.use('/api', apiLimiter);
+
     },
     credentials: true,
     optionsSuccessStatus: 200
@@ -64,11 +85,11 @@ const corsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', sensitiveLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transfers', transferRoutes);
 app.use('/api/shipments', shipmentRoutes);
@@ -79,7 +100,12 @@ import transactionRoutes from './routes/transactions.js';
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/chat', chatRoutes);
+app.use('/api/chat', sensitiveLimiter, chatRoutes);
+const privateUploadsDir = join(__dirname, '../private_uploads');
+if (!fs.existsSync(privateUploadsDir)) {
+    fs.mkdirSync(privateUploadsDir, { recursive: true });
+}
+
 
 // Servir carpeta de uploads estáticamente
 const uploadsDir = join(__dirname, '../uploads');

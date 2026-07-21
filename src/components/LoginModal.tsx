@@ -105,11 +105,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                                     const user = await signInWithGoogle();
                                     console.log('Google Login success, registering with social...', user);
                                     await registerWithSocial({
-                                        name: user.displayName,
-                                        email: user.email,
-                                        photoUrl: user.photoURL,
-                                        provider: 'google',
-                                        uid: user.uid
+                                        idToken: await user.getIdToken()
                                     });
                                     console.log('Social registration success, closing modal...');
                                     onClose();

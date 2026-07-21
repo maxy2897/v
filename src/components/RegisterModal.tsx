@@ -124,11 +124,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                   const user = await signInWithGoogle();
                   console.log('Google Register success, creating account...', user);
                   await registerWithSocial({
-                    name: user.displayName,
-                    email: user.email,
-                    photoUrl: user.photoURL,
-                    provider: 'google',
-                    uid: user.uid
+                    idToken: await user.getIdToken()
                   });
                   onClose();
                   alert(t('register.success'));

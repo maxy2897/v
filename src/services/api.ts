@@ -54,11 +54,7 @@ export const register = async (userData: {
 
 // Social Login (Google/Apple)
 export const socialLogin = async (userData: {
-    name: string;
-    email: string;
-    photoUrl?: string;
-    provider: 'google' | 'apple';
-    uid: string;
+    idToken: string;
 }) => {
     const response = await fetch(`${API_URL}/auth/social-login`, {
         method: 'POST',
@@ -146,11 +142,11 @@ export const updateProfile = async (userData: FormData | {
 }) => {
     // Determinar headers: si es FormData (tiene archivo o imagen), dejar que browser setee Content-Type
     const isFormData = userData instanceof FormData;
-    const headers = isFormData ? {} : { 'Content-Type': 'application/json' };
+    const headers: Record<string, string> = isFormData ? {} : { 'Content-Type': 'application/json' };
     const body = isFormData ? userData : JSON.stringify(userData);
 
     const token = getToken();
-    const finalHeaders = {
+    const finalHeaders: HeadersInit = {
         ...headers,
         ...(token && { Authorization: `Bearer ${token}` }),
     };

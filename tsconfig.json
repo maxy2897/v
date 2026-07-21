@@ -27,5 +27,13 @@
     "noEmit": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": [
+    "index.tsx",
+    "App.tsx",
+    "types.ts",
+    "vite.config.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
 }

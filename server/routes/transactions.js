@@ -85,16 +85,18 @@ router.patch('/:id', protect, admin, async (req, res) => {
  * @desc    Download receipt PDF
  * @route   GET /api/transactions/:id/receipt
  */
-router.get('/:id/receipt', async (req, res) => {
+router.get('/:id/receipt', protect, async (req, res) => {
     try {
         const transaction = await Transaction.findById(req.params.id);
         if (!transaction) {
             return res.status(404).json({ message: 'Transaction not found' });
         }
+        const canViewAllReceipts = ['admin', 'admin_finance', 'admin_tech'].includes(req.user.role);
+        const ownsReceipt = transaction.userId && transaction.userId.equals(req.user._id);
+        if (!canViewAllReceipts && !ownsReceipt) {
+            return res.status(403).json({ message: 'No autorizado para consultar este recibo' });
+        }
 
-        // TODO: Add proper ownership check if strictly private
-        // For now, allowing download if they have the ID (presumed they got it from the success screen)
-        // Ideally: if (transaction.userId && (!req.user || !transaction.userId.equals(req.user._id))) ...
 
         const buffer = await generateWordReceipt(transaction);
 

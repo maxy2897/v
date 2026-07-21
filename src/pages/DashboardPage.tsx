@@ -410,7 +410,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
 
     return (
         <>
-            <div className="min-h-screen bg-transparent">
+            <div className="min-h-screen bg-white">
                 <div className="flex flex-col md:flex-row min-h-screen">
 
                     {/* Wallapop Sidebar */}
@@ -495,7 +495,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                     </aside>
 
                     {/* Main Content Area */}
-                    <main className={`flex-grow bg-transparent pt-24 pb-12 px-6 md:px-12 overflow-y-auto ${isMobileMenu ? 'hidden md:block' : 'block'}`}>
+                    <main className={`flex-grow bg-white pt-24 pb-12 px-6 md:px-12 overflow-y-auto ${isMobileMenu ? 'hidden md:block' : 'block'}`}>
                         <div className="max-w-4xl">
 
                             {/* Mobile Back Button */}

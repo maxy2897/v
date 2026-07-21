@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, roleManager, finance } from '../middleware/auth.js';
 import User from '../models/User.js';
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 // @route   GET /api/admin/users
 // @desc    Admin dashboard data
 // @access  Private/SuperAdmin
-router.get('/users', protect, admin, async (req, res) => {
+router.get('/users', protect, roleManager, async (req, res) => {
     try {
         if (!['admin', 'admin_tech'].includes(req.user.role)) {
             return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
@@ -22,7 +22,7 @@ router.get('/users', protect, admin, async (req, res) => {
 // @route   PUT /api/admin/users/:id/role
 // @desc    Update user role
 // @access  Private/SuperAdmin
-router.put('/users/:id/role', protect, async (req, res) => {
+router.put('/users/:id/role', protect, roleManager, async (req, res) => {
     try {
         // Solo el administrador principal o técnico puede asignar roles a otros
         if (!['admin', 'admin_tech'].includes(req.user.role)) {
@@ -68,7 +68,7 @@ import Notification from '../models/Notification.js';
 // @route   DELETE /api/admin/users/:id
 // @desc    Delete user and all their associated data
 // @access  Private/SuperAdmin
-router.delete('/users/:id', protect, async (req, res) => {
+router.delete('/users/:id', protect, roleManager, async (req, res) => {
     try {
         if (!['admin', 'admin_tech'].includes(req.user.role)) {
             return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
@@ -105,7 +105,7 @@ router.delete('/users/:id', protect, async (req, res) => {
 // @route   POST /api/admin/users/:id/password
 // @desc    Solicitar cambio de contraseña al usuario
 // @access  Private/SuperAdmin
-router.post('/users/:id/password', protect, async (req, res) => {
+router.post('/users/:id/password', protect, roleManager, async (req, res) => {
     try {
         if (!['admin', 'admin_tech'].includes(req.user.role)) {
             return res.status(403).json({ message: 'No autorizado, requiere privilegios de Administrador Principal o Técnico' });
@@ -145,7 +145,7 @@ router.post('/users/:id/password', protect, async (req, res) => {
 // @route   PUT /api/admin/users/:id/virtual-card
 // @desc    Actualizar o activar tarjeta virtual de usuario
 // @access  Private/Admin
-router.put('/users/:id/virtual-card', protect, async (req, res) => {
+router.put('/users/:id/virtual-card', protect, finance, async (req, res) => {
     try {
         if (!['admin', 'admin_tech', 'admin_finance'].includes(req.user.role)) {
             return res.status(403).json({ message: 'No autorizado' });

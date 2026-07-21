@@ -1,5 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
@@ -135,7 +138,54 @@ router.post(
 // @desc    Login/Registro con Google/Apple
 // @access  Public
 router.post('/social-login', async (req, res) => {
+    const { idToken } = req.body;
+    if (!idToken || typeof idToken !== 'string') {
+        return res.status(400).json({ message: 'Token social requerido' });
+    }
+    try {
+        const firebaseApp = getApps()[0] || initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID || 'bodipo-business' });
+        const decoded = await getAdminAuth(firebaseApp).verifyIdToken(idToken, true);
+        const provider = decoded.firebase?.sign_in_provider;
+        if (!decoded.email || decoded.email_verified !== true || !['google.com', 'apple.com'].includes(provider)) {
+            return res.status(401).json({ message: 'Identidad social no verificada' });
+        }
+        const email = decoded.email.toLowerCase();
+        let user = await User.findOne({ email });
+        const isNewUser = !user;
+        if (!user) {
+            user = await User.create({
+                name: decoded.name || email.split('@')[0],
+                email,
+                password: crypto.randomBytes(32).toString('hex'),
+                username: decoded.uid,
+                profileImage: decoded.picture,
+                emailVerified: true
+            });
+        }
+        return res.status(isNewUser ? 201 : 200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            gender: user.gender,
+            username: user.username,
+            profileImage: user.profileImage,
+            idNumber: user.idNumber,
+            discountEligible: user.discountEligible,
+            virtualCard: user.virtualCard,
+            role: user.role,
+            token: generateToken(user._id),
+        });
+    } catch (error) {
+        console.error('Social login verification failed:', error.message);
+        return res.status(401).json({ message: 'No se pudo verificar la identidad social' });
+    }
+});
+
+router.post('/social-login-legacy-disabled', async (req, res) => {
     const { name, email, photoUrl, provider, uid } = req.body;
+    return res.status(410).json({ message: 'Ruta deshabilitada' });
 
     try {
         // Verificar si usuario existe

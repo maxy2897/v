@@ -57,3 +57,38 @@ export const tech = (req, res, next) => {
         res.status(403).json({ message: 'No autorizado, requiere nivel técnico' });
     }
 };
+
+// Operaciones de logistica: administrador principal, local o tecnico.
+export const logistics = (req, res, next) => {
+    if (req.user && ['admin', 'admin_local', 'admin_tech'].includes(req.user.role)) {
+        return next();
+    }
+    return res.status(403).json({ message: 'No autorizado, requiere acceso a logistica' });
+};
+
+// La gestion de roles queda reservada al administrador principal y al tecnico.
+export const roleManager = (req, res, next) => {
+    if (req.user && ['admin', 'admin_tech'].includes(req.user.role)) {
+        return next();
+    }
+    return res.status(403).json({ message: 'No autorizado, requiere nivel principal o tecnico' });
+};
+
+// Autenticacion opcional para operaciones que tambien admiten invitados.
+export const optionalProtect = async (req, res, next) => {
+    const header = req.headers.authorization;
+    if (!header?.startsWith('Bearer ')) {
+        req.user = null;
+        return next();
+    }
+    try {
+        const decoded = jwt.verify(header.split(' ')[1], process.env.JWT_SECRET);
+        req.user = await User.findById(decoded.id).select('-password');
+        if (!req.user) {
+            return res.status(401).json({ message: 'Usuario no encontrado' });
+        }
+        return next();
+    } catch (error) {
+        return res.status(401).json({ message: 'Token invalido' });
+    }
+};

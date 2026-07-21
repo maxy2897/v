@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html,
+  body,
+  #root {
+    background: #ffffff;
+  }
+}
 @layer utilities {
   @keyframes spinY {
     0% {

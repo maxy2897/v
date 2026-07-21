@@ -797,7 +797,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col md:flex-row h-screen italic-none relative">
+    <div className="min-h-screen bg-white flex flex-col md:flex-row h-screen italic-none relative">
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -935,7 +935,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
        </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen bg-[#f8fafc] overflow-y-auto w-full relative custom-scrollbar">
+      <div className="flex-1 flex flex-col h-screen bg-white overflow-y-auto w-full relative custom-scrollbar">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 md:gap-8">
             <button 

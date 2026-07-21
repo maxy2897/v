@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator';
 import Transfer from '../models/Transfer.js';
 import Transaction from '../models/Transaction.js';
 import Notification from '../models/Notification.js';
+import { optionalProtect } from '../middleware/auth.js';
 
 import User from '../models/User.js';
 
@@ -12,7 +13,7 @@ const router = express.Router();
 // Configurar multer para subida de imágenes
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/');
+        cb(null, 'private_uploads/');
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -36,13 +37,13 @@ const upload = multer({
 // @route   POST /api/transfers
 // @desc    Crear nueva solicitud de transferencia
 // @access  Public (se recomienda autenticación opcional)
-router.post('/', upload.single('proofImage'), [
+router.post('/', optionalProtect, upload.single('proofImage'), [
     // Validaciones básicas que no dependen de multer
     // Nota: express-validator puede tener problemas con form-data si no se configura bien,
     // pero aquí validaremos manualmente los campos requeridos si faltan.
 ], async (req, res) => {
     try {
-        const { sender, beneficiary, amount, currency, direction, user, category, description, type: reqType } = req.body;
+        const { sender, beneficiary, amount, currency, direction, category, description, type: reqType } = req.body;
 
         // Parsear objetos JSON si vienen como strings (form-data a veces hace esto)
         const senderObj = typeof sender === 'string' ? JSON.parse(sender) : sender;
@@ -63,12 +64,12 @@ router.post('/', upload.single('proofImage'), [
             currency: normalizedCurrency,
             direction: direction || 'GQ_ES',
             proofImage: req.file.path,
-            user: user || null
+            user: req.user?._id || null
         });
 
         // Consumir descuento si el usuario existe y es elegible
-        if (user) {
-            const userDoc = await User.findById(user);
+        if (req.user) {
+            const userDoc = await User.findById(req.user._id);
             if (userDoc && userDoc.discountEligible) {
                 userDoc.discountEligible = false;
                 await userDoc.save();
@@ -83,7 +84,7 @@ router.post('/', upload.single('proofImage'), [
         const transaction = await Transaction.create({
             type: transactionType,
             referenceId: transfer._id,
-            userId: user || null,
+            userId: req.user?._id || null,
             onModel: 'Transfer',
             amount: Number(amount),
             currency: normalizedCurrency,

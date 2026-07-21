@@ -25,3 +25,12 @@ dist-ssr
 
 .vercel
 .env*.local
+
+# Secretos y datos generados por usuarios
+.env
+.env.*
+!.env.example
+!.env.production.example
+uploads/
+!uploads/.gitkeep
+private_uploads/

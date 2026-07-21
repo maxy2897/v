@@ -246,7 +246,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                 <ForgotPasswordModal
                     isOpen={isForgotOpen}
                     onClose={() => setIsForgotOpen(false)}
-                    initialEmail={user.email}
+                    initialEmail={user?.email || ''}
                 />
             )}
         </div>

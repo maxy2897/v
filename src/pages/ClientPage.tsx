@@ -12,7 +12,7 @@ interface ClientPageProps {
 
 const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
     const { t } = useSettings();
-    const { login, register, isAuthenticated } = useAuth();
+    const { login, register, registerWithSocial, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -109,9 +109,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-transparent py-20 [clip-path:inset(0)]">
-            {/* Background elements */}
-            <div className="fixed inset-0 z-[-1] bg-[url('/images/bg/hero-map-v3.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
+        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-white py-20 [clip-path:inset(0)]">
 
             <div className="max-w-2xl w-full mx-4">
                 <motion.div
@@ -148,23 +146,13 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                 try {
                                     const { signInWithGoogle } = await import('../firebase');
                                     const user = await signInWithGoogle();
-                                    await register({
-                                        name: user.displayName || '',
-                                        email: user.email || '',
-                                        password: Math.random().toString(36).slice(-8), // Dummy password for social login
-                                        phone: '',
-                                        address: '',
-                                        username: user.uid,
-                                        photoUrl: user.photoURL || '',
-                                        provider: 'google',
-                                        uid: user.uid
+                                    await registerWithSocial({
+                                        idToken: await user.getIdToken()
                                     });
                                     navigate('/dashboard');
                                 } catch (error) {
                                     console.error("Google Login Error:", error);
-                                    // If registration fails (e.g. user exists), try login logic or handle it gracefully
-                                    // Ideally use a unified social auth method
-                                    navigate('/dashboard');
+                                    setError('No se pudo verificar el acceso con Google.');
                                 }
                             }}
                             className="w-full flex items-center justify-center gap-3 py-4 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors group bg-white"

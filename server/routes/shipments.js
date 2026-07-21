@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { protect } from '../middleware/auth.js';
+import { protect, logistics } from '../middleware/auth.js';
 import Shipment from '../models/Shipment.js';
 import User from '../models/User.js';
 import Transaction from '../models/Transaction.js';
@@ -484,7 +484,7 @@ router.get('/track/:trackingNumber', async (req, res) => {
 // @route   POST /api/shipments/bulk-arrival
 // @desc    Mark multiple shipments as arrived at destination
 // @access  Private/Admin
-router.post('/bulk-arrival', protect, async (req, res) => {
+router.post('/bulk-arrival', protect, logistics, async (req, res) => {
     try {
         const { shipmentIds } = req.body;
 
@@ -529,7 +529,7 @@ router.post('/bulk-arrival', protect, async (req, res) => {
 // @route   POST /api/shipments/manifest
 // @desc    Create a collective package (manifest)
 // @access  Private/Admin
-router.post('/manifest', protect, async (req, res) => {
+router.post('/manifest', protect, logistics, async (req, res) => {
     try {
         const { shipmentIds, description } = req.body;
         if (!shipmentIds || !Array.isArray(shipmentIds) || shipmentIds.length === 0) {
@@ -555,7 +555,7 @@ router.post('/manifest', protect, async (req, res) => {
 // @route   GET /api/shipments/manifest/:manifestId
 // @desc    Get manifest by ID and its shipments
 // @access  Private/Admin
-router.get('/manifest/:manifestId', protect, async (req, res) => {
+router.get('/manifest/:manifestId', protect, logistics, async (req, res) => {
     try {
         const manifest = await Manifest.findOne({ manifestId: req.params.manifestId.toUpperCase() })
             .populate({
@@ -577,7 +577,7 @@ router.get('/manifest/:manifestId', protect, async (req, res) => {
 // @route   PATCH /api/shipments/manifest/:manifestId/status
 // @desc    Update all shipments in a manifest
 // @access  Private/Admin
-router.patch('/manifest/:manifestId/status', protect, async (req, res) => {
+router.patch('/manifest/:manifestId/status', protect, logistics, async (req, res) => {
     try {
         const { status } = req.body;
         const manifest = await Manifest.findOne({ manifestId: req.params.manifestId.toUpperCase() });

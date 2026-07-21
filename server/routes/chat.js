@@ -189,8 +189,7 @@ router.post('/response', async (req, res) => {
         }
 
         res.status(500).json({
-            error: `Error en servidor: ${errorMsg}`,
-            details: error.stack
+            error: `Error en servidor: ${errorMsg}`
         });
     }
 });

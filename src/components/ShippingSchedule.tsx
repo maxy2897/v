@@ -100,8 +100,7 @@ const ShippingSchedule: React.FC = () => {
     .sort((a, b) => a.dist - b.dist);
 
   return (
-    <section id="calendario" className="pt-10 pb-24 relative overflow-hidden [clip-path:inset(0)]">
-      <div className="fixed inset-0 z-0 bg-[url('/images/bg/calendar-net-v2.png')] bg-cover bg-center blur-[3px] brightness-[1.2] pointer-events-none"></div>
+    <section id="calendario" className="pt-10 pb-24 relative overflow-hidden bg-white [clip-path:inset(0)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-2 gap-6 w-full">
           <div className="max-w-xl shrink-0 pt-2">
