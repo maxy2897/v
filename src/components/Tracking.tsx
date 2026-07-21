@@ -4,7 +4,7 @@ import { useSettings } from '../context/SettingsContext';
 
 const Tracking: React.FC = () => {
   const { t } = useSettings();
-  const [trackingId, setTrackingId] = useState('');
+  const [trackingId, setTrackingId] = useState(() => new URLSearchParams(window.location.search).get('codigo')?.trim().toUpperCase() || '');
   const [found, setFound] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [shipmentData, setShipmentData] = useState<any>(null);

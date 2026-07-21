@@ -1,224 +1,112 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 
 interface HomePageProps {
-    onOpenRegister: () => void;
-    onOpenContact: () => void;
+  onOpenRegister: () => void;
+  onOpenContact: () => void;
 }
 
+const actions = [
+  { title: 'Tarifas y tiempos', subtitle: 'Calcula tu envío', to: '/tarifas', icon: 'M4 3h16v18H4zM8 7h8M8 12h2m4 0h2M8 16h2m4 0h2' },
+  { title: 'Seguimiento', subtitle: 'Localiza tu paquete', to: '/rastreo', featured: true, icon: 'M10 18a8 8 0 1 1 5.3-2m5.7 5-5.2-5.2M9 8h5v5H9z' },
+  { title: 'Realizar un envío', subtitle: 'Empieza ahora', to: '/tarifas', icon: 'm21 8-9-5-9 5 9 5 9-5ZM3 8v8l9 5 9-5V8m-9 5v8' },
+];
+
+const services = [
+  { title: 'Próximas salidas', text: 'Consulta nuestro calendario de envíos.', to: '/calendario', icon: 'M3 5h18v16H3zM8 3v4m8-4v4M3 10h18' },
+  { title: 'Compras online', text: 'Compra en tus tiendas favoritas sin fronteras.', to: '/compras-online', icon: 'M3 4h2l2.4 11.2h11L21 8H6M9 20h.01M19 20h.01' },
+  { title: 'Money Transfer', text: 'Envía dinero de forma sencilla y segura.', to: '/money-transfer', icon: 'M7 7h11l-3-3m3 3-3 3m2 7H6l3 3m-3-3 3-3M12 3a9 9 0 1 0 9 9' },
+  { title: 'Tienda Bodipo', text: 'Productos y oportunidades seleccionadas.', to: '/tienda', icon: 'M3 10h18l-2-6H5l-2 6Zm2 0v10h14V10M9 20v-6h6v6' },
+];
+
+const LineIcon = ({ path, className = 'h-9 w-9' }: { path: string; className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d={path} />
+  </svg>
+);
+
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) => {
-    const { t, appConfig } = useSettings();
+  const { appConfig } = useSettings();
+  const navigate = useNavigate();
+  const [trackingId, setTrackingId] = useState('');
+  const hero = appConfig?.content?.hero;
+  const heroImage = hero?.heroImage || '/images/foto-original.jpg';
 
-    return (
-        <div className="relative font-['Poppins'] bg-white text-[#00151a] overflow-hidden selection:bg-teal-500/30">
+  const submitTracking = (event: React.FormEvent) => {
+    event.preventDefault();
+    const code = trackingId.trim().toUpperCase();
+    navigate(code ? `/rastreo?codigo=${encodeURIComponent(code)}` : '/rastreo');
+  };
 
-            {/* 2. Sección Hero */}
-            <section className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 min-h-[90vh] flex items-center [clip-path:inset(0)]">
-                {/* Fondo de Mapa con mayor visibilidad y efecto parallax nativo */}
+  return (
+    <main className="bg-white text-[#00151a]">
+      <section className="relative min-h-[610px] overflow-hidden bg-[#00151a]">
+        <img src={heroImage} alt="Servicio logístico de Bodipo Business" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#00151a]/95 via-[#00151a]/72 to-[#00151a]/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#00151a]/75 via-transparent to-black/15" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-                    <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="lg:col-span-7 space-y-6"
-                        >
-                            <h1 
-                                className="text-5xl md:text-6xl lg:text-7xl font-['Montserrat'] bg-clip-text text-transparent bg-gradient-to-b from-[#0a1b1d] to-[#040e0f] drop-shadow-[0_0_20px_rgba(200,250,245,0.7)] tracking-tighter leading-[0.9] font-black [-webkit-text-stroke:2px_#f0fdfc]"
-                            >
-                                Servicio<br />
-                                Internacional
-                            </h1>
+        <div className="relative mx-auto flex min-h-[610px] max-w-7xl flex-col items-center justify-center px-4 pb-12 pt-16 text-center sm:px-6 lg:px-8">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }} className="max-w-4xl text-white">
+            <span className="mb-4 inline-flex rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[.22em] backdrop-blur-sm">Logística, comercio y servicios</span>
+            <h1 className="text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">{hero?.title || 'Conectamos lo que importa'}</h1>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/85 sm:text-xl">{hero?.subtitle || 'Soluciones de envío y servicios internacionales pensados para acercarte a nuevas oportunidades.'}</p>
+          </motion.div>
 
-                            <p className="text-xl md:text-2xl text-teal-950 max-w-2xl leading-relaxed font-semibold">
-                                Deja tus gestiones en nuestras manos y olvídate del estrés.
-                            </p>
+          <div className="mt-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden shadow-2xl sm:grid-cols-3">
+            {actions.map((action) => (
+              <Link key={action.title} to={action.to} className={`group flex min-h-32 items-center justify-center gap-4 border-b border-gray-200 px-5 py-6 text-left transition sm:flex-col sm:gap-2 sm:border-b-0 sm:border-r sm:text-center last:border-0 ${action.featured ? 'bg-[#007e85] text-white hover:bg-[#006a70]' : 'bg-white text-[#00151a] hover:bg-teal-50'}`}>
+                <LineIcon path={action.icon} />
+                <div><strong className="block text-sm font-black uppercase tracking-wide">{action.title}</strong><span className={`mt-1 block text-xs ${action.featured ? 'text-white/75' : 'text-gray-500'}`}>{action.subtitle}</span></div>
+              </Link>
+            ))}
+          </div>
 
-                            {/* Desktop only: Buttons and Testimonials (Hidden on mobile) */}
-                            <div className="hidden lg:block">
-                                <div className="flex flex-row gap-4 pt-4">
-                                    <Link to="/tarifas" className="px-10 py-4 bg-[#1b3d41] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10 w-full sm:w-auto text-center">
-                                        REALIZAR ENVÍO
-                                    </Link>
-                                    <button 
-                                        onClick={onOpenContact}
-                                        className="px-10 py-4 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-2xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 w-full sm:w-auto text-center"
-                                    >
-                                        CONTACTAR
-                                    </button>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-full sm:w-[260px] shadow-2xl"
-                                    >
-                                        <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="María R." />
-                                        <div>
-                                            <p className="text-[12px] font-bold text-gray-900 mb-0.5">Reseña</p>
-                                            <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
-                                            <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - María R.</p>
-                                        </div>
-                                    </motion.div>
-
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2 }}
-                                        className="bg-white text-gray-900 p-3 rounded-2xl flex items-center gap-3 w-full sm:w-[260px] shadow-2xl"
-                                    >
-                                        <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="Martín G." />
-                                        <div>
-                                            <p className="text-[12px] font-bold text-gray-900 mb-0.5">Reseña</p>
-                                            <div className="flex gap-0.5 mb-1 text-[12px] text-yellow-400">⭐⭐⭐⭐⭐</div>
-                                            <p className="text-[11px] leading-tight font-medium text-gray-700">"Excelente servicio para mi negocio." - Martín G.</p>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Right Panel (Two Boys Image + RAM/Ethiopian Overlays) */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className="lg:col-span-5 mt-16 lg:mt-0 relative"
-                        >
-                            <div className="relative rounded-[2.5rem] overflow-hidden bg-transparent shadow-2xl h-[550px] lg:h-[650px] w-full border-2 border-white/10 group">
-                                <img
-                                    className="w-full h-full object-cover"
-                                    src="/images/foto-original.jpg"
-                                    alt="Equipo BodipoBusiness"
-                                />
-                                
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#00151a]/95 via-[#00151a]/50 to-transparent"></div>
-
-                                {/* Floating Logos Overlay from Screenshot */}
-                                <div className="absolute bottom-6 left-0 right-0 px-6 xl:px-8 z-20 flex flex-col gap-6">
-                                    <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
-                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-16 sm:h-28 md:h-32">
-                                            <img src="/images/logos/ram-logo.png" alt="Royal Air Maroc" className="h-full object-contain filter drop-shadow-xl scale-125" />
-                                        </div>
-                                        <div className="flex items-center p-1 hover:scale-110 transition-transform h-16 sm:h-28 md:h-32">
-                                            <img src="/images/logos/ethiopian-logo.png" alt="Ethiopian Airlines" className="h-full object-contain filter drop-shadow-xl" />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-wrap items-center justify-between gap-4 text-white">
-                                        <div className="flex items-center gap-2">
-                                            <svg className="w-6 h-6 md:w-8 md:h-8 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                                            <span className="text-[10px] md:text-sm font-bold leading-tight">Pagos<br/>Seguros<br/>SSL</span>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-xs md:text-base font-bold leading-tight">Entregas<br/>Certificadas</span>
-                                        </div>
-                                        <div className="font-extrabold italic text-xl md:text-3xl tracking-tighter shrink-0 border-y-2 border-white/20 py-0.5">
-                                            DHL
-                                        </div>
-                                        <div className="flex flex-col items-center shrink-0">
-                                            <span className="font-black text-lg md:text-3xl tracking-tighter leading-none">FedEx<span className="text-[8px] md:text-xs align-top font-bold">®</span></span>
-                                            <span className="text-[7px] md:text-[9px] font-medium tracking-widest mt-0.5">Logística</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Mobile only: Buttons and Testimonials (Positioned after image) */}
-                        <div className="lg:hidden mt-8 space-y-6 w-full">
-                            <div className="flex flex-row gap-2">
-                                <Link to="/tarifas" className="flex-1 py-4 px-2 bg-[#1b3d41] text-white rounded-xl font-bold text-[10px] md:text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 border border-white/10 text-center flex items-center justify-center leading-tight">
-                                    REALIZAR<br/>ENVÍO
-                                </Link>
-                                <button 
-                                    onClick={onOpenContact}
-                                    className="flex-1 py-4 px-2 bg-gradient-to-r from-[#6baba4] to-[#4b968d] text-white rounded-xl font-bold text-[10px] md:text-xs uppercase tracking-wider hover:opacity-90 transition-all shadow-xl active:scale-95 text-center flex items-center justify-center leading-tight"
-                                >
-                                    CONTACTAR
-                                </button>
-                            </div>
-
-                            <div className="flex flex-col gap-4">
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    className="bg-white text-gray-900 p-4 rounded-2xl flex items-center gap-4 w-full shadow-2xl border border-gray-100"
-                                >
-                                    <img src="https://i.pravatar.cc/150?u=maria" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="María R." />
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-900 mb-0.5">Reseña</p>
-                                        <div className="flex gap-0.5 mb-1 text-[10px] text-yellow-400">⭐⭐⭐⭐⭐</div>
-                                        <p className="text-[11px] leading-snug font-medium text-gray-700">"Excelente servicio para mi negocio." - María R.</p>
-                                    </div>
-                                </motion.div>
-
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: 0.1 }}
-                                    className="bg-white text-gray-900 p-4 rounded-2xl flex items-center gap-4 w-full shadow-2xl border border-gray-100"
-                                >
-                                    <img src="https://i.pravatar.cc/150?u=marta" className="w-14 h-14 rounded-full border-2 border-white shadow-sm shrink-0" alt="Martín G." />
-                                    <div>
-                                        <p className="text-xs font-bold text-gray-900 mb-0.5">Reseña</p>
-                                        <div className="flex gap-0.5 mb-1 text-[10px] text-yellow-400">⭐⭐⭐⭐⭐</div>
-                                        <p className="text-[11px] leading-snug font-medium text-gray-700">"Excelente servicio para mi negocio." - Martín G.</p>
-                                    </div>
-                                </motion.div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Money Transfer restyled to match aesthetic */}
-            <section className="py-24 relative overflow-hidden bg-white [clip-path:inset(0)]">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="bg-[#001a22]/80 backdrop-blur-md rounded-[4rem] overflow-hidden relative border border-white/5 shadow-3xl">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 relative z-10">
-                            <div className="p-12 md:p-24 flex flex-col justify-center space-y-10">
-                                <span className="px-5 py-2 rounded-full border border-teal-500/30 text-teal-400 text-[10px] font-black uppercase tracking-widest w-fit backdrop-blur-md bg-teal-500/5">
-                                    Trusted Financial Services
-                                </span>
-                                <h2 className="text-5xl md:text-7xl font-['Montserrat'] font-black text-white tracking-tighter leading-none">
-                                    Money<br />
-                                    <span className="text-teal-400">Transfer</span>
-                                </h2>
-                                <p className="text-gray-400 text-lg font-medium leading-relaxed max-w-sm">
-                                    Envía dinero de forma segura y al instante con las mejores tasas.
-                                </p>
-                                <Link
-                                    to="/money-transfer"
-                                    className="flex items-center justify-center px-12 py-5 bg-teal-500 text-[#00151a] rounded-3xl font-['Montserrat'] font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-teal-500/10 w-fit active:scale-95"
-                                >
-                                    Realizar Transferencia
-                                    <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                    </svg>
-                                </Link>
-                            </div>
-                             <div className="relative h-[550px] lg:h-auto overflow-hidden">
-                                <img
-                                    src="https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&q=80&w=1200"
-                                    alt="Money Transfer"
-                                    className="w-full h-full object-cover brightness-90 saturate-[0.8] relative z-0"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#001a22] via-[#001a22]/40 to-transparent hidden lg:block z-10"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+          <form onSubmit={submitTracking} className="mt-5 flex w-full max-w-3xl flex-col gap-3 sm:flex-row sm:gap-0" aria-label="Seguimiento de envíos">
+            <label htmlFor="home-tracking" className="sr-only">Número de seguimiento</label>
+            <input id="home-tracking" value={trackingId} onChange={(e) => setTrackingId(e.target.value.toUpperCase())} placeholder="NÚMERO DE SEGUIMIENTO" className="min-h-16 flex-1 border-0 bg-white px-6 text-base font-semibold uppercase text-[#00151a] outline-none ring-[#007e85] placeholder:text-gray-400 focus:ring-4" />
+            <button type="submit" className="min-h-16 bg-[#f59e0b] px-9 text-sm font-black uppercase tracking-[.12em] text-[#00151a] transition hover:bg-amber-400">Buscar</button>
+          </form>
         </div>
-    );
+      </section>
+
+      <section className="px-4 py-10 sm:px-6">
+        <Link to="/calendario" className="mx-auto flex max-w-5xl items-start gap-4 border-l-4 border-[#f59e0b] bg-amber-50 px-5 py-5 text-sm text-gray-700 transition hover:bg-amber-100 sm:items-center">
+          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f59e0b] font-black text-[#00151a] sm:mt-0">!</span>
+          <span><strong className="text-[#00151a]">Planifica tu próximo envío.</strong> Consulta fechas de salida, destinos y disponibilidad en nuestro calendario.</span>
+          <span className="ml-auto hidden font-black text-[#007e85] sm:block">Ver calendario →</span>
+        </Link>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <p className="text-xs font-black uppercase tracking-[.25em] text-[#007e85]">Todo en un solo lugar</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">Gestiona tus operaciones</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-gray-600">Accede rápidamente a los servicios de Bodipo Business y elige la solución que necesitas.</p>
+        </div>
+
+        <div className="mt-14 grid gap-px overflow-hidden border border-gray-200 bg-gray-200 sm:grid-cols-2 lg:grid-cols-4">
+          {services.map((service) => (
+            <Link key={service.title} to={service.to} className="group bg-white px-7 py-10 text-center transition hover:bg-teal-50">
+              <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#007e85] text-[#007e85] transition group-hover:bg-[#007e85] group-hover:text-white"><LineIcon path={service.icon} /></span>
+              <h3 className="mt-6 text-base font-black uppercase tracking-wide">{service.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">{service.text}</p>
+              <span className="mt-5 inline-block text-xs font-black uppercase tracking-widest text-[#007e85]">Acceder →</span>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-16 flex flex-col items-center justify-between gap-7 bg-[#00151a] px-7 py-10 text-white sm:flex-row sm:px-12">
+          <div><p className="text-xs font-black uppercase tracking-[.2em] text-teal-300">¿Necesitas ayuda?</p><h2 className="mt-2 text-2xl font-black sm:text-3xl">Te ayudamos a elegir la mejor solución.</h2></div>
+          <div className="flex shrink-0 flex-wrap gap-3">
+            <button onClick={onOpenContact} className="border border-white/40 px-6 py-3 text-xs font-black uppercase tracking-wider transition hover:bg-white hover:text-[#00151a]">Contactar</button>
+            <button onClick={onOpenRegister} className="bg-[#f59e0b] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#00151a] transition hover:bg-amber-400">Crear cuenta</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 };
 
 export default HomePage;

@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
 
   return (
     <div className="flex flex-col w-full sticky top-0 z-50 shadow-md">
-      <header className="bg-white/30 backdrop-blur-xl border-b border-white/40 transition-all duration-300">
+      <header className="bg-[#00151a] border-b border-white/10 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 xl:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
@@ -58,10 +58,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   )}
                 </div>
                 <div className="flex flex-col -space-y-0.5 xl:-space-y-1 pointer-events-none">
-                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter uppercase transition-colors drop-shadow-sm bg-clip-text text-transparent bg-gradient-to-r from-teal-800 to-[#00151a]">
+                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter uppercase transition-colors drop-shadow-sm text-white">
                     Bodipo
                   </span>
-                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-teal-800 to-[#00151a]">
+                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] uppercase text-white">
                     Business
                   </span>
                 </div>
@@ -83,15 +83,15 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     to={item.path}
                     className={`relative px-3 py-1.5 transition-all duration-300 z-10 whitespace-nowrap ${
                       location.pathname === item.path 
-                        ? 'text-teal-900 font-black' 
-                        : 'text-teal-800 hover:text-teal-600'
+                        ? 'text-white font-black'
+                        : 'text-teal-100 hover:text-white'
                     }`}
                     onMouseEnter={() => setHoveredPath(item.path)}
                   >
                     {item.path === hoveredPath && (
                       <motion.div
                         layoutId="bubble"
-                        className="absolute inset-0 bg-teal-50 border border-teal-900/10 rounded-full -z-10"
+                        className="absolute inset-0 bg-white/10 border border-white/10 rounded-full -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -99,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   </Link>
                 ))}
 
-                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-teal-900/20 shrink-0">
+                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-white/20 shrink-0">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={toggleTheme}
@@ -112,11 +112,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                         <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                       )}
                     </button>
-                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 bg-clip-text text-transparent bg-gradient-to-r from-teal-800 to-[#1b4e4d]">
+                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 text-teal-100">
                       <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>ES</button>
-                      <span className="text-teal-900/30 px-1">|</span>
+                      <span className="text-white/30 px-1">|</span>
                       <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>EN</button>
-                      <span className="text-teal-900/30 px-1">|</span>
+                      <span className="text-white/30 px-1">|</span>
                       <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>FR</button>
                     </div>
                   </div>
@@ -183,10 +183,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                   </div>
                 ) : (
                   <div className="hidden md:flex items-center gap-2 shrink-0">
-                    <button onClick={onOpenLogin} className="bg-white text-[#00151a] px-4 py-2 rounded-full hover:bg-gray-50 border-2 border-[#00151a] text-xs font-bold whitespace-nowrap">
+                    <button onClick={onOpenLogin} className="bg-transparent text-white px-4 py-2 rounded-full hover:bg-white/10 border border-white/40 text-xs font-bold whitespace-nowrap">
                       {t('nav.login')}
                     </button>
-                    <button onClick={onOpenRegister} className="bg-[#00151a] text-white px-4 py-2 rounded-full hover:bg-[#007e85] shadow-lg text-xs font-bold whitespace-nowrap">
+                    <button onClick={onOpenRegister} className="bg-[#007e85] text-white px-4 py-2 rounded-full hover:bg-teal-600 shadow-lg text-xs font-bold whitespace-nowrap">
                       {t('nav.register')}
                     </button>
                   </div>
@@ -195,7 +195,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                 {/* Mobile Menu Toggle */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="xl:hidden p-2 text-[#00151a] shrink-0"
+                  className="xl:hidden p-2 text-white shrink-0"
                   aria-label="Toggle mobile menu"
                 >
                   {mobileMenuOpen ? (
@@ -210,8 +210,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
         </div>
         
         {/* Banner Superior de Seguridad Unificado */}
-        <div className="border-t border-teal-900/10 py-2.5 px-0 sm:px-6 xl:px-8 bg-white/20 md:bg-transparent overflow-hidden whitespace-nowrap w-full flex">
-            <div className="max-w-7xl mx-auto flex items-center text-[10px] md:text-sm font-bold tracking-normal text-teal-900 w-max md:w-full animate-marquee md:!animate-none">
+        <div className="border-t border-white/10 py-2.5 px-0 sm:px-6 xl:px-8 bg-[#06272b] overflow-hidden whitespace-nowrap w-full flex">
+            <div className="max-w-7xl mx-auto flex items-center text-[10px] md:text-sm font-bold tracking-normal text-teal-50 w-max md:w-full animate-marquee md:!animate-none">
                 
                 {/* Primer set de elementos */}
                 <div className="flex items-center gap-8 md:gap-4 md:justify-between w-max md:w-full px-5 md:px-0">
