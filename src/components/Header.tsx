@@ -208,45 +208,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
             </div>
           </div>
         </div>
-        
-        {/* Banner Superior de Seguridad Unificado */}
-        <div className="border-t border-white/10 py-2.5 px-0 sm:px-6 xl:px-8 bg-[#06272b] overflow-hidden whitespace-nowrap w-full flex">
-            <div className="max-w-7xl mx-auto flex items-center text-[10px] md:text-sm font-bold tracking-normal text-teal-50 w-max md:w-full animate-marquee md:!animate-none">
-                
-                {/* Primer set de elementos */}
-                <div className="flex items-center gap-8 md:gap-4 md:justify-between w-max md:w-full px-5 md:px-0">
-                    <div className="flex items-center gap-2 text-sm md:text-base font-black shrink-0">
-                         Seguridad y Confianza Garantizada
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                         <span className="text-teal-500 text-base md:text-lg">💳</span> Pagos Seguros SSL
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                         <span className="text-teal-500 text-base md:text-lg">🛡️</span> Entregas Certificadas
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                         <span className="text-teal-500 text-base md:text-lg">🕒</span> Atención 24/7
-                    </div>
-                </div>
-
-                {/* Segundo set de elementos para el bucle infinito (Oculto en Desktop) */}
-                <div aria-hidden="true" className="flex md:hidden items-center gap-8 px-5">
-                    <div className="flex items-center gap-2 text-sm font-black shrink-0">
-                         Seguridad y Confianza Garantizada
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                         <span className="text-teal-500 text-base">💳</span> Pagos Seguros SSL
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                         <span className="text-teal-500 text-base">🛡️</span> Entregas Certificadas
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                         <span className="text-teal-500 text-base">🕒</span> Atención 24/7
-                    </div>
-                </div>
-
-            </div>
-        </div>
       </header>
 
       {/* Mobile Menu Overlay */}
