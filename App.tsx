@@ -234,12 +234,12 @@ const AppContent: React.FC = () => {
                   </p>
                 </div>
 
-                <nav className="grid grid-cols-1 gap-0 text-white/85 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center" aria-label="Enlaces del pie de página">
-                  <Link to="/mapa-del-sitio" className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Mapa del sitio</Link>
-                  <button onClick={() => setIsCookieOpen(true)} className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Consentimiento de cookies</button>
-                  <Link to="/condiciones" className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Condiciones de uso</Link>
-                  <Link to="/privacidad" className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Política de privacidad</Link>
-                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 border-white/25 py-2 font-bold text-white transition hover:text-[#ffbd59] lg:border-l lg:pl-4 lg:py-0">
+                <nav className="flex flex-col gap-y-1 text-white/85 sm:flex-row sm:flex-wrap sm:items-center" aria-label="Enlaces del pie de página">
+                  <Link to="/mapa-del-sitio" className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Mapa del sitio</Link>
+                  <button onClick={() => setIsCookieOpen(true)} className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Consentimiento de cookies</button>
+                  <Link to="/condiciones" className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Condiciones de uso</Link>
+                  <Link to="/privacidad" className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Política de privacidad</Link>
+                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 border-white/25 py-2 font-bold text-white transition hover:text-[#ffbd59] sm:border-l sm:pl-4 sm:py-0">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M5 18l-2 3v-5a9 9 0 1 1 4 4" /></svg>
                     Preguntar a Bodipo
                   </button>

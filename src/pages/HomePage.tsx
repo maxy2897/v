@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
+import { useAuth } from '../context/AuthContext';
 
 interface HomePageProps {
   onOpenRegister: () => void;
@@ -24,6 +25,7 @@ const Arrow = () => (
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOpenAbout }) => {
   const { appConfig } = useSettings();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [trackingId, setTrackingId] = useState('');
   const hero = appConfig?.content?.hero;
@@ -140,6 +142,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
           </div>
         </div>
       </section>
+      {!isAuthenticated && (
       <section className="bg-[#007e85] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
           <div>
@@ -152,6 +155,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
           </div>
         </div>
       </section>
+      )}
     </main>
   );
 };
