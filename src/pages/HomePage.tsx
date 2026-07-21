@@ -36,7 +36,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
 
   return (
     <main className="overflow-hidden bg-[#f5f1e8] text-[#06272b]">
-      <section className="relative isolate min-h-[900px] bg-[#06272b]">
+      <section className="relative isolate min-h-[620px] bg-[#06272b]">
         <div className="absolute inset-0 overflow-hidden">
           <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#06272b]/95 via-[#06272b]/76 to-[#06272b]/10" />
@@ -45,49 +45,49 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
         <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
 
-        <div className="relative mx-auto grid min-h-[900px] max-w-7xl content-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[.48fr_.52fr] lg:px-10">
+        <div className="relative mx-auto grid min-h-[620px] max-w-7xl content-center gap-5 px-5 py-8 sm:px-8 lg:grid-cols-[.52fr_.48fr] lg:px-10">
           <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 max-w-2xl">
-            <div className="mb-8 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
+            <div className="mb-4 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
               <span className="h-px w-12 bg-[#ffbd59]" />
               Desde Guinea Ecuatorial al mundo
             </div>
-            <h1 className="max-w-xl text-5xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-7xl">
+            <h1 className="max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
               {hero?.title || 'Movemos oportunidades.'}
             </h1>
-            <p className="mt-7 max-w-lg text-lg leading-relaxed text-[#c8dad7]">
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-[#c8dad7]">
               {hero?.subtitle || 'Envíos, comercio y servicios financieros conectados por un equipo que conoce tu realidad.'}
             </p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-7 py-4 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
                 Calcular un envío <Arrow />
               </Link>
-              <button onClick={onOpenContact} className="group inline-flex items-center gap-3 border border-white/30 px-7 py-4 text-xs font-black uppercase tracking-[.13em] text-white transition hover:border-white hover:bg-white hover:text-[#06272b]">
+              <button onClick={onOpenContact} className="group inline-flex items-center gap-3 border border-white/30 px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-white transition hover:border-white hover:bg-white hover:text-[#06272b]">
                 Hablar con Bodipo <Arrow />
               </button>
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, delay: .15 }} className="relative z-20 max-w-[520px] lg:col-start-1 lg:row-start-2 lg:w-full">
-            <div className="border border-white/15 bg-[#f5f1e8] p-7 shadow-[0_28px_80px_rgba(0,0,0,.28)] sm:p-9">
+            <div className="border border-white/15 bg-[#f5f1e8] p-5 shadow-[0_20px_60px_rgba(0,0,0,.25)] sm:p-6">
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[.25em] text-[#007e85]">Centro de seguimiento</p>
-                  <h2 className="mt-2 text-2xl font-black tracking-tight">¿Dónde está tu envío?</h2>
+                  <h2 className="mt-1 text-xl font-black tracking-tight">¿Dónde está tu envío?</h2>
                 </div>
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#06272b] text-[#ffbd59]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#06272b] text-[#ffbd59]">
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" /></svg>
                 </span>
               </div>
-              <form onSubmit={submitTracking} className="mt-8">
+              <form onSubmit={submitTracking} className="mt-4">
                 <label htmlFor="home-tracking" className="text-xs font-bold text-[#48625f]">Introduce tu número de seguimiento</label>
-                <div className="mt-3 border-b-2 border-[#06272b] pb-2">
-                  <input id="home-tracking" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())} placeholder="Ej. BOD-2026-0001" className="w-full bg-transparent py-3 font-mono text-lg font-bold uppercase outline-none placeholder:text-[#93a5a2]" />
+                <div className="mt-3 border-b-2 border-[#06272b]">
+                  <input id="home-tracking" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())} placeholder="Ej. BOD-2026-0001" className="w-full bg-transparent py-2 font-mono text-base font-bold uppercase outline-none placeholder:text-[#93a5a2]" />
                 </div>
-                <button type="submit" className="group mt-6 flex w-full items-center justify-between bg-[#007e85] px-6 py-4 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-[#06272b]">
+                <button type="submit" className="group mt-4 flex w-full items-center justify-between bg-[#007e85] px-5 py-3 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-[#06272b]">
                   Consultar recorrido <Arrow />
                 </button>
               </form>
-              <div className="mt-7 grid grid-cols-2 gap-3 border-t border-[#d8d3c9] pt-6 text-xs">
+              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#d8d3c9] pt-4 text-xs">
                 <Link to="/tarifas" className="group font-black uppercase tracking-wider text-[#48625f] hover:text-[#007e85]">Tarifas <span aria-hidden="true">↗</span></Link>
                 <Link to="/calendario" className="group text-right font-black uppercase tracking-wider text-[#48625f] hover:text-[#007e85]">Salidas <span aria-hidden="true">↗</span></Link>
               </div>
@@ -96,7 +96,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 lg:px-10 lg:pt-24">
+      <section className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 lg:px-10 lg:pt-16">
         <div className="grid gap-10 border-b border-[#cfc8bc] pb-14 lg:grid-cols-[.75fr_1.25fr] lg:items-end">
           <div>
             <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">El ecosistema Bodipo</p>
@@ -131,8 +131,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
             <h2 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">La distancia no debería limitar tus oportunidades.</h2>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
-            <button onClick={onOpenRegister} className="bg-[#ffbd59] px-7 py-4 text-xs font-black uppercase tracking-[.14em] text-[#06272b] transition hover:bg-white">Crear una cuenta</button>
-            <button onClick={onOpenContact} className="border border-white/40 px-7 py-4 text-xs font-black uppercase tracking-[.14em] transition hover:bg-white hover:text-[#06272b]">Contactar</button>
+            <button onClick={onOpenRegister} className="bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.14em] text-[#06272b] transition hover:bg-white">Crear una cuenta</button>
+            <button onClick={onOpenContact} className="border border-white/40 px-6 py-3.5 text-xs font-black uppercase tracking-[.14em] transition hover:bg-white hover:text-[#06272b]">Contactar</button>
           </div>
         </div>
       </section>
