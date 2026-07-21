@@ -59,6 +59,12 @@ const corsOptions = {
         } else {
             callback(new Error('No permitido por CORS'));
         }
+
+    },
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
 app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
@@ -74,14 +80,10 @@ const sensitiveLimiter = rateLimit({
     limit: 20,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    message: { message: 'Demasiados intentos. Int?ntalo de nuevo m?s tarde.' }
+    message: { message: 'Demasiados intentos. Intentalo de nuevo mas tarde.' }
 });
 app.use('/api', apiLimiter);
 
-    },
-    credentials: true,
-    optionsSuccessStatus: 200
-};
 
 // Middleware
 app.use(cors(corsOptions));
