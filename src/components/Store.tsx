@@ -12,7 +12,7 @@ const Store: React.FC<StoreProps> = ({ products }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
-    <section id="tienda" className="py-24 pt-32 bg-white relative overflow-hidden [clip-path:inset(0)]">
+    <section id="tienda" className="py-20 pt-24 bg-[#f5f1e8] relative overflow-hidden [clip-path:inset(0)]">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-10">
@@ -23,7 +23,7 @@ const Store: React.FC<StoreProps> = ({ products }) => {
               </span>
               <span className="text-xs font-black uppercase tracking-widest text-teal-800">{t('store.badge')}</span>
             </div>
-            <h2 className="text-5xl md:text-7xl font-black text-[#00151a] tracking-tighter leading-none mb-8">
+            <h2 className="text-4xl md:text-5xl font-black text-[#00151a] tracking-tighter leading-none mb-8">
               {t('store.title')} <br /><span className="text-[#007e85]">{t('store.title_highlight')}</span>
             </h2>
             <p className="text-xl text-gray-500 font-medium leading-relaxed">

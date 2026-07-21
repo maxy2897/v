@@ -64,7 +64,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOp
   const { t } = useSettings();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 selection:bg-teal-100 selection:text-teal-900 transition-colors duration-300">
+    <div className="min-h-screen bg-[#f5f1e8] dark:bg-gray-900 selection:bg-teal-100 selection:text-teal-900 transition-colors duration-300">
       <Header 
         onOpenRegister={onOpenRegister || (() => {})} 
         onOpenLogin={onOpenLogin || (() => {})} 
@@ -105,11 +105,11 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOp
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square rounded-[3rem] bg-teal-50 dark:bg-teal-900/10 overflow-hidden shadow-2xl relative z-10 p-4 border border-teal-100/20">
+              <div className="aspect-square rounded-[1.75rem] bg-teal-50 dark:bg-teal-900/10 overflow-hidden shadow-2xl relative z-10 p-4 border border-teal-100/20">
                  <img 
                    src="/images/hero-home.jpg" 
                    alt="Logistic Operations" 
-                   className="w-full h-full object-cover rounded-[2.5rem]"
+                   className="w-full h-full object-cover rounded-[1.5rem]"
                  />
               </div>
               <div className="absolute -top-8 -right-8 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -z-10"></div>

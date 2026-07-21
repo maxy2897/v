@@ -6,23 +6,32 @@
   html,
   body,
   #root {
-    background: #ffffff;
+    background: #f5f1e8;
+  }
+
+  body {
+    color: #06272b;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 3px solid rgba(245, 158, 11, 0.75);
+    outline-offset: 3px;
   }
 }
+
 @layer utilities {
   @keyframes spinY {
-    0% {
-      transform: rotateY(0deg);
-    }
-    100% {
-      transform: rotateY(360deg);
-    }
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
   }
 
   @keyframes marquee {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
   }
+
   .animate-marquee {
     animation: marquee 20s linear infinite;
     display: inline-flex;

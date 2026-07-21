@@ -161,8 +161,8 @@ const MoneyTransfer: React.FC = () => {
 
   if (successTxId) {
     return (
-      <section className="py-12 bg-white min-h-[60vh] flex items-center justify-center">
-        <div className="max-w-2xl w-full mx-4 bg-[#00151a] p-12 rounded-[3rem] text-center shadow-2xl relative overflow-hidden animate-in zoom-in duration-500">
+      <section className="py-12 bg-[#f5f1e8] min-h-[60vh] flex items-center justify-center">
+        <div className="max-w-2xl w-full mx-4 bg-[#0b4f55] p-12 rounded-[1.75rem] text-center shadow-2xl relative overflow-hidden animate-in zoom-in duration-500">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-transparent"></div>
           <div className="w-20 h-20 bg-teal-500 rounded-full flex items-center justify-center mx-auto mb-8 text-[#00151a]">
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
@@ -190,7 +190,7 @@ const MoneyTransfer: React.FC = () => {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="transferencias"
-      className="py-12 relative overflow-hidden bg-white [clip-path:inset(0)]"
+      className="py-12 relative overflow-hidden bg-[#f5f1e8] [clip-path:inset(0)]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-8">
@@ -200,14 +200,14 @@ const MoneyTransfer: React.FC = () => {
             </span>
             <span className="text-[10px] font-black uppercase tracking-widest text-teal-800">{t('transfer.badge')}</span>
           </div>
-          <h2 className="text-4xl md:text-6xl font-black text-[#00151a] tracking-tighter leading-none">
+          <h2 className="text-4xl md:text-5xl font-black text-[#00151a] tracking-tighter leading-none">
             {t('transfer.title')} <br /><span className="text-[#007e85]">{t('transfer.title_highlight')}</span>
           </h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Calculadora y Formulario */}
-          <div className="lg:col-span-7 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-[3rem] border border-gray-100 p-8 md:p-12 shadow-xl">
+          <div className="lg:col-span-7 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-[1.75rem] border border-gray-100 p-8 md:p-12 shadow-xl">
             <div className="flex bg-gray-50 p-1 rounded-2xl mb-10 overflow-x-auto">
               <button
                 onClick={() => setDirection('ES_GQ')}
@@ -322,7 +322,7 @@ const MoneyTransfer: React.FC = () => {
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className={`w-full bg-[#00151a] text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/10 mt-6 ${loading ? 'opacity-50 cursor-wait' : ''}`}
+                className={`w-full bg-[#0b4f55] text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/10 mt-6 ${loading ? 'opacity-50 cursor-wait' : ''}`}
               >
                 {loading ? t('transfer.cta.processing') : t('transfer.cta.submit')}
               </button>
@@ -332,7 +332,7 @@ const MoneyTransfer: React.FC = () => {
 
           {/* Información de Cuentas Destino */}
           <div className="lg:col-span-5 space-y-8">
-            <div className="bg-[#00151a] rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
+            <div className="bg-[#00151a] rounded-[1.75rem] p-10 text-white shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl"></div>
               <h3 className="text-2xl font-black mb-8 border-b border-white/10 pb-4">{t('transfer.accounts.title')}</h3>
 
@@ -384,7 +384,7 @@ const MoneyTransfer: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-8 border-2 border-dashed border-gray-100 rounded-[2.5rem] flex items-center space-x-6">
+            <div className="p-8 border-2 border-dashed border-gray-100 rounded-[1.5rem] flex items-center space-x-6">
               <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 shrink-0">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>

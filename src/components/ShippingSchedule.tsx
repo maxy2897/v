@@ -100,7 +100,7 @@ const ShippingSchedule: React.FC = () => {
     .sort((a, b) => a.dist - b.dist);
 
   return (
-    <section id="calendario" className="pt-10 pb-24 relative overflow-hidden bg-white [clip-path:inset(0)]">
+    <section id="calendario" className="pt-10 pb-24 relative overflow-hidden bg-[#f5f1e8] [clip-path:inset(0)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-2 gap-6 w-full">
           <div className="max-w-xl shrink-0 pt-2">
@@ -142,8 +142,8 @@ const ShippingSchedule: React.FC = () => {
           {displayShipments.map((ship, idx) => (
             <div
               key={idx}
-              className={`relative p-8 rounded-[2.5rem] transition-all duration-500 overflow-hidden border ${ship.highlight
-                ? 'bg-[#00151a] text-white shadow-2xl shadow-teal-900/40 scale-105 z-10 border-transparent'
+              className={`relative p-8 rounded-[1.5rem] transition-all duration-500 overflow-hidden border ${ship.highlight
+                ? 'bg-[#0b4f55] text-white shadow-2xl shadow-teal-900/40 scale-105 z-10 border-transparent'
                 : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md text-[#00151a] dark:text-white border-white/20 hover:border-teal-200/50 shadow-sm'
                 }`}
             >
@@ -187,7 +187,7 @@ const ShippingSchedule: React.FC = () => {
           ))}
 
           {displayShipments.length > 0 && displayShipments.length < 4 && (
-            <div className={`hidden lg:flex flex-col justify-center items-center rounded-[2.5rem] bg-gradient-to-br from-teal-50 to-white border border-teal-100 p-8 text-center relative overflow-hidden ${displayShipments.length === 1 ? 'lg:col-span-3' :
+            <div className={`hidden lg:flex flex-col justify-center items-center rounded-[1.5rem] bg-gradient-to-br from-teal-50 to-white border border-teal-100 p-8 text-center relative overflow-hidden ${displayShipments.length === 1 ? 'lg:col-span-3' :
                 displayShipments.length === 2 ? 'lg:col-span-2' :
                   'lg:col-span-1'
               }`}>
@@ -230,7 +230,7 @@ const ShippingSchedule: React.FC = () => {
           </div>
         </div>
         {/* Resumen Anual - MOVIDO AQUÍ */}
-        <div className="bg-transparent rounded-[3rem] p-8 md:p-12 border border-white/5 shadow-sm mb-16">
+        <div className="bg-transparent rounded-[1.75rem] p-8 md:p-12 border border-white/5 shadow-sm mb-16">
           <div className="flex items-center space-x-4 mb-10">
             <div className="w-10 h-10 bg-[#005f6b] rounded-xl flex items-center justify-center text-white">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -257,7 +257,7 @@ const ShippingSchedule: React.FC = () => {
         </div>
 
         {/* --- Services Integrated From ServicesPage --- */}
-        <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-[3rem] p-8 md:p-12 mb-10 shadow-sm border border-teal-100 dark:border-white/5 relative overflow-hidden">
+        <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md rounded-[1.75rem] p-8 md:p-12 mb-10 shadow-sm border border-teal-100 dark:border-white/5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#00151a]/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative z-10">
             <div>
@@ -302,7 +302,7 @@ const ShippingSchedule: React.FC = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-teal-500/5 rounded-[2.5rem] p-8 border border-teal-500/10">
+              <div className="bg-teal-500/5 rounded-[1.5rem] p-8 border border-teal-500/10">
                 <h4 className="text-xl font-black text-[#00151a] mb-6 tracking-tight">{t('services.rates.title') || 'TARIFAS'}</h4>
                 <ul className="space-y-3">
                   {[

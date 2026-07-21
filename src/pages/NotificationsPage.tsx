@@ -85,13 +85,13 @@ const NotificationsPage: React.FC = () => {
     }
 
     if (loading) return (
-        <div className="min-h-screen bg-white pt-24 pb-12 flex items-center justify-center">
+        <div className="min-h-screen bg-[#f5f1e8] pt-24 pb-12 flex items-center justify-center">
             <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-white pt-24 pb-12">
+        <div className="min-h-screen bg-[#f5f1e8] pt-24 pb-12">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
@@ -119,7 +119,7 @@ const NotificationsPage: React.FC = () => {
                 </div>
 
                 {notifications.length === 0 ? (
-                    <div className="bg-white rounded-[3rem] p-12 text-center border border-dashed border-gray-200 shadow-sm">
+                    <div className="bg-white rounded-[1.75rem] p-12 text-center border border-dashed border-gray-200 shadow-sm">
                         <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8 text-4xl">
                             📭
                         </div>
@@ -136,7 +136,7 @@ const NotificationsPage: React.FC = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 key={n._id}
                                 onClick={() => !n.isRead && handleMarkAsRead(n._id)}
-                                className={`group relative p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer flex gap-6 ${n.isRead
+                                className={`group relative p-8 rounded-[1.5rem] border-2 transition-all cursor-pointer flex gap-6 ${n.isRead
                                     ? 'bg-white/60 border-gray-100 grayscale-[0.5] opacity-80 hover:bg-white hover:grayscale-0'
                                     : 'bg-white border-teal-200 shadow-xl shadow-teal-500/5 hover:border-teal-400'
                                     }`}

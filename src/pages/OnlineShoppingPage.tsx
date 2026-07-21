@@ -210,7 +210,7 @@ const OnlineShoppingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] transition-colors bg-white pt-24 sm:pt-32 pb-20 relative overflow-hidden [clip-path:inset(0)]">
+    <div className="min-h-[100dvh] transition-colors bg-[#f5f1e8] pt-24 sm:pt-32 pb-20 relative overflow-hidden [clip-path:inset(0)]">
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <header className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 lg:gap-20 mb-20">
@@ -259,7 +259,7 @@ const OnlineShoppingPage: React.FC = () => {
                />
 
                {!user?.virtualCard?.active && (
-                 <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-4 sm:p-8 text-center rounded-[1.2rem] sm:rounded-[2.5rem] border border-white/5">
+                 <div className="absolute inset-0 bg-black/80 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-4 sm:p-8 text-center rounded-[1.2rem] sm:rounded-[1.5rem] border border-white/5">
                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/10 rounded-full flex items-center justify-center text-xl sm:text-2xl mb-2 sm:mb-4 border border-white/20 shadow-2xl">🔒</div>
                    <button 
                      onClick={() => {
@@ -278,7 +278,7 @@ const OnlineShoppingPage: React.FC = () => {
                )}
             </div>
 
-            <div className="w-full max-w-[500px] flex justify-between items-center px-8 py-6 bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-white/5">
+            <div className="w-full max-w-[500px] flex justify-between items-center px-8 py-6 bg-white dark:bg-gray-900 rounded-[1.25rem] shadow-2xl border border-gray-100 dark:border-white/5">
                 <div className={`text-left ${!user?.virtualCard?.active ? 'blur-[8px] opacity-20' : ''}`}>
                   <p className="text-[9px] font-black text-teal-500 uppercase tracking-[0.3em] mb-1">Tu Saldo Disponible</p>
                   <p className="text-3xl font-black tracking-tighter text-[#00151a]">{(user?.virtualCard?.balance || 0).toLocaleString()} <span className="text-teal-500 text-sm">FCFA</span></p>
@@ -305,7 +305,7 @@ const OnlineShoppingPage: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.05 }}
               whileHover={{ y: -10 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center group hover:border-teal-500 transition-all duration-300 relative overflow-hidden h-32 md:h-44"
+              className="bg-white dark:bg-gray-800 p-6 rounded-[1.5rem] shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center group hover:border-teal-500 transition-all duration-300 relative overflow-hidden h-32 md:h-44"
             >
               <StoreLogoImage
                 src={getStoreLogo(store.domain, store.logo)}
@@ -334,7 +334,7 @@ const OnlineShoppingPage: React.FC = () => {
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-white dark:bg-gray-900 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden border border-gray-100 dark:border-white/5"
+              className="bg-white dark:bg-gray-900 w-full max-w-md rounded-[1.5rem] p-8 shadow-2xl relative overflow-hidden border border-gray-100 dark:border-white/5"
             >
               <button 
                 onClick={() => setIsRechargeModalOpen(false)}

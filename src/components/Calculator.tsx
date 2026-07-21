@@ -291,7 +291,7 @@ const Calculator: React.FC = () => {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ type: "spring", stiffness: 90, damping: 20 }}
       id="calculadora"
-      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 dark:border-white/5 p-4 md:p-12 relative overflow-hidden"
+      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-[1.25rem] md:rounded-[1.75rem] border border-gray-100 dark:border-white/5 p-4 md:p-12 relative overflow-hidden"
     >
       <AnimatePresence>
         {notification && (
@@ -318,7 +318,7 @@ const Calculator: React.FC = () => {
           <div className="inline-block px-4 py-1.5 bg-teal-50 rounded-full mb-6">
             <span className="text-[10px] font-black uppercase tracking-widest text-teal-700">{t('calc.badge')}</span>
           </div>
-          <h2 className="text-2xl md:text-5xl font-black text-[#00151a] tracking-tighter mb-8">
+          <h2 className="text-2xl md:text-4xl font-black text-[#00151a] tracking-tighter mb-8">
             {t('calc.title')} <br /><span className="text-[#007e85]">{t('calc.title_highlight')}</span>
           </h2>
 
@@ -487,7 +487,7 @@ const Calculator: React.FC = () => {
               </div>
             )}
 
-            <button onClick={calculateShipping} className="w-full bg-[#00151a] text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/10">
+            <button onClick={calculateShipping} className="w-full bg-[#0b4f55] text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-[#007e85] transition-all shadow-xl shadow-teal-900/10">
               {t('calc.cta.view_cost')}
             </button>
           </div>
@@ -495,7 +495,7 @@ const Calculator: React.FC = () => {
 
         <div className="relative flex">
           {generatedCode ? (
-            <div className="bg-[#005f6b] p-8 md:p-12 rounded-[3rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative text-white">
+            <div className="bg-[#005f6b] p-8 md:p-12 rounded-[1.75rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative text-white">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-300 to-transparent"></div>
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
@@ -503,7 +503,7 @@ const Calculator: React.FC = () => {
               <p className="text-teal-200 text-[10px] font-black uppercase tracking-[0.4em] mb-4">{t('calc.success.badge')}</p>
               <h3 className="text-2xl font-black mb-6 leading-tight">{t('calc.success.hello')} {userData.fullName.split(' ')[0]}, {t('calc.success.completed')}</h3>
 
-              <div className="bg-white/10 border border-white/20 p-8 rounded-[2rem] w-full mb-8">
+              <div className="bg-white/10 border border-white/20 p-8 rounded-[1.25rem] w-full mb-8">
                 <p className="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-2">{t('calc.success.tracking_label')}</p>
                 <p className="text-5xl font-black tracking-tighter mb-4">{generatedCode}</p>
                 <button onClick={copyToClipboard} className="bg-white text-[#005f6b] px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-teal-50 transition-colors mb-6">
@@ -538,7 +538,7 @@ const Calculator: React.FC = () => {
               <button onClick={resetCalculator} className="text-[9px] font-black uppercase tracking-[0.3em] opacity-60 hover:opacity-100 transition-opacity">{t('calc.success.new_calc')}</button>
             </div>
           ) : showForm ? (
-            <div className="bg-white border border-gray-100 p-8 md:p-12 rounded-[3rem] w-full flex flex-col shadow-xl animate-in fade-in slide-in-from-right-4 duration-500 relative overflow-y-auto max-h-[700px]">
+            <div className="bg-white border border-gray-100 p-8 md:p-12 rounded-[1.75rem] w-full flex flex-col shadow-xl animate-in fade-in slide-in-from-right-4 duration-500 relative overflow-y-auto max-h-[700px]">
               <button
                 onClick={() => setShowForm(false)}
                 className="absolute top-8 right-8 text-gray-300 hover:text-gray-500 transition-colors"
@@ -611,14 +611,14 @@ const Calculator: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setPayMethod('Almacén')}
-                        className={`py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${payMethod === 'Almacén' ? 'bg-[#00151a] text-white border-[#00151a]' : 'bg-white text-gray-400 border-gray-100'}`}
+                        className={`py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${payMethod === 'Almacén' ? 'bg-[#0b4f55] text-white border-[#00151a]' : 'bg-white text-gray-400 border-gray-100'}`}
                       >
                         {t('calc.form.pay_almacen_short')}
                       </button>
                       <button
                         type="button"
                         onClick={() => setPayMethod('Ecobank')}
-                        className={`py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${payMethod === 'Ecobank' ? 'bg-[#00151a] text-white border-[#00151a]' : 'bg-white text-gray-400 border-gray-100'}`}
+                        className={`py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${payMethod === 'Ecobank' ? 'bg-[#0b4f55] text-white border-[#00151a]' : 'bg-white text-gray-400 border-gray-100'}`}
                       >
                         {t('calc.form.pay_ecobank_short')}
                       </button>
@@ -700,7 +700,7 @@ const Calculator: React.FC = () => {
               </form>
             </div>
           ) : total !== null ? (
-            <div className="bg-[#00151a] p-12 rounded-[3rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative overflow-hidden">
+            <div className="bg-[#0b4f55] p-12 rounded-[1.75rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-transparent"></div>
               <p className="text-teal-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6">{t('calc.result.badge')}</p>
 
@@ -795,7 +795,7 @@ const Calculator: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white border-2 border-dashed border-gray-100 rounded-[3rem] w-full min-h-[400px] flex flex-col justify-center items-center text-center p-6 relative overflow-hidden group">
+            <div className="bg-white border-2 border-dashed border-gray-100 rounded-[1.75rem] w-full min-h-[400px] flex flex-col justify-center items-center text-center p-6 relative overflow-hidden group">
               <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
                 {info.type === 'Marítimo' ? (
                   <img src="./images/service-ship.png" className="w-full h-full object-cover scale-150" alt="" />
@@ -805,7 +805,7 @@ const Calculator: React.FC = () => {
               </div>
 
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-full max-w-[280px] aspect-square rounded-[2rem] overflow-hidden mb-8 shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
+                <div className="w-full max-w-[280px] aspect-square rounded-[1.25rem] overflow-hidden mb-8 shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
                   {info.type === 'Marítimo' ? (
                     <img src="./images/service-ship.png" className="w-full h-full object-cover animate-in fade-in zoom-in duration-700" alt="Transporte Marítimo" />
                   ) : (

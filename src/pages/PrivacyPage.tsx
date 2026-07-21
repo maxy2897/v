@@ -6,10 +6,10 @@ const PrivacyPage: React.FC = () => {
     const { t } = useSettings();
 
     return (
-        <div className="min-h-screen bg-white py-20 px-4">
+        <div className="min-h-screen bg-[#f5f1e8] py-20 px-4">
             <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
                 {/* Header */}
-                <div className="bg-[#00151a] p-12 text-center">
+                <div className="bg-[#0b4f55] p-12 text-center">
                     <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-3">
                         {t('privacy.title')}
                     </h1>
@@ -80,7 +80,7 @@ const PrivacyPage: React.FC = () => {
                         <div className="mt-6 text-center">
                             <Link
                                 to="/"
-                                className="inline-block bg-[#00151a] text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-teal-600 transition-all"
+                                className="inline-block bg-[#0b4f55] text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-teal-600 transition-all"
                             >
                                 {t('privacy.back')}
                             </Link>

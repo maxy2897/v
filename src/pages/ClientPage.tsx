@@ -109,13 +109,13 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-white py-20 [clip-path:inset(0)]">
+        <div className="min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-[#f5f1e8] py-20 [clip-path:inset(0)]">
 
             <div className="max-w-2xl w-full mx-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.05)] border border-white/50 p-8 md:p-12 overflow-hidden relative"
+                    className="bg-white/80 backdrop-blur-xl rounded-[1.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.05)] border border-white/50 p-8 md:p-12 overflow-hidden relative"
                 >
                     {/* Header with Close Button */}
                     <div className="relative text-center mb-10">
@@ -263,7 +263,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#007e85] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-teal-900/10 disabled:opacity-50"
+                                    className="w-full bg-[#0b4f55] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#007e85] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-teal-900/10 disabled:opacity-50"
                                 >
                                     {loading ? '...' : t('login.btn')}
                                 </button>
@@ -286,14 +286,14 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                         <button
                                             type="button"
                                             onClick={() => handleRegisterChange({ target: { name: 'gender', value: 'male' } } as React.ChangeEvent<HTMLInputElement>)}
-                                            className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'male' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                            className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'male' ? 'bg-[#0b4f55] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
                                         >
                                             {t('client.male')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => handleRegisterChange({ target: { name: 'gender', value: 'female' } } as React.ChangeEvent<HTMLInputElement>)}
-                                            className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'female' ? 'bg-[#00151a] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                            className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${registerData.gender === 'female' ? 'bg-[#0b4f55] text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
                                         >
                                             {t('client.female')}
                                         </button>
@@ -450,7 +450,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                                     animate={{ scale: 1, opacity: 1, y: 0 }}
                                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                                    className="relative bg-white w-full max-w-lg rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl p-6 md:p-8"
+                                    className="relative bg-white w-full max-w-lg rounded-[1.5rem] md:rounded-[1.5rem] overflow-hidden shadow-2xl p-6 md:p-8"
                                 >
                                     <div className="flex justify-between items-center mb-6">
                                         <h3 className="text-xl md:text-2xl font-black text-[#00151a] tracking-tight">{t('client.terms_conditions')}</h3>
@@ -473,7 +473,7 @@ const ClientPage: React.FC<ClientPageProps> = ({ onOpenForgotPassword }) => {
                                             setAcceptedTerms(true);
                                             setShowTermsModal(false);
                                         }}
-                                        className="w-full bg-[#00151a] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs mt-8 hover:bg-[#007e85] transition-all"
+                                        className="w-full bg-[#0b4f55] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs mt-8 hover:bg-[#007e85] transition-all"
                                     >
                                         {t('client.understood_accept')}
                                     </button>

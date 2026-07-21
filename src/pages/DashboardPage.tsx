@@ -410,7 +410,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
 
     return (
         <>
-            <div className="min-h-screen bg-white">
+            <div className="min-h-screen bg-[#f5f1e8]">
                 <div className="flex flex-col md:flex-row min-h-screen">
 
                     {/* Wallapop Sidebar */}
@@ -495,7 +495,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                     </aside>
 
                     {/* Main Content Area */}
-                    <main className={`flex-grow bg-white pt-24 pb-12 px-6 md:px-12 overflow-y-auto ${isMobileMenu ? 'hidden md:block' : 'block'}`}>
+                    <main className={`flex-grow bg-[#f5f1e8] pt-24 pb-12 px-6 md:px-12 overflow-y-auto ${isMobileMenu ? 'hidden md:block' : 'block'}`}>
                         <div className="max-w-4xl">
 
                             {/* Mobile Back Button */}
@@ -557,7 +557,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                     <button
                                         type="button"
                                         onClick={() => navigate('/tarifas?mode=documento&origin=Guinea Ecuatorial')}
-                                        className="w-full p-8 rounded-[2rem] border-2 border-dashed border-teal-200 bg-teal-50/50 flex flex-col sm:flex-row items-center justify-between gap-6 hover:bg-teal-100 transition-all group"
+                                        className="w-full p-8 rounded-[1.25rem] border-2 border-dashed border-teal-200 bg-teal-50/50 flex flex-col sm:flex-row items-center justify-between gap-6 hover:bg-teal-100 transition-all group"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-600 shadow-sm shrink-0 group-hover:scale-110 transition-transform">
@@ -568,7 +568,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                 <p className="text-[10px] font-bold text-gray-500 uppercase italic">{t('dashboard.express_service_spain')}</p>
                                             </div>
                                         </div>
-                                        <span className="bg-[#00151a] text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">{t('dashboard.send_now')}</span>
+                                        <span className="bg-[#0b4f55] text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">{t('dashboard.send_now')}</span>
                                     </button>
 
                                     {/* Search */}
@@ -677,7 +677,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             {activeTab === 'notifications' && (
                                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {notifications.length === 0 ? (
-                                        <div className="bg-white rounded-[3rem] p-12 text-center border border-dashed border-gray-200 shadow-sm">
+                                        <div className="bg-white rounded-[1.75rem] p-12 text-center border border-dashed border-gray-200 shadow-sm">
                                             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8 text-4xl">
                                                 📭
                                             </div>
@@ -693,7 +693,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 key={n._id}
                                                 onClick={() => !n.isRead && handleMarkAsRead(n._id)}
-                                                className={`group relative p-8 rounded-[2.5rem] border-2 transition-all cursor-pointer flex gap-6 ${n.isRead
+                                                className={`group relative p-8 rounded-[1.5rem] border-2 transition-all cursor-pointer flex gap-6 ${n.isRead
                                                     ? 'bg-white/60 border-gray-100 opacity-80 hover:bg-white hover:opacity-100'
                                                     : 'bg-white border-teal-200 shadow-xl shadow-teal-500/5 hover:border-teal-400'
                                                     }`}
@@ -737,7 +737,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             {/* Settings View (Wallapop Style) */}
                             {activeTab === 'settings' && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-                                    <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 md:p-12 shadow-sm">
+                                    <div className="bg-white rounded-[1.5rem] border border-gray-100 p-8 md:p-12 shadow-sm">
                                         <h3 className="text-xl font-black text-[#00151a] mb-10 border-b border-gray-50 pb-6 uppercase tracking-tight">{t('dashboard.edit_profile')}</h3>
 
                                         <form onSubmit={handleUpdateProfile} className="space-y-10">
@@ -807,7 +807,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                             <button
                                                 type="submit"
                                                 disabled={loading}
-                                                className="w-full mt-10 bg-[#00151a] text-white py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-teal-600 transition-all shadow-xl shadow-gray-200"
+                                                className="w-full mt-10 bg-[#0b4f55] text-white py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[11px] hover:bg-teal-600 transition-all shadow-xl shadow-gray-200"
                                             >
                                                 {loading ? t('admin.loading') : t('dashboard.save_info')}
                                             </button>
@@ -919,7 +919,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                                     <button 
                                                         type="submit"
                                                         disabled={loading}
-                                                        className="flex-1 bg-[#00151a] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 transition-all shadow-lg"
+                                                        className="flex-1 bg-[#0b4f55] text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 transition-all shadow-lg"
                                                     >
                                                         {loading ? t('common.processing') : t('common.save')}
                                                     </button>
@@ -933,7 +933,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             {/* Virtual Card View */}
                             {activeTab === 'virtual_card' && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    <div className="bg-white rounded-[3rem] p-10 shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-12 items-center">
+                                    <div className="bg-white rounded-[1.75rem] p-10 shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-12 items-center">
                                         <div className="w-full max-w-[450px] shrink-0 relative group">
                                             <VirtualCard 
                                                 number={user.virtualCard?.number}
@@ -946,7 +946,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                             />
                                             
                                             {!user.virtualCard?.active && (
-                                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[2rem]">
+                                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[12px] z-30 flex flex-col items-center justify-center p-8 text-center rounded-[1.25rem]">
                                                     <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/20">🔒</div>
                                                     <button 
                                                         onClick={() => setIsRechargeModalOpen(true)}
@@ -1016,7 +1016,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             {activeTab === 'help' && (
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
                                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
-                                        <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm h-fit">
+                                        <div className="bg-white p-10 rounded-[1.5rem] border border-gray-100 shadow-sm h-fit">
                                             <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-tight ml-2">{t('dashboard.faqs')}</h3>
                                             <div className="space-y-4">
                                                 {[
@@ -1037,11 +1037,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                                             </div>
                                         </div>
 
-                                        <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm max-h-[900px] overflow-y-auto scrollbar-hide">
+                                        <div className="bg-white p-10 rounded-[1.5rem] border border-gray-100 shadow-sm max-h-[900px] overflow-y-auto scrollbar-hide">
                                             <h3 className="text-xl font-black text-[#00151a] mb-8 uppercase tracking-tight ml-2">{t('dashboard.legal_contract')}</h3>
                                             <div className="space-y-6">
                                                 {TERMS_AND_CONDITIONS.map((term, index) => (
-                                                    <section key={index} className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100/50 hover:shadow-sm transition-all group">
+                                                    <section key={index} className="bg-gray-50 p-8 rounded-[1.25rem] border border-gray-100/50 hover:shadow-sm transition-all group">
                                                         <div className="flex items-center gap-4 mb-4">
                                                             <span className="w-8 h-8 rounded-full bg-white text-[#007e85] flex items-center justify-center font-black text-xs shadow-sm">{index + 1}</span>
                                                             <h4 className="font-black text-[#00151a] uppercase text-[11px] tracking-widest">{t(`terms.title.${index + 1}`) || term.title}</h4>
@@ -1074,7 +1074,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenSettings, onOpenAdm
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+                            className="relative w-full max-w-md bg-white rounded-[1.5rem] p-8 shadow-2xl overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                             <h3 className="text-2xl font-black text-teal-900 uppercase italic tracking-tighter mb-2">Solicitar Activación</h3>

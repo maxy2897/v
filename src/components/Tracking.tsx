@@ -67,14 +67,14 @@ const Tracking: React.FC = () => {
   };
 
   return (
-    <section id="rastreo" className="py-20 relative overflow-hidden bg-white [clip-path:inset(0)]">
+    <section id="rastreo" className="py-20 relative overflow-hidden bg-[#f5f1e8] [clip-path:inset(0)]">
       <div className="max-w-4xl mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 60, scale: 0.98 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.1 }}
           transition={{ type: "spring", stiffness: 90, damping: 20 }}
-          className="bg-[#001a1a]/90 dark:bg-black/90 backdrop-blur-md rounded-[3rem] p-12 text-white shadow-2xl relative overflow-hidden border border-white/10"
+          className="bg-[#0b4f55]/95 dark:bg-black/90 backdrop-blur-md rounded-[1.75rem] p-12 text-white shadow-2xl relative overflow-hidden border border-white/10"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
@@ -111,7 +111,7 @@ const Tracking: React.FC = () => {
 
           {found && shipmentData && (
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative z-10">
-              <div className="flex flex-col sm:flex-row items-center justify-between p-8 bg-white/5 rounded-[2rem] border border-white/5 gap-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between p-8 bg-white/5 rounded-[1.25rem] border border-white/5 gap-6">
                 <div className="text-center sm:text-left">
                   <p className="text-teal-400 text-xs font-black uppercase tracking-widest mb-1">{t('track.result.id_label')}: {trackingId}</p>
                   <p className="text-2xl font-black">{shipmentData.origin} &rarr; {shipmentData.destination}</p>

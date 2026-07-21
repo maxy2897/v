@@ -151,7 +151,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
         </button>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[1.5rem] border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-gray-50 bg-gray-50/50">
           <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Pendientes de Procesar</h4>
         </div>
@@ -207,7 +207,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
         </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden mt-12">
+      <div className="bg-white rounded-[1.5rem] border border-gray-100 shadow-sm overflow-hidden mt-12">
         <div className="p-8 border-b border-gray-50 bg-teal-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col">
             <h4 className="text-[11px] font-black text-teal-900 uppercase tracking-widest">Tarjetas Activas y Saldos</h4>
@@ -252,7 +252,7 @@ const VirtualCardManager: React.FC<{ BASE_URL: string; user: any; updateUserVirt
         {viewingCapture && (
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setViewingCapture(null)} className="absolute inset-0 bg-black/90 backdrop-blur-sm" />
-             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative max-w-4xl w-full bg-white rounded-[3rem] overflow-hidden shadow-2xl">
+             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative max-w-4xl w-full bg-white rounded-[1.75rem] overflow-hidden shadow-2xl">
                 <div className="p-6 border-b flex justify-between items-center bg-gray-50"><span className="text-[10px] font-black uppercase tracking-widest text-gray-500 italic">Comprobante de Pago</span><button onClick={() => setViewingCapture(null)} className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-teal-900 border border-gray-100 hover:bg-gray-100 shadow-sm transition-all focus:outline-none">✕</button></div>
                 <div className="p-4 max-h-[80vh] overflow-auto flex items-center justify-center bg-transparent"><img src={viewingCapture.startsWith('http') ? viewingCapture : `${BASE_URL}/${viewingCapture}`} className="max-w-full h-auto rounded-xl" alt="Comprobante Completo" /></div>
              </motion.div>
@@ -743,7 +743,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
         {/* Minimal Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-           <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+           <div className="bg-white p-8 rounded-[1.5rem] border border-gray-100 shadow-sm">
              <div className="flex justify-between items-center mb-6">
                 <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-2 border-teal-500 pl-3">{t('admin.section.activity')}</h4>
                 <button onClick={() => setActiveTab('shipments')} className="text-[9px] font-black text-teal-600 uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">{t('dash.view_all')}</button>
@@ -766,7 +766,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
            </div>
 
            <div className="space-y-6">
-              <div className="bg-[#00151a] p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group">
+              <div className="bg-[#0b4f55] p-8 rounded-[1.5rem] text-white shadow-xl relative overflow-hidden group">
                 <div className="absolute -right-10 -bottom-10 opacity-5 group-hover:rotate-12 transition-transform duration-700">
                    <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
                 </div>
@@ -783,7 +783,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">{t('admin.system_status')}</p>
                    <p className="text-xs font-black text-teal-600 uppercase italic">{t('admin.active_secure')}</p>
@@ -797,7 +797,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col md:flex-row h-screen italic-none relative">
+    <div className="min-h-screen bg-[#f5f1e8] flex flex-col md:flex-row h-screen italic-none relative">
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -812,7 +812,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       </AnimatePresence>
 
       {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#00151a] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:block md:w-72 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none overflow-y-auto h-[100dvh] custom-scrollbar`}>
+      <aside className={`fixed inset-y-0 left-0 z-[100] w-72 bg-[#0b4f55] text-white flex flex-col p-8 transition-transform duration-300 md:relative md:block md:w-72 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} border-r border-teal-900/20 shadow-2xl md:shadow-none overflow-y-auto h-[100dvh] custom-scrollbar`}>
           <div className="flex flex-col min-h-full shrink-0">
             {/* Logo Section */}
              <div className="mb-8 flex items-center justify-between gap-4">
@@ -935,7 +935,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
        </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen bg-white overflow-y-auto w-full relative custom-scrollbar">
+      <div className="flex-1 flex flex-col h-screen bg-[#f5f1e8] overflow-y-auto w-full relative custom-scrollbar">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 md:gap-8">
             <button 
@@ -1013,7 +1013,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           
           {activeTab === 'products' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-               <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+               <section className="bg-white p-8 rounded-[1.25rem] border border-gray-100 shadow-sm">
                   <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">{t('admin.new_product')}</h3>
                   <form onSubmit={addProduct} className="space-y-4">
                      <div className="relative group">
@@ -1035,7 +1035,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      <input required type="text" placeholder={t('admin.product_name')} title={t('admin.product_name')} className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
                      <input required type="text" placeholder={t('shipping.price') + " (ej: 50.000 FCFA)"} title={t('shipping.price')} className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
                      <textarea placeholder={t('shipping.description') + " (opcional)"} title={t('shipping.description')} className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
-                     <button type="submit" disabled={isUploading || !newProduct.image} title={t('admin.publish_product')} className="w-full py-4 bg-[#00151a] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">{t('admin.publish_product')}</button>
+                     <button type="submit" disabled={isUploading || !newProduct.image} title={t('admin.publish_product')} className="w-full py-4 bg-[#0b4f55] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">{t('admin.publish_product')}</button>
                   </form>
                </section>
             </div>
@@ -1074,7 +1074,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                          initial={{ scale: 0.9, y: 20 }}
                          animate={{ scale: 1, y: 0 }}
                          exit={{ scale: 0.9, y: 20 }}
-                         className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col"
+                         className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[1.75rem] shadow-2xl overflow-hidden flex flex-col"
                        >
                           <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                              <div>
@@ -1086,7 +1086,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                           
                           <div className="flex-1 overflow-y-auto p-8 space-y-4">
                              {selectedUserGroup.shipments.map(ship => (
-                               <div key={ship._id} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-white hover:shadow-xl transition-all group">
+                               <div key={ship._id} className="p-6 bg-gray-50 rounded-[1.25rem] border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-white hover:shadow-xl transition-all group">
                                   <div className="flex items-center gap-6">
                                      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">📦</div>
                                      <div>
@@ -1132,7 +1132,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      acc[label] = true;
                      return acc;
                   }, {} as any)).map(folder => (
-                    <div key={folder} onClick={() => setSelectedTxFolder(folder === selectedTxFolder ? null : folder)} className={`p-8 rounded-[2.5rem] border transition-all cursor-pointer flex flex-col items-center gap-4 group ${selectedTxFolder === folder ? 'bg-teal-500 border-teal-400 text-white shadow-xl shadow-teal-500/20' : 'bg-white border-gray-100 shadow-sm hover:shadow-xl'}`}>
+                    <div key={folder} onClick={() => setSelectedTxFolder(folder === selectedTxFolder ? null : folder)} className={`p-8 rounded-[1.5rem] border transition-all cursor-pointer flex flex-col items-center gap-4 group ${selectedTxFolder === folder ? 'bg-teal-500 border-teal-400 text-white shadow-xl shadow-teal-500/20' : 'bg-white border-gray-100 shadow-sm hover:shadow-xl'}`}>
                        <div className="text-4xl transition-transform ${selectedTxFolder === folder ? 'scale-110' : 'group-hover:scale-110'}">📂</div>
                        <span className={`font-black uppercase text-[10px] tracking-widest ${selectedTxFolder === folder ? 'text-white' : 'text-teal-900'}`}>{folder}</span>
                     </div>
@@ -1140,7 +1140,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                </div>
 
                 {(selectedTxFolder || true) && (
-                  <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm animate-in slide-in-from-top-4">
+                  <div className="bg-white p-8 rounded-[1.75rem] border border-gray-100 shadow-sm animate-in slide-in-from-top-4">
                       <h4 className="text-sm font-black text-teal-900 uppercase tracking-widest mb-6 border-b pb-4 italic">{t('admin.transactions_of', { folder: selectedTxFolder })}</h4>
                      <div className="space-y-3">
                         {transactions.filter(tx => getAssignedFolder(tx.createdAt) === selectedTxFolder).map(tx => (
@@ -1158,14 +1158,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      </div>
                   </div>
                )}
-               {transactions.length === 0 && <div className="p-20 text-center bg-white rounded-[3rem] border border-gray-100 text-gray-300 font-bold italic uppercase tracking-widest">{t('admin.scanner.no_tx')}</div>}
+               {transactions.length === 0 && <div className="p-20 text-center bg-white rounded-[1.75rem] border border-gray-100 text-gray-300 font-bold italic uppercase tracking-widest">{t('admin.scanner.no_tx')}</div>}
             </div>
           )}
 
 
           {activeTab === 'pos' && (
             <div className="max-w-4xl mx-auto">
-               <div className="bg-white p-10 md:p-12 rounded-[3.5rem] border border-gray-100 shadow-2xl relative overflow-hidden">
+               <div className="bg-white p-10 md:p-12 rounded-[1.75rem] border border-gray-100 shadow-2xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                   
                   <div className="relative z-10">
@@ -1233,7 +1233,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                         </div>
                         
                         <div className="md:col-span-2 pt-6">
-                           <button type="submit" disabled={isUploading} className="w-full py-5 bg-orange-500 text-white rounded-[2rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-orange-500/30 hover:bg-orange-600 active:scale-95 transition-all">
+                           <button type="submit" disabled={isUploading} className="w-full py-5 bg-orange-500 text-white rounded-[1.25rem] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-orange-500/30 hover:bg-orange-600 active:scale-95 transition-all">
                               {isUploading ? t('common.processing') : t('admin.finalize_pos')}
                            </button>
                         </div>
@@ -1245,7 +1245,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
           {activeTab === 'content' && (
              <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5">
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.web_config_hero')}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
@@ -1257,7 +1257,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       </div>
                       <div className="space-y-4">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-2">{t('admin.hero_cover_image')}</label>
-                         <div className="w-full h-48 bg-gray-100 rounded-[2rem] overflow-hidden relative group border-2 border-dashed border-gray-200">
+                         <div className="w-full h-48 bg-gray-100 rounded-[1.25rem] overflow-hidden relative group border-2 border-dashed border-gray-200">
                             {editConfig?.content?.hero?.heroImage ? (
                                <img src={editConfig.content.hero.heroImage} className="w-full h-full object-cover" alt={t('admin.web_config_hero')} />
                             ) : (
@@ -1270,7 +1270,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    </div>
                 </div>
 
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.scanner.contact_phones')}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
@@ -1288,7 +1288,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    </div>
                 </div>
 
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.next_shipment_dates')}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -1302,7 +1302,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    </div>
                 </div>
 
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.annual_summary_title')}</h3>
                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-6 block font-bold">{t('admin.scanner.annual_hint')}</p>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1337,7 +1337,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 </div>
 
 
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.social_networks')}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -1395,7 +1395,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                           )}
                        </div>
 
-                       <div className="bg-gray-50/50 p-8 rounded-[2.5rem] border border-gray-100 shadow-inner">
+                       <div className="bg-gray-50/50 p-8 rounded-[1.5rem] border border-gray-100 shadow-inner">
                           <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-6 italic">Añadir Nueva Tienda</h4>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                              <div className="space-y-2">
@@ -1436,7 +1436,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
           {activeTab === 'config' && (
              <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in">
-                <div className="bg-[#00151a] p-10 rounded-[3rem] text-white shadow-2xl shadow-teal-900/40 relative overflow-hidden">
+                <div className="bg-[#0b4f55] p-10 rounded-[1.75rem] text-white shadow-2xl shadow-teal-900/40 relative overflow-hidden">
                    <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                    <h3 className="text-2xl font-black uppercase tracking-tighter italic mb-10 border-l-4 border-teal-500 pl-6">{t('admin.system_config')}</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
@@ -1533,7 +1533,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
           {activeTab === 'operational' && (
               <div className="max-w-4xl mx-auto space-y-8 animate-in zoom-in-95 duration-500 pb-20">
-                 <div className="bg-white p-6 md:p-10 rounded-[3rem] shadow-2xl border border-gray-100 relative overflow-hidden">
+                 <div className="bg-white p-6 md:p-10 rounded-[1.75rem] shadow-2xl border border-gray-100 relative overflow-hidden">
                     <div className="absolute -top-20 -left-20 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl"></div>
                     
                     <div className="relative z-10 flex flex-col items-center text-center">
@@ -1556,8 +1556,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                        </div>
                        
                        {operationalInputMode === 'qr' ? (
-                          <div className="w-full max-w-md bg-[#011a1f] p-4 rounded-[3rem] mb-10 relative shadow-2xl border-4 border-[#01242b]">
-                             <div id="reader" className="w-full aspect-square overflow-hidden rounded-[2.5rem] bg-black">
+                          <div className="w-full max-w-md bg-[#011a1f] p-4 rounded-[1.75rem] mb-10 relative shadow-2xl border-4 border-[#01242b]">
+                             <div id="reader" className="w-full aspect-square overflow-hidden rounded-[1.5rem] bg-black">
                                 {!isScanning && (
                                    <div className="h-full flex flex-col items-center justify-center text-white p-10">
                                       <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-6"></div>
@@ -1568,7 +1568,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                              </div>
                              {/* Scanning UI overlay */}
                              {isScanning && (
-                                <div className="absolute inset-0 pointer-events-none rounded-[3rem]">
+                                <div className="absolute inset-0 pointer-events-none rounded-[1.75rem]">
                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-teal-500/50 rounded-3xl animate-pulse"></div>
                                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-teal-500/50 shadow-[0_0_15px_rgba(20,184,166,0.5)] animate-[scan_2s_infinite]"></div>
                                 </div>
@@ -1581,7 +1581,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                 <input 
                                    type="text" 
                                    placeholder="EJ: BB-ES-2401..." 
-                                   className="w-full px-8 py-6 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-[2rem] text-lg font-black tracking-tighter text-teal-900 placeholder:text-gray-300 outline-none transition-all shadow-sm"
+                                   className="w-full px-8 py-6 bg-gray-50 border-2 border-transparent focus:border-teal-500/20 focus:bg-white rounded-[1.25rem] text-lg font-black tracking-tighter text-teal-900 placeholder:text-gray-300 outline-none transition-all shadow-sm"
                                    value={manualCode}
                                    onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                                    onKeyDown={(e) => e.key === 'Enter' && manualCode && handleQuickTrack(manualCode)}
@@ -1598,7 +1598,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                        )}
 
                        {scannedShipment && (
-                          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full p-8 bg-teal-50 rounded-[3rem] border border-teal-100 shadow-xl text-left border-b-4 border-b-teal-500">
+                          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full p-8 bg-teal-50 rounded-[1.75rem] border border-teal-100 shadow-xl text-left border-b-4 border-b-teal-500">
                              <div className="flex justify-between items-start mb-6">
                                 <div>
                                    <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">{t('admin.package_identified')}</p>
@@ -1673,11 +1673,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic leading-none mb-2">{t('admin.executive_reports')}</h3>
                       <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] border-l-2 border-teal-500 pl-3">{t('admin.logistic_performance')}</p>
                    </div>
-                   <button onClick={exportToExcel} className="px-8 py-3 bg-[#00151a] text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-900 transition-all shadow-xl">{t('admin.export_data')}</button>
+                   <button onClick={exportToExcel} className="px-8 py-3 bg-[#0b4f55] text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-teal-900 transition-all shadow-xl">{t('admin.export_data')}</button>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                   <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm col-span-1 lg:col-span-2">
+                   <div className="bg-white p-10 rounded-[1.75rem] border border-gray-100 shadow-sm col-span-1 lg:col-span-2">
                       <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-10 pb-2 border-b">{t('admin.shipment_evolution')}</h4>
                       <div className="h-64 flex items-end justify-between gap-4 px-4 overflow-hidden">
                          {normalizedMonthly.map((h, i) => (
@@ -1703,7 +1703,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                       </div>
                    </div>
                    
-                   <div className="bg-gradient-to-br from-teal-900 to-slate-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
+                   <div className="bg-gradient-to-br from-teal-900 to-slate-900 p-10 rounded-[1.75rem] text-white shadow-2xl relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-700">
                          <svg className="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
                       </div>
@@ -1733,7 +1733,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
           {activeTab === 'manifests' && (
              <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5">
-                <div className="bg-[#00151a] p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden border border-teal-500/20">
+                <div className="bg-[#0b4f55] p-10 rounded-[1.75rem] text-white shadow-2xl relative overflow-hidden border border-teal-500/20">
                    <div className="absolute top-0 right-0 text-[200px] opacity-10 leading-none select-none">📦</div>
                    <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-2">{t('admin.collective_packages')}</h3>
                    <p className="text-teal-400 text-[10px] font-black uppercase tracking-[0.3em]">{t('admin.generate_qr_master')}</p>
@@ -1746,7 +1746,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                 {manifestTab === 'create' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      {/* Left: Package Selection */}
-                     <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+                     <div className="bg-white p-8 rounded-[1.75rem] border border-gray-100 shadow-sm">
                         <h4 className="text-sm font-black text-teal-900 uppercase tracking-widest mb-2 border-l-4 border-teal-500 pl-4">{t('admin.select_packages')}</h4>
                         <div className="flex gap-2 mb-6 mt-4 items-center">
                            <div className="flex gap-2">
@@ -1792,7 +1792,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      </div>
 
                      {/* Right: Create / Preview */}
-                     <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm flex flex-col">
+                     <div className="bg-white p-8 rounded-[1.75rem] border border-gray-100 shadow-sm flex flex-col">
                         <h4 className="text-sm font-black text-teal-900 uppercase tracking-widest mb-6 border-l-4 border-teal-500 pl-4">{t('admin.configure_bundle')}</h4>
                         <div className="space-y-4 flex-1">
                            <div>
@@ -1817,7 +1817,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                         </button>
 
                         {createdManifest && (
-                          <div className="mt-6 p-6 bg-[#00151a] text-white rounded-3xl text-center space-y-4 shadow-xl border border-teal-500/30">
+                          <div className="mt-6 p-6 bg-[#0b4f55] text-white rounded-3xl text-center space-y-4 shadow-xl border border-teal-500/30">
                              <p className="text-[9px] font-black uppercase tracking-widest text-teal-400">✅ {t('admin.bundle_created')}</p>
                              <p className="font-black text-lg">{createdManifest.manifestId}</p>
                              <div className="flex justify-center bg-white p-4 rounded-2xl shadow-inner">
@@ -1840,7 +1840,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
                 {manifestTab === 'scan' && (
                   <div className="max-w-2xl mx-auto space-y-6">
-                     <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
+                     <div className="bg-white p-8 rounded-[1.75rem] border border-gray-100 shadow-sm">
                         <h4 className="text-sm font-black text-teal-900 uppercase tracking-widest mb-6 border-l-4 border-teal-500 pl-4">{t('admin.scan_search_collective')}</h4>
                         <div className="flex gap-3">
                            <input type="text" title={t('admin.collective_bundle_id')} placeholder="Ej: BB-MAN-123456AB" value={manifestScanInput} onChange={e => setManifestScanInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLookupManifest(manifestScanInput)} className="flex-1 p-4 bg-gray-50 rounded-2xl font-black text-sm" />
@@ -1849,7 +1849,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                      </div>
 
                      {scannedManifest && (
-                       <div className="bg-white p-8 rounded-[3rem] border border-teal-100 shadow-2xl animate-in slide-in-from-top-4">
+                       <div className="bg-white p-8 rounded-[1.75rem] border border-teal-100 shadow-2xl animate-in slide-in-from-top-4">
                           <div className="flex items-center justify-between mb-8">
                              <div>
                                <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.2em] mb-1">{t('admin.bundle_found')}</p>
@@ -1898,7 +1898,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                                    <option value="Entregado">{t('shipping.status.delivered')}</option>
                                 </select>
                               </div>
-                              <button onClick={handleManifestStatusUpdate} className="w-full py-6 bg-teal-600 text-white rounded-[2rem] font-black uppercase text-[11px] tracking-[0.2em] hover:bg-teal-700 transition-all shadow-2xl shadow-teal-500/30 hover:scale-[1.02] active:scale-95">
+                              <button onClick={handleManifestStatusUpdate} className="w-full py-6 bg-teal-600 text-white rounded-[1.25rem] font-black uppercase text-[11px] tracking-[0.2em] hover:bg-teal-700 transition-all shadow-2xl shadow-teal-500/30 hover:scale-[1.02] active:scale-95">
                                  ✅ {t('admin.update_packages_at_once', { count: scannedManifest.shipments?.length || 0 })}
                               </button>
                           </div>
@@ -1910,7 +1910,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
           )}
           {activeTab === 'pickup' && (
              <div className="max-w-4xl mx-auto animate-in fade-in">
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100">
                    <div className="flex items-center gap-6 mb-10">
                       <div className="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner">📦</div>
                       <div>
@@ -1926,7 +1926,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                    
                    <div className="space-y-4">
                       {allShipments.filter(s => s.trackingNumber.includes(pickupSearch) || s.recipient.name.toLowerCase().includes(pickupSearch.toLowerCase())).slice(0, 10).map(ship => (
-                         <div key={ship._id} className="p-6 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-xl transition-all group">
+                         <div key={ship._id} className="p-6 bg-gray-50/50 rounded-[1.5rem] border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-xl transition-all group">
                             <div className="flex items-center gap-6">
                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-gray-100 group-hover:rotate-6 transition-transform">📍</div>
                                <div>
@@ -1946,7 +1946,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
 
           {activeTab === 'branding' && (
              <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in">
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100 italic-none">
+                <div className="bg-white p-10 rounded-[1.75rem] shadow-sm border border-gray-100 italic-none">
                    <h3 className="text-xl font-black text-teal-900 uppercase italic tracking-tighter mb-8 border-l-4 border-teal-500 pl-4">{t('admin.visual_identity')}</h3>
                    <div className="space-y-8">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
