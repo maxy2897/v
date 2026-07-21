@@ -34,11 +34,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
   }, []);
 
   const navItems = [
-    { path: '/calendario', label: t('nav.calendar') },
     { path: '/tarifas', label: t('nav.rates') },
-    { path: '/money-transfer', label: t('nav.money_transfer') },
-    { path: '/compras-online', label: t('nav.online_shopping') },
-    { path: '/tienda', label: t('nav.store') },
     { path: '/rastreo', label: t('nav.tracking') },
   ];
 
