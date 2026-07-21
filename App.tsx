@@ -74,6 +74,7 @@ const FirstVisitRedirect = () => {
 const AnimatedRoutes: React.FC<{
   onOpenRegister: () => void;
   onOpenContact: () => void;
+  onOpenAbout: () => void;
   onOpenForgotPassword: (email?: string) => void;
   onOpenSettings: () => void;
   onOpenAdmin: () => void;
@@ -81,13 +82,13 @@ const AnimatedRoutes: React.FC<{
   setProducts: (p: Product[]) => void;
   config: AppConfig;
   setConfig: (c: AppConfig) => void;
-}> = ({ onOpenRegister, onOpenContact, onOpenForgotPassword, onOpenSettings, onOpenAdmin, products, setProducts, config, setConfig }) => {
+}> = ({ onOpenRegister, onOpenContact, onOpenAbout, onOpenForgotPassword, onOpenSettings, onOpenAdmin, products, setProducts, config, setConfig }) => {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location}>
-        <Route path="/" element={<AnimatedPage><HomePage onOpenRegister={onOpenRegister} onOpenContact={onOpenContact} /></AnimatedPage>} />
+        <Route path="/" element={<AnimatedPage><HomePage onOpenRegister={onOpenRegister} onOpenContact={onOpenContact} onOpenAbout={onOpenAbout} /></AnimatedPage>} />
         <Route path="/calendario" element={<AnimatedPage><CalendarPage /></AnimatedPage>} />
         <Route path="/tarifas" element={<AnimatedPage><RatesPage /></AnimatedPage>} />
 
@@ -202,6 +203,7 @@ const AppContent: React.FC = () => {
             <AnimatedRoutes
               onOpenRegister={() => setIsRegisterOpen(true)}
               onOpenContact={() => setIsContactOpen(true)}
+              onOpenAbout={() => setIsAboutOpen(true)}
               onOpenForgotPassword={(email) => {
                 setResetEmail(email);
                 setIsForgotPasswordOpen(true);
@@ -218,34 +220,6 @@ const AppContent: React.FC = () => {
 
         {!isAdminRoute && (
           <footer className="relative z-50">
-            <section className="border-t border-[#d9d2c7] bg-[#f5f1e8]">
-              <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10">
-                <div className="max-w-3xl">
-                  <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#007e85]">Sobre nosotros</p>
-                  <h2 className="mt-4 text-3xl font-black tracking-tight text-[#06272b] sm:text-4xl">
-                    Conectamos personas, mercados y oportunidades.
-                  </h2>
-                  <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#5d716e]">
-                    Bodipo Business es un equipo ecuatoguineano que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => setIsAboutOpen(true)}
-                    className="border border-[#155e63] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#155e63] transition hover:bg-[#155e63] hover:text-white"
-                  >
-                    Conocer al equipo
-                  </button>
-                  <a
-                    href="mailto:info@bodipobusiness.com"
-                    className="bg-[#ffbd59] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#06272b] transition hover:bg-[#06272b] hover:text-white"
-                  >
-                    Contactar
-                  </a>
-                </div>
-              </div>
-            </section>
 
             <div className="bg-[#155e63] text-white">
               <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 text-xs sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
@@ -260,12 +234,12 @@ const AppContent: React.FC = () => {
                   </p>
                 </div>
 
-                <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 text-white/80" aria-label="Enlaces del pie de página">
-                  <Link to="/mapa-del-sitio" className="transition hover:text-white">Mapa del sitio</Link>
-                  <button onClick={() => setIsCookieOpen(true)} className="transition hover:text-white">Consentimiento de cookies</button>
-                  <Link to="/condiciones" className="transition hover:text-white">Condiciones de uso</Link>
-                  <Link to="/privacidad" className="transition hover:text-white">Política de privacidad</Link>
-                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 font-bold text-white transition hover:text-[#ffbd59]">
+                <nav className="grid grid-cols-1 gap-0 text-white/85 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center" aria-label="Enlaces del pie de página">
+                  <Link to="/mapa-del-sitio" className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Mapa del sitio</Link>
+                  <button onClick={() => setIsCookieOpen(true)} className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Consentimiento de cookies</button>
+                  <Link to="/condiciones" className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Condiciones de uso</Link>
+                  <Link to="/privacidad" className="border-white/25 py-2 transition hover:text-white lg:border-l lg:px-4 lg:py-0">Política de privacidad</Link>
+                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 border-white/25 py-2 font-bold text-white transition hover:text-[#ffbd59] lg:border-l lg:pl-4 lg:py-0">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M5 18l-2 3v-5a9 9 0 1 1 4 4" /></svg>
                     Preguntar a Bodipo
                   </button>

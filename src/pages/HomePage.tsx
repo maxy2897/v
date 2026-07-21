@@ -6,6 +6,7 @@ import { useSettings } from '../context/SettingsContext';
 interface HomePageProps {
   onOpenRegister: () => void;
   onOpenContact: () => void;
+  onOpenAbout: () => void;
 }
 
 const operations = [
@@ -21,7 +22,7 @@ const Arrow = () => (
   </svg>
 );
 
-const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) => {
+const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOpenAbout }) => {
   const { appConfig } = useSettings();
   const navigate = useNavigate();
   const [trackingId, setTrackingId] = useState('');
@@ -124,6 +125,21 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact }) =>
         </div>
       </section>
 
+      <section className="border-t border-[#d9d2c7] bg-[#f5f1e8]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#007e85]">Sobre nosotros</p>
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-[#06272b] sm:text-4xl">Conectamos personas, mercados y oportunidades.</h2>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#5d716e]">
+              Bodipo Business es un equipo ecuatoguineano que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button onClick={onOpenAbout} className="border border-[#155e63] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#155e63] transition hover:bg-[#155e63] hover:text-white">Conocer al equipo</button>
+            <button onClick={onOpenContact} className="bg-[#ffbd59] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#06272b] transition hover:bg-[#06272b] hover:text-white">Contactar</button>
+          </div>
+        </div>
+      </section>
       <section className="bg-[#007e85] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
           <div>
