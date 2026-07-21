@@ -211,200 +211,58 @@ const AppContent: React.FC = () => {
         </main>
 
         {!isAdminRoute && (
-          <footer className="bg-[#00151a] py-12 text-white relative z-50">
-            <div className="max-w-7xl mx-auto px-4">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
-                <div className="col-span-1 lg:col-span-1">
-                  <div className="flex items-center space-x-4 mb-8">
-                    <div className="flex items-center justify-center shrink-0">
-                      {config.customLogoUrl && (
-                        <img
-                          src={config.customLogoUrl}
-                          className="h-14 lg:h-16 object-contain logo-white-outline"
-                          alt="Logo"
-                        />
-                      )}
-                      {!config.customLogoUrl && (
-                        <span className="logo-font text-4xl text-teal-400 leading-none select-none drop-shadow-[0_0_2px_rgba(255,255,255,1)]">{config.logoText}</span>
-                      )}
-                    </div>
-                    <span className="text-2xl font-black tracking-tighter uppercase">BODIPO BUSINESS</span>
-                  </div>
-                  <p className="text-gray-400 text-sm font-medium leading-relaxed mb-8">
-                    {t('footer.logistics_desc')}
+          <footer className="relative z-50">
+            <section className="border-t border-[#d9d2c7] bg-[#f5f1e8]">
+              <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10">
+                <div className="max-w-3xl">
+                  <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#007e85]">Sobre nosotros</p>
+                  <h2 className="mt-4 text-3xl font-black tracking-tight text-[#06272b] sm:text-4xl">
+                    Conectamos personas, mercados y oportunidades.
+                  </h2>
+                  <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#5d716e]">
+                    Bodipo Business es un equipo ecuatoguineano que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
                   </p>
                 </div>
 
-                <div className="space-y-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.direct_contact')}</p>
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                        <span className="text-sm">🇪🇸</span>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.spain')}</p>
-                        <p className="text-sm font-bold">{appConfig?.contact?.phones?.es || '+34 641 992 110'}</p>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-teal-400 mt-2">Email</p>
-                        <p className="text-sm font-bold">info@bodipobusiness.com</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-4">
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                        <span className="text-sm">🇨🇲</span>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.cameroon')}</p>
-                        <p className="text-sm font-bold">{appConfig?.contact?.phones?.cm || '+237 687528854'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-4">
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                        <span className="text-sm">🇬🇶</span>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('footer.guinea')}</p>
-                        <p className="text-sm font-bold">{appConfig?.contact?.phones?.gq || '+240 222 667 763'}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.logistics_services')}</p>
-                  <ul className="space-y-3 text-sm font-medium text-gray-400">
-                    <li><Link to="/tarifas" className="hover:text-white transition-colors">{t('footer.calc_rates')}</Link></li>
-                    <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.calendar')}</Link></li>
-                    <li><Link to="/rastreo" className="hover:text-white transition-colors">{t('footer.tracking')}</Link></li>
-                    <li><Link to="/calendario" className="hover:text-white transition-colors">{t('footer.advisor')}</Link></li>
-                  </ul>
-                </div>
-
-                <div className="space-y-6">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-teal-400">{t('footer.locations')}</p>
-                  <ul className="space-y-3 text-sm font-medium text-gray-400">
-                    <li>Avenida de Daganzo 13, B - Madrid</li>
-                    <li>Malabo / Bata - Guinea Ecuatorial</li>
-                  </ul>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setIsAboutOpen(true)}
+                    className="border border-[#155e63] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#155e63] transition hover:bg-[#155e63] hover:text-white"
+                  >
+                    Conocer al equipo
+                  </button>
+                  <a
+                    href="mailto:info@bodipobusiness.com"
+                    className="bg-[#ffbd59] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#06272b] transition hover:bg-[#06272b] hover:text-white"
+                  >
+                    Contactar
+                  </a>
                 </div>
               </div>
+            </section>
 
-              <div className="pt-16 border-t border-white/5 mt-16">
-                <div className="flex flex-col gap-16">
-                  <div className="flex flex-col gap-6">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500/80 text-center lg:text-left">{t('about.team_badge')}</p>
-                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-10">
-                      {/* Member 1: Nguema */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/dv-nguema.jpeg" 
-                            alt={t('about.member_nguema_name')} 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
-                            {t('about.member_nguema_name').split(' ').slice(0, 2).join(' ')}
-                          </span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Director</span>
-                        </div>
-                      </button>
-
-                      <div className="w-px h-8 bg-gray-800 hidden lg:block" />
-
-                      {/* Member 2: Martin Ndong */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/da-martin.jpg" 
-                            alt={t('about.member_martin_name')} 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
-                            {t('about.member_martin_name').split(' ').slice(0, 2).join(' ')}
-                          </span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Product Design</span>
-                        </div>
-                      </button>
-
-                      <div className="w-px h-8 bg-gray-800 hidden lg:block" />
-
-                      {/* Member 3: D.R. NGUEMA */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/dr-nguema.jpg" 
-                            alt={t('about.member_dr_name')} 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
-                            {t('about.member_dr_name')}
-                          </span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Legal Affairs</span>
-                        </div>
-                      </button>
-
-                      <div className="w-px h-8 bg-gray-800 hidden lg:block" />
-
-                      {/* Member 4: Evangelina */}
-                      <button 
-                        onClick={() => setIsAboutOpen(true)}
-                        className="flex items-center gap-3 group"
-                      >
-                        <div className="w-12 h-12 rounded-full border-2 border-teal-500/30 overflow-hidden group-hover:border-teal-400 transition-all shadow-lg group-hover:scale-105 duration-300">
-                          <img 
-                            src="./images/evangelina-mokuy.jpg" 
-                            alt={t('about.member_evangelina_name')} 
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200';
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-teal-400 transition-colors leading-none">
-                            {t('about.member_evangelina_name').split(' ').slice(1, 3).join(' ')}
-                          </span>
-                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1 group-hover:text-teal-400/50">Finance</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-center lg:items-start gap-4 pt-8 border-t border-white/5">
-                    <p className="text-[10px] font-black text-teal-400/30 uppercase tracking-[0.4em]">© 2026 BODIPOBUSINESS S.L.</p>
-                    <button 
-                      onClick={handleAdminLogin}
-                      className="text-[9px] font-black uppercase tracking-[0.4em] opacity-20 hover:opacity-100 hover:text-teal-400 transition-all flex items-center gap-2"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                      {t('footer.admin_access')}
-                    </button>
-                  </div>
+            <div className="bg-[#155e63] text-white">
+              <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 text-xs sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+                <div className="flex items-center gap-3">
+                  {config.customLogoUrl ? (
+                    <img src={config.customLogoUrl} className="h-9 w-9 object-contain logo-white-outline" alt="Bodipo Business" />
+                  ) : (
+                    <span className="logo-font text-2xl text-white">{config.logoText}</span>
+                  )}
+                  <p className="font-bold tracking-wide">
+                    © {new Date().getFullYear()} Bodipo Business
+                  </p>
                 </div>
+
+                <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 text-white/80" aria-label="Enlaces del pie de página">
+                  <Link to="/tarifas" className="transition hover:text-white">Tarifas</Link>
+                  <Link to="/rastreo" className="transition hover:text-white">Seguimiento</Link>
+                  <Link to="/privacidad" className="transition hover:text-white">Política de privacidad</Link>
+                  <button onClick={() => setIsAboutOpen(true)} className="transition hover:text-white">Sobre nosotros</button>
+                  <button onClick={handleAdminLogin} className="text-white/35 transition hover:text-white">
+                    {t('footer.admin_access')}
+                  </button>
+                </nav>
               </div>
             </div>
           </footer>
