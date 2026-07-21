@@ -32,6 +32,11 @@ const AIChat: React.FC<AIChatProps> = ({ config }) => {
     }
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    const openChat = () => setIsOpen(true);
+    window.addEventListener('open-bodipo-chat', openChat);
+    return () => window.removeEventListener('open-bodipo-chat', openChat);
+  }, []);
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 

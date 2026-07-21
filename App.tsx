@@ -18,6 +18,7 @@ const ContactModal = lazy(() => import('./src/components/ContactModal'));
 const AdminPanel = lazy(() => import('./src/components/AdminPanel'));
 const SettingsModal = lazy(() => import('./src/components/SettingsModal'));
 const AboutTeamPanel = lazy(() => import('./src/components/AboutTeamPanel'));
+const CookiePreferences = lazy(() => import('./src/components/CookiePreferences'));
 
 // Lazy loaded Pages
 const HomePage = lazy(() => import('./src/pages/HomePage'));
@@ -30,6 +31,8 @@ const ClientPage = lazy(() => import('./src/pages/ClientPage'));
 const MoneyTransferPage = lazy(() => import('./src/pages/MoneyTransferPage'));
 const DashboardPage = lazy(() => import('./src/pages/DashboardPage'));
 const PrivacyPage = lazy(() => import('./src/pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./src/pages/TermsPage'));
+const SiteMapPage = lazy(() => import('./src/pages/SiteMapPage'));
 import NotificationsPage from './src/pages/NotificationsPage';
 // const NotificationsPage = lazy(() => import('./src/pages/NotificationsPage'));
 const OnlineShoppingPage = lazy(() => import('./src/pages/OnlineShoppingPage'));
@@ -95,6 +98,8 @@ const AnimatedRoutes: React.FC<{
         <Route path="/compras-online" element={<AnimatedPage><OnlineShoppingPage /></AnimatedPage>} />
         <Route path="/dashboard" element={<AnimatedPage><DashboardPage onOpenSettings={onOpenSettings} onOpenAdmin={onOpenAdmin} onOpenForgotPassword={onOpenForgotPassword} /></AnimatedPage>} />
         <Route path="/privacidad" element={<AnimatedPage><PrivacyPage /></AnimatedPage>} />
+        <Route path="/condiciones" element={<AnimatedPage><TermsPage /></AnimatedPage>} />
+        <Route path="/mapa-del-sitio" element={<AnimatedPage><SiteMapPage /></AnimatedPage>} />
         <Route path="/notificaciones" element={<AnimatedPage><NotificationsPage /></AnimatedPage>} />
         <Route path="/admin" element={
           <AnimatedPage>
@@ -120,6 +125,7 @@ const AppContent: React.FC = () => {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isCookieOpen, setIsCookieOpen] = useState(() => !localStorage.getItem('bb_cookie_consent'));
   const navigate = useNavigate();
 
   // Dynamic State
@@ -255,12 +261,13 @@ const AppContent: React.FC = () => {
                 </div>
 
                 <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 text-white/80" aria-label="Enlaces del pie de página">
-                  <Link to="/tarifas" className="transition hover:text-white">Tarifas</Link>
-                  <Link to="/rastreo" className="transition hover:text-white">Seguimiento</Link>
+                  <Link to="/mapa-del-sitio" className="transition hover:text-white">Mapa del sitio</Link>
+                  <button onClick={() => setIsCookieOpen(true)} className="transition hover:text-white">Consentimiento de cookies</button>
+                  <Link to="/condiciones" className="transition hover:text-white">Condiciones de uso</Link>
                   <Link to="/privacidad" className="transition hover:text-white">Política de privacidad</Link>
-                  <button onClick={() => setIsAboutOpen(true)} className="transition hover:text-white">Sobre nosotros</button>
-                  <button onClick={handleAdminLogin} className="text-white/35 transition hover:text-white">
-                    {t('footer.admin_access')}
+                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 font-bold text-white transition hover:text-[#ffbd59]">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M5 18l-2 3v-5a9 9 0 1 1 4 4" /></svg>
+                    Preguntar a Bodipo
                   </button>
                 </nav>
               </div>
@@ -295,6 +302,7 @@ const AppContent: React.FC = () => {
           <AIChat config={config} />
           {isAboutOpen && <AboutTeamPanel isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />}
           {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
+          <CookiePreferences isOpen={isCookieOpen} onClose={() => setIsCookieOpen(false)} />
         </Suspense>
       </div>
       </PullToRefresh>

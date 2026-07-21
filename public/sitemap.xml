@@ -18,4 +18,5 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-</urlset>
+  <url><loc>https://v-five-dun.vercel.app/#/condiciones</loc></url>
+  <url><loc>https://v-five-dun.vercel.app/#/mapa-del-sitio</loc></url></urlset>
