@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
                     <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block">{config.logoText}</span>
                   )}
                 </div>
-                <div className="flex flex-col justify-center leading-none pointer-events-none text-white">
+                <div className="flex flex-col justify-center translate-y-2 leading-none pointer-events-none text-white">
                   <span className="text-base md:text-xl font-black tracking-tight uppercase drop-shadow-sm">
                     Bodipo
                   </span>
