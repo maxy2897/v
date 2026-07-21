@@ -46,18 +46,18 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
             <div className="flex items-center gap-1 xl:gap-4 shrink-0">
 
               <Link to="/" className="flex items-center space-x-2 group relative z-20">
-                <div className="flex items-center justify-center w-12 h-12 md:w-20 md:h-20 xl:w-28 xl:h-28 bg-transparent rounded-full group-hover:scale-110 transition-transform p-1">
+                <div className="flex items-center justify-center w-11 h-11 md:w-14 md:h-14 bg-transparent rounded-full transition-transform p-1">
                   {config.customLogoUrl ? (
                     <img src={config.customLogoUrl} className="h-full w-full object-contain drop-shadow-[0_0_1px_rgba(255,255,255,1)] drop-shadow-[0_0_4px_rgba(255,255,255,0.65)]" alt="Logo" />
                   ) : (
                     <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block">{config.logoText}</span>
                   )}
                 </div>
-                <div className="flex flex-col -space-y-0.5 xl:-space-y-1 pointer-events-none">
-                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tighter uppercase transition-colors drop-shadow-sm text-white">
+                <div className="flex items-baseline gap-2 whitespace-nowrap pointer-events-none text-white">
+                  <span className="text-lg md:text-xl xl:text-2xl font-black tracking-tight uppercase drop-shadow-sm">
                     Bodipo
                   </span>
-                  <span className="text-[9px] md:text-xs xl:text-sm font-bold tracking-[0.2em] uppercase text-white">
+                  <span className="text-lg md:text-xl xl:text-2xl font-semibold tracking-tight uppercase">
                     Business
                   </span>
                 </div>
