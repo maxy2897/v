@@ -128,6 +128,11 @@ const AppContent: React.FC = () => {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isCookieOpen, setIsCookieOpen] = useState(() => !localStorage.getItem('bb_cookie_consent'));
   const navigate = useNavigate();
+  useEffect(() => {
+    const openAbout = () => setIsAboutOpen(true);
+    window.addEventListener('open-bodipo-about', openAbout);
+    return () => window.removeEventListener('open-bodipo-about', openAbout);
+  }, []);
 
   // Dynamic State
   const [products, setProducts] = useState<Product[]>([]);
@@ -234,16 +239,24 @@ const AppContent: React.FC = () => {
                   </p>
                 </div>
 
-                <nav className="flex flex-col gap-y-1 text-white/85 sm:flex-row sm:flex-wrap sm:items-center" aria-label="Enlaces del pie de página">
-                  <Link to="/mapa-del-sitio" className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Mapa del sitio</Link>
-                  <button onClick={() => setIsCookieOpen(true)} className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Consentimiento de cookies</button>
-                  <Link to="/condiciones" className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Condiciones de uso</Link>
-                  <Link to="/privacidad" className="border-white/25 py-2 transition hover:text-white sm:border-l sm:px-4 sm:py-0">Política de privacidad</Link>
-                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 border-white/25 py-2 font-bold text-white transition hover:text-[#ffbd59] sm:border-l sm:pl-4 sm:py-0">
+                <div className="flex flex-col items-center gap-3 lg:items-end">
+                  <nav className="flex flex-col items-center gap-2 text-white/90" aria-label="Enlaces legales">
+                    <div className="flex items-center">
+                      <Link to="/mapa-del-sitio" className="px-4 transition hover:text-white">Mapa del sitio</Link>
+                      <span className="h-4 w-px bg-white/55" aria-hidden="true" />
+                      <button onClick={() => setIsCookieOpen(true)} className="px-4 transition hover:text-white">Consentimiento de cookies</button>
+                    </div>
+                    <div className="flex items-center">
+                      <Link to="/condiciones" className="px-4 transition hover:text-white">Condiciones de uso</Link>
+                      <span className="h-4 w-px bg-white/55" aria-hidden="true" />
+                      <Link to="/privacidad" className="px-4 transition hover:text-white">Política de privacidad</Link>
+                    </div>
+                  </nav>
+                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 font-bold text-white transition hover:text-[#ffbd59]">
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M5 18l-2 3v-5a9 9 0 1 1 4 4" /></svg>
                     Preguntar a Bodipo
                   </button>
-                </nav>
+                </div>
               </div>
             </div>
           </footer>
