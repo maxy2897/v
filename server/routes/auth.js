@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps, applicationDefault } from 'firebase-admin/app';
 import { getAuth as getAdminAuth } from 'firebase-admin/auth';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
@@ -143,7 +143,10 @@ router.post('/social-login', async (req, res) => {
         return res.status(400).json({ message: 'Token social requerido' });
     }
     try {
-        const firebaseApp = getApps()[0] || initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID || 'bodipo-business' });
+        const firebaseApp = getApps()[0] || initializeApp({
+            credential: applicationDefault(),
+            projectId: process.env.FIREBASE_PROJECT_ID || 'bodipo-business'
+        });
         const decoded = await getAdminAuth(firebaseApp).verifyIdToken(idToken, true);
         const provider = decoded.firebase?.sign_in_provider;
         if (!decoded.email || decoded.email_verified !== true || !['google.com', 'apple.com'].includes(provider)) {
