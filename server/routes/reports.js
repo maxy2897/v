@@ -1,103 +1,72 @@
 import express from 'express';
 import { protect, finance } from '../middleware/auth.js';
-import User from '../models/User.js';
-import Shipment from '../models/Shipment.js';
-import Transfer from '../models/Transfer.js';
+import DeliveryPayment from '../models/DeliveryPayment.js';
 
 const router = express.Router();
 
+const csvCell = (value) => {
+    const text = value === null || value === undefined ? '' : String(value);
+    return `"${text.replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
+};
+
 /**
- * @desc    Generate monthly accounting report (CSV)
+ * @desc    Export an Excel-compatible delivery payment report
  * @route   GET /api/reports/accounting
- * @access  Private/Admin
+ * @access  Private/Finance
  */
 router.get('/accounting', protect, finance, async (req, res) => {
     try {
-        // 1. Fetch Data (Last 30 days or All - defaulting to ALL for now as per request "cada vez que se registre")
-        // To help accounting, we usually want everything or filtered by date. 
-        // For simplicity v1, we fetch ALL history sorted by date.
+        const filter = {};
+        if (req.query.branch) filter.branch = String(req.query.branch);
+        if (req.query.from || req.query.to) {
+            filter.createdAt = {};
+            if (req.query.from) filter.createdAt.$gte = new Date(String(req.query.from));
+            if (req.query.to) {
+                const end = new Date(String(req.query.to));
+                end.setHours(23, 59, 59, 999);
+                filter.createdAt.$lte = end;
+            }
+        }
 
-        const users = await User.find({}).sort({ createdAt: -1 }).lean();
-        const shipments = await Shipment.find({}).sort({ createdAt: -1 }).lean();
-        const transfers = await Transfer.find({}).sort({ createdAt: -1 }).lean();
+        const payments = await DeliveryPayment.find(filter).sort({ createdAt: -1 }).lean();
+        const headers = [
+            'FECHA', 'HORA', 'SUCURSAL', 'TRABAJADOR', 'ROL', 'CODIGO PAQUETE',
+            'CLIENTE', 'TELEFONO', 'TIPO DE COBRO', 'TOTAL PAQUETE', 'SALDO ANTES',
+            'MONTO ENTREGADO', 'MONTO APLICADO', 'CAMBIO DEVUELTO', 'SALDO PENDIENTE',
+            'ESTADO DEL COBRO', 'NOTA'
+        ];
 
-        // 2. Flatten and Unify Data
-        // We want a single timeline of financial/activity events
-
-        let rows = [];
-
-        // Process Shipments
-        shipments.forEach(ship => {
-            rows.push({
-                date: new Date(ship.createdAt),
-                type: 'ENVÍO PAQUETE',
-                client: ship.user ? ship.user.toString() : 'N/A', //Ideally populate checking user name if needed, but ID is safe
-                description: `Rastreo: ${ship.trackingNumber} | ${ship.origin} -> ${ship.destination} | ${ship.weight}Kg`,
-                amount: ship.price,
-                currency: 'XAF/EUR', // Mixed currently, usually EUR for Spain->GQ
-                status: ship.status
-            });
+        const lines = [headers.map(csvCell).join(';')];
+        payments.forEach(payment => {
+            const date = new Date(payment.createdAt);
+            lines.push([
+                date.toLocaleDateString('es-ES'),
+                date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                payment.branch,
+                payment.worker?.name,
+                payment.worker?.role,
+                payment.trackingNumber,
+                payment.client?.name,
+                payment.client?.phone,
+                payment.partial ? 'COBRO PARCIAL' : 'COBRO COMPLETO',
+                payment.totalDue,
+                payment.balanceBefore,
+                payment.tenderedAmount,
+                payment.appliedAmount,
+                payment.changeAmount,
+                payment.balanceAfter,
+                payment.balanceAfter > 0 ? 'PENDIENTE' : 'PAGADO',
+                payment.note
+            ].map(csvCell).join(';'));
         });
 
-        // Process Transfers
-        transfers.forEach(trans => {
-            rows.push({
-                date: new Date(trans.createdAt),
-                type: 'ENVÍO DINERO',
-                client: trans.sender.name,
-                description: `${trans.direction} | Benef: ${trans.beneficiary.name}`,
-                amount: trans.amount,
-                currency: trans.currency,
-                status: trans.status
-            });
-        });
-
-        // Process Users (Registrations) - Zero monetary value but good for tracking growth
-        users.forEach(user => {
-            rows.push({
-                date: new Date(user.createdAt),
-                type: 'REGISTRO USUARIO',
-                client: user.name,
-                description: `Email: ${user.email} | Tel: ${user.phone || 'N/A'}`,
-                amount: 0,
-                currency: '-',
-                status: 'Activo'
-            });
-        });
-
-        // Sort by Date Descending
-        rows.sort((a, b) => b.date - a.date);
-
-        // 3. Generate CSV String
-        const headers = ['FECHA', 'TIPO OPERACION', 'CLIENTE', 'DESCRIPCION', 'MONTO', 'MONEDA', 'ESTADO'];
-
-        let csvContent = headers.join(';') + '\n'; // Using semicolon for Excel compatibility in EU regions
-
-        rows.forEach(row => {
-            const dateStr = row.date.toISOString().split('T')[0]; // YYYY-MM-DD
-            const cleanDesc = row.description ? row.description.replace(/;/g, ',').replace(/\n/g, ' ') : '';
-            const cleanClient = row.client ? row.client.replace(/;/g, ',') : 'Anonimo';
-
-            const line = [
-                dateStr,
-                row.type,
-                cleanClient,
-                cleanDesc,
-                row.amount,
-                row.currency,
-                row.status
-            ].join(';');
-            csvContent += line + '\n';
-        });
-
-        // 4. Send File
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename=reporte_bodipo_contabilidad.csv');
-        res.status(200).send(csvContent);
-
+        const suffix = new Date().toISOString().slice(0, 10);
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename=reporte_cobros_entregas_${suffix}.csv`);
+        res.status(200).send('\uFEFF' + lines.join('\n'));
     } catch (error) {
-        console.error('Error generating report:', error);
-        res.status(500).json({ message: 'Error al generar el reporte' });
+        console.error('Error generating delivery payment report:', error);
+        res.status(500).json({ message: 'Error al generar el reporte de cobros' });
     }
 });
 

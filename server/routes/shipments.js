@@ -6,6 +6,7 @@ import User from '../models/User.js';
 import Transaction from '../models/Transaction.js';
 import Notification from '../models/Notification.js';
 import Manifest from '../models/Manifest.js';
+import DeliveryPayment from '../models/DeliveryPayment.js';
 
 const router = express.Router();
 
@@ -440,6 +441,110 @@ router.patch('/:id/status', protect, async (req, res) => {
     }
 });
 
+// @route   GET /api/shipments/pickup-search?q=name-or-code
+// @desc    Search packages for branch delivery and return payment balance
+// @access  Private/Logistics
+router.get('/pickup-search', protect, logistics, async (req, res) => {
+    try {
+        const q = String(req.query.q || '').trim();
+        if (q.length < 2) return res.json([]);
+        const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(escaped, 'i');
+        const shipments = await Shipment.find({
+            status: { $ne: 'Cancelado' },
+            $or: [
+                { trackingNumber: pattern },
+                { 'recipient.name': pattern },
+                { 'recipient.phone': pattern },
+                { 'sender.name': pattern }
+            ]
+        }).populate('user', 'name email phone').sort({ createdAt: -1 }).limit(20).lean();
+
+        const ids = shipments.map(item => item._id);
+        const paid = await DeliveryPayment.aggregate([
+            { $match: { shipment: { $in: ids } } },
+            { $group: { _id: '$shipment', amount: { $sum: '$appliedAmount' } } }
+        ]);
+        const paidByShipment = new Map(paid.map(item => [String(item._id), item.amount]));
+        res.json(shipments.map(item => {
+            const paidAmount = paidByShipment.get(String(item._id)) || 0;
+            const totalDue = Math.max(Number(item.price) || 0, 0);
+            return { ...item, paymentSummary: { totalDue, paidAmount, balance: Math.max(totalDue - paidAmount, 0) } };
+        }));
+    } catch (error) {
+        console.error('Pickup search error:', error);
+        res.status(500).json({ message: 'No se pudo buscar el paquete' });
+    }
+});
+// @route   POST /api/shipments/:id/delivery-payment
+// @desc    Register a full or partial payment when a package is collected
+// @access  Private/Logistics
+router.post('/:id/delivery-payment', protect, logistics, async (req, res) => {
+    try {
+        const shipment = await Shipment.findById(req.params.id).populate('user', 'name email phone');
+        if (!shipment) return res.status(404).json({ message: 'Paquete no encontrado' });
+        if (shipment.status === 'Cancelado') return res.status(400).json({ message: 'No se puede cobrar un paquete cancelado' });
+
+        const tenderedAmount = Number(req.body.tenderedAmount);
+        const partial = req.body.partial === true;
+        const branch = String(req.body.branch || shipment.destination || '').trim();
+        const note = String(req.body.note || '').trim().slice(0, 500);
+        if (!Number.isFinite(tenderedAmount) || tenderedAmount <= 0) {
+            return res.status(400).json({ message: 'El monto recibido debe ser mayor que cero' });
+        }
+        if (!branch) return res.status(400).json({ message: 'Indica la sucursal que realiza el cobro' });
+
+        const previous = await DeliveryPayment.aggregate([
+            { $match: { shipment: shipment._id } },
+            { $group: { _id: null, paid: { $sum: '$appliedAmount' } } }
+        ]);
+        const alreadyPaid = previous[0]?.paid || 0;
+        const totalDue = Math.max(Number(shipment.price) || 0, 0);
+        const balanceBefore = Math.max(totalDue - alreadyPaid, 0);
+        if (balanceBefore <= 0) return res.status(400).json({ message: 'Este paquete ya esta pagado completamente' });
+        if (!partial && tenderedAmount < balanceBefore) {
+            return res.status(400).json({ message: 'El monto es insuficiente. Activa cobro parcial para registrar un abono.' });
+        }
+
+        const appliedAmount = Math.min(tenderedAmount, balanceBefore);
+        const changeAmount = Math.max(tenderedAmount - balanceBefore, 0);
+        const balanceAfter = Math.max(balanceBefore - appliedAmount, 0);
+        const client = shipment.recipient?.name ? shipment.recipient : (shipment.user || shipment.sender || {});
+
+        const payment = await DeliveryPayment.create({
+            shipment: shipment._id,
+            trackingNumber: shipment.trackingNumber,
+            client: {
+                name: client.name || 'Cliente sin nombre',
+                phone: client.phone || '',
+                email: client.email || ''
+            },
+            totalDue,
+            tenderedAmount,
+            appliedAmount,
+            changeAmount,
+            balanceBefore,
+            balanceAfter,
+            partial: balanceAfter > 0,
+            branch,
+            note,
+            receivedBy: req.user._id,
+            worker: { name: req.user.name, email: req.user.email, role: req.user.role }
+        });
+
+        if (balanceAfter === 0) {
+            shipment.status = 'Entregado';
+            shipment.deliveredAt = new Date();
+            shipment.history.push({ status: 'Entregado', location: branch, date: new Date() });
+            await shipment.save();
+        }
+
+        res.status(201).json({ payment, shipment, summary: { totalDue, alreadyPaid: alreadyPaid + appliedAmount, balance: balanceAfter, change: changeAmount } });
+    } catch (error) {
+        console.error('Delivery payment error:', error);
+        res.status(500).json({ message: 'No se pudo registrar el cobro' });
+    }
+});
 // @route   GET /api/shipments/tracking/:trackingNumber
 // @desc    Get full shipment info for admin (pickup)
 // @access  Private/Admin
