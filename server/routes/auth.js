@@ -144,10 +144,7 @@ router.post('/social-login', async (req, res) => {
         return res.status(400).json({ message: 'Token social requerido' });
     }
     try {
-        const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-        if (!credentialsPath) {
-            throw new Error('GOOGLE_APPLICATION_CREDENTIALS no esta configurada');
-        }
+        const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || '/etc/secrets/firebase-service-account.json';
         const serviceAccount = JSON.parse(readFileSync(credentialsPath, 'utf8'));
         const firebaseApp = getApps()[0] || initializeApp({
             credential: cert(serviceAccount),
