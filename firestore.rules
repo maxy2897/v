@@ -1,0 +1,9 @@
+rules_version = '2';
+// La web no lee Firestore directamente: el seguimiento lo sirve la función "seguimiento".
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
