@@ -1,0 +1,42 @@
+# Publica la web, la función del Excel y las reglas de Firestore en Firebase al subir cambios a main.
+# Necesita el secreto FIREBASE_SERVICE_ACCOUNT (el JSON de la cuenta de servicio) en GitHub.
+name: Publicar en Firebase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+    steps:
+      - name: Comprobar la clave de Firebase
+        id: clave
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::notice::Falta el secreto FIREBASE_SERVICE_ACCOUNT; no se publica en Firebase."
+            echo "hay=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "hay=si" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.clave.outputs.hay == 'si'
+      - uses: actions/setup-node@v4
+        if: steps.clave.outputs.hay == 'si'
+        with:
+          node-version: 20
+      - name: Construir la web
+        if: steps.clave.outputs.hay == 'si'
+        run: |
+          npm ci
+          npm run build
+          npm ci --prefix functions
+      - name: Publicar
+        if: steps.clave.outputs.hay == 'si'
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase.json"
+          npx --yes firebase-tools@13 deploy --project bodipo-business --only hosting,functions,firestore:rules --force --non-interactive
