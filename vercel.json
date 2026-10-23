@@ -4,8 +4,20 @@
     "framework": "vite",
     "rewrites": [
         {
-            "source": "/api/(.*)",
-            "destination": "https://bodipo-business-api.onrender.com/api/$1"
+            "source": "/subir.php",
+            "destination": "/api/seguimiento/subir"
+        },
+        {
+            "source": "/pagados.php",
+            "destination": "/api/seguimiento/pagados"
+        },
+        {
+            "source": "/datos.json",
+            "destination": "/api/seguimiento/datos"
+        },
+        {
+            "source": "/api/:path((?!seguimiento/).*)",
+            "destination": "https://bodipo-business-api.onrender.com/api/:path"
         },
         {
             "source": "/(.*)",
@@ -22,5 +34,10 @@
                 }
             ]
         }
-    ]
+    ],
+    "functions": {
+        "api/seguimiento/*.js": {
+            "maxDuration": 30
+        }
+    }
 }
