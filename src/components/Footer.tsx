@@ -91,7 +91,7 @@ const Footer: React.FC<FooterProps> = ({ config, onOpenCookies, onOpenContact, o
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#8FB0BA]">
-              Envíos aéreos entre España, Guinea Ecuatorial y Camerún, con seguimiento de cada paquete.
+              Envíos aéreos y marítimos entre España, Guinea Ecuatorial y Camerún, con seguimiento de cada paquete.
             </p>
           </div>
 
