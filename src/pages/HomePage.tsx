@@ -40,14 +40,12 @@ const Arrow = () => (
 );
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOpenAbout }) => {
-  const { appConfig } = useSettings();
   const { isAuthenticated } = useAuth();
   // El enlace del WhatsApp llega como ?c=M1310K7Q y abre la portada ya en ese paquete.
   const codigoUrl = new URLSearchParams(window.location.search).get('c') || '';
   const [trackingId, setTrackingId] = useState(codigoUrl.toUpperCase());
   const [codigoBuscado, setCodigoBuscado] = useState(codigoUrl);
   const resultado = useRef<HTMLElement>(null);
-  const hero = appConfig?.content?.hero;
   const heroImage = '/images/bodipo-malabo-delivery-hero.jpg';
 
   const submitTracking = (event: React.FormEvent) => {
@@ -78,10 +76,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
               Desde Guinea Ecuatorial al mundo
             </div>
             <h1 className="max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
-              {hero?.title || 'Movemos oportunidades.'}
+              Movemos oportunidades.
             </h1>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-[#c8dad7]">
-              {hero?.subtitle || 'Envíos, comercio y servicios financieros conectados por un equipo que conoce tu realidad.'}
+              Servicios logísticos integrales, envíos aéreos y soluciones empresariales adaptadas a tus necesidades.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
