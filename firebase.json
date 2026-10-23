@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "cleanUrls": false,
+    "rewrites": [
+      { "source": "/subir.php", "function": { "functionId": "seguimiento", "region": "europe-west1" } },
+      { "source": "/pagados.php", "function": { "functionId": "seguimiento", "region": "europe-west1" } },
+      { "source": "/datos.json", "function": { "functionId": "seguimiento", "region": "europe-west1" } },
+      { "source": "/app", "destination": "/app.html" },
+      { "source": "**", "destination": "/app.html" }
+    ],
+    "headers": [
+      { "source": "/assets/**", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
+      { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+    ]
+  },
+  "functions": [{ "source": "functions", "codebase": "default", "runtime": "nodejs20" }],
+  "firestore": { "rules": "firestore.rules" }
+}
