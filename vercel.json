@@ -2,8 +2,8 @@
     "redirects": [
         {
             "source": "/(.*)",
-            "destination": "https://app.bodipobusiness.com/$1",
-            "permanent": false
+            "destination": "https://bodipobusiness.com/",
+            "permanent": true
         }
     ]
 }
