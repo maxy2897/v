@@ -45,7 +45,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
   const [trackingId, setTrackingId] = useState(codigoUrl.toUpperCase());
   const [codigoBuscado, setCodigoBuscado] = useState(codigoUrl);
   const resultado = useRef<HTMLElement>(null);
-  const heroImage = '/images/malabo-ciudad.jpg';
+  const heroImage = '/images/bodipo-malabo-delivery-hero.jpg';
 
   const submitTracking = (event: React.FormEvent) => {
     event.preventDefault();
@@ -61,7 +61,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
     <main className="overflow-hidden bg-[#F3F6F7] text-[#0E2A3B]">
       <section className="relative isolate min-h-[620px] bg-[#0E2A3B]">
         <div className="absolute inset-0 overflow-hidden">
-          <img src={heroImage} alt="Malabo, Guinea Ecuatorial" className="h-full w-full object-cover object-[center_55%]" />
+          <img src={heroImage} alt="Repartidor de Bodipo Business entregando un paquete" className="h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(14,42,59,.94)_0%,rgba(14,42,59,.78)_45%,rgba(14,42,59,.25)_100%)]" />
         </div>
 
@@ -253,7 +253,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
 
       <section className="border-t border-[#d9d2c7] bg-white">
         <div className="grid w-full gap-10 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-16 lg:py-20 xl:px-24">
-          <img src="/images/bodipo-malabo-delivery-hero.jpg" alt="Entrega de un paquete de Bodipo Business en Malabo" className="aspect-[16/10] w-full object-cover shadow-[0_20px_50px_rgba(14,42,59,.18)]" loading="lazy" />
+          <img src="/images/malabo-ciudad.jpg" alt="Malabo, Guinea Ecuatorial" className="aspect-[16/10] w-full object-cover shadow-[0_20px_50px_rgba(14,42,59,.18)]" loading="lazy" />
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#1E5A5E]">Sobre nosotros</p>
             <h2 className="mt-4 font-display text-4xl font-bold uppercase leading-none tracking-[.01em] text-[#0E2A3B] sm:text-5xl">Conectamos personas, mercados y oportunidades.</h2>
