@@ -2,7 +2,7 @@
     "name": "Bodipo Business",
     "short_name": "Bodipo",
     "description": "Tu solución de confianza para envíos de paquetería, logística y compras.",
-    "start_url": "./index.html",
+    "start_url": "/app",
     "display": "standalone",
     "orientation": "portrait-primary",
     "background_color": "#ffffff",

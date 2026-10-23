@@ -2,6 +2,13 @@
     "buildCommand": "npm run build",
     "outputDirectory": "dist",
     "framework": "vite",
+    "redirects": [
+        {
+            "source": "/app/",
+            "destination": "/app",
+            "permanent": false
+        }
+    ],
     "rewrites": [
         {
             "source": "/subir.php",
@@ -16,12 +23,16 @@
             "destination": "/api/seguimiento/datos"
         },
         {
+            "source": "/app",
+            "destination": "/app.html"
+        },
+        {
             "source": "/api/:path((?!seguimiento/).*)",
             "destination": "https://bodipo-business-api.onrender.com/api/:path"
         },
         {
             "source": "/(.*)",
-            "destination": "/index.html"
+            "destination": "/app.html"
         }
     ],
     "headers": [
