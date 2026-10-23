@@ -2,14 +2,37 @@
     "buildCommand": "npm run build",
     "outputDirectory": "dist",
     "framework": "vite",
+    "redirects": [
+        {
+            "source": "/app/",
+            "destination": "/app",
+            "permanent": false
+        }
+    ],
     "rewrites": [
         {
-            "source": "/api/(.*)",
-            "destination": "https://bodipo-business-api.onrender.com/api/$1"
+            "source": "/subir.php",
+            "destination": "/api/seguimiento/subir"
+        },
+        {
+            "source": "/pagados.php",
+            "destination": "/api/seguimiento/pagados"
+        },
+        {
+            "source": "/datos.json",
+            "destination": "/api/seguimiento/datos"
+        },
+        {
+            "source": "/app",
+            "destination": "/app.html"
+        },
+        {
+            "source": "/api/:path((?!seguimiento/).*)",
+            "destination": "https://bodipo-business-api.onrender.com/api/:path"
         },
         {
             "source": "/(.*)",
-            "destination": "/index.html"
+            "destination": "/app.html"
         }
     ],
     "headers": [
@@ -22,5 +45,10 @@
                 }
             ]
         }
-    ]
+    ],
+    "functions": {
+        "api/seguimiento/*.js": {
+            "maxDuration": 30
+        }
+    }
 }

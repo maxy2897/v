@@ -5,8 +5,7 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME).then((cache) => {
             // Basic cache array
             return cache.addAll([
-                '/',
-                '/index.html',
+                '/app.html',
                 '/logo-n.png',
                 '/src/index.css'
             ]);

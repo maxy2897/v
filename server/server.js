@@ -129,8 +129,8 @@ app.use(express.static(distDir));
 
 // Catch-all para SPA (React Router)
 app.get(/^(?!\/api).*/, (req, res) => {
-    if (fs.existsSync(join(distDir, 'index.html'))) {
-        res.sendFile(join(distDir, 'index.html'));
+    if (fs.existsSync(join(distDir, 'app.html'))) {
+        res.sendFile(join(distDir, 'app.html'));
     } else {
         res.status(404).send('Frontend no compilado. Ejecuta npm run build.');
     }

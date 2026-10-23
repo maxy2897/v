@@ -24,6 +24,8 @@ export default defineConfig(() => {
     },
     build: {
       rollupOptions: {
+        // La portada (public/index.html) es la web de seguimiento; la app vive en app.html (/app).
+        input: path.resolve(__dirname, 'app.html'),
         output: {
           manualChunks: {
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
