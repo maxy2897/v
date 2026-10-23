@@ -47,7 +47,10 @@ jobs:
           TITULAR: ${{ secrets.TITULAR }}
         run: |
           P="$FIREBASE_PROJECT"
-          gcloud services enable firebasehosting.googleapis.com firestore.googleapis.com --project "$P"
+          gcloud services enable firebasehosting.googleapis.com firestore.googleapis.com identitytoolkit.googleapis.com --project "$P"
+          # Firestore guarda el seguimiento que sube el Excel; funciona también sin Blaze.
+          gcloud firestore databases describe --database='(default)' --project "$P" >/dev/null 2>&1 \
+            || gcloud firestore databases create --location=eur3 --project "$P"
           # La función del Excel necesita el plan Blaze; sin él se publica solo la web.
           if ! gcloud services enable secretmanager.googleapis.com cloudfunctions.googleapis.com \
               cloudbuild.googleapis.com artifactregistry.googleapis.com run.googleapis.com \
@@ -57,8 +60,6 @@ jobs:
             exit 0
           fi
           echo "blaze=si" >> "$GITHUB_OUTPUT"
-          gcloud firestore databases describe --database='(default)' --project "$P" >/dev/null 2>&1 \
-            || gcloud firestore databases create --location=eur3 --project "$P"
           # Solo se crea una versión nueva cuando el valor cambia.
           for NOMBRE in EXCEL_CLAVE IBAN TITULAR; do
             VALOR="${!NOMBRE}"
@@ -85,9 +86,9 @@ jobs:
           if [ "${{ steps.prep.outputs.blaze }}" = "si" ]; then
             npx --yes firebase-tools@13 deploy --project "$FIREBASE_PROJECT" --only hosting,functions,firestore:rules --force --non-interactive
           else
-            # Sin la función, el seguimiento sigue en Hostinger (bodipobusiness.com): Firebase
-            # sirve solo la app, también en la raíz, y se quitan las rutas de la función.
-            rm -f dist/index.html
+            # Sin la función: la portada es la app, que lee el seguimiento de Firestore,
+            # y se quitan las rutas de la función.
+            cp dist/app.html dist/index.html
             node -e "const f=require('./firebase.json');f.hosting.rewrites=f.hosting.rewrites.filter(r=>!r.function);require('fs').writeFileSync('firebase.json',JSON.stringify(f,null,2))"
-            npx --yes firebase-tools@13 deploy --project "$FIREBASE_PROJECT" --only hosting --non-interactive
+            npx --yes firebase-tools@13 deploy --project "$FIREBASE_PROJECT" --only hosting,firestore:rules --non-interactive
           fi

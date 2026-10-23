@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
+import ExcelTracking from '../components/ExcelTracking';
 
 interface HomePageProps {
   onOpenRegister: () => void;
@@ -26,16 +27,23 @@ const Arrow = () => (
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOpenAbout }) => {
   const { appConfig } = useSettings();
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const [trackingId, setTrackingId] = useState('');
+  // El enlace del WhatsApp llega como ?c=M1310K7Q y abre la portada ya en ese paquete.
+  const codigoUrl = new URLSearchParams(window.location.search).get('c') || '';
+  const [trackingId, setTrackingId] = useState(codigoUrl.toUpperCase());
+  const [codigoBuscado, setCodigoBuscado] = useState(codigoUrl);
+  const resultado = useRef<HTMLElement>(null);
   const hero = appConfig?.content?.hero;
   const heroImage = '/images/bodipo-malabo-delivery-hero.jpg';
 
   const submitTracking = (event: React.FormEvent) => {
     event.preventDefault();
-    const code = trackingId.trim().toUpperCase();
-    navigate(code ? `/rastreo?codigo=${encodeURIComponent(code)}` : '/rastreo');
+    setCodigoBuscado(trackingId.trim());
+    setTimeout(() => resultado.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   };
+
+  useEffect(() => {
+    if (codigoUrl) resultado.current?.scrollIntoView({ block: 'start' });
+  }, []);
 
   return (
     <main className="overflow-hidden bg-[#f5f1e8] text-[#06272b]">
@@ -48,7 +56,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
         <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
 
-        <div className="relative mx-auto grid min-h-[620px] max-w-7xl content-center gap-5 px-5 py-8 sm:px-8 lg:grid-cols-[.52fr_.48fr] lg:px-10">
+        <div className="relative grid min-h-[620px] w-full content-center gap-5 px-5 py-8 sm:px-8 lg:grid-cols-[.52fr_.48fr] lg:px-16 xl:px-24">
           <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 max-w-2xl">
             <div className="mb-4 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
               <span className="h-px w-12 bg-[#ffbd59]" />
@@ -84,7 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
               <form onSubmit={submitTracking} className="mt-4">
                 <label htmlFor="home-tracking" className="text-xs font-bold text-[#48625f]">Introduce tu número de seguimiento</label>
                 <div className="mt-3 border-b-2 border-[#06272b]">
-                  <input id="home-tracking" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())} placeholder="Ej. BOD-2026-0001" className="w-full bg-transparent py-2 font-mono text-base font-bold uppercase outline-none placeholder:text-[#93a5a2]" />
+                  <input id="home-tracking" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())} placeholder="Ej. M-1310-K7Q" className="w-full bg-transparent py-2 font-mono text-base font-bold uppercase outline-none placeholder:text-[#93a5a2]" />
                 </div>
                 <button type="submit" className="group mt-4 flex w-full items-center justify-between bg-[#007e85] px-5 py-3 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-[#06272b]">
                   Consultar recorrido <Arrow />
@@ -99,7 +107,15 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 lg:px-10 lg:pt-16">
+      {codigoBuscado && (
+        <section ref={resultado} id="seguimiento" className="scroll-mt-24 border-b border-[#d9d2c7] px-5 py-14 sm:px-8 lg:px-16 xl:px-24">
+          <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">Centro de seguimiento</p>
+          <h2 className="mb-8 mt-3 text-3xl font-black tracking-tight sm:text-4xl">Así va tu envío</h2>
+          <ExcelTracking codigo={codigoBuscado} />
+        </section>
+      )}
+
+      <section className="relative w-full px-5 pb-24 pt-24 sm:px-8 lg:px-16 lg:pt-16 xl:px-24">
         <div className="grid gap-10 border-b border-[#cfc8bc] pb-14 lg:grid-cols-[.75fr_1.25fr] lg:items-end">
           <div>
             <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">El ecosistema Bodipo</p>
@@ -128,7 +144,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
       </section>
 
       <section className="border-t border-[#d9d2c7] bg-[#f5f1e8]">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10">
+        <div className="grid w-full gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-16 xl:px-24">
           <div className="max-w-3xl">
             <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#007e85]">Sobre nosotros</p>
             <h2 className="mt-4 text-3xl font-black tracking-tight text-[#06272b] sm:text-4xl">Conectamos personas, mercados y oportunidades.</h2>
@@ -144,7 +160,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
       </section>
       {!isAuthenticated && (
       <section className="bg-[#007e85] text-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-10">
+        <div className="grid w-full gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-16 xl:px-24">
           <div>
             <p className="text-xs font-black uppercase tracking-[.24em] text-[#b9eee8]">Tu próximo paso</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">La distancia no debería limitar tus oportunidades.</h2>

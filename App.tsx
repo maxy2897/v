@@ -227,7 +227,7 @@ const AppContent: React.FC = () => {
           <footer className="relative z-50">
 
             <div className="bg-[#155e63] text-white">
-              <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 text-xs sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+              <div className="flex w-full flex-col gap-5 px-5 py-6 text-xs sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-16 xl:px-24">
                 <div className="flex items-center gap-3">
                   {config.customLogoUrl ? (
                     <img src={config.customLogoUrl} className="h-9 w-9 object-contain logo-white-outline" alt="Bodipo Business" />
