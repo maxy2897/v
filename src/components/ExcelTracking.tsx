@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 // Seguimiento de la web de Hostinger: lee datos.json, que sube el botón ACTUALIZAR WEB del Excel.
-// En bodipobusiness.com se lee del mismo sitio; desde otro dominio, de bodipobusiness.com.
-const DATA_URL = /(^|\.)bodipobusiness\.com$/.test(window.location.hostname) && !window.location.hostname.startsWith('app.')
-  ? '/datos.json'
-  : 'https://bodipobusiness.com/datos.json';
+// El Excel y datos.json siguen en Hostinger, en datos.bodipobusiness.com (la web está en Firebase).
+const DATA_URL = 'https://datos.bodipobusiness.com/datos.json';
 
 const PUNTOS: Record<string, string> = {
   Malabo: 'Malabo · Atepa, por la tarde',

@@ -85,9 +85,9 @@ jobs:
           if [ "${{ steps.prep.outputs.blaze }}" = "si" ]; then
             npx --yes firebase-tools@13 deploy --project "$FIREBASE_PROJECT" --only hosting,functions,firestore:rules --force --non-interactive
           else
-            # Sin la función, el seguimiento sigue en Hostinger (bodipobusiness.com): Firebase
-            # sirve solo la app, también en la raíz, y se quitan las rutas de la función.
-            rm -f dist/index.html
+            # Sin la función, el Excel sigue en Hostinger (datos.bodipobusiness.com): la portada es la app,
+            # que lee de allí el seguimiento, y se quitan las rutas de la función.
+            cp dist/app.html dist/index.html
             node -e "const f=require('./firebase.json');f.hosting.rewrites=f.hosting.rewrites.filter(r=>!r.function);require('fs').writeFileSync('firebase.json',JSON.stringify(f,null,2))"
             npx --yes firebase-tools@13 deploy --project "$FIREBASE_PROJECT" --only hosting --non-interactive
           fi
