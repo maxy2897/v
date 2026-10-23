@@ -1,5 +1,5 @@
 // Datos públicos de contacto de Bodipo Business (los usan la portada y el pie de página).
-export const EMAIL = 'info@bodipobusiness.com';
+export const EMAIL = 'bodipobusiness019@gmail.com';
 export const HORARIO = 'WhatsApp o llamada, de 9:00 a 21:00 h';
 
 export const AGENCIAS = [
