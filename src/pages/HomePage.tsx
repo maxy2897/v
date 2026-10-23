@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { useSettings } from '../context/SettingsContext';
 import ExcelTracking from '../components/ExcelTracking';
 import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceTelefono, enlaceWhatsApp } from '../constants/empresa';
 
@@ -11,6 +10,43 @@ interface HomePageProps {
   onOpenContact: () => void;
   onOpenAbout: () => void;
 }
+
+const FRASES_HERO = [
+  'Movemos oportunidades.',
+  'Tu conexión segura entre España y Guinea Ecuatorial.',
+  'Envíos aéreos a Malabo y Bata cada semana.',
+  'Cada envío cuenta.',
+];
+
+// Título de portada que va alternando frases. Todas ocupan la misma celda,
+// así el bloque mide lo que la frase más larga y no salta al cambiar.
+const TituloRotativo: React.FC = () => {
+  const [actual, setActual] = useState(0);
+  const sinMovimiento = useReducedMotion();
+
+  useEffect(() => {
+    const id = window.setInterval(() => setActual((i) => (i + 1) % FRASES_HERO.length), 4000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <h1 className="grid max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
+      <span className="sr-only">{FRASES_HERO[0]}</span>
+      {FRASES_HERO.map((frase, i) => (
+        <motion.span
+          key={frase}
+          aria-hidden="true"
+          className="col-start-1 row-start-1"
+          initial={false}
+          animate={i === actual ? { opacity: 1, y: 0 } : { opacity: 0, y: sinMovimiento ? 0 : 14 }}
+          transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {frase}
+        </motion.span>
+      ))}
+    </h1>
+  );
+};
 
 const operations = [
   { number: '01', title: 'Próximas salidas', text: 'Planifica con fechas, rutas y disponibilidad actualizadas.', to: '/calendario', action: 'Ver calendario' },
@@ -75,11 +111,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
               <span className="h-px w-12 bg-[#ffbd59]" />
               Desde Guinea Ecuatorial al mundo
             </div>
-            <h1 className="max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
-              Movemos oportunidades.
-            </h1>
+            <TituloRotativo />
             <p className="mt-4 max-w-lg text-base leading-relaxed text-[#c8dad7]">
-              Servicios logísticos integrales, envíos aéreos y soluciones empresariales adaptadas a tus necesidades.
+              Servicios logísticos integrales, envíos aéreos y marítimos, y soluciones empresariales adaptadas a tus necesidades.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
