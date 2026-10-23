@@ -1,54 +1,9 @@
 {
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "framework": "vite",
     "redirects": [
         {
-            "source": "/app/",
-            "destination": "/app",
+            "source": "/(.*)",
+            "destination": "https://app.bodipobusiness.com/$1",
             "permanent": false
         }
-    ],
-    "rewrites": [
-        {
-            "source": "/subir.php",
-            "destination": "/api/seguimiento/subir"
-        },
-        {
-            "source": "/pagados.php",
-            "destination": "/api/seguimiento/pagados"
-        },
-        {
-            "source": "/datos.json",
-            "destination": "/api/seguimiento/datos"
-        },
-        {
-            "source": "/app",
-            "destination": "/app.html"
-        },
-        {
-            "source": "/api/:path((?!seguimiento/).*)",
-            "destination": "https://bodipo-business-api.onrender.com/api/:path"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/app.html"
-        }
-    ],
-    "headers": [
-        {
-            "source": "/assets/(.*)",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=31536000, immutable"
-                }
-            ]
-        }
-    ],
-    "functions": {
-        "api/seguimiento/*.js": {
-            "maxDuration": 30
-        }
-    }
+    ]
 }
