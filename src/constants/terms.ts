@@ -29,7 +29,7 @@ export const TERMS_AND_CONDITIONS = [
     },
     {
         title: "Reembolsos",
-        content: "El servicio de reembolso sólo está disponible para clientes abonados o con código, cuyas estipulaciones están recogidas en el contrato. Para más información, póngase en contacto con nuestro servicio de atención al cliente en el teléfono +34 641 992 110 o info@bodipobusiness.com."
+        content: "El servicio de reembolso sólo está disponible para clientes abonados o con código, cuyas estipulaciones están recogidas en el contrato. Para más información, póngase en contacto con nuestro servicio de atención al cliente en el teléfono +34 641 992 110 o bodipobusiness019@gmail.com."
     },
     {
         title: "Depósito y enajenación de la mercancía",

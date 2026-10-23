@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useSettings } from '../context/SettingsContext';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import ExcelTracking from '../components/ExcelTracking';
+import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceTelefono, enlaceWhatsApp } from '../constants/empresa';
 
 interface HomePageProps {
   onOpenRegister: () => void;
@@ -11,11 +11,62 @@ interface HomePageProps {
   onOpenAbout: () => void;
 }
 
+const FRASES_HERO = [
+  'Movemos oportunidades.',
+  'Tu conexión segura entre España y Guinea Ecuatorial.',
+  'Envíos aéreos a Malabo y Bata cada semana.',
+  'Cada envío cuenta.',
+];
+
+// Título de portada que va alternando frases. Todas ocupan la misma celda,
+// así el bloque mide lo que la frase más larga y no salta al cambiar.
+const TituloRotativo: React.FC = () => {
+  const [actual, setActual] = useState(0);
+  const sinMovimiento = useReducedMotion();
+
+  useEffect(() => {
+    const id = window.setInterval(() => setActual((i) => (i + 1) % FRASES_HERO.length), 4000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <h1 className="grid max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
+      <span className="sr-only">{FRASES_HERO[0]}</span>
+      {FRASES_HERO.map((frase, i) => (
+        <motion.span
+          key={frase}
+          aria-hidden="true"
+          className="col-start-1 row-start-1"
+          initial={false}
+          animate={i === actual ? { opacity: 1, y: 0 } : { opacity: 0, y: sinMovimiento ? 0 : 14 }}
+          transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {frase}
+        </motion.span>
+      ))}
+    </h1>
+  );
+};
+
 const operations = [
   { number: '01', title: 'Próximas salidas', text: 'Planifica con fechas, rutas y disponibilidad actualizadas.', to: '/calendario', action: 'Ver calendario' },
   { number: '02', title: 'Compras online', text: 'Recibe tus compras internacionales con acompañamiento local.', to: '/compras-online', action: 'Empezar a comprar' },
   { number: '03', title: 'Money Transfer', text: 'Transferencias claras, seguras y pensadas para tu día a día.', to: '/money-transfer', action: 'Enviar dinero' },
   { number: '04', title: 'Tienda Bodipo', text: 'Una selección de productos y oportunidades para nuestra comunidad.', to: '/tienda', action: 'Visitar tienda' },
+];
+
+const servicios = [
+  { titulo: 'Transporte aéreo', texto: 'Vuelos regulares con Ethiopian Airlines según el calendario de envíos, a Malabo y a Bata.', puntos: ['Paquetería y carga desde 1 kg', 'Salidas programadas y avisadas con antelación'], icono: 'M2 16l20-6-20-6 3 6-3 6Zm3-6h8' },
+  { titulo: 'Recogida y almacén en España', texto: 'Recibimos tu mercancía en Alcalá de Henares o la recogemos en tu domicilio.', puntos: ['Recogida a domicilio la semana antes del envío (los jueves no)', 'Cada paquete se registra, se pesa y se verifica'], icono: 'M3 7h11v10H3zM14 10h4l3 3v4h-7M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z' },
+  { titulo: 'Despacho y custodia en Guinea', texto: 'Gestionamos el despacho a la llegada y guardamos tu paquete en espacios seguros hasta la entrega.', puntos: ['Entrega en nuestras oficinas de Malabo y Bata', 'Aviso por WhatsApp cuando está listo'], icono: 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Zm-3 9 2 2 4-4' },
+  { titulo: 'Seguimiento de cada paquete', texto: 'Cada paquete tiene su código. Con él ves en esta web en qué punto está, sin tener que preguntar.', puntos: ['Recibido, salida, llegada, listo y entregado', 'El código va en tu factura y en tu WhatsApp'], icono: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm9 16-3.5-3.5' },
+];
+
+const pasos = [
+  { titulo: 'Prepáralo', texto: 'Trae tus cosas ya metidas en cajas y etiquetadas. Si no tienes caja, puedes comprar una al dejar el paquete.' },
+  { titulo: 'Entrégalo y confirma', texto: 'Dinos el destino (Malabo o Bata) y dónde pagarás (España o Guinea). Una vez iniciado el envío no se pueden cambiar.' },
+  { titulo: 'Sigue tu envío', texto: 'Te mandamos tu código de seguimiento por WhatsApp. Si tienes dudas con el peso o el contenido, avísanos como máximo al día siguiente.' },
+  { titulo: 'Recógelo', texto: 'Te avisamos cuando esté listo. Recógelo dentro del plazo del aviso y con el pago completado; después se cobra almacenamiento por día.' },
 ];
 
 const Arrow = () => (
@@ -25,14 +76,12 @@ const Arrow = () => (
 );
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOpenAbout }) => {
-  const { appConfig } = useSettings();
   const { isAuthenticated } = useAuth();
   // El enlace del WhatsApp llega como ?c=M1310K7Q y abre la portada ya en ese paquete.
   const codigoUrl = new URLSearchParams(window.location.search).get('c') || '';
   const [trackingId, setTrackingId] = useState(codigoUrl.toUpperCase());
   const [codigoBuscado, setCodigoBuscado] = useState(codigoUrl);
   const resultado = useRef<HTMLElement>(null);
-  const hero = appConfig?.content?.hero;
   const heroImage = '/images/bodipo-malabo-delivery-hero.jpg';
 
   const submitTracking = (event: React.FormEvent) => {
@@ -46,7 +95,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
   }, []);
 
   return (
-    <main className="overflow-hidden bg-[#f5f1e8] text-[#06272b]">
+    <main className="overflow-hidden bg-[#F3F6F7] text-[#0E2A3B]">
       <section className="relative isolate min-h-[620px] bg-[#06272b]">
         <div className="absolute inset-0 overflow-hidden">
           <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover object-center" />
@@ -62,11 +111,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
               <span className="h-px w-12 bg-[#ffbd59]" />
               Desde Guinea Ecuatorial al mundo
             </div>
-            <h1 className="max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
-              {hero?.title || 'Movemos oportunidades.'}
-            </h1>
+            <TituloRotativo />
             <p className="mt-4 max-w-lg text-base leading-relaxed text-[#c8dad7]">
-              {hero?.subtitle || 'Envíos, comercio y servicios financieros conectados por un equipo que conoce tu realidad.'}
+              Servicios logísticos integrales, envíos aéreos y marítimos, y soluciones empresariales adaptadas a tus necesidades.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
@@ -115,11 +162,102 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
         </section>
       )}
 
+      <section id="servicios" className="w-full px-5 pb-16 pt-24 sm:px-8 lg:px-16 lg:pt-20 xl:px-24">
+        <p className="text-xs font-black uppercase tracking-[.24em] text-[#1E5A5E]">Nuestra logística</p>
+        <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold uppercase leading-none text-[#0E2A3B] sm:text-5xl">Nos ocupamos de toda la cadena</h2>
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-[#55707C]">Desde que recogemos tu paquete en España hasta que lo retiras en Guinea Ecuatorial.</p>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          {servicios.map((s) => (
+            <article key={s.titulo} className="flex flex-col border-t-4 border-[#2E9E3E] bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E1EEEE] text-[#1E5A5E]">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={s.icono} /></svg>
+              </span>
+              <h3 className="mt-5 font-display text-2xl font-bold uppercase leading-tight text-[#0E2A3B]">{s.titulo}</h3>
+              <p className="mt-3 leading-relaxed text-[#55707C]">{s.texto}</p>
+              <ul className="mt-4 flex flex-col gap-2 border-t border-[#D5E0E3] pt-4 text-sm text-[#0E2A3B]">
+                {s.puntos.map((p) => (
+                  <li key={p} className="flex gap-2"><span className="mt-0.5 text-[#2E9E3E]" aria-hidden="true">✓</span>{p}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="como-enviar" className="bg-[#0E2A3B] text-white">
+        <div className="grid w-full gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.3fr_.7fr] lg:px-16 lg:py-20 xl:px-24">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[.24em] text-[#7FD08A]">Paso a paso</p>
+            <h2 className="mt-3 font-display text-4xl font-bold uppercase leading-none sm:text-5xl">Cómo enviar tu paquete</h2>
+            <ol className="mt-10 grid gap-8 sm:grid-cols-2">
+              {pasos.map((p, i) => (
+                <li key={p.titulo} className="flex gap-4">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#2E9E3E] font-display text-xl font-bold">{i + 1}</span>
+                  <div>
+                    <h3 className="font-display text-xl font-bold uppercase">{p.titulo}</h3>
+                    <p className="mt-1.5 leading-relaxed text-[#A9C3CB]">{p.texto}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="self-start border-2 border-dashed border-white/40 p-6">
+            <p className="font-display text-lg font-bold uppercase tracking-[.06em] text-[#7FD08A]">Así debe ir identificado cada paquete</p>
+            <dl className="mt-5 flex flex-col gap-3 font-mono text-sm">
+              <div className="flex justify-between gap-4 border-b border-white/15 pb-2"><dt className="text-[#A9C3CB]">Destinatario</dt><dd>Nombre y apellidos</dd></div>
+              <div className="flex justify-between gap-4 border-b border-white/15 pb-2"><dt className="text-[#A9C3CB]">Teléfono</dt><dd>+240 ··· ··· ···</dd></div>
+              <div className="flex justify-between gap-4 border-b border-white/15 pb-2"><dt className="text-[#A9C3CB]">Destino</dt><dd>MALABO / BATA</dd></div>
+            </dl>
+            <p className="mt-5 bg-white py-2 text-center font-display text-xl font-bold tracking-[.08em] text-[#0E2A3B]">BODIPO BUSINESS</p>
+            <p className="mt-4 text-sm text-[#A9C3CB]">Un paquete sin identificar no es responsabilidad de la agencia hasta que se identifique, y puede retrasarse.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contacto" className="w-full px-5 py-16 sm:px-8 lg:px-16 lg:py-20 xl:px-24">
+        <p className="text-xs font-black uppercase tracking-[.24em] text-[#1E5A5E]">Contacto y agencias</p>
+        <h2 className="mt-3 font-display text-4xl font-bold uppercase leading-none text-[#0E2A3B] sm:text-5xl">Estamos cerca de ti</h2>
+        <p className="mt-4 max-w-2xl text-lg text-[#55707C]">{HORARIO}. En tu primer mensaje dinos tu nombre y qué servicio necesitas.</p>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {AGENCIAS.map((a) => (
+            <article key={a.pais} className="flex flex-col bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
+              <div className="flex items-center gap-3">
+                {a.bandera ? <img src={a.bandera} alt="" className="h-6 w-9 rounded-[3px] object-cover" /> : <span className="text-2xl" aria-hidden="true">🇨🇲</span>}
+                <h3 className="font-display text-2xl font-bold uppercase text-[#0E2A3B]">{a.pais}</h3>
+              </div>
+              <p className="mt-3 text-[#55707C]">{a.direccion}<br />{a.ciudad}</p>
+              <a href={enlaceTelefono(a.telefono)} className="mt-4 font-mono text-lg font-bold text-[#0E2A3B] hover:text-[#1E5A5E]">{a.telefono}</a>
+              <div className="mt-5 flex gap-2">
+                <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="flex-1 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
+                <a href={enlaceTelefono(a.telefono)} className="flex-1 border border-[#0E2A3B] py-2.5 text-center text-xs font-black uppercase tracking-wider text-[#0E2A3B] hover:bg-[#0E2A3B] hover:text-white">Llamar</a>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-5 grid gap-5 md:grid-cols-[1fr_2fr]">
+          <a href={`mailto:${EMAIL}`} className="flex items-center gap-4 bg-[#1E5A5E] p-6 text-white hover:bg-[#0E2A3B]">
+            <svg className="h-8 w-8 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+            <span><span className="block text-xs font-black uppercase tracking-[.2em] text-[#A9C3CB]">Correo electrónico</span><span className="text-lg font-bold">{EMAIL}</span></span>
+          </a>
+          <div className="bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
+            <p className="text-xs font-black uppercase tracking-[.2em] text-[#1E5A5E]">Puntos de recogida</p>
+            <ul className="mt-3 grid gap-3 sm:grid-cols-3">
+              {PUNTOS_RECOGIDA.map((p) => (
+                <li key={p.lugar}><span className="block font-display text-lg font-bold uppercase text-[#0E2A3B]">{p.lugar}</span><span className="text-sm text-[#55707C]">{p.detalle}</span></li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-[#55707C]">Las fechas de recogida en Guinea dependen del despacho de cada aerolínea. Te las confirmamos por WhatsApp.</p>
+          </div>
+        </div>
+      </section>
+
       <section className="relative w-full px-5 pb-24 pt-24 sm:px-8 lg:px-16 lg:pt-16 xl:px-24">
         <div className="grid gap-10 border-b border-[#cfc8bc] pb-14 lg:grid-cols-[.75fr_1.25fr] lg:items-end">
           <div>
-            <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">El ecosistema Bodipo</p>
-            <h2 className="mt-4 text-4xl font-black leading-none tracking-[-.035em] sm:text-6xl">Una cuenta.<br />Más caminos.</h2>
+            <p className="text-xs font-black uppercase tracking-[.24em] text-[#007e85]">Además, te ayudamos con</p>
+            <h2 className="mt-4 font-display text-4xl font-bold uppercase leading-none text-[#0E2A3B] sm:text-5xl">Más servicios Bodipo</h2>
           </div>
           <p className="max-w-xl text-lg leading-relaxed text-[#48625f] lg:ml-auto">
             Hemos reunido las operaciones que más utilizas para que puedas pasar de planificar a actuar sin perder tiempo.
@@ -143,30 +281,31 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
         </div>
       </section>
 
-      <section className="border-t border-[#d9d2c7] bg-[#f5f1e8]">
-        <div className="grid w-full gap-10 px-5 py-14 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-16 xl:px-24">
-          <div className="max-w-3xl">
-            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#007e85]">Sobre nosotros</p>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-[#06272b] sm:text-4xl">Conectamos personas, mercados y oportunidades.</h2>
+      <section className="border-t border-[#d9d2c7] bg-white">
+        <div className="grid w-full gap-10 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-16 lg:py-20 xl:px-24">
+          <img src="/images/malabo-ciudad.jpg" alt="Malabo, Guinea Ecuatorial" className="aspect-[16/10] w-full object-cover shadow-[0_20px_50px_rgba(14,42,59,.18)]" loading="lazy" />
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#1E5A5E]">Sobre nosotros</p>
+            <h2 className="mt-4 font-display text-4xl font-bold uppercase leading-none tracking-[.01em] text-[#0E2A3B] sm:text-5xl">Conectamos personas, mercados y oportunidades.</h2>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#5d716e]">
               Bodipo Business es un equipo ecuatoguineano que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button onClick={onOpenAbout} className="border border-[#155e63] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#155e63] transition hover:bg-[#155e63] hover:text-white">Conocer al equipo</button>
-            <button onClick={onOpenContact} className="bg-[#ffbd59] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#06272b] transition hover:bg-[#06272b] hover:text-white">Contactar</button>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <button onClick={onOpenAbout} className="border border-[#0E2A3B] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#0E2A3B] transition hover:bg-[#0E2A3B] hover:text-white">Conocer al equipo</button>
+              <button onClick={onOpenContact} className="bg-[#2E9E3E] px-6 py-3 text-xs font-black uppercase tracking-wider text-white transition hover:bg-[#0E2A3B]">Contactar</button>
+            </div>
           </div>
         </div>
       </section>
       {!isAuthenticated && (
-      <section className="bg-[#007e85] text-white">
+      <section className="bg-[#1E5A5E] text-white">
         <div className="grid w-full gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-center lg:px-16 xl:px-24">
           <div>
             <p className="text-xs font-black uppercase tracking-[.24em] text-[#b9eee8]">Tu próximo paso</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl">La distancia no debería limitar tus oportunidades.</h2>
           </div>
           <div className="flex flex-wrap gap-3 lg:justify-end">
-            <button onClick={onOpenRegister} className="bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.14em] text-[#06272b] transition hover:bg-white">Crear una cuenta</button>
+            <button onClick={onOpenRegister} className="bg-[#2E9E3E] px-6 py-3.5 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-white hover:text-[#0E2A3B]">Crear una cuenta</button>
             <button onClick={onOpenContact} className="border border-white/40 px-6 py-3.5 text-xs font-black uppercase tracking-[.14em] transition hover:bg-white hover:text-[#06272b]">Contactar</button>
           </div>
         </div>

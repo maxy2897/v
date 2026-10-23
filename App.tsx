@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './src/components/Header';
+import Footer, { SeguimientoFlotante } from './src/components/Footer';
 import AnimatedPage from './src/components/AnimatedPage';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
@@ -224,43 +225,14 @@ const AppContent: React.FC = () => {
         </main>
 
         {!isAdminRoute && (
-          <footer className="relative z-50">
-
-            <div className="bg-[#155e63] text-white">
-              <div className="flex w-full flex-col gap-5 px-5 py-6 text-xs sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-16 xl:px-24">
-                <div className="flex items-center gap-3">
-                  {config.customLogoUrl ? (
-                    <img src={config.customLogoUrl} className="h-9 w-9 object-contain logo-white-outline" alt="Bodipo Business" />
-                  ) : (
-                    <span className="logo-font text-2xl text-white">{config.logoText}</span>
-                  )}
-                  <p className="font-bold tracking-wide">
-                    © {new Date().getFullYear()} Bodipo Business
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-center gap-3 lg:items-end">
-                  <nav className="flex flex-col items-center gap-2 text-white/90" aria-label="Enlaces legales">
-                    <div className="flex items-center">
-                      <Link to="/mapa-del-sitio" className="px-4 transition hover:text-white">Mapa del sitio</Link>
-                      <span className="h-4 w-px bg-white/55" aria-hidden="true" />
-                      <button onClick={() => setIsCookieOpen(true)} className="px-4 transition hover:text-white">Consentimiento de cookies</button>
-                    </div>
-                    <div className="flex items-center">
-                      <Link to="/condiciones" className="px-4 transition hover:text-white">Condiciones de uso</Link>
-                      <span className="h-4 w-px bg-white/55" aria-hidden="true" />
-                      <Link to="/privacidad" className="px-4 transition hover:text-white">Política de privacidad</Link>
-                    </div>
-                  </nav>
-                  <button onClick={() => window.dispatchEvent(new CustomEvent('open-bodipo-chat'))} className="inline-flex items-center gap-2 font-bold text-white transition hover:text-[#ffbd59]">
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M8 10h.01M12 10h.01M16 10h.01M5 18l-2 3v-5a9 9 0 1 1 4 4" /></svg>
-                    Preguntar a Bodipo
-                  </button>
-                </div>
-              </div>
-            </div>
-          </footer>
+          <Footer
+            config={config}
+            onOpenCookies={() => setIsCookieOpen(true)}
+            onOpenContact={() => setIsContactOpen(true)}
+            onOpenAbout={() => setIsAboutOpen(true)}
+          />
         )}
+        {!isAdminRoute && <SeguimientoFlotante />}
 
         <Suspense fallback={null}>
           {isRegisterOpen && <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />}
