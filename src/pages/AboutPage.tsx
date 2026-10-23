@@ -177,7 +177,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onOpenRegister, onOpenLogin, onOp
       </main>
 
       <footer className="py-12 border-t border-gray-100 dark:border-gray-800 text-center text-gray-400 text-[10px] font-black uppercase tracking-[0.4em]">
-         {config.logoText} © 2026 Bodipo Business S.A.
+         {config.logoText} © 2026 Benjamin Ona Global Logistic, S.L.
       </footer>
     </div>
   );

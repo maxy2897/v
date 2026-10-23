@@ -182,7 +182,7 @@ const AboutTeamPanel: React.FC<AboutTeamPanelProps> = ({ isOpen, onClose }) => {
           </div>
           
           <div className="bg-[#00151a] py-6 text-center border-t border-white/5 shrink-0">
-             <p className="text-[8px] font-black uppercase tracking-[0.5em] text-white/30">Bodipo Business S.A. © 2026 - {t('footer.rights')}</p>
+             <p className="text-[8px] font-black uppercase tracking-[0.5em] text-white/30">Bodipo Business · Benjamin Ona Global Logistic, S.L. © 2026 - {t('footer.rights')}</p>
           </div>
         </div>
       )}

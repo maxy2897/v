@@ -140,7 +140,7 @@ const Footer: React.FC<FooterProps> = ({ config, onOpenCookies, onOpenContact, o
             <span className="h-4 w-px bg-white/40" aria-hidden="true" />
             <Link to="/condiciones" className="px-3 hover:text-white">Condiciones de uso</Link>
           </nav>
-          <p className="text-[#8FB0BA]">© {new Date().getFullYear()} Bodipo Business S.L.</p>
+          <p className="text-[#8FB0BA]">© {new Date().getFullYear()} Bodipo Business · Benjamin Ona Global Logistic, S.L.</p>
         </div>
       </div>
     </footer>
