@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import ExcelTracking from '../components/ExcelTracking';
 import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceTelefono, enlaceWhatsApp } from '../constants/empresa';
 
@@ -39,12 +40,14 @@ const Arrow = () => (
 );
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOpenAbout }) => {
+  const { appConfig } = useSettings();
   const { isAuthenticated } = useAuth();
   // El enlace del WhatsApp llega como ?c=M1310K7Q y abre la portada ya en ese paquete.
   const codigoUrl = new URLSearchParams(window.location.search).get('c') || '';
   const [trackingId, setTrackingId] = useState(codigoUrl.toUpperCase());
   const [codigoBuscado, setCodigoBuscado] = useState(codigoUrl);
   const resultado = useRef<HTMLElement>(null);
+  const hero = appConfig?.content?.hero;
   const heroImage = '/images/bodipo-malabo-delivery-hero.jpg';
 
   const submitTracking = (event: React.FormEvent) => {
@@ -59,44 +62,39 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
 
   return (
     <main className="overflow-hidden bg-[#F3F6F7] text-[#0E2A3B]">
-      <section className="relative isolate min-h-[620px] bg-[#0E2A3B]">
+      <section className="relative isolate min-h-[620px] bg-[#06272b]">
         <div className="absolute inset-0 overflow-hidden">
-          <img src={heroImage} alt="Repartidor de Bodipo Business entregando un paquete" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(14,42,59,.94)_0%,rgba(14,42,59,.78)_45%,rgba(14,42,59,.25)_100%)]" />
+          <img src={heroImage} alt="Equipo de logística de Bodipo Business" className="h-full w-full object-cover object-center" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#06272b]/95 via-[#06272b]/76 to-[#06272b]/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06272b]/55 via-transparent to-[#06272b]/10" />
         </div>
+        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
+        <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
 
-        <div className="relative grid min-h-[620px] w-full content-center gap-6 px-5 py-9 sm:px-8 lg:grid-cols-[.52fr_.48fr] lg:px-16 xl:px-24">
-          <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 flex max-w-2xl flex-col gap-3">
-            <div className="flex items-center gap-2 font-mono text-xs font-bold text-white" aria-label="Ruta España, Guinea Ecuatorial">
-              <img src="/images/bandera-es.jpg" alt="España" className="h-5 w-7 rounded-[3px] object-cover" />
-              <span className="text-[#A9C3CB]" aria-hidden="true">⇄</span>
-              <img src="/images/bandera-gq.jpg" alt="Guinea Ecuatorial" className="h-5 w-7 rounded-[3px] object-cover" />
-              <span className="ml-1">MALABO · BATA</span>
+        <div className="relative grid min-h-[620px] w-full content-center gap-5 px-5 py-8 sm:px-8 lg:grid-cols-[.52fr_.48fr] lg:px-16 xl:px-24">
+          <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 max-w-2xl">
+            <div className="mb-4 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
+              <span className="h-px w-12 bg-[#ffbd59]" />
+              Desde Guinea Ecuatorial al mundo
             </div>
-            <p className="font-display text-base font-semibold uppercase tracking-[.12em] text-[#7FD08A]">Logística aérea España ⇄ Guinea Ecuatorial</p>
-            <h1 className="max-w-xl font-display text-[clamp(44px,11vw,72px)] font-bold leading-none tracking-[.01em] text-white">
-              Somos tu mejor opción
+            <h1 className="max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
+              {hero?.title || 'Movemos oportunidades.'}
             </h1>
-            <p className="max-w-[38ch] text-base leading-relaxed text-[#D6E4E8]">
-              Recogemos, transportamos y entregamos tu mercancía de España a Malabo y Bata, con seguimiento de cada paquete.
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-[#c8dad7]">
+              {hero?.subtitle || 'Envíos, comercio y servicios financieros conectados por un equipo que conoce tu realidad.'}
             </p>
-            <ul className="mt-1 flex flex-wrap gap-2">
-              {['Carga aérea', 'Recogida a domicilio', 'Custodia segura', 'Seguimiento online'].map((chip) => (
-                <li key={chip} className="rounded-full border border-white/45 px-3.5 py-1.5 font-display text-[15px] font-semibold uppercase tracking-[.05em] text-white">{chip}</li>
-              ))}
-            </ul>
-            <div className="mt-3 flex flex-wrap gap-3">
-              <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#2E9E3E] px-6 py-3.5 font-display text-base font-bold uppercase tracking-[.06em] text-white transition hover:bg-white hover:text-[#0E2A3B]">
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to="/tarifas" className="group inline-flex items-center gap-3 bg-[#ffbd59] px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-[#06272b] transition hover:bg-white">
                 Calcular un envío <Arrow />
               </Link>
-              <button onClick={onOpenContact} className="group inline-flex items-center gap-3 border border-white/40 px-6 py-3.5 font-display text-base font-bold uppercase tracking-[.06em] text-white transition hover:border-white hover:bg-white hover:text-[#0E2A3B]">
+              <button onClick={onOpenContact} className="group inline-flex items-center gap-3 border border-white/30 px-6 py-3.5 text-xs font-black uppercase tracking-[.13em] text-white transition hover:border-white hover:bg-white hover:text-[#06272b]">
                 Hablar con Bodipo <Arrow />
               </button>
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7, delay: .15 }} className="relative z-20 max-w-[520px] lg:col-start-1 lg:row-start-2 lg:w-full">
-            <div className="border border-white/15 bg-white p-5 shadow-[0_20px_60px_rgba(0,0,0,.25)] sm:p-6">
+            <div className="border border-white/15 bg-[#f5f1e8] p-5 shadow-[0_20px_60px_rgba(0,0,0,.25)] sm:p-6">
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[.25em] text-[#007e85]">Centro de seguimiento</p>
@@ -111,7 +109,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
                 <div className="mt-3 border-b-2 border-[#06272b]">
                   <input id="home-tracking" value={trackingId} onChange={(event) => setTrackingId(event.target.value.toUpperCase())} placeholder="Ej. M-1310-K7Q" className="w-full bg-transparent py-2 font-mono text-base font-bold uppercase outline-none placeholder:text-[#93a5a2]" />
                 </div>
-                <button type="submit" className="group mt-4 flex w-full items-center justify-between bg-[#1E5A5E] px-5 py-3 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-[#0E2A3B]">
+                <button type="submit" className="group mt-4 flex w-full items-center justify-between bg-[#007e85] px-5 py-3 text-xs font-black uppercase tracking-[.14em] text-white transition hover:bg-[#06272b]">
                   Consultar recorrido <Arrow />
                 </button>
               </form>

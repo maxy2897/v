@@ -72,12 +72,12 @@ const Footer: React.FC<FooterProps> = ({ config, onOpenCookies, onOpenContact, o
   };
 
   return (
-    <footer className="relative z-40 bg-[#0E2A3B] text-white">
+    <footer className="relative z-40 bg-[#06272b] text-white">
       {/* Franja superior con la flecha de marca */}
       <div className="flex items-center overflow-hidden pt-12 lg:pt-16" aria-hidden="true">
         <span className="h-[3px] flex-1 bg-white/90" />
         <svg className="-ml-1 h-8 w-8 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="m8 4 8 8-8 8" /></svg>
-        <span className="ml-3 mr-[18%] h-9 w-9 rounded-full bg-[#2E9E3E]" />
+        <span className="ml-3 mr-[18%] h-9 w-9 rounded-full bg-[#ffbd59]" />
       </div>
 
       <div className="w-full px-5 pb-6 pt-8 sm:px-8 lg:px-16 lg:pt-12 xl:px-24">
@@ -117,16 +117,16 @@ const Footer: React.FC<FooterProps> = ({ config, onOpenCookies, onOpenContact, o
 
         {/* Redes y contacto rápido */}
         <div className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
-          <a href={WHATSAPP} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#7FD08A] hover:text-[#7FD08A]">
+          <a href={WHATSAPP} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#ffbd59] hover:text-[#ffbd59]">
             <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2c2.6 0 5.1 1 6.9 2.9 1.8 1.8 2.9 4.3 2.9 6.9 0 5.4-4.4 9.8-9.8 9.8zM20.5 3.5C18.2 1.2 15.2 0 12 0 5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.5-8.4z" /></svg>
           </a>
-          <a href={REDES.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#7FD08A] hover:text-[#7FD08A]">
+          <a href={REDES.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#ffbd59] hover:text-[#ffbd59]">
             <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
           </a>
-          <a href={REDES.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#7FD08A] hover:text-[#7FD08A]">
+          <a href={REDES.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#ffbd59] hover:text-[#ffbd59]">
             <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-1.8-2.5V9.7a5.7 5.7 0 1 0 4.9 5.7V9.1a7.3 7.3 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6Z" /></svg>
           </a>
-          <a href={`mailto:${EMAIL}`} aria-label="Correo" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#7FD08A] hover:text-[#7FD08A]">
+          <a href={`mailto:${EMAIL}`} aria-label="Correo" className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/80 transition hover:border-[#ffbd59] hover:text-[#ffbd59]">
             <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
           </a>
         </div>
@@ -155,7 +155,7 @@ export const SeguimientoFlotante: React.FC = () => {
   return (
     <button
       onClick={irAlSeguimiento}
-      className="fixed bottom-[46px] right-[116px] z-40 hidden h-14 md:flex items-center gap-2.5 rounded-full bg-[#2E9E3E] pl-5 pr-6 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(0,0,0,.25)] transition hover:bg-[#0E2A3B] sm:right-[124px]"
+      className="fixed bottom-[46px] right-[116px] z-40 hidden h-14 md:flex items-center gap-2.5 rounded-full bg-[#ffbd59] pl-5 pr-6 text-[15px] font-bold text-[#06272b] shadow-[0_10px_30px_rgba(0,0,0,.25)] transition hover:bg-white sm:right-[124px]"
     >
       <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="m20 20-3.5-3.5" /></svg>
       Seguimiento envío

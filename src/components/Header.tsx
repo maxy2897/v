@@ -106,14 +106,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
         className={`relative shrink-0 py-1 font-display text-base font-semibold uppercase tracking-[.05em] transition-colors ${activo ? 'text-white' : 'text-white/85 hover:text-white'}`}
       >
         {item.label}
-        {activo && <span className="absolute inset-x-0 -bottom-0.5 h-[2px] bg-[#7FD08A]" />}
+        {activo && <span className="absolute inset-x-0 -bottom-0.5 h-[2px] bg-[#ffbd59]" />}
       </Link>
     );
   };
 
   return (
     <div className="sticky top-0 z-50 flex w-full flex-col shadow-[0_2px_14px_rgba(0,0,0,.2)]">
-      <header className="bg-[#0E2A3B]">
+      <header className="bg-[#155e63]">
         <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 pb-3 pt-3.5 sm:px-6 lg:flex-nowrap lg:px-16 lg:py-3.5 xl:px-24">
           {logo}
 
@@ -136,7 +136,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
               <div className="relative shrink-0" ref={userMenuRef}>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-white transition hover:border-[#7FD08A]"
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-white transition hover:border-[#ffbd59]"
                   aria-label="Mi cuenta"
                 >
                   {user.profileImage ? (
@@ -221,7 +221,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
 
               <button
                 onClick={() => { setMobileMenuOpen(false); irAlSeguimiento(); }}
-                className="mx-5 mt-5 flex items-center justify-center gap-2 rounded-full bg-[#2E9E3E] py-3.5 text-sm font-black text-white"
+                className="mx-5 mt-5 flex items-center justify-center gap-2 rounded-full bg-[#ffbd59] py-3.5 text-sm font-black text-[#06272b]"
               >
                 <IconoBuscar className="h-4 w-4" /> Seguimiento de envío
               </button>
@@ -235,13 +235,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
                     className="flex items-center justify-between border-b border-white/10 py-4 text-lg font-bold"
                   >
                     {item.label}
-                    <span className="text-[#7FD08A]">›</span>
+                    <span className="text-[#ffbd59]">›</span>
                   </Link>
                 ))}
                 {isAuthenticated && (
                   <Link to="/dashboard?tab=settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between border-b border-white/10 py-4 text-lg font-bold">
                     {t('nav.settings') || 'Ajustes'}
-                    <span className="text-[#7FD08A]">›</span>
+                    <span className="text-[#ffbd59]">›</span>
                   </Link>
                 )}
               </nav>
