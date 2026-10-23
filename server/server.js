@@ -50,8 +50,8 @@ const allowedOrigins = [
     'http://localhost:5000',
     'https://bodipobusiness.com',
     'https://www.bodipobusiness.com',
-    'https://bodipo-business.web.app',
-    'https://bodipo-business.firebaseapp.com',
+    'https://bodipo-business-1d955.web.app',
+    'https://bodipo-business-1d955.firebaseapp.com',
     process.env.FRONTEND_URL // URL de producción (Render/Vercel)
 ];
 

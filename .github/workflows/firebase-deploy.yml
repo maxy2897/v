@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  FIREBASE_PROJECT: bodipo-business
+  FIREBASE_PROJECT: bodipo-business-1d955
 
 jobs:
   deploy:
