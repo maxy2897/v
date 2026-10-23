@@ -287,7 +287,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
             <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#1E5A5E]">Sobre nosotros</p>
             <h2 className="mt-4 font-display text-4xl font-bold uppercase leading-none tracking-[.01em] text-[#0E2A3B] sm:text-5xl">Conectamos personas, mercados y oportunidades.</h2>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#5d716e]">
-              Bodipo Business es un equipo ecuatoguineano que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
+              Bodipo Business es una empresa ecuatoguineana que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <button onClick={onOpenAbout} className="border border-[#0E2A3B] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#0E2A3B] transition hover:bg-[#0E2A3B] hover:text-white">Conocer al equipo</button>
