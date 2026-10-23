@@ -4,8 +4,8 @@ export const HORARIO = 'WhatsApp o llamada, de 9:00 a 21:00 h';
 
 export const AGENCIAS = [
   { pais: 'España', ciudad: 'Alcalá de Henares (Madrid)', direccion: 'Avenida de Daganzo 13 B', telefono: '+34 641 992 110', bandera: '/images/bandera-es.jpg', whatsapp: true },
-  { pais: 'Guinea Ecuatorial', ciudad: 'Malabo y Bata', direccion: 'B/ Santa María III, Malabo', telefono: '+240 222 667 763', bandera: '/images/bandera-gq.jpg', whatsapp: true },
-  { pais: 'Camerún', ciudad: 'Yaundé', direccion: 'Universidad Católica', telefono: '+237 687 528 854', bandera: '', whatsapp: true },
+  { pais: 'Guinea Ecuatorial', ciudad: 'Malabo y Bata', direccion: 'B/ Santa María III, Malabo', telefono: '+240 222 005 843', bandera: '/images/bandera-gq.jpg', whatsapp: false },
+  { pais: 'Camerún', ciudad: 'Yaundé', direccion: 'Universidad Católica', telefono: '+237 687 528 854', bandera: '', whatsapp: false },
 ];
 
 export const PUNTOS_RECOGIDA = [

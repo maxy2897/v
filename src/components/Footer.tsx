@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AppConfig } from '../../types';
 import { useIrAlSeguimiento } from './Header';
-import { AGENCIAS, EMAIL, HORARIO, REDES, enlaceTelefono } from '../constants/empresa';
+import { AGENCIAS, EMAIL, HORARIO, REDES, enlaceWhatsApp } from '../constants/empresa';
 
 interface FooterProps {
   config: AppConfig;
@@ -47,7 +47,7 @@ const Footer: React.FC<FooterProps> = ({ config, onOpenCookies, onOpenContact, o
     {
       titulo: 'Contacto',
       enlaces: [
-        ...AGENCIAS.map((ag) => ({ label: `${ag.pais}: ${ag.telefono}`, href: enlaceTelefono(ag.telefono) })),
+        ...AGENCIAS.map((ag) => ({ label: `${ag.pais}: ${ag.telefono}`, href: ag.whatsapp ? enlaceWhatsApp(ag.telefono) : undefined })),
         { label: EMAIL, href: `mailto:${EMAIL}` },
         { label: HORARIO },
       ],

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import ExcelTracking from '../components/ExcelTracking';
-import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceTelefono, enlaceWhatsApp } from '../constants/empresa';
+import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp } from '../constants/empresa';
 
 interface HomePageProps {
   onOpenRegister: () => void;
@@ -227,11 +227,10 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
                 <h3 className="font-display text-2xl font-bold uppercase text-[#0E2A3B]">{a.pais}</h3>
               </div>
               <p className="mt-3 text-[#55707C]">{a.direccion}<br />{a.ciudad}</p>
-              <a href={enlaceTelefono(a.telefono)} className="mt-4 font-mono text-lg font-bold text-[#0E2A3B] hover:text-[#1E5A5E]">{a.telefono}</a>
-              <div className="mt-5 flex gap-2">
-                <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="flex-1 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
-                <a href={enlaceTelefono(a.telefono)} className="flex-1 border border-[#0E2A3B] py-2.5 text-center text-xs font-black uppercase tracking-wider text-[#0E2A3B] hover:bg-[#0E2A3B] hover:text-white">Llamar</a>
-              </div>
+              <p className="mt-4 font-mono text-lg font-bold text-[#0E2A3B]">{a.telefono}</p>
+              {a.whatsapp && (
+                <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="mt-5 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
+              )}
             </article>
           ))}
         </div>
@@ -288,7 +287,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
             <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#1E5A5E]">Sobre nosotros</p>
             <h2 className="mt-4 font-display text-4xl font-bold uppercase leading-none tracking-[.01em] text-[#0E2A3B] sm:text-5xl">Conectamos personas, mercados y oportunidades.</h2>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#5d716e]">
-              Bodipo Business es un equipo ecuatoguineano que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
+              Bodipo Business es una empresa ecuatoguineana que facilita envíos, compras y servicios financieros entre Guinea Ecuatorial, España y Camerún con atención cercana y procesos claros.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <button onClick={onOpenAbout} className="border border-[#0E2A3B] px-6 py-3 text-xs font-black uppercase tracking-wider text-[#0E2A3B] transition hover:bg-[#0E2A3B] hover:text-white">Conocer al equipo</button>
