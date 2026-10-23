@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-// Seguimiento de la web de Hostinger: lee datos.json, que sube el botón ACTUALIZAR WEB del Excel.
-// El Excel y datos.json siguen en Hostinger, en datos.bodipobusiness.com (la web está en Firebase).
-const DATA_URL = 'https://datos.bodipobusiness.com/datos.json';
+// Seguimiento de paquetes: el botón ACTUALIZAR WEB del Excel guarda los datos (sin importes) en
+// Firestore, en seguimiento/publico, como texto JSON en el campo "json". Las reglas dejan leerlo a todos.
+const DATA_URL = 'https://firestore.googleapis.com/v1/projects/bodipo-business-1d955/databases/(default)/documents/seguimiento/publico';
 
 const PUNTOS: Record<string, string> = {
   Malabo: 'Malabo · Atepa, por la tarde',
@@ -154,7 +154,9 @@ const ExcelTracking: React.FC<Props> = ({ codigo }) => {
   useEffect(() => {
     fetch(DATA_URL, { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
+      .then((doc) => {
+        const texto = doc?.fields?.json?.stringValue;
+        const d = texto ? JSON.parse(texto) : null;
         if (!d || !d.paquetes) return;
         setPaquetes(d.paquetes);
         setCuenta(d.cuenta || {});

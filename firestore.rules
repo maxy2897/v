@@ -1,7 +1,12 @@
 rules_version = '2';
-// La web no lee Firestore directamente: el seguimiento lo sirve la función "seguimiento".
+// seguimiento/publico lo escribe solo el usuario del Excel y lo lee la web (sin importes ni teléfonos).
+// Todo lo demás queda cerrado.
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /seguimiento/publico {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'excel@bodipobusiness.com';
+    }
     match /{document=**} {
       allow read, write: if false;
     }
