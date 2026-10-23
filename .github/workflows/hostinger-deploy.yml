@@ -1,0 +1,56 @@
+# Publica la web unida (portada + seguimiento del Excel) en bodipobusiness.com, en Hostinger, por FTP.
+# Secretos de GitHub: HOSTINGER_FTP_SERVER, HOSTINGER_FTP_USER y HOSTINGER_FTP_PASSWORD.
+# Solo sube los archivos de la web: subir.php, pagados.php, config.php y datos.json no se tocan.
+name: Publicar en Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.HOSTINGER_FTP_SERVER }}
+    steps:
+      - name: Comprobar el acceso FTP
+        id: ftp
+        run: |
+          if [ -z "$FTP_SERVER" ]; then
+            echo "::notice::Faltan los secretos FTP de Hostinger; no se publica en Hostinger."
+            echo "hay=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "hay=si" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.ftp.outputs.hay == 'si'
+      - uses: actions/setup-node@v4
+        if: steps.ftp.outputs.hay == 'si'
+        with:
+          node-version: 20
+      - name: Construir la web
+        if: steps.ftp.outputs.hay == 'si'
+        run: |
+          npm ci
+          npm run build
+          # En Hostinger la app es la portada: index.html pasa a ser la app (se deja app.html para el service worker).
+          cp dist/app.html dist/index.html
+          sed -i 's#"start_url": *"/app"#"start_url": "/"#' dist/manifest.json
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        if: steps.ftp.outputs.hay == 'si'
+        with:
+          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_FTP_USER }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            subir.php
+            pagados.php
+            pagar.php
+            config.php
+            datos.json
+            .htaccess
