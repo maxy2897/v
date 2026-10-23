@@ -54,10 +54,12 @@ jobs:
           # Solo se crea una versión nueva cuando el valor cambia.
           for NOMBRE in EXCEL_CLAVE IBAN TITULAR; do
             VALOR="${!NOMBRE}"
-            [ -z "$VALOR" ] && { echo "::warning::Falta el secreto $NOMBRE en GitHub."; continue; }
             if ! gcloud secrets describe "$NOMBRE" --project "$P" >/dev/null 2>&1; then
               gcloud secrets create "$NOMBRE" --replication-policy=automatic --project "$P"
+              # Valor provisional para que la función se pueda publicar; la función lo ignora.
+              [ -z "$VALOR" ] && printf '%s' '-' | gcloud secrets versions add "$NOMBRE" --data-file=- --project "$P"
             fi
+            [ -z "$VALOR" ] && { echo "::warning::Falta el secreto $NOMBRE en GitHub."; continue; }
             ACTUAL="$(gcloud secrets versions access latest --secret "$NOMBRE" --project "$P" 2>/dev/null || true)"
             if [ "$ACTUAL" != "$VALOR" ]; then
               printf '%s' "$VALOR" | gcloud secrets versions add "$NOMBRE" --data-file=- --project "$P"

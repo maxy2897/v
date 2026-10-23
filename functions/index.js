@@ -41,7 +41,10 @@ async function subir(req, res) {
 
     // La web sabe así si ofrecer tarjeta (Stripe sin activar) y qué cuenta mostrar para la transferencia.
     datos.tarjeta = false;
-    if (IBAN.value()) datos.cuenta = { iban: IBAN.value(), titular: TITULAR.value() || '' };
+    // "-" es el valor provisional mientras no se ha puesto el IBAN real.
+    const iban = (IBAN.value() || '').trim();
+    const titular = (TITULAR.value() || '').trim();
+    if (iban && iban !== '-') datos.cuenta = { iban, titular: titular === '-' ? '' : titular };
 
     try {
         const ahora = new Date();
