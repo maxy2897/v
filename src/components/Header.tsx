@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppConfig } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -14,9 +14,45 @@ interface HeaderProps {
   config: AppConfig;
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSettings, config }) => {
+// Lleva a la portada y pone el cursor en la casilla del código de seguimiento.
+export const useIrAlSeguimiento = () => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const [hoveredPath, setHoveredPath] = useState(location.pathname);
+  return () => {
+    const enfocar = () => {
+      const input = document.getElementById('home-tracking') as HTMLInputElement | null;
+      if (!input) return false;
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus({ preventScroll: true });
+      return true;
+    };
+    if (location.pathname === '/' && enfocar()) return;
+    navigate('/');
+    let intentos = 0;
+    const timer = window.setInterval(() => {
+      intentos += 1;
+      if (enfocar() || intentos > 30) window.clearInterval(timer);
+    }, 100);
+  };
+};
+
+const IconoBuscar = ({ className = 'h-5 w-5' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+    <circle cx="11" cy="11" r="7" />
+    <path strokeLinecap="round" d="m20 20-3.5-3.5" />
+  </svg>
+);
+
+const IconoUsuario = ({ className = 'h-5 w-5' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <circle cx="12" cy="8" r="4" />
+    <path strokeLinecap="round" d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+  </svg>
+);
+
+const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) => {
+  const location = useLocation();
+  const irAlSeguimiento = useIrAlSeguimiento();
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme, language, setLanguage, t } = useSettings();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -34,179 +70,131 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
   }, []);
 
   const navItems = [
-    { path: '/tarifas', label: t('nav.rates') },
-    { path: '/rastreo', label: t('nav.tracking') },
+    { path: '/tarifas', label: 'Tarifas' },
+    { path: '/calendario', label: 'Salidas' },
+    { path: '/compras-online', label: 'Compras online' },
+    { path: '/money-transfer', label: 'Money Transfer' },
+    { path: '/tienda', label: 'Tienda' },
   ];
 
+  const logo = (
+    <Link to="/" className="flex items-center gap-3" aria-label="Bodipo Business, inicio">
+      <span className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-xl bg-white md:h-[50px] md:w-[50px]">
+        <img src="/images/logo-bodipo.png" className="h-auto w-[38px] md:w-[40px]" alt="" />
+      </span>
+      <span className="flex flex-col">
+        <span className="font-display text-[22px] font-bold uppercase leading-none tracking-[.04em] text-white md:text-2xl">Bodipo Business</span>
+        <span className="mt-1 text-[12px] uppercase tracking-[.12em] text-[#A9C3CB] md:text-[13px]">Cada envío cuenta</span>
+      </span>
+    </Link>
+  );
+
+  const idiomas = (clase: string, activo: string, inactivo: string) => (
+    <div className={clase}>
+      {(['es', 'en', 'fr'] as const).map((l) => (
+        <button key={l} onClick={() => setLanguage(l)} className={language === l ? activo : inactivo}>{l.toUpperCase()}</button>
+      ))}
+    </div>
+  );
+
+  const enlaceMenu = (item: { path: string; label: string }) => {
+    const activo = location.pathname === item.path;
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        className={`relative shrink-0 py-1 font-display text-base font-semibold uppercase tracking-[.05em] transition-colors ${activo ? 'text-white' : 'text-white/85 hover:text-white'}`}
+      >
+        {item.label}
+        {activo && <span className="absolute inset-x-0 -bottom-0.5 h-[2px] bg-[#7FD08A]" />}
+      </Link>
+    );
+  };
+
   return (
-    <div className="flex flex-col w-full sticky top-0 z-50 shadow-md">
-      <header className="bg-[#155e63] border-b border-white/15 transition-all duration-300">
-        <div className="w-full px-4 sm:px-6 lg:px-16 xl:px-24">
-          <div className="flex justify-between items-center h-16 md:h-20">
-            <div className="flex items-center gap-1 xl:gap-4 shrink-0">
+    <div className="sticky top-0 z-50 flex w-full flex-col shadow-[0_2px_14px_rgba(0,0,0,.2)]">
+      <header className="bg-[#0E2A3B]">
+        <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 pb-3 pt-3.5 sm:px-6 lg:flex-nowrap lg:px-16 lg:py-3.5 xl:px-24">
+          {logo}
 
-              <Link to="/" className="flex items-center gap-3 group relative z-20">
-                <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-transparent rounded-full overflow-visible">
-                  {config.customLogoUrl ? (
-                    <img src={config.customLogoUrl} className="h-full w-full scale-[1.45] object-contain drop-shadow-[0_0_1px_rgba(255,255,255,1)] drop-shadow-[0_0_4px_rgba(255,255,255,0.65)]" alt="Logo" />
+          {/* Ordenador: menú en la misma barra */}
+          <nav className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8" aria-label="Menú principal">
+            <button onClick={irAlSeguimiento} className="shrink-0 py-1 font-display text-base font-semibold uppercase tracking-[.05em] text-white/85 hover:text-white">Seguimiento</button>
+            {navItems.map(enlaceMenu)}
+          </nav>
+
+          <div className="flex items-center gap-2 md:gap-3">
+            {idiomas(
+              'hidden items-center gap-2 text-[12px] font-semibold xl:flex',
+              'text-white',
+              'text-white/45 hover:text-white'
+            )}
+
+            {isAuthenticated && <NotificationBell />}
+
+            {isAuthenticated && user ? (
+              <div className="relative shrink-0" ref={userMenuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-white transition hover:border-[#7FD08A]"
+                  aria-label="Mi cuenta"
+                >
+                  {user.profileImage ? (
+                    <img
+                      src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
-                    <span className="logo-font text-xl md:text-4xl xl:text-5xl text-green-900 leading-none select-none pt-1 inline-block">{config.logoText}</span>
+                    <span className="text-sm font-bold text-[#0E2A3B]">{user.name?.charAt(0)}</span>
                   )}
-                </div>
-                <div className="flex flex-col justify-center translate-y-2 leading-none pointer-events-none text-white">
-                  <span className="text-base md:text-xl font-black tracking-tight uppercase drop-shadow-sm">
-                    Bodipo
-                  </span>
-                  <span className="mt-1 text-base md:text-xl font-black tracking-tight uppercase">
-                    Business
-                  </span>
-                </div>
-              </Link>
-            </div>
+                </button>
 
-            {/* Language Switcher and Actions */}
-            <div className="flex items-center gap-1.5 md:gap-4">
-              {/* Mobile Language Switcher removed per user request */}
-
-              {/* Desktop Nav */}
-              <nav
-                className="hidden xl:flex items-center space-x-3 text-xs font-black uppercase tracking-wider shrink-0"
-                onMouseLeave={() => setHoveredPath(location.pathname)}
-              >
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`relative px-3 py-1.5 transition-all duration-300 z-10 whitespace-nowrap ${
-                      location.pathname === item.path 
-                        ? 'text-white font-black'
-                        : 'text-teal-100 hover:text-white'
-                    }`}
-                    onMouseEnter={() => setHoveredPath(item.path)}
-                  >
-                    {item.path === hoveredPath && (
-                      <motion.div
-                        layoutId="bubble"
-                        className="absolute inset-0 bg-white/10 border border-white/10 rounded-full -z-10"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                    )}
-                    {item.label}
-                  </Link>
-                ))}
-
-                <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-white/20 shrink-0">
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={toggleTheme}
-                      className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-                      title={theme === 'dark' ? 'Modo Claro' : 'Modo Oscuro'}
-                    >
-                      {theme === 'dark' ? (
-                        <svg className="w-3.5 h-3.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                      ) : (
-                        <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                      )}
-                    </button>
-                    <div className="flex items-center text-[10px] font-bold uppercase gap-1 text-teal-100">
-                      <button onClick={() => setLanguage('es')} className={`${language === 'es' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>ES</button>
-                      <span className="text-white/30 px-1">|</span>
-                      <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>EN</button>
-                      <span className="text-white/30 px-1">|</span>
-                      <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'from-teal-700 to-teal-900 font-extrabold' : 'opacity-70 hover:opacity-100 transition-opacity'}`}>FR</button>
-                    </div>
-                  </div>
-                </div>
-              </nav>
-
-              {/* Common Actions (Bell, Auth/User) */}
-              <div className="flex items-center gap-2 shrink-0">
-                {isAuthenticated && <NotificationBell />}
-
-                {isAuthenticated && user ? (
-                  <div className="relative group shrink-0" ref={userMenuRef}>
-                    <button
-                      onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white border-2 border-teal-500 hover:border-teal-600 transition-all shadow-md overflow-hidden relative"
-                    >
-                      {user.profileImage ? (
-                        <img
-                          src={user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}/${user.profileImage}`}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-teal-700 font-bold text-xs">{user.name?.charAt(0)}</div>
-                      )}
-                    </button>
-                    
-                    {(user.role !== 'user' || user.isVerified) && (
-                      <div className="absolute -bottom-1 -right-1 z-10 bg-white rounded-full p-[1.5px] shadow-sm">
-                        <svg width="14" height="14" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path fillRule="evenodd" clipRule="evenodd" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill="#0095F6" />
-                        </svg>
-                      </div>
-                    )}
-
-                    {showUserMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
-                        <Link
-                          to="/dashboard"
-                          onClick={() => setShowUserMenu(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700"
-                        >
-                          {t('nav.dashboard')}
-                        </Link>
-                        <Link
-                          to="/dashboard?tab=settings"
-                          onClick={() => setShowUserMenu(false)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 font-bold uppercase tracking-tighter"
-                        >
-                          {t('nav.settings') || 'Ajustes'}
-                        </Link>
-
-                        <button
-                          onClick={() => {
-                            logout();
-                            setShowUserMenu(false);
-                          }}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                        >
-                          {t('nav.logout')}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="hidden md:flex items-center gap-2 shrink-0">
-                    <button onClick={onOpenLogin} className="bg-transparent text-white px-4 py-2 rounded-full hover:bg-white/10 border border-white/40 text-xs font-bold whitespace-nowrap">
-                      {t('nav.login')}
-                    </button>
-                    <button onClick={onOpenRegister} className="bg-[#007e85] text-white px-4 py-2 rounded-full hover:bg-teal-600 shadow-lg text-xs font-bold whitespace-nowrap">
-                      {t('nav.register')}
+                {showUserMenu && (
+                  <div className="absolute right-0 z-50 mt-2 w-52 rounded-2xl border border-gray-100 bg-white py-2 shadow-xl">
+                    <Link to="/dashboard" onClick={() => setShowUserMenu(false)} className="block px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-[#F3F6F7]">
+                      {t('nav.dashboard')}
+                    </Link>
+                    <Link to="/dashboard?tab=settings" onClick={() => setShowUserMenu(false)} className="block px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-[#F3F6F7]">
+                      {t('nav.settings') || 'Ajustes'}
+                    </Link>
+                    <button onClick={() => { logout(); setShowUserMenu(false); }} className="block w-full px-4 py-2.5 text-left text-sm font-semibold text-red-600 hover:bg-red-50">
+                      {t('nav.logout')}
                     </button>
                   </div>
                 )}
-
-                {/* Mobile Menu Toggle */}
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="xl:hidden p-2 text-white shrink-0"
-                  aria-label="Toggle mobile menu"
-                >
-                  {mobileMenuOpen ? (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                  ) : (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                  )}
-                </button>
               </div>
-            </div>
+            ) : (
+              <button
+                onClick={onOpenLogin}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/40 text-white transition hover:border-white lg:h-auto lg:w-auto lg:gap-2 lg:px-4 lg:py-2"
+                aria-label={t('nav.login')}
+              >
+                <IconoUsuario className="h-5 w-5" />
+                <span className="hidden font-display text-[15px] font-semibold uppercase tracking-[.05em] lg:inline">{t('nav.login')}</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="flex h-10 w-10 items-center justify-center text-white lg:hidden"
+              aria-label="Abrir menú"
+            >
+              <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
+
+          {/* Móvil: menú en una segunda fila, como la web anterior */}
+          <nav className="-mx-4 flex w-[calc(100%+2rem)] gap-6 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-6 sm:w-[calc(100%+3rem)] sm:px-6 lg:hidden" aria-label="Secciones">
+            <button onClick={irAlSeguimiento} className="shrink-0 py-1 font-display text-base font-semibold uppercase tracking-[.05em] text-white">Seguimiento</button>
+            {navItems.map(enlaceMenu)}
+          </nav>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Menú del móvil */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -215,78 +203,75 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, onOpenSett
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm xl:hidden"
+              className="fixed inset-0 z-40 bg-black/40 lg:hidden"
             />
             <motion.div
-              initial={{ x: '100%' }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 z-50 w-[70%] max-w-sm bg-white p-6 xl:hidden overflow-y-auto shadow-2xl border-l border-teal-100"
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="fixed inset-y-0 left-0 z-50 flex w-[82%] max-w-sm flex-col overflow-y-auto bg-[#0E2A3B] text-white shadow-2xl lg:hidden"
             >
-              <div className="flex flex-col h-full">
-                <div className="flex justify-between items-center mb-8">
-                  <span className="text-xs font-black text-teal-900 uppercase tracking-widest">Menú</span>
-                  <button onClick={() => setMobileMenuOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-teal-50 text-teal-900" aria-label="Cerrar menú">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                </div>
+              <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+                {logo}
+                <button onClick={() => setMobileMenuOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10" aria-label="Cerrar menú">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path strokeLinecap="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
 
-                <div className="flex flex-col space-y-4 flex-1">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="text-lg font-black text-[#00151a] py-2 border-b border-gray-50 uppercase tracking-tighter"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+              <button
+                onClick={() => { setMobileMenuOpen(false); irAlSeguimiento(); }}
+                className="mx-5 mt-5 flex items-center justify-center gap-2 rounded-full bg-[#2E9E3E] py-3.5 text-sm font-black text-white"
+              >
+                <IconoBuscar className="h-4 w-4" /> Seguimiento de envío
+              </button>
 
+              <nav className="mt-4 flex flex-col px-5" aria-label="Menú">
+                {navItems.map((item) => (
                   <Link
-                    to="/dashboard?tab=settings"
+                    key={item.path}
+                    to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex text-left items-center gap-3 text-lg font-black text-gray-500 py-4 border-b border-gray-50 group uppercase tracking-tighter w-full"
+                    className="flex items-center justify-between border-b border-white/10 py-4 text-lg font-bold"
                   >
-                    <span className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors text-gray-400">⚙️</span>
-                    {t('nav.settings') || 'Ajustes'}
+                    {item.label}
+                    <span className="text-[#7FD08A]">›</span>
                   </Link>
+                ))}
+                {isAuthenticated && (
+                  <Link to="/dashboard?tab=settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between border-b border-white/10 py-4 text-lg font-bold">
+                    {t('nav.settings') || 'Ajustes'}
+                    <span className="text-[#7FD08A]">›</span>
+                  </Link>
+                )}
+              </nav>
 
-
+              <div className="mt-auto flex flex-col gap-4 p-5">
+                <div className="flex items-center justify-between">
+                  <button onClick={toggleTheme} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10" aria-label="Cambiar tema">
+                    {theme === 'dark' ? '🌙' : '☀️'}
+                  </button>
+                  {idiomas(
+                    'flex items-center gap-1 rounded-xl bg-white/10 p-1',
+                    'rounded-lg bg-white px-3 py-1.5 text-xs font-black text-[#0E2A3B]',
+                    'px-3 py-1.5 text-xs font-black text-white/60'
+                  )}
                 </div>
 
-                <div className="mt-auto pt-6 flex flex-col gap-4">
-                  <div className="flex items-center justify-between py-4 border-b border-gray-50">
-                    <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50">
-                      {theme === 'dark' ? '🌙' : '☀️'}
+                {!isAuthenticated ? (
+                  <div className="flex flex-col gap-3">
+                    <button onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }} className="w-full rounded-full border border-white/40 py-3 text-sm font-bold">
+                      {t('nav.login')}
                     </button>
-                    <div className="flex items-center bg-gray-50 p-1 rounded-xl">
-                      <button onClick={() => setLanguage('es')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'es' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>ES</button>
-                      <button onClick={() => setLanguage('en')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'en' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>EN</button>
-                      <button onClick={() => setLanguage('fr')} className={`px-3 py-1.5 rounded-lg text-xs font-black ${language === 'fr' ? 'bg-white text-teal-600 shadow-sm' : 'text-gray-400'}`}>FR</button>
-                    </div>
+                    <button onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }} className="w-full rounded-full bg-white py-3 text-sm font-black text-[#0E2A3B]">
+                      {t('nav.register')}
+                    </button>
                   </div>
-
-                  {!isAuthenticated && (
-                    <div className="flex flex-col gap-3">
-                      <button onClick={() => { setMobileMenuOpen(false); onOpenLogin(); }} className="w-full py-3 bg-white border-2 border-[#00151a] rounded-xl font-black text-[#00151a] uppercase text-xs">
-                        {t('nav.login')}
-                      </button>
-                      <button onClick={() => { setMobileMenuOpen(false); onOpenRegister(); }} className="w-full py-3 bg-[#00151a] text-white rounded-xl font-black uppercase text-xs">
-                        {t('nav.register')}
-                      </button>
-                    </div>
-                  )}
-
-                  {isAuthenticated && (
-                    <div className="flex flex-col gap-2 border-t border-gray-50 pt-4">
-                      <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="w-full py-4 text-red-600 font-bold text-xs uppercase tracking-widest bg-red-50 rounded-2xl">
-                        {t('nav.logout')}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                ) : (
+                  <button onClick={() => { setMobileMenuOpen(false); logout(); }} className="w-full rounded-full bg-red-500/15 py-3 text-sm font-bold text-red-300">
+                    {t('nav.logout')}
+                  </button>
+                )}
               </div>
             </motion.div>
           </>
