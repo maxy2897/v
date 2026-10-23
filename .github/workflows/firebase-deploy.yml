@@ -1,11 +1,15 @@
 # Publica la web, la función del Excel y las reglas de Firestore en Firebase al subir cambios a main.
-# Necesita el secreto FIREBASE_SERVICE_ACCOUNT (el JSON de la cuenta de servicio) en GitHub.
+# Secretos de GitHub: FIREBASE_SERVICE_ACCOUNT (JSON de la cuenta de servicio, con rol Propietario)
+# y EXCEL_CLAVE, IBAN y TITULAR, que se copian a Secret Manager para la función.
 name: Publicar en Firebase
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+env:
+  FIREBASE_PROJECT: bodipo-business
 
 jobs:
   deploy:
@@ -28,6 +32,37 @@ jobs:
         if: steps.clave.outputs.hay == 'si'
         with:
           node-version: 20
+      - uses: google-github-actions/auth@v2
+        if: steps.clave.outputs.hay == 'si'
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+        if: steps.clave.outputs.hay == 'si'
+      - name: Preparar el proyecto (APIs, base de datos y secretos)
+        if: steps.clave.outputs.hay == 'si'
+        env:
+          EXCEL_CLAVE: ${{ secrets.EXCEL_CLAVE }}
+          IBAN: ${{ secrets.IBAN }}
+          TITULAR: ${{ secrets.TITULAR }}
+        run: |
+          P="$FIREBASE_PROJECT"
+          gcloud services enable firestore.googleapis.com secretmanager.googleapis.com \
+            cloudfunctions.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
+            run.googleapis.com eventarc.googleapis.com firebasehosting.googleapis.com --project "$P"
+          gcloud firestore databases describe --database='(default)' --project "$P" >/dev/null 2>&1 \
+            || gcloud firestore databases create --location=eur3 --project "$P"
+          # Solo se crea una versión nueva cuando el valor cambia.
+          for NOMBRE in EXCEL_CLAVE IBAN TITULAR; do
+            VALOR="${!NOMBRE}"
+            [ -z "$VALOR" ] && { echo "::warning::Falta el secreto $NOMBRE en GitHub."; continue; }
+            if ! gcloud secrets describe "$NOMBRE" --project "$P" >/dev/null 2>&1; then
+              gcloud secrets create "$NOMBRE" --replication-policy=automatic --project "$P"
+            fi
+            ACTUAL="$(gcloud secrets versions access latest --secret "$NOMBRE" --project "$P" 2>/dev/null || true)"
+            if [ "$ACTUAL" != "$VALOR" ]; then
+              printf '%s' "$VALOR" | gcloud secrets versions add "$NOMBRE" --data-file=- --project "$P"
+            fi
+          done
       - name: Construir la web
         if: steps.clave.outputs.hay == 'si'
         run: |
@@ -36,7 +71,4 @@ jobs:
           npm ci --prefix functions
       - name: Publicar
         if: steps.clave.outputs.hay == 'si'
-        run: |
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase.json"
-          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase.json"
-          npx --yes firebase-tools@13 deploy --project bodipo-business --only hosting,functions,firestore:rules --force --non-interactive
+        run: npx --yes firebase-tools@13 deploy --project "$FIREBASE_PROJECT" --only hosting,functions,firestore:rules --force --non-interactive
