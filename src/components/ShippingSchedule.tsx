@@ -228,7 +228,7 @@ const ShippingSchedule: React.FC = () => {
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-teal-800">{t('services.main.badge')}</p>
                     <p className="text-lg font-bold text-[#00151a]">{t('services.main.name')}</p>
-                    <p className="text-[10px] text-gray-500 font-medium italic">Envíos aéreos desde 11€/Kg y marítimos por m³.</p>
+                    <p className="text-[10px] text-gray-500 font-medium italic">Envíos aéreos desde 14€/Kg y marítimos por m³.</p>
                   </div>
                 </div>
                 <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex items-center space-x-6">
@@ -258,8 +258,8 @@ const ShippingSchedule: React.FC = () => {
                 <h4 className="text-xl font-black text-[#00151a] mb-6 tracking-tight">{t('services.rates.title') || 'TARIFAS'}</h4>
                 <ul className="space-y-3">
                   {[
-                    { label: 'España → Malabo (Aéreo)', price: '16€/Kg' },
-                    { label: 'España → Bata (Aéreo)', price: '11€/Kg' },
+                    { label: 'España → Malabo (Aéreo)', price: '14€/Kg' },
+                    { label: 'España → Bata (Aéreo)', price: '16€/Kg' },
                     { label: 'España → Guinea (Marítimo)', price: '470€/m³' },
                     { label: 'Marítimo: paquetes pequeños o cajas', price: 'desde 80€' },
                     { label: 'Camerún → Malabo (Kg)', price: '3000 XAF' },
