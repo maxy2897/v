@@ -112,7 +112,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                                     navigate('/dashboard');
                                 } catch (error: any) {
                                     console.error('Google Login Error:', error);
-                                    alert('Error con Google: ' + (error.message || error));
+                                    alert(error.message || 'No se pudo entrar con Google.');
                                 }
                             }}
                             className="flex items-center justify-center gap-3 py-4 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors group"

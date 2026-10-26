@@ -21,6 +21,22 @@ export const appleProvider = new OAuthProvider('apple.com');
 
 export const isElectron = () => typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes(' electron/');
 
+// Traduce los errores de Firebase a un mensaje claro para el cliente
+const googleErrorMessage = (error: any) => {
+    switch (error?.code) {
+        case 'auth/unauthorized-domain':
+        case 'auth/operation-not-allowed':
+            return 'El acceso con Google no está disponible ahora mismo. Regístrate con tu correo y contraseña.';
+        case 'auth/popup-blocked':
+            return 'Tu navegador ha bloqueado la ventana de Google. Permite las ventanas emergentes o regístrate con tu correo.';
+        case 'auth/popup-closed-by-user':
+        case 'auth/cancelled-popup-request':
+            return 'Se cerró la ventana de Google antes de terminar. Inténtalo de nuevo.';
+        default:
+            return error?.message || 'No se pudo entrar con Google. Inténtalo con tu correo y contraseña.';
+    }
+};
+
 export const signInWithGoogle = async () => {
     if (isElectron()) {
         throw new Error("El inicio de sesión social (Google/Apple) no está disponible en la versión de escritorio por razones de seguridad de los proveedores. Por favor, usa tu correo y contraseña.");
@@ -31,7 +47,7 @@ export const signInWithGoogle = async () => {
         return result.user;
     } catch (error) {
         console.error("Error signing in with Google", error);
-        throw error;
+        throw new Error(googleErrorMessage(error));
     }
 };
 
