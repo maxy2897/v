@@ -24,6 +24,7 @@ const Calculator: React.FC = () => {
 
   const [bultoType, setBultoType] = useState<23 | 32>(23);
   const [total, setTotal] = useState<{ value: number; currency: string } | null>(null);
+  const [seaQuote, setSeaQuote] = useState(false);
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -76,9 +77,12 @@ const Calculator: React.FC = () => {
     }
   }, [isAuthenticated, user]);
 
+  React.useEffect(() => { setSeaQuote(false); }, [info.type, info.origin, calcMode]);
+
   const calculateShipping = () => {
     setGeneratedCode(null);
     setShowForm(false);
+    setSeaQuote(false);
 
     if (calcMode === 'documento') {
       setTotal(info.origin === 'Guinea Ecuatorial' ? { value: 25000, currency: 'XAF' } : { value: 20, currency: '€' });
@@ -98,12 +102,10 @@ const Calculator: React.FC = () => {
             rate = 14;
           }
         } else {
-          // Dynamic Rate
-          if (info.destination === 'Bata') {
-            rate = appConfig?.rates.sea.es_bata || 4;
-          } else {
-            rate = appConfig?.rates.sea.es_gq || 4;
-          }
+          // Marítimo va por m³: no se calcula, se consulta con el equipo
+          setTotal(null);
+          setSeaQuote(true);
+          return;
         }
         currency = '€';
       } else if (info.origin === 'Camerún') {
@@ -710,6 +712,17 @@ const Calculator: React.FC = () => {
                   {isRegistering ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <span>{t('calc.form.cta_finish')} (Finalizar Todos)</span>}
                 </button>
               </form>
+            </div>
+          ) : seaQuote ? (
+            <div className="bg-[#0b4f55] p-12 rounded-[1.75rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl">
+              <p className="text-[10px] font-black uppercase tracking-widest text-teal-400 mb-4">{t('calc.service.sea')}</p>
+              <p className="text-4xl font-black text-white mb-2">Desde 80€</p>
+              <p className="text-sm text-gray-300 font-medium mb-1">Paquetes pequeños o cajas</p>
+              <p className="text-sm text-gray-300 font-medium mb-6">Carga por volumen: 470€/m³</p>
+              <p className="text-xs text-gray-300 mb-8 max-w-[280px]">El precio exacto depende del tamaño. Consulta con nuestro equipo.</p>
+              <a href="https://wa.me/34641992110" target="_blank" rel="noopener noreferrer" className="w-full bg-teal-500 text-[#00151a] py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20">
+                Consultar por WhatsApp
+              </a>
             </div>
           ) : total !== null ? (
             <div className="bg-[#0b4f55] p-12 rounded-[1.75rem] w-full flex flex-col justify-center items-center text-center animate-in fade-in zoom-in duration-500 shadow-2xl relative overflow-hidden">
