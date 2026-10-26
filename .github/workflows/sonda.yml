@@ -7,8 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in https://bodipo-business-api.onrender.com/ https://bodipo-business-api.onrender.com/api/config; do
-            echo "== $u"; curl -sS -m 90 -o body.txt -w "%{http_code} %{time_total}\n" "$u" || true; head -c 300 body.txt; echo
+          for o in https://bodipobusiness.com https://www.bodipobusiness.com; do
+            echo "== preflight $o"
+            curl -sS -m 60 -o /dev/null -D - -X OPTIONS -H "Origin: $o" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' https://bodipo-business-api.onrender.com/api/auth/register | grep -i "^HTTP\|access-control" || true
+            echo "== post $o"
+            curl -sS -m 60 -X POST -H "Origin: $o" -H 'Content-Type: application/json' -d '{"name":"x","email":"no-valido","password":"x"}' -D - https://bodipo-business-api.onrender.com/api/auth/register -o body.txt | grep -i "^HTTP\|access-control" || true; head -c 200 body.txt; echo
           done
-          echo "== register (correo inválido a propósito)"
-          curl -sS -m 90 -X POST -H 'Content-Type: application/json' -d '{"name":"x","email":"no-valido","password":"x"}' -w "\n%{http_code}\n" https://bodipo-business-api.onrender.com/api/auth/register | head -c 400 || true
+          curl -sS -m 30 https://bodipo-business-api.onrender.com/api/health; echo
