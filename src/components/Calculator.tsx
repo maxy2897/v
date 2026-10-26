@@ -751,8 +751,9 @@ const Calculator: React.FC = () => {
 
               {/* Price display with live conversion */}
               {(() => {
-                const eurXaf = appConfig?.rates?.exchange?.eur_xaf || 655;
-                const xafEur = appConfig?.rates?.exchange?.xaf_eur || (1 / 655);
+                // Tipo de cambio fijo para paquetes (Antonio, 26/10/2026)
+                const eurXaf = 750;
+                const xafEur = 1 / eurXaf;
                 const baseValue = total.value;
                 const baseCurrency = total.currency;
 
