@@ -265,8 +265,8 @@ const ShippingSchedule: React.FC = () => {
                     { label: 'Camerún → Malabo (Kg)', price: '3000 XAF' },
                     { label: 'Documentos desde España', price: '20€' },
                     { label: 'Documentos desde Guinea', price: '25.000 XAF' },
-                    { label: 'Bulto 23 Kg (Malabo / Bata)', price: '368€ / 253€' },
-                    { label: 'Bulto 32 Kg (Malabo / Bata)', price: '512€ / 352€' }
+                    { label: 'Bulto 23 Kg (Malabo / Bata)', price: '320€ / 360€' },
+                    { label: 'Bulto 32 Kg (Malabo / Bata)', price: '440€ / 500€' }
                   ].map((item, i) => (
                     <li key={i} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-white/50 px-2 rounded-xl transition-colors">
                       <span className="font-bold text-gray-600 text-xs">{item.label}</span>
