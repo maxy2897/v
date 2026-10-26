@@ -62,9 +62,9 @@ const MoneyTransfer: React.FC = () => {
     </div>
     <div className="bg-white/5 rounded-2xl p-6 space-y-3 border border-white/5">
       <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.name_label')}</p>
-      <p className="text-sm font-black uppercase">{appConfig?.bank?.holder || 'ANTONIO M. NDONG'}</p>
+      <p className="text-sm font-black uppercase">BODIPO BUSINESS</p>
       <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.iban_label')}</p>
-      <p className="text-xs font-mono font-black text-yellow-300 break-all">{appConfig?.bank?.iban || 'ES46 1583 0001 1590 4700 6648'}</p>
+      <p className="text-xs font-mono font-black text-yellow-300 break-all">ES57 0182 1758 9602 0181 2441</p>
     </div>
   </div>
 
@@ -363,9 +363,9 @@ const MoneyTransfer: React.FC = () => {
                   </div>
                   <div className="bg-white/5 rounded-2xl p-6 space-y-3 border border-white/5">
                     <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.name_label')}</p>
-                    <p className="text-sm font-black uppercase">ANTONIO M. NDONG</p>
+                    <p className="text-sm font-black uppercase">BODIPO BUSINESS</p>
                     <p className="text-[10px] font-bold text-gray-400 uppercase">{t('transfer.accounts.iban_label')}</p>
-                    <p className="text-xs font-mono font-black text-yellow-300 break-all">ES46 1583 0001 1590 4700 6648</p>
+                    <p className="text-xs font-mono font-black text-yellow-300 break-all">ES57 0182 1758 9602 0181 2441</p>
                   </div>
                 </div>
 
