@@ -1,0 +1,14 @@
+name: Sonda Render
+on:
+  push:
+    branches: [sonda-render]
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in https://bodipo-business-api.onrender.com/ https://bodipo-business-api.onrender.com/api/config; do
+            echo "== $u"; curl -sS -m 90 -o body.txt -w "%{http_code} %{time_total}\n" "$u" || true; head -c 300 body.txt; echo
+          done
+          echo "== register (correo inválido a propósito)"
+          curl -sS -m 90 -X POST -H 'Content-Type: application/json' -d '{"name":"x","email":"no-valido","password":"x"}' -w "\n%{http_code}\n" https://bodipo-business-api.onrender.com/api/auth/register | head -c 400 || true
