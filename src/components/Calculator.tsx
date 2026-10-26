@@ -754,6 +754,8 @@ const Calculator: React.FC = () => {
                 // Tipo de cambio fijo para paquetes (Antonio, 26/10/2026)
                 const eurXaf = 750;
                 const xafEur = 1 / eurXaf;
+                // Igual que el Excel: los cobros en XAF se redondean a 500 (sin monedas)
+                const toXaf = (eur: number) => Math.round((eur * eurXaf) / 500) * 500;
                 const baseValue = total.value;
                 const baseCurrency = total.currency;
 
@@ -764,7 +766,7 @@ const Calculator: React.FC = () => {
 
                 if (baseCurrency === '€') {
                   if (payLocation === 'Guinea') {
-                    displayValue = Math.round(baseValue * eurXaf);
+                    displayValue = toXaf(baseValue);
                     displayCurrency = 'XAF';
                     altValue = baseValue;
                     altCurrency = '€';
@@ -772,7 +774,7 @@ const Calculator: React.FC = () => {
                     // paying in Spain in €
                     displayValue = baseValue;
                     displayCurrency = '€';
-                    altValue = Math.round(baseValue * eurXaf);
+                    altValue = toXaf(baseValue);
                     altCurrency = 'XAF';
                   }
                 } else if (baseCurrency === 'XAF') {
