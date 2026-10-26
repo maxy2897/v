@@ -6,6 +6,10 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export const BASE_URL = import.meta.env.VITE_API_URL || FALLBACK_URL;
 
+// Mensaje de error legible: el servidor devuelve { message } o, en validaciones, { errors: [{ msg }] }
+const errorMessage = (data: any, fallback: string) =>
+    data?.message || (Array.isArray(data?.errors) && data.errors.map((e: any) => e.msg).filter(Boolean).join('. ')) || fallback;
+
 // Obtener token del localStorage
 const getToken = () => {
     return localStorage.getItem('token');
@@ -40,7 +44,7 @@ export const register = async (userData: {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al registrar usuario');
+        throw new Error(errorMessage(data, 'Error al registrar usuario'));
     }
 
     // Guardar token
@@ -67,7 +71,7 @@ export const socialLogin = async (userData: {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error en inicio de sesión social');
+        throw new Error(errorMessage(data, 'Error en inicio de sesión social'));
     }
 
     // Guardar token
@@ -95,7 +99,7 @@ export const login = async (credentials: {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión');
+        throw new Error(errorMessage(data, 'Error al iniciar sesión'));
     }
 
     // Guardar token
@@ -123,7 +127,7 @@ export const getCurrentUser = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al obtener usuario');
+        throw new Error(errorMessage(data, 'Error al obtener usuario'));
     }
 
     return data;
@@ -161,7 +165,7 @@ export const updateProfile = async (userData: FormData | {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al actualizar perfil');
+        throw new Error(errorMessage(data, 'Error al actualizar perfil'));
     }
 
     // Actualizar usuario en localStorage
@@ -181,7 +185,7 @@ export const getUserShipments = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al obtener envíos');
+        throw new Error(errorMessage(data, 'Error al obtener envíos'));
     }
 
     return data;
@@ -197,7 +201,7 @@ export const getUserTransactions = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al obtener transacciones');
+        throw new Error(errorMessage(data, 'Error al obtener transacciones'));
     }
 
     return data;
@@ -225,7 +229,7 @@ export const createShipment = async (shipmentData: {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al crear envío');
+        throw new Error(errorMessage(data, 'Error al crear envío'));
     }
 
     return data;
@@ -242,7 +246,7 @@ export const createBulkShipment = async (shipments: any[]) => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al crear envíos masivos');
+        throw new Error(errorMessage(data, 'Error al crear envíos masivos'));
     }
 
     return data;
@@ -281,7 +285,7 @@ export const createTransfer = async (formData: FormData) => {
     }
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al crear transferencia');
+        throw new Error(errorMessage(data, 'Error al crear transferencia'));
     }
 
     return data;
@@ -297,7 +301,7 @@ export const updateShipmentStatus = async (id: string, status: string) => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al actualizar estado');
+        throw new Error(errorMessage(data, 'Error al actualizar estado'));
     }
 
     return data;
@@ -311,7 +315,7 @@ export const createManifest = async (shipmentIds: string[], description?: string
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al crear bulto colectivo');
+    if (!response.ok) throw new Error(errorMessage(data, 'Error al crear bulto colectivo'));
     return data;
 };
 
@@ -323,7 +327,7 @@ export const getManifest = async (manifestId: string) => {
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Bulto colectivo no encontrado');
+    if (!response.ok) throw new Error(errorMessage(data, 'Bulto colectivo no encontrado'));
     return data;
 };
 
@@ -336,7 +340,7 @@ export const updateManifestStatus = async (manifestId: string, status: string) =
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al actualizar bulto');
+    if (!response.ok) throw new Error(errorMessage(data, 'Error al actualizar bulto'));
     return data;
 };
 // Actualizar contraseña
@@ -353,7 +357,7 @@ export const updatePassword = async (passwords: {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al actualizar contraseña');
+        throw new Error(errorMessage(data, 'Error al actualizar contraseña'));
     }
 
     return data;
@@ -367,7 +371,7 @@ export const getVapidPublicKey = async () => {
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al obtener VAPID key');
+    if (!response.ok) throw new Error(errorMessage(data, 'Error al obtener VAPID key'));
     return data.publicKey;
 };
 
@@ -388,7 +392,7 @@ export const updateUserVirtualCard = async (userId: string, cardData: { balance?
     }
 
     if (!response.ok) {
-        throw new Error(data.message || 'Error al actualizar tarjeta virtual');
+        throw new Error(errorMessage(data, 'Error al actualizar tarjeta virtual'));
     }
 
     return data;

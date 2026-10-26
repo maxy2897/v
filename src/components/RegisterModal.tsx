@@ -130,7 +130,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
                   alert(t('register.success'));
                 } catch (error: any) {
                   console.error('Google Register Error:', error);
-                  alert('Error con Google: ' + (error.message || error));
+                  alert(error.message || 'No se pudo entrar con Google.');
                 }
               }}
 
