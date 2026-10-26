@@ -14,6 +14,14 @@ interface TeamMember {
 
 const TEAM_MEMBERS: TeamMember[] = [
   {
+    id: '0',
+    name: "BENJAMÍN ONA EYENE ANGUE",
+    roleKey: "about.member_benjamin_role",
+    bioKeys: ["about.member_benjamin_bio1", "about.member_benjamin_bio2", "about.member_benjamin_bio3"],
+    image: "/images/benjamin-ona.jpg",
+    email: "benjamin_ona@hotmail.com",
+  },
+  {
     id: '1',
     name: "D. V. Nguema Elebiyo Mangue",
     roleKey: "about.member_nguema_role",
