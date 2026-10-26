@@ -2,34 +2,18 @@ import React from 'react';
 import { useSettings } from '../context/SettingsContext';
 
 const ShippingSchedule: React.FC = () => {
-  const { t, appConfig } = useSettings();
+  const { t } = useSettings();
 
   // Lógica de fechas dinámica
   const today = new Date();
 
-  // Verify config state
-  console.log('ShippingSchedule: appConfig state:', appConfig);
 
-  // Obtener fechas desde la configuración o usar defaults
-  const parsedNextAir = appConfig?.dates?.nextAirDeparture ? new Date(appConfig.dates.nextAirDeparture) : null;
-  const parsedNextSea = appConfig?.dates?.nextSeaDeparture ? new Date(appConfig.dates.nextSeaDeparture) : null;
-
-  const nextAir = parsedNextAir && !isNaN(parsedNextAir.getTime()) ? parsedNextAir : null;
-  const nextSea = parsedNextSea && !isNaN(parsedNextSea.getTime()) ? parsedNextSea : null;
-
-
-  // Construir lista dinámica
-  const dynamicSchedule = [];
-  if (nextAir) dynamicSchedule.push({ date: nextAir, type: 'Aéreo', destination: 'Malabo / Bata' });
-  if (nextSea) dynamicSchedule.push({ date: nextSea, type: 'Marítimo', destination: 'Malabo / Bata' });
-
-  // Fallback si no hay config (Fechas hardcodeadas de ejemplo)
-  const fallbackSchedule = [
-    { date: new Date(2026, 3, 17), type: 'Aéreo', destination: 'Malabo / Bata' },
-    { date: new Date(2026, 3, 30), type: 'Aéreo', destination: 'Malabo / Bata' }
-  ];
-
-  const fullSchedule = dynamicSchedule.length > 0 ? dynamicSchedule : fallbackSchedule;
+  // Calendario oficial de salidas aéreas (España → Malabo / Bata)
+  const fullSchedule = [
+    new Date(2026, 9, 13), new Date(2026, 9, 27),
+    new Date(2026, 10, 10), new Date(2026, 10, 28),
+    new Date(2026, 11, 8), new Date(2026, 11, 22), new Date(2026, 11, 29),
+  ].map(date => ({ date, type: 'Aéreo', destination: 'Malabo / Bata' }));
   
   // Ensure chronologically sorted items so that we accurately get the 'next' ones
   fullSchedule.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -58,46 +42,14 @@ const ShippingSchedule: React.FC = () => {
     highlight: index === 0 // La primera de la lista es la próxima salida (destacada)
   }));
 
-  // Referencia anual dinámica con fallback
-  const schedule = appConfig?.content?.schedule;
-  const rawYearlyOverview = [
-    {
-      month: schedule?.block1?.month || 'ENERO',
-      days: schedule?.block1?.days || '2, 17 y 30'
-    },
-    {
-      month: schedule?.block2?.month || 'FEBRERO',
-      days: schedule?.block2?.days || '10 y 21'
-    },
-    {
-      month: schedule?.block3?.month || 'MARZO',
-      days: schedule?.block3?.days || '7 y 24'
-    },
-    {
-      month: schedule?.block4?.month || 'ABRIL',
-      days: schedule?.block4?.days || '11, 18 y 28'
-    },
-  ];
-
-  const currentMonthNum = new Date().getMonth() + 1;
-  const getMonthNumber = (monthName: string) => {
-    const name = monthName?.toUpperCase().trim() || '';
-    const months: Record<string, number> = {
-      'ENERO': 1, 'FEBRERO': 2, 'MARZO': 3, 'ABRIL': 4, 'ABLIL': 4, 'MAYO': 5, 'JUNIO': 6,
-      'JULIO': 7, 'AGOSTO': 8, 'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
-    };
-    return months[name] || 0;
-  };
-
-  const processedOverview = rawYearlyOverview
-    .map(item => {
-      const num = getMonthNumber(item.month);
-      let dist = num === 0 ? 999 : num - currentMonthNum;
-      if (dist < -6 && dist !== 999) dist += 12; // Maneja saltos de año (ej. estando en Nov, Enero es +2 meses)
-      return { ...item, num, dist };
-    })
-    .filter(item => item.num === 0 ? item.month.trim() !== '' : item.dist >= 0)
-    .sort((a, b) => a.dist - b.dist);
+  // Resumen por meses: solo meses que aún no han terminado
+  const processedOverview = [
+    { month: 'OCTUBRE', year: 2026, m: 9, days: '13 y 27' },
+    { month: 'NOVIEMBRE', year: 2026, m: 10, days: '10 y 28' },
+    { month: 'DICIEMBRE', year: 2026, m: 11, days: '8, 22 y 29' },
+  ]
+    .filter(item => new Date(item.year, item.m + 1, 1) > today)
+    .map(item => ({ ...item, dist: (item.year - today.getFullYear()) * 12 + item.m - today.getMonth() }));
 
   return (
     <section id="calendario" className="pt-10 pb-24 relative overflow-hidden bg-[#f5f1e8] [clip-path:inset(0)]">
@@ -221,10 +173,10 @@ const ShippingSchedule: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-black text-amber-800 uppercase tracking-widest">
-                {t('schedule.notice_title')}
+                Aviso importante
               </p>
               <p className="mt-1 text-sm text-amber-700 font-bold leading-relaxed">
-                {t('schedule.notice_desc')}
+                Los paquetes se pueden entregar hasta las 12:00 del mismo día de salida. Envíos marítimos: consulta las fechas con nuestro equipo. Las fechas de diciembre pueden variar según el stock de mercancía.
               </p>
             </div>
           </div>
@@ -276,7 +228,7 @@ const ShippingSchedule: React.FC = () => {
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-teal-800">{t('services.main.badge')}</p>
                     <p className="text-lg font-bold text-[#00151a]">{t('services.main.name')}</p>
-                    <p className="text-[10px] text-gray-500 font-medium italic">{t('services.main.desc')}</p>
+                    <p className="text-[10px] text-gray-500 font-medium italic">Envíos aéreos desde 14€/Kg y marítimos por m³.</p>
                   </div>
                 </div>
                 <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex items-center space-x-6">
@@ -306,18 +258,19 @@ const ShippingSchedule: React.FC = () => {
                 <h4 className="text-xl font-black text-[#00151a] mb-6 tracking-tight">{t('services.rates.title') || 'TARIFAS'}</h4>
                 <ul className="space-y-3">
                   {[
-                    { label: t('admin.rate_air_es_gq'), price: appConfig?.starRates?.air_es_gq || '11€/Kg' },
-                    { label: t('admin.rate_air_es_bata'), price: appConfig?.starRates?.air_es_bata || '11€/Kg' },
-                    { label: t('admin.rate_sea_es_gq'), price: appConfig?.starRates?.sea_es_gq || '4€/Kg' },
-                    { label: t('admin.rate_sea_es_bata'), price: appConfig?.starRates?.sea_es_bata || '4€/Kg' },
-                    { label: t('admin.rate_kg_cm_gq'), price: appConfig?.starRates?.kg_cm_gq || '3000 XAF' },
-                    { label: t('admin.rate_docs_gq_es'), price: appConfig?.starRates?.docs_gq_es || '15€' },
-                    { label: t('admin.rate_bulto_23kg'), price: appConfig?.starRates?.bulto_23kg || '220€' },
-                    { label: t('admin.rate_bulto_32kg'), price: appConfig?.starRates?.bulto_32kg || '310€' }
+                    { label: 'España → Malabo (Aéreo)', price: '14€/Kg' },
+                    { label: 'España → Bata (Aéreo)', price: '16€/Kg' },
+                    { label: 'España → Guinea (Marítimo)', price: '470€/m³' },
+                    { label: 'Marítimo: paquetes pequeños o cajas', price: 'desde 80€' },
+                    { label: 'Camerún → Malabo (Kg)', price: '3000 XAF' },
+                    { label: 'Documentos desde España', price: '20€' },
+                    { label: 'Documentos desde Guinea', price: '25.000 XAF' },
+                    { label: 'Bulto 23 Kg (Malabo / Bata)', price: '320€ / 360€' },
+                    { label: 'Bulto 32 Kg (Malabo / Bata)', price: '440€ / 500€' }
                   ].map((item, i) => (
                     <li key={i} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-white/50 px-2 rounded-xl transition-colors">
                       <span className="font-bold text-gray-600 text-xs">{item.label}</span>
-                      <span className="font-black text-[#007e85]">{item.price}</span>
+                      <span className="font-black text-[#007e85] text-right whitespace-nowrap pl-3">{item.price}</span>
                     </li>
                   ))}
                 </ul>
