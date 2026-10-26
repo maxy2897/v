@@ -81,7 +81,7 @@ const Calculator: React.FC = () => {
     setShowForm(false);
 
     if (calcMode === 'documento') {
-      setTotal({ value: 15, currency: '€' });
+      setTotal(info.origin === 'Guinea Ecuatorial' ? { value: 25000, currency: 'XAF' } : { value: 20, currency: '€' });
       return;
     }
 
@@ -93,9 +93,9 @@ const Calculator: React.FC = () => {
         if (info.type === 'Aéreo') {
           // Dynamic Rate
           if (info.destination === 'Bata') {
-            rate = appConfig?.rates.air.es_bata || 11;
+            rate = 16;
           } else {
-            rate = appConfig?.rates.air.es_gq || 11;
+            rate = 14;
           }
         } else {
           // Dynamic Rate
@@ -121,8 +121,9 @@ const Calculator: React.FC = () => {
 
       setTotal({ value: finalPrice, currency });
     } else {
-      const bulto23Price = appConfig?.rates?.bulto?.kg23 || 220;
-      const bulto32Price = appConfig?.rates?.bulto?.kg32 || 310;
+      const toBata = info.destination === 'Bata';
+      const bulto23Price = toBata ? 360 : 320;
+      const bulto32Price = toBata ? 500 : 440;
       let finalPrice = bultoType === 23 ? bulto23Price : bulto32Price;
       if (isAuthenticated && user?.isVerified && appConfig?.discounts?.active && appConfig?.discounts?.percentage && user?.discountEligible && useDiscount) {
         finalPrice = finalPrice - (finalPrice * (appConfig.discounts.percentage / 100));
@@ -444,15 +445,26 @@ const Calculator: React.FC = () => {
                 </>
               ) : calcMode === 'bulto' ? (
                 <div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    {(['Malabo', 'Bata'] as const).map(d => (
+                      <button
+                        key={d}
+                        onClick={() => setInfo({ ...info, destination: d })}
+                        className={`py-3 rounded-2xl font-bold border transition-all ${info.destination === d ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}
+                      >
+                        🇬🇶 {d}
+                      </button>
+                    ))}
+                  </div>
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">{t('calc.bulto.label')}</label>
                   <div className="grid grid-cols-2 gap-4">
                     <button onClick={() => setBultoType(23)} className={`py-6 rounded-2xl font-bold border flex flex-col items-center transition-all ${bultoType === 23 ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}>
                       <span className="text-2xl font-black">23 Kg</span>
-                      <span className="text-xs uppercase opacity-60">{appConfig?.rates?.bulto?.kg23 || 220}€</span>
+                      <span className="text-xs uppercase opacity-60">{info.destination === 'Bata' ? 360 : 320}€</span>
                     </button>
                     <button onClick={() => setBultoType(32)} className={`py-6 rounded-2xl font-bold border flex flex-col items-center transition-all ${bultoType === 32 ? 'border-teal-500 bg-teal-50 text-teal-900' : 'border-gray-100 bg-white text-gray-400'}`}>
                       <span className="text-2xl font-black">32 Kg</span>
-                      <span className="text-xs uppercase opacity-60">{appConfig?.rates?.bulto?.kg32 || 310}€</span>
+                      <span className="text-xs uppercase opacity-60">{info.destination === 'Bata' ? 500 : 440}€</span>
                     </button>
                   </div>
                 </div>
@@ -461,7 +473,7 @@ const Calculator: React.FC = () => {
                   <p className="text-xs font-black uppercase tracking-widest text-teal-800 mb-2 flex items-center justify-center gap-2">
                     <span className="text-lg">🇬🇶</span> {t('calc.doc.title')} <span className="text-lg">🇪🇸</span>
                   </p>
-                  <p className="text-2xl font-black text-[#00151a]">15€ <span className="text-xs text-gray-400 font-bold uppercase ml-2">{t('calc.doc.flat_rate')}</span></p>
+                  <p className="text-2xl font-black text-[#00151a]">{info.origin === 'Guinea Ecuatorial' ? '25.000 XAF' : '20€'} <span className="text-xs text-gray-400 font-bold uppercase ml-2">{t('calc.doc.flat_rate')}</span></p>
                   <p className="text-[9px] text-teal-600 font-bold uppercase mt-4">{t('calc.doc.route')}</p>
                 </div>
               )}
