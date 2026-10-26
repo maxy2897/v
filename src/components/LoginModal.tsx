@@ -9,10 +9,11 @@ import { signInWithGoogle } from '../firebase';
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onOpenRegister?: () => void;
     onOpenForgotPassword?: (email?: string) => void;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPassword }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPassword, onOpenRegister }) => {
     const { login, registerWithSocial } = useAuth();
     const { t } = useSettings();
     const navigate = useNavigate();
@@ -198,7 +199,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenForgotPa
                         <button
                             onClick={() => {
                                 onClose();
-                                // Aquí se podría abrir el modal de registro
+                                onOpenRegister?.();
                             }}
                             className="text-teal-600 font-black uppercase tracking-wider hover:underline"
                         >

@@ -240,6 +240,7 @@ const AppContent: React.FC = () => {
             <LoginModal
               isOpen={isLoginOpen}
               onClose={() => setIsLoginOpen(false)}
+              onOpenRegister={() => setIsRegisterOpen(true)}
               onOpenForgotPassword={(email) => {
                 setIsLoginOpen(false);
                 setResetEmail(email);
