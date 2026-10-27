@@ -7,11 +7,20 @@ import { useAuth } from '../context/AuthContext';
 import { PhoneInput } from './PhoneInput';
 
 
+// Opciones para hacer llegar el paquete a Bodipo en España (mismas que el canal de WhatsApp)
+const ENTREGAS = {
+  almacen: { titulo: 'Lo llevo al almacén', detalle: 'Av. de Daganzo 13B, 28806 Alcalá de Henares (Madrid). Lunes a viernes 10:00-18:00, sábado 10:00-14:00.' },
+  recogida: { titulo: 'Recogida a domicilio', detalle: 'Madrid 20 €; afueras de Madrid desde 30 €. Te confirmamos el día y el precio por WhatsApp.' },
+  mensajeria: { titulo: 'Lo envío por mensajería', detalle: 'Correos, GLS, MRW o FedEx. Destinatario: Bodipo Business, contacto 641 992 110, Av. de Daganzo 13B, 28806 Alcalá de Henares (Madrid). Envíanos el justificante con el número de seguimiento por WhatsApp.' },
+} as const;
+
 const Calculator: React.FC = () => {
   const { t, appConfig } = useSettings();
   const { user, isAuthenticated } = useAuth();
   const [calcMode, setCalcMode] = useState<'kg' | 'bulto' | 'documento'>('kg');
   const [lastTransactionId, setLastTransactionId] = useState<string | null>(null);
+  // Resumen del último registro, para mandarlo a Bodipo por WhatsApp
+  const [lastSummary, setLastSummary] = useState<{ shipments: any[]; code: string } | null>(null);
   const [info, setInfo] = useState<PackageInfo>({
     weight: 0,
     length: 20,
@@ -53,6 +62,8 @@ const Calculator: React.FC = () => {
 
   // Payment preference states
   const [payLocation, setPayLocation] = useState<'Origen' | 'Guinea'>('Origen');
+  // Cómo nos hace llegar el paquete el cliente (solo envíos desde España)
+  const [entrega, setEntrega] = useState<'almacen' | 'recogida' | 'mensajeria' | null>(null);
   const [payMethod, setPayMethod] = useState<'Almacén' | 'Ecobank'>('Almacén');
 
   const [userData, setUserData] = useState({
@@ -150,6 +161,11 @@ const Calculator: React.FC = () => {
       return;
     }
 
+    if (info.origin === 'España' && !entrega) {
+      showToast('Elige cómo nos harás llegar el paquete', 'error');
+      return;
+    }
+
     setIsRegistering(true);
 
     try {
@@ -219,6 +235,7 @@ const Calculator: React.FC = () => {
         console.log('Shipment created response:', res);
 
         setGeneratedCode(trackingNumber);
+        setLastSummary({ shipments: [shipmentData], code: trackingNumber });
         if (res.transactionId) {
           setLastTransactionId(res.transactionId);
         }
@@ -229,6 +246,10 @@ const Calculator: React.FC = () => {
 
         if (res.shipments && res.shipments.length > 0) {
           setGeneratedCode(res.shipments[0].trackingNumber);
+          setLastSummary({
+            shipments: allShipments.map((sh, i) => ({ ...sh, trackingNumber: res.shipments[i]?.trackingNumber })),
+            code: res.shipments[0].trackingNumber
+          });
         }
         if (res.transactionId) {
           setLastTransactionId(res.transactionId);
@@ -269,6 +290,24 @@ const Calculator: React.FC = () => {
     }
   };
 
+  const whatsappLink = () => {
+    if (!lastSummary) return 'https://wa.me/34641992110';
+    const lines = ['Hola Bodipo Business, acabo de registrar un envío en la web:', ''];
+    lastSummary.shipments.forEach((sh, i) => {
+      if (lastSummary.shipments.length > 1) lines.push(`Envío ${i + 1}`);
+      lines.push(`Código: ${sh.trackingNumber || lastSummary.code}`);
+      lines.push(`Ruta: ${sh.origin} → ${sh.destination}`);
+      lines.push(`Peso: ${sh.weight} kg`);
+      lines.push(`Importe: ${sh.price} ${sh.currency === 'EUR' ? '€' : sh.currency}`);
+      if (sh.sender?.name) lines.push(`Remitente: ${sh.sender.name}${sh.sender.phone ? ' (' + sh.sender.phone + ')' : ''}`);
+      if (sh.recipient?.name && sh.recipient.name !== 'Pendiente / Self') lines.push(`Destinatario: ${sh.recipient.name}${sh.recipient.phone ? ' (' + sh.recipient.phone + ')' : ''}`);
+      lines.push('');
+    });
+    lines.push(`Pago en: ${payLocation === 'Origen' ? info.origin : 'Guinea Ecuatorial'}`);
+    if (entrega) lines.push(`Entrega del paquete: ${ENTREGAS[entrega].titulo}`);
+    return `https://wa.me/34641992110?text=${encodeURIComponent(lines.join('\n'))}`;
+  };
+
   const copyToClipboard = () => {
     if (generatedCode) {
       navigator.clipboard.writeText(generatedCode);
@@ -283,6 +322,7 @@ const Calculator: React.FC = () => {
     setUserData({ fullName: '', phone: '', idNumber: '' });
     setRecipientData({ name: '', phone: '' });
     setPayLocation('Origen');
+    setEntrega(null);
     setPayMethod('Almacén');
     setUseDiscount(false);
   };
@@ -544,6 +584,23 @@ const Calculator: React.FC = () => {
                 {lastTransactionId ? 'Descargar Factura' : 'Generando Factura...'}
               </button>
 
+              {entrega && (
+                <div className="bg-white/10 border border-white/20 p-5 rounded-[1.25rem] w-full mb-6 text-left">
+                  <p className="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-2">{ENTREGAS[entrega].titulo}</p>
+                  <p className="text-xs text-white/90 leading-relaxed">{ENTREGAS[entrega].detalle}</p>
+                </div>
+              )}
+
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25D366] text-white py-4 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:brightness-110 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
+              >
+                Enviar a Bodipo por WhatsApp
+              </a>
+              <p className="text-[10px] text-teal-100/80 mb-6">Mándanos el resumen para confirmar tu envío.</p>
+
               <div className="text-[10px] font-bold text-teal-100/60 uppercase tracking-widest mb-6">
                 {t('calc.success.pay_location')}: {payLocation === 'Origen' ? info.origin : t('calc.origin.gq')}
                 {payLocation === 'Guinea' && ` (${payMethod})`}
@@ -599,6 +656,25 @@ const Calculator: React.FC = () => {
                     />
                     <input aria-label="DNI, NIE o Pasaporte" required type="text" className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl text-[16px] font-medium text-black focus:ring-2 focus:ring-teal-500 transition-all" placeholder="DNI, NIE o Pasaporte" value={userData.idNumber} onChange={e => setUserData({ ...userData, idNumber: e.target.value })} />
                   </>
+                )}
+
+                {info.origin === 'España' && (
+                  <div className="pt-4 border-t border-gray-100">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-[#007e85] mb-4">¿Cómo nos harás llegar el paquete?</p>
+                    <div className="space-y-3">
+                      {(Object.keys(ENTREGAS) as (keyof typeof ENTREGAS)[]).map(k => (
+                        <button
+                          key={k}
+                          type="button"
+                          onClick={() => setEntrega(k)}
+                          className={`w-full text-left p-4 rounded-2xl border transition-all ${entrega === k ? 'border-teal-500 bg-teal-50' : 'border-gray-100 bg-white'}`}
+                        >
+                          <p className={`text-sm font-black ${entrega === k ? 'text-teal-900' : 'text-gray-700'}`}>{ENTREGAS[k].titulo}</p>
+                          <p className="text-xs text-gray-500 mt-1 leading-relaxed">{ENTREGAS[k].detalle}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 <div className="pt-4 border-t border-gray-100">
