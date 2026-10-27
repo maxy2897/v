@@ -12,6 +12,8 @@ const Calculator: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [calcMode, setCalcMode] = useState<'kg' | 'bulto' | 'documento'>('kg');
   const [lastTransactionId, setLastTransactionId] = useState<string | null>(null);
+  // Resumen del último registro, para mandarlo a Bodipo por WhatsApp
+  const [lastSummary, setLastSummary] = useState<{ shipments: any[]; code: string } | null>(null);
   const [info, setInfo] = useState<PackageInfo>({
     weight: 0,
     length: 20,
@@ -219,6 +221,7 @@ const Calculator: React.FC = () => {
         console.log('Shipment created response:', res);
 
         setGeneratedCode(trackingNumber);
+        setLastSummary({ shipments: [shipmentData], code: trackingNumber });
         if (res.transactionId) {
           setLastTransactionId(res.transactionId);
         }
@@ -229,6 +232,10 @@ const Calculator: React.FC = () => {
 
         if (res.shipments && res.shipments.length > 0) {
           setGeneratedCode(res.shipments[0].trackingNumber);
+          setLastSummary({
+            shipments: allShipments.map((sh, i) => ({ ...sh, trackingNumber: res.shipments[i]?.trackingNumber })),
+            code: res.shipments[0].trackingNumber
+          });
         }
         if (res.transactionId) {
           setLastTransactionId(res.transactionId);
@@ -267,6 +274,23 @@ const Calculator: React.FC = () => {
     } catch (e) {
       showToast('Error al descargar factura', 'error');
     }
+  };
+
+  const whatsappLink = () => {
+    if (!lastSummary) return 'https://wa.me/34641992110';
+    const lines = ['Hola Bodipo Business, acabo de registrar un envío en la web:', ''];
+    lastSummary.shipments.forEach((sh, i) => {
+      if (lastSummary.shipments.length > 1) lines.push(`Envío ${i + 1}`);
+      lines.push(`Código: ${sh.trackingNumber || lastSummary.code}`);
+      lines.push(`Ruta: ${sh.origin} → ${sh.destination}`);
+      lines.push(`Peso: ${sh.weight} kg`);
+      lines.push(`Importe: ${sh.price} ${sh.currency === 'EUR' ? '€' : sh.currency}`);
+      if (sh.sender?.name) lines.push(`Remitente: ${sh.sender.name}${sh.sender.phone ? ' (' + sh.sender.phone + ')' : ''}`);
+      if (sh.recipient?.name && sh.recipient.name !== 'Pendiente / Self') lines.push(`Destinatario: ${sh.recipient.name}${sh.recipient.phone ? ' (' + sh.recipient.phone + ')' : ''}`);
+      lines.push('');
+    });
+    lines.push(`Pago en: ${payLocation === 'Origen' ? info.origin : 'Guinea Ecuatorial'}`);
+    return `https://wa.me/34641992110?text=${encodeURIComponent(lines.join('\n'))}`;
   };
 
   const copyToClipboard = () => {
@@ -543,6 +567,16 @@ const Calculator: React.FC = () => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                 {lastTransactionId ? 'Descargar Factura' : 'Generando Factura...'}
               </button>
+
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25D366] text-white py-4 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:brightness-110 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
+              >
+                Enviar a Bodipo por WhatsApp
+              </a>
+              <p className="text-[10px] text-teal-100/80 mb-6">Mándanos el resumen para confirmar tu envío.</p>
 
               <div className="text-[10px] font-bold text-teal-100/60 uppercase tracking-widest mb-6">
                 {t('calc.success.pay_location')}: {payLocation === 'Origen' ? info.origin : t('calc.origin.gq')}
