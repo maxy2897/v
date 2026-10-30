@@ -179,7 +179,11 @@ const ExcelTracking: React.FC<Props> = ({ codigo }) => {
         if (!d || !d.paquetes) return;
         const lista: Record<string, Paquete> = {};
         Object.entries(d.paquetes as Record<string, Paquete>).forEach(([k, p]) => {
-          lista[k] = { ...p, pasos: ordenarFechas(p.pasos || []) };
+          // El paso 1 lleva la fecha del envío (ENV/27/10/2026 -> 27/10/2026), no la del día en que se cargó.
+          const pasos = [...(p.pasos || [])];
+          const fechaEnvio = /(\d{2}\/\d{2}\/\d{4})$/.exec(p.envio || '');
+          if (pasos[0] && fechaEnvio) pasos[0] = fechaEnvio[1];
+          lista[k] = { ...p, pasos: ordenarFechas(pasos) };
         });
         setPaquetes(lista);
         setCuenta(d.cuenta || {});

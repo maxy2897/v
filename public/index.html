@@ -481,6 +481,9 @@ fetch("datos.json", {cache:"no-store"}).then(function(r){ return r.ok ? r.json()
   // Una etapa no puede ir después de la siguiente (registrado el 28 pero salió el 27): se muestra la fecha de la siguiente.
   Object.keys(PAQUETES).forEach(function(k){
     var pasos = (PAQUETES[k].pasos || []).slice(), sig = null;
+    // El paso 1 lleva la fecha del envío (ENV/27/10/2026 -> 27/10/2026), no la del día en que se cargó.
+    var fe = /(\d{2}\/\d{2}\/\d{4})$/.exec(PAQUETES[k].envio || "");
+    if (pasos[0] && fe) pasos[0] = fe[1];
     var dia = function(f){ var m = f && /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(f); return m ? Number(m[3] + m[2] + m[1]) : null; };
     for (var j = pasos.length - 1; j >= 0; j--) {
       if (dia(pasos[j]) === null) continue;
