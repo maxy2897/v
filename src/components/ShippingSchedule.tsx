@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { SALIDAS_AEREAS } from '../constants/salidas';
 
 const ShippingSchedule: React.FC = () => {
   const { t } = useSettings();
@@ -9,11 +10,7 @@ const ShippingSchedule: React.FC = () => {
 
 
   // Calendario oficial de salidas aéreas (España → Malabo / Bata)
-  const fullSchedule = [
-    new Date(2026, 9, 13), new Date(2026, 9, 27),
-    new Date(2026, 10, 10), new Date(2026, 10, 28),
-    new Date(2026, 11, 8), new Date(2026, 11, 22), new Date(2026, 11, 29),
-  ].map(date => ({ date, type: 'Aéreo', destination: 'Malabo / Bata' }));
+  const fullSchedule = SALIDAS_AEREAS.map(date => ({ date, type: 'Aéreo', destination: 'Malabo / Bata' }));
   
   // Ensure chronologically sorted items so that we accurately get the 'next' ones
   fullSchedule.sort((a, b) => a.date.getTime() - b.date.getTime());

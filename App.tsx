@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation, Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './src/components/Header';
+import AnuncioProximoEnvio from './src/components/AnuncioProximoEnvio';
 import Footer, { SeguimientoFlotante } from './src/components/Footer';
 import AnimatedPage from './src/components/AnimatedPage';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -203,6 +204,7 @@ const AppContent: React.FC = () => {
             config={config}
           />
         )}
+        {!isAdminRoute && <AnuncioProximoEnvio />}
 
         <main className="flex-grow">
           <Suspense fallback={<PageLoader />}>
