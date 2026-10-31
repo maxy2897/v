@@ -35,7 +35,7 @@ const EJEMPLO: Record<string, Paquete> = {
 function etapas(e: Paquete) {
   const bata = e.destino === 'Bata';
   const lista = [
-    { i: 0, t: 'Recibido en España', p: 'Registrado, pesado y verificado en nuestra oficina de Alcalá de Henares' },
+    { i: 0, t: 'Paquete registrado', p: 'Registrado, pesado y verificado en nuestra oficina de Alcalá de Henares' },
     { i: 1, t: 'Salida de España', p: 'Va en avión a Guinea Ecuatorial con Ethiopian Airlines' },
     { i: 2, t: bata ? 'Clasificado en Malabo' : 'Llegado a Malabo', p: bata ? 'Ha llegado a Malabo y está preparado para seguir hacia Bata' : 'En despacho y clasificación. Te avisamos en cuanto esté listo para recoger' },
   ];
@@ -43,6 +43,25 @@ function etapas(e: Paquete) {
   lista.push({ i: 4, t: 'Listo para recoger', p: PUNTOS[e.destino] || '' });
   lista.push({ i: 5, t: 'Entregado', p: 'Recogido por el cliente' });
   return lista;
+}
+
+// Una etapa no puede ir después de la siguiente: si en el Excel se apuntó más tarde
+// (p. ej. registrado el 28 pero salió el 27), se muestra la fecha de la siguiente.
+const aDia = (f: string | null) => {
+  const m = f ? /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(f) : null;
+  return m ? Number(m[3] + m[2] + m[1]) : null;
+};
+function ordenarFechas(pasos: (string | null)[]) {
+  const res = [...pasos];
+  let siguiente: string | null = null;
+  for (let k = res.length - 1; k >= 0; k--) {
+    const dia = aDia(res[k]);
+    if (dia === null) continue;
+    const diaSig = aDia(siguiente);
+    if (diaSig !== null && dia > diaSig) res[k] = siguiente;
+    siguiente = res[k];
+  }
+  return res;
 }
 
 export const limpiarCodigo = (v: string) => v.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -158,7 +177,15 @@ const ExcelTracking: React.FC<Props> = ({ codigo }) => {
         const texto = doc?.fields?.json?.stringValue;
         const d = texto ? JSON.parse(texto) : null;
         if (!d || !d.paquetes) return;
-        setPaquetes(d.paquetes);
+        const lista: Record<string, Paquete> = {};
+        Object.entries(d.paquetes as Record<string, Paquete>).forEach(([k, p]) => {
+          // El paso 1 lleva la fecha del envío (ENV/27/10/2026 -> 27/10/2026), no la del día en que se cargó.
+          const pasos = [...(p.pasos || [])];
+          const fechaEnvio = /(\d{2}\/\d{2}\/\d{4})$/.exec(p.envio || '');
+          if (pasos[0] && fechaEnvio) pasos[0] = fechaEnvio[1];
+          lista[k] = { ...p, pasos: ordenarFechas(pasos) };
+        });
+        setPaquetes(lista);
         setCuenta(d.cuenta || {});
         setActualizado(d.actualizado || '');
         setEjemplo(false);
