@@ -21,14 +21,15 @@ const MoneyTransfer: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [successTxId, setSuccessTxId] = useState<string | null>(null);
 
-  // Tasas actualizadas desde configuración dinámica
-  const rateEURO_CFA = appConfig?.rates.exchange.eur_xaf || 600;
-  const rateCFA_EURO = appConfig?.rates.exchange.xaf_eur ? (1 / appConfig.rates.exchange.xaf_eur) : 0.00167; // Aprox fallback
-  const feeCM_GQ = 0.04;    // 4% comisión para Camerún
+  // Tasas fijadas por Bodipo (no las de la configuración del servidor):
+  // de euro a franco 1€ = 600 FCFA; de franco a euro hacen falta 730 FCFA por cada euro.
+  const rateEURO_CFA = 600;
+  const rateCFA_EURO = 730;
+  const [resumen, setResumen] = useState('');
 
   const calculateResult = () => {
     if (direction === 'ES_GQ') return amount * rateEURO_CFA;
-    if (direction === 'GQ_ES') return amount * (appConfig?.rates.exchange.xaf_eur ? (1 / appConfig.rates.exchange.xaf_eur) : rateCFA_EURO);
+    if (direction === 'GQ_ES') return amount / rateCFA_EURO;
     if (direction === 'CM_GQ') return amount;
     return 0;
   };
@@ -86,6 +87,28 @@ const MoneyTransfer: React.FC = () => {
       return;
     }
 
+    // Resumen para mandar por WhatsApp a atención al cliente (+34 641 992 110).
+    const enviaTexto = `${amount.toLocaleString('es-ES')} ${direction === 'ES_GQ' ? '€' : 'FCFA'}`;
+    const recibeTexto = direction === 'CM_GQ'
+      ? `Total a pagar: ${Math.round(amount * 1.04).toLocaleString('es-ES')} FCFA (cargo 4%)`
+      : `Recibe: ${calculatedAmount.toLocaleString('es-ES', { maximumFractionDigits: direction === 'GQ_ES' ? 2 : 0 })} ${direction === 'GQ_ES' ? '€' : 'FCFA'}`;
+    const lineas = [
+      '*Money Transfer · Bodipo Business*',
+      `Operación: ${direction === 'ES_GQ' ? 'Euro a CFA (España → Guinea)' : direction === 'GQ_ES' ? 'CFA a Euro (Guinea → España)' : 'Camerún → Guinea'}`,
+      `Envía: ${enviaTexto}`,
+      recibeTexto,
+      direction === 'ES_GQ' ? `Tasa: 1€ = ${rateEURO_CFA} FCFA` : direction === 'GQ_ES' ? `Tasa: ${rateCFA_EURO} FCFA = 1€` : '',
+      '',
+      `Remitente: ${formData.senderName}${formData.senderId ? ` (${formData.senderId})` : ''}${formData.senderPhone ? ` · ${formData.senderPhone}` : ''}`,
+      `Beneficiario: ${formData.beneName}`,
+      formData.beneIdOrIban ? `${direction === 'GQ_ES' ? 'IBAN' : 'DIP'}: ${formData.beneIdOrIban}` : '',
+      formData.benePhoneOrBizum ? `${direction === 'GQ_ES' ? 'Bizum/Teléfono' : 'Teléfono'}: ${formData.benePhoneOrBizum}` : '',
+      '',
+      'Adjunto el justificante del ingreso.',
+    ].filter((l, i, a) => l !== '' || (a[i - 1] && a[i - 1] !== ''));
+    const texto = lineas.join('\n');
+    setResumen(texto);
+
     setLoading(true);
     try {
       const data = new FormData();
@@ -114,6 +137,7 @@ const MoneyTransfer: React.FC = () => {
 
       const res = await createTransfer(data);
 
+      setResumen(`${texto}\nReferencia web: ${res.transactionId}`);
       setSuccessTxId(res.transactionId);
 
       // Reset form
@@ -130,7 +154,10 @@ const MoneyTransfer: React.FC = () => {
 
     } catch (error: any) {
       console.error(error);
-      alert(t('transfer.alert.error') + error.message);
+      // Si la web no puede registrarla, la operación no se pierde: va igual por WhatsApp.
+      if (window.confirm(t('transfer.alert.error') + error.message + '\n\n¿Enviar los datos a Bodipo por WhatsApp?')) {
+        window.open(`https://wa.me/34641992110?text=${encodeURIComponent(texto)}`, '_blank');
+      }
     } finally {
       setLoading(false);
     }
@@ -168,7 +195,16 @@ const MoneyTransfer: React.FC = () => {
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
           </div>
           <h2 className="text-3xl font-black text-white mb-4">¡Transferencia Solicitada!</h2>
-          <p className="text-gray-400 mb-8 max-w-md mx-auto">Tu solicitud ha sido registrada correctamente. Puedes descargar tu comprobante a continuación.</p>
+          <p className="text-gray-400 mb-8 max-w-md mx-auto">Tu solicitud ha sido registrada. Envíanos ahora el resumen por WhatsApp y adjunta la foto del justificante del ingreso.</p>
+
+          <a
+            href={`https://wa.me/34641992110?text=${encodeURIComponent(resumen)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-[#25D366] text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:brightness-95 transition-all shadow-lg flex items-center justify-center gap-2 mb-4"
+          >
+            Enviar a Bodipo por WhatsApp
+          </a>
 
           <button onClick={downloadReceipt} className="w-full bg-white text-[#00151a] py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-50 transition-all shadow-lg flex items-center justify-center gap-2 mb-6">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
