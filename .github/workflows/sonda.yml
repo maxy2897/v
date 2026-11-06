@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          curl -sS -m 90 https://bodipo-business-api.onrender.com/api/health; echo
           for o in https://bodipobusiness.com https://www.bodipobusiness.com; do
-            echo "== preflight $o"
-            curl -sS -m 60 -o /dev/null -D - -X OPTIONS -H "Origin: $o" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' https://bodipo-business-api.onrender.com/api/auth/register | grep -i "^HTTP\|access-control" || true
-            echo "== post $o"
-            curl -sS -m 60 -X POST -H "Origin: $o" -H 'Content-Type: application/json' -d '{"name":"x","email":"no-valido","password":"x"}' -D - https://bodipo-business-api.onrender.com/api/auth/register -o body.txt | grep -i "^HTTP\|access-control" || true; head -c 200 body.txt; echo
+            echo "== login $o"
+            curl -sS -m 60 -X POST -H "Origin: $o" -H 'Content-Type: application/json' -d '{"email":"nadie@ejemplo.com","password":"x"}' -D - https://bodipo-business-api.onrender.com/api/auth/login -o body.txt | grep -i "^HTTP\|access-control" || true; head -c 200 body.txt; echo
+            echo "== social $o"
+            curl -sS -m 60 -X POST -H "Origin: $o" -H 'Content-Type: application/json' -d '{"idToken":"x"}' -D - https://bodipo-business-api.onrender.com/api/auth/social-login -o body.txt | grep -i "^HTTP\|access-control" || true; head -c 200 body.txt; echo
           done
-          curl -sS -m 30 https://bodipo-business-api.onrender.com/api/health; echo
