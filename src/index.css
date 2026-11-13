@@ -43,3 +43,10 @@
     filter: drop-shadow(1px 1px 0 white) drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white);
   }
 }
+/* Navidad: copos de la portada */
+@keyframes caerCopo {
+  0% { transform: translate3d(0, -10px, 0); }
+  50% { transform: translate3d(var(--vaiven, 15px), 330px, 0); }
+  100% { transform: translate3d(0, 680px, 0); }
+}
+.copo { animation-name: caerCopo; animation-timing-function: linear; animation-iteration-count: infinite; filter: blur(.4px); }
