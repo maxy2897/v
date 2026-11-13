@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import ExcelTracking from '../components/ExcelTracking';
+import Nieve from '../components/Nieve';
+import { esNavidad } from '../constants/temporada';
 import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp } from '../constants/empresa';
 
 interface HomePageProps {
@@ -18,6 +20,9 @@ const FRASES_HERO = [
   'Cada envío cuenta.',
 ];
 
+// En Navidad se añade una frase de temporada al principio.
+const FRASES = esNavidad() ? ['Esta Navidad, lleva tus regalos a Malabo y Bata.', ...FRASES_HERO] : FRASES_HERO;
+
 // Título de portada que va alternando frases. Todas ocupan la misma celda,
 // así el bloque mide lo que la frase más larga y no salta al cambiar.
 const TituloRotativo: React.FC = () => {
@@ -25,14 +30,14 @@ const TituloRotativo: React.FC = () => {
   const sinMovimiento = useReducedMotion();
 
   useEffect(() => {
-    const id = window.setInterval(() => setActual((i) => (i + 1) % FRASES_HERO.length), 4000);
+    const id = window.setInterval(() => setActual((i) => (i + 1) % FRASES.length), 4000);
     return () => window.clearInterval(id);
   }, []);
 
   return (
     <h1 className="grid max-w-xl text-4xl font-black leading-[.98] tracking-[-.045em] text-white sm:text-5xl lg:text-6xl">
-      <span className="sr-only">{FRASES_HERO[0]}</span>
-      {FRASES_HERO.map((frase, i) => (
+      <span className="sr-only">{FRASES[0]}</span>
+      {FRASES.map((frase, i) => (
         <motion.span
           key={frase}
           aria-hidden="true"
@@ -102,6 +107,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
           <div className="absolute inset-0 bg-gradient-to-r from-[#06272b]/95 via-[#06272b]/76 to-[#06272b]/10" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#06272b]/55 via-transparent to-[#06272b]/10" />
         </div>
+        {esNavidad() && <Nieve />}
         <div className="absolute -left-24 top-24 h-72 w-72 rounded-full border border-teal-300/10" />
         <div className="absolute -left-8 top-40 h-44 w-44 rounded-full border border-teal-300/10" />
 
@@ -109,7 +115,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
           <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7 }} className="relative z-10 max-w-2xl">
             <div className="mb-4 flex items-center gap-4 text-xs font-black uppercase tracking-[.24em] text-[#ffbd59]">
               <span className="h-px w-12 bg-[#ffbd59]" />
-              Desde Guinea Ecuatorial al mundo
+              {esNavidad() ? 'Felices fiestas · Envíos de Navidad' : 'Desde Guinea Ecuatorial al mundo'}
             </div>
             <TituloRotativo />
             <p className="mt-4 max-w-lg text-base leading-relaxed text-[#c8dad7]">

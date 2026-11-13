@@ -6,6 +6,16 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { BASE_URL } from '../services/api';
 import { NotificationBell } from './NotificationBell';
+import { esNavidad } from '../constants/temporada';
+
+// Gorro de Papá Noel que se pone sobre el logo en Navidad.
+const Gorro = () => (
+  <svg className="pointer-events-none absolute -right-3 -top-4 h-7 w-8 rotate-[18deg] md:h-8 md:w-9" viewBox="0 0 40 34" aria-hidden="true">
+    <path d="M5 25C8 11 17 3 29 6c4 1 6 5 5 10l-3-3c-1 6-4 11-4 12Z" fill="#E01E25" />
+    <rect x="2" y="22" width="28" height="8" rx="4" fill="#fff" />
+    <circle cx="33" cy="15" r="4.5" fill="#fff" />
+  </svg>
+);
 
 interface HeaderProps {
   onOpenRegister: () => void;
@@ -79,8 +89,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenRegister, onOpenLogin, config }) 
 
   const logo = (
     <Link to="/" className="flex items-center gap-3" aria-label="Bodipo Business, inicio">
-      <span className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-xl bg-white md:h-[50px] md:w-[50px]">
+      <span className="relative grid h-[46px] w-[46px] shrink-0 place-items-center rounded-xl bg-white md:h-[50px] md:w-[50px]">
         <img src="/images/logo-bodipo.png" className="h-auto w-[38px] md:w-[40px]" alt="" />
+        {esNavidad() && <Gorro />}
       </span>
       <span className="flex flex-col">
         <span className="font-display text-[22px] font-bold uppercase leading-none tracking-[.04em] text-white md:text-2xl">Bodipo Business</span>

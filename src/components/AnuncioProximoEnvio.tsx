@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { proximasSalidas } from '../constants/salidas';
+import { esNavidad } from '../constants/temporada';
 
 // Franja de aviso bajo la cabecera, en todas las páginas: la próxima salida aérea del calendario.
 // Cambia sola al pasar cada fecha; si no quedan salidas, no se muestra.
@@ -16,9 +17,12 @@ const AnuncioProximoEnvio: React.FC = () => {
   const mensaje = `Hola Bodipo, quiero reservar sitio en el envío aéreo del ${fecha}.`;
 
   return (
-    <div className="bg-[#ffbd59] text-[#06272b]">
+    <div
+      className="bg-[#ffbd59] text-[#06272b]"
+      style={esNavidad() ? { borderBottom: '4px solid transparent', borderImage: 'repeating-linear-gradient(135deg,#E01E25 0 10px,#fff 10px 20px,#2E9E3E 20px 30px,#fff 30px 40px) 4' } : undefined}
+    >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-2.5 text-center text-sm">
-        <span className="font-black uppercase tracking-[.14em] text-[11px]">✈️ Próximo envío aéreo</span>
+        <span className="font-black uppercase tracking-[.14em] text-[11px]">{esNavidad() ? '🎄 ' : '✈️ '}Próximo envío aéreo</span>
         <span className="font-black">{fecha.charAt(0).toUpperCase() + fecha.slice(1)}</span>
         <span className="font-semibold">Malabo y Bata · {cuando} · Entrega de paquetes hasta las 12:00</span>
         <span className="flex gap-2">
