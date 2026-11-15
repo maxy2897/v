@@ -225,26 +225,26 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
         <h2 className="mt-3 font-display text-4xl font-bold uppercase leading-none text-[#0E2A3B] sm:text-5xl">Estamos cerca de ti</h2>
         <p className="mt-4 max-w-2xl text-lg text-[#55707C]">{HORARIO}. En tu primer mensaje dinos tu nombre y qué servicio necesitas.</p>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {AGENCIAS.map((a) => (
-            <article key={a.pais} className="flex flex-col bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
+            <article key={a.nombre} className="flex flex-col bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
               <div className="flex items-center gap-3">
                 {a.bandera ? <img src={a.bandera} alt="" className="h-6 w-9 rounded-[3px] object-cover" /> : <span className="text-2xl" aria-hidden="true">🇨🇲</span>}
-                <h3 className="font-display text-2xl font-bold uppercase text-[#0E2A3B]">{a.pais}</h3>
+                <h3 className="font-display text-2xl font-bold uppercase text-[#0E2A3B]">{a.nombre}</h3>
               </div>
               <p className="mt-3 text-[#55707C]">{a.direccion}<br />{a.ciudad}</p>
               <p className="mt-4 font-mono text-lg font-bold text-[#0E2A3B]">{a.telefono}</p>
               <iframe
-                title={`Mapa de la agencia de ${a.pais}`}
+                title={`Mapa de la oficina de ${a.nombre}`}
                 src={mapaIncrustado(a.mapa)}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 className="mt-5 h-44 w-full border-0 bg-[#E6EEF0]"
               />
-              <div className="mt-auto flex gap-2 pt-5">
-                <a href={enlaceMapa(a.mapa)} target="_blank" rel="noreferrer" className="flex-1 border border-[#0E2A3B] py-2.5 text-center text-xs font-black uppercase tracking-wider text-[#0E2A3B] hover:bg-[#0E2A3B] hover:text-white">Cómo llegar</a>
+              <div className="mt-auto flex flex-wrap gap-2 pt-5">
+                <a href={enlaceMapa(a.mapa)} target="_blank" rel="noreferrer" className="min-w-[7.5rem] flex-1 border border-[#0E2A3B] py-2.5 text-center text-xs font-black uppercase tracking-wider text-[#0E2A3B] hover:bg-[#0E2A3B] hover:text-white">Cómo llegar</a>
                 {a.whatsapp && (
-                  <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="flex-1 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
+                  <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="min-w-[7.5rem] flex-1 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
                 )}
               </div>
             </article>

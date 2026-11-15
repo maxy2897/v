@@ -3,9 +3,10 @@ export const EMAIL = 'bodipobusiness019@gmail.com';
 export const HORARIO = 'WhatsApp o llamada, de 9:00 a 21:00 h';
 
 export const AGENCIAS = [
-  { pais: 'España', ciudad: 'Alcalá de Henares (Madrid)', direccion: 'Avenida de Daganzo 13 B', telefono: '+34 641 992 110', bandera: '/images/bandera-es.jpg', whatsapp: true, mapa: 'Avenida de Daganzo 13B, 28806 Alcalá de Henares, Madrid' },
-  { pais: 'Guinea Ecuatorial', ciudad: 'Malabo y Bata', direccion: 'B/ Santa María III, Malabo', telefono: '+240 222 005 843', bandera: '/images/bandera-gq.jpg', whatsapp: false, mapa: 'Santa María III, Malabo, Guinea Ecuatorial' },
-  { pais: 'Camerún', ciudad: 'Yaundé', direccion: 'Universidad Católica', telefono: '+237 687 528 854', bandera: '', whatsapp: false, mapa: "Université Catholique d'Afrique Centrale, Yaoundé, Cameroun" },
+  { pais: 'España', nombre: 'España', ciudad: 'Alcalá de Henares (Madrid)', direccion: 'Avenida de Daganzo 13 B', telefono: '+34 641 992 110', bandera: '/images/bandera-es.jpg', whatsapp: true, mapa: 'Avenida de Daganzo 13B, 28806 Alcalá de Henares, Madrid' },
+  { pais: 'Guinea Ecuatorial', nombre: 'Malabo', ciudad: 'Malabo', direccion: 'B/ Santa María III', telefono: '+240 222 005 843', bandera: '/images/bandera-gq.jpg', whatsapp: false, mapa: 'Santa María III, Malabo, Guinea Ecuatorial' },
+  { pais: 'Guinea Ecuatorial', nombre: 'Bata', ciudad: 'Bata', direccion: 'Cruce de Mbangan', telefono: '+240 222 005 843', bandera: '/images/bandera-gq.jpg', whatsapp: false, mapa: 'Mbangan, Bata, Guinea Ecuatorial' },
+  { pais: 'Camerún', nombre: 'Camerún', ciudad: 'Yaundé', direccion: 'Universidad Católica', telefono: '+237 687 528 854', bandera: '', whatsapp: false, mapa: "Université Catholique d'Afrique Centrale, Yaoundé, Cameroun" },
 ];
 
 export const PUNTOS_RECOGIDA = [
