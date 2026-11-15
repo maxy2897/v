@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import ExcelTracking from '../components/ExcelTracking';
 import Nieve from '../components/Nieve';
 import { esNavidad } from '../constants/temporada';
-import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp } from '../constants/empresa';
+import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp, enlaceMapa, mapaIncrustado } from '../constants/empresa';
 
 interface HomePageProps {
   onOpenRegister: () => void;
@@ -234,9 +234,19 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
               </div>
               <p className="mt-3 text-[#55707C]">{a.direccion}<br />{a.ciudad}</p>
               <p className="mt-4 font-mono text-lg font-bold text-[#0E2A3B]">{a.telefono}</p>
-              {a.whatsapp && (
-                <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="mt-5 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
-              )}
+              <iframe
+                title={`Mapa de la agencia de ${a.pais}`}
+                src={mapaIncrustado(a.mapa)}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="mt-5 h-44 w-full border-0 bg-[#E6EEF0]"
+              />
+              <div className="mt-auto flex gap-2 pt-5">
+                <a href={enlaceMapa(a.mapa)} target="_blank" rel="noreferrer" className="flex-1 border border-[#0E2A3B] py-2.5 text-center text-xs font-black uppercase tracking-wider text-[#0E2A3B] hover:bg-[#0E2A3B] hover:text-white">Cómo llegar</a>
+                {a.whatsapp && (
+                  <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="flex-1 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
+                )}
+              </div>
             </article>
           ))}
         </div>
@@ -250,7 +260,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
             <p className="text-xs font-black uppercase tracking-[.2em] text-[#1E5A5E]">Puntos de recogida</p>
             <ul className="mt-3 grid gap-3 sm:grid-cols-3">
               {PUNTOS_RECOGIDA.map((p) => (
-                <li key={p.lugar}><span className="block font-display text-lg font-bold uppercase text-[#0E2A3B]">{p.lugar}</span><span className="text-sm text-[#55707C]">{p.detalle}</span></li>
+                <li key={p.lugar}><span className="block font-display text-lg font-bold uppercase text-[#0E2A3B]">{p.lugar}</span><span className="text-sm text-[#55707C]">{p.detalle}</span><a href={enlaceMapa(p.mapa)} target="_blank" rel="noreferrer" className="mt-1 block text-xs font-black uppercase tracking-wider text-[#1E5A5E] underline underline-offset-4 hover:text-[#0E2A3B]">Ver en el mapa</a></li>
               ))}
             </ul>
             <p className="mt-3 text-xs text-[#55707C]">Las fechas de recogida en Guinea dependen del despacho de cada aerolínea. Te las confirmamos por WhatsApp.</p>
