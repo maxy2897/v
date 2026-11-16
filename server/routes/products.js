@@ -30,40 +30,48 @@ router.get('/', async (req, res) => {
 // @access  Private/Admin
 router.post('/', protect, tech, async (req, res) => {
     try {
-        let { name, color, price, description, image, tag, slogan, waLink } = req.body;
+        const { name, color, price, description, tag, slogan, waLink } = req.body;
 
-        // Subir imagen a Cloudinary si es base64
-        if (image && image.startsWith('data:image')) {
-            try {
-                // Configurar opciones de subida
-                const uploadOptions = {
-                    folder: 'bodipo_products',
-                    resource_type: 'auto',
-                    timeout: 60000 // 60 segundos
-                };
+        // Fotos: acepta `images` (lista, hasta 4) y/o `image` (una sola, versión anterior)
+        let fotos = Array.isArray(req.body.images) ? req.body.images.filter(Boolean) : [];
+        if (fotos.length === 0 && req.body.image) fotos = [req.body.image];
+        fotos = fotos.slice(0, 4);
+        if (fotos.length === 0) {
+            return res.status(400).json({ message: 'Falta la foto del producto' });
+        }
 
-                console.log('Iniciando subida a Cloudinary...');
-                const result = await cloudinary.uploader.upload(image, uploadOptions);
-
-                image = result.secure_url;
-                console.log('✅ Imagen subida con éxito:', image);
-            } catch (uploadError) {
-                console.error('❌ Error detallado Cloudinary:', JSON.stringify(uploadError, null, 2));
-                return res.status(500).json({
-                    message: 'Error al subir la imagen a la nube',
-                    error: uploadError.message
-                });
+        // Subir a Cloudinary las fotos que vengan en base64
+        const subidas = [];
+        for (const foto of fotos) {
+            if (typeof foto === 'string' && foto.startsWith('data:image')) {
+                try {
+                    const result = await cloudinary.uploader.upload(foto, {
+                        folder: 'bodipo_products',
+                        resource_type: 'auto',
+                        timeout: 60000
+                    });
+                    subidas.push(result.secure_url);
+                } catch (uploadError) {
+                    console.error('❌ Error detallado Cloudinary:', JSON.stringify(uploadError, null, 2));
+                    return res.status(500).json({
+                        message: 'Error al subir la imagen a la nube',
+                        error: uploadError.message
+                    });
+                }
+            } else {
+                subidas.push(foto);
             }
         }
 
         const product = await Product.create({
             name,
-            color,
+            color: color || '',
             price,
-            description,
-            image,
-            tag,
-            slogan,
+            description: description || '',
+            image: subidas[0],
+            images: subidas,
+            tag: tag || '',
+            slogan: slogan || '',
             waLink
         });
 
@@ -84,24 +92,14 @@ router.delete('/:id', protect, tech, async (req, res) => {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
 
-        // Borrar imagen de Cloudinary si existe
-        if (product.image && product.image.includes('cloudinary')) {
+        // Borrar de Cloudinary todas las fotos del producto
+        const fotos = Array.from(new Set([product.image, ...(product.images || [])].filter(Boolean)));
+        for (const foto of fotos) {
+            if (!foto.includes('cloudinary')) continue;
             try {
-                console.log('🔍 Analizando imagen para borrar:', product.image);
-
-                // Regex para capturar el public_id:
-                // Busca "/upload/", opcionalmente una versión "v12345/", y captura todo hasta el punto de la extensión.
-                const regex = /\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/;
-                const match = product.image.match(regex);
-
+                const match = foto.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
                 if (match && match[1]) {
-                    const publicId = match[1];
-                    console.log('🗑️ Public ID detectado:', publicId);
-
-                    const result = await cloudinary.uploader.destroy(publicId, { invalidate: true });
-                    console.log('✅ Resultado Cloudinary:', result);
-                } else {
-                    console.log('⚠️ No se pudo extraer el public_id de la URL:', product.image);
+                    await cloudinary.uploader.destroy(match[1], { invalidate: true });
                 }
             } catch (cloudError) {
                 console.error('⚠️ Error al borrar imagen de Cloudinary:', cloudError);

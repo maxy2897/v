@@ -7,6 +7,7 @@ import { AdminNotifications } from './AdminNotifications';
 import { AdminUsers } from './AdminUsers';
 import { createNotification } from '../services/notificationsApi';
 import { createProduct as apiCreateProduct, deleteProduct as apiDeleteProduct, getProducts } from '../services/productsApi';
+import { fotosDe, precioEnEuros, comprimirFoto } from '../utils/productos';
 import { Html5Qrcode } from 'html5-qrcode';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
@@ -339,6 +340,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     name: '',
     price: '',
     image: '',
+    images: [] as string[],
     color: '',
     description: '',
     tag: '',
@@ -643,7 +645,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
       
       try {
         if (type === 'product') {
-          setNewProduct({ ...newProduct, image: base64String });
+          // Las fotos de producto van por handleProductPhoto (hasta 2)
         } else if (type === 'logo') {
           // Send to config endpoint
           const newConf = { ...config, customLogoUrl: base64String } as any;
@@ -668,19 +670,49 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
     reader.readAsDataURL(file);
   };
 
+  // Foto de producto: posición 0 = delante (principal), 1 = detrás / segunda foto
+  const handleProductPhoto = async (e: React.ChangeEvent<HTMLInputElement>, posicion: number) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const foto = await comprimirFoto(file);
+      setNewProduct(prev => {
+        const fotos = [...prev.images];
+        fotos[posicion] = foto;
+        const limpias = fotos.filter(Boolean);
+        return { ...prev, images: limpias, image: limpias[0] || '' };
+      });
+    } catch (error) {
+      console.error('Error handling image:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const quitarFotoProducto = (posicion: number) => {
+    setNewProduct(prev => {
+      const limpias = prev.images.filter((_, i) => i !== posicion);
+      return { ...prev, images: limpias, image: limpias[0] || '' };
+    });
+  };
+
   const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (newProduct.images.length === 0) return;
     try {
       setIsUploading(true);
       const productToCreate = {
         ...newProduct,
-        id: Date.now().toString(),
+        image: newProduct.images[0],
+        images: newProduct.images,
         waLink: `https://wa.me/34641992110?text=Hola,%20estoy%20interesado%20en%20el%20producto%20${encodeURIComponent(newProduct.name)}`,
-        price: newProduct.price.includes('FCFA') ? newProduct.price : `${newProduct.price} FCFA`
+        price: precioEnEuros(newProduct.price)
       };
       const created = await apiCreateProduct(productToCreate as any);
-      setProducts([...products, created]);
-      setNewProduct({ name: '', price: '', image: '', color: '', description: '', tag: '', slogan: '' });
+      setProducts([created, ...products]);
+      setNewProduct({ name: '', price: '', image: '', images: [], color: '', description: '', tag: '', slogan: '' });
        alert(t('admin.scanner.product_success'));
     } catch (error) {
        alert(t('admin.scanner.product_error'));
@@ -1016,27 +1048,69 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, setProducts, config, 
                <section className="bg-white p-8 rounded-[1.25rem] border border-gray-100 shadow-sm">
                   <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">{t('admin.new_product')}</h3>
                   <form onSubmit={addProduct} className="space-y-4">
-                     <div className="relative group">
-                        <div className={`w-full h-48 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden transition-all ${isUploading ? 'opacity-50' : ''}`}>
-                           {newProduct.image ? (
-                              <img src={newProduct.image} className="w-full h-full object-cover" alt="Preview" />
-                           ) : (
-                              <>
-                                 <span className="text-3xl mb-2">📷</span>
-                                 <p className="text-[10px] font-black uppercase text-teal-400 mt-4 leading-relaxed">{t('admin.scan_qr_guinea_update')}</p>
-                              </>
-                           )}
-                           <input type="file" title="Subir imagen de producto" onChange={e => handleImageUpload(e, 'product')} className="absolute inset-0 opacity-0 cursor-pointer" />
-                        </div>
-                        {newProduct.image && (
-                           <button type="button" onClick={() => setNewProduct({...newProduct, image: ''})} title={t('common.delete')} className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-xl text-xs font-black shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">{t('common.delete')}</button>
-                        )}
+                     <div className="grid grid-cols-2 gap-3">
+                        {[0, 1].map(posicion => {
+                           const foto = newProduct.images[posicion];
+                           const activa = posicion === 0 || newProduct.images.length >= 1;
+                           return (
+                              <div key={posicion} className="relative group">
+                                 <div className={`w-full aspect-[3/4] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden transition-all text-center px-2 ${isUploading ? 'opacity-50' : ''} ${activa ? '' : 'opacity-40'}`}>
+                                    {foto ? (
+                                       <img src={foto} className="w-full h-full object-cover" alt={posicion === 0 ? 'Foto principal' : 'Segunda foto'} />
+                                    ) : (
+                                       <>
+                                          <span className="text-3xl mb-2">📷</span>
+                                          <p className="text-[10px] font-black uppercase text-teal-600 leading-relaxed">{posicion === 0 ? 'Foto principal (delante)' : 'Segunda foto (detrás) · opcional'}</p>
+                                       </>
+                                    )}
+                                    {activa && (
+                                       <input type="file" accept="image/*" title={posicion === 0 ? 'Subir foto principal' : 'Subir segunda foto'} onChange={e => handleProductPhoto(e, posicion)} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                    )}
+                                 </div>
+                                 {foto && (
+                                    <button type="button" onClick={() => quitarFotoProducto(posicion)} title={t('common.delete')} className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-lg text-[10px] font-black shadow-lg">✕</button>
+                                 )}
+                              </div>
+                           );
+                        })}
                      </div>
                      <input required type="text" placeholder={t('admin.product_name')} title={t('admin.product_name')} className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
-                     <input required type="text" placeholder={t('shipping.price') + " (ej: 50.000 FCFA)"} title={t('shipping.price')} className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
+                     <div className="relative">
+                        <input required type="text" inputMode="decimal" placeholder="Precio en euros (ej: 35)" title="Precio en euros" className="px-4 py-3 pr-10 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">€</span>
+                     </div>
+                     <input type="text" placeholder="Color / talla (opcional)" title="Color o talla" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.color} onChange={e => setNewProduct({...newProduct, color: e.target.value})} />
+                     <input type="text" placeholder="Etiqueta sobre la foto (opcional, ej: NUEVO)" title="Etiqueta" className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20" value={newProduct.tag} onChange={e => setNewProduct({...newProduct, tag: e.target.value})} />
                      <textarea placeholder={t('shipping.description') + " (opcional)"} title={t('shipping.description')} className="px-4 py-3 bg-gray-50 rounded-xl text-sm w-full outline-none focus:ring-2 focus:ring-teal-500/20 h-24" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} />
-                     <button type="submit" disabled={isUploading || !newProduct.image} title={t('admin.publish_product')} className="w-full py-4 bg-[#0b4f55] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">{t('admin.publish_product')}</button>
+                     <button type="submit" disabled={isUploading || newProduct.images.length === 0} title={t('admin.publish_product')} className="w-full py-4 bg-[#0b4f55] text-white rounded-2xl font-black uppercase text-xs hover:bg-teal-900 transition-colors disabled:opacity-50">{isUploading ? 'Subiendo…' : t('admin.publish_product')}</button>
                   </form>
+               </section>
+
+               <section className="bg-white p-8 rounded-[1.25rem] border border-gray-100 shadow-sm">
+                  <h3 className="text-sm font-black text-gray-400 mb-6 uppercase tracking-widest border-b pb-2">Productos en la tienda ({products.length})</h3>
+                  {products.length === 0 ? (
+                     <p className="text-sm text-gray-400">Todavía no hay productos.</p>
+                  ) : (
+                     <ul className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+                        {products.map(p => {
+                           const fotos = fotosDe(p);
+                           return (
+                              <li key={p.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
+                                 <div className="flex -space-x-3 shrink-0">
+                                    {fotos.slice(0, 2).map((f, i) => (
+                                       <img key={i} src={f} alt="" className="w-12 h-16 object-cover rounded-lg border-2 border-white" />
+                                    ))}
+                                 </div>
+                                 <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-black text-gray-900 uppercase truncate">{p.name}</p>
+                                    <p className="text-xs text-gray-500">{precioEnEuros(p.price)} · {fotos.length} {fotos.length === 1 ? 'foto' : 'fotos'}</p>
+                                 </div>
+                                 <button type="button" onClick={() => deleteProduct(p.id)} disabled={isDeletingId === p.id} className="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase disabled:opacity-50">{isDeletingId === p.id ? '…' : t('common.delete')}</button>
+                              </li>
+                           );
+                        })}
+                     </ul>
+                  )}
                </section>
             </div>
           )}

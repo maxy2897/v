@@ -36,6 +36,10 @@ export interface Product {
   price: string;
   description: string;
   image: string;
+  /** Fotos del producto (la primera es la principal). Si falta, se usa `image`. */
+  images?: string[];
+  /** Tallas a elegir (ej. camiseta). */
+  tallas?: string[];
   tag: string;
   slogan: string;
   waLink: string;
