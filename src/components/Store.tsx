@@ -112,7 +112,7 @@ const Store: React.FC<StoreProps> = ({ products }) => {
                           e.stopPropagation();
                           setFotoTarjeta(prev => ({ ...prev, [product.id]: i }));
                         }}
-                        className={`h-2.5 rounded-full shadow transition-all ${i === indice ? 'w-5 bg-white' : 'w-2.5 bg-white/60 hover:bg-white'}`}
+                        className={`h-2.5 rounded-full shadow transition-all ${i === indice ? 'w-5 bg-gray-900' : 'w-2.5 bg-gray-900/30 hover:bg-gray-900/60'} ring-1 ring-white/70`}
                       />
                     ))}
                   </div>

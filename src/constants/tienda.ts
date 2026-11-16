@@ -20,7 +20,7 @@ export const CATALOGO_TIENDA: Product[] = [
     description:
       'Camiseta blanca de manga corta y corte amplio. Delante lleva el logo bb pequeño en el pecho y detrás el diseño grande «Somos tu mejor opción · Recibe bultos desde Europa» sobre un cielo azul.',
     image: '/tienda/camiseta-delante.jpg',
-    images: ['/tienda/camiseta-delante.jpg'],
+    images: ['/tienda/camiseta-delante.jpg', '/tienda/camiseta-detras.jpg'],
     tallas: ['S', 'M', 'L', 'XL'],
     tag: 'Nuevo',
     slogan: '',
@@ -34,7 +34,7 @@ export const CATALOGO_TIENDA: Product[] = [
     description:
       'Gorra estilo trucker con frontal blanco, rejilla trasera transpirable y visera azul marino. Logo bb grande estampado delante. Fresca para el calor y con estilo urbano.',
     image: '/tienda/gorra.jpg',
-    images: ['/tienda/gorra.jpg'],
+    images: ['/tienda/gorra.jpg', '/tienda/gorra-real.jpg'],
     tag: '',
     slogan: '',
     waLink: '',
@@ -47,7 +47,7 @@ export const CATALOGO_TIENDA: Product[] = [
     description:
       'Bolsa blanca reutilizable con asas largas para llevar al hombro. Un lado con el logo bb y el otro con la frase «Somos tu mejor opción». Ligera y práctica para la compra, el trabajo o el viaje.',
     image: '/tienda/bolsa-logo.jpg',
-    images: ['/tienda/bolsa-logo.jpg'],
+    images: ['/tienda/bolsa-logo.jpg', '/tienda/bolsa-frase.jpg'],
     tag: '',
     slogan: '',
     waLink: '',
