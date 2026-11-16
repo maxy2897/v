@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import ExcelTracking from '../components/ExcelTracking';
 import Nieve from '../components/Nieve';
 import { esNavidad } from '../constants/temporada';
-import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp } from '../constants/empresa';
+import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp, enlaceMapa, mapaIncrustado } from '../constants/empresa';
 
 interface HomePageProps {
   onOpenRegister: () => void;
@@ -225,18 +225,28 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
         <h2 className="mt-3 font-display text-4xl font-bold uppercase leading-none text-[#0E2A3B] sm:text-5xl">Estamos cerca de ti</h2>
         <p className="mt-4 max-w-2xl text-lg text-[#55707C]">{HORARIO}. En tu primer mensaje dinos tu nombre y qué servicio necesitas.</p>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {AGENCIAS.map((a) => (
-            <article key={a.pais} className="flex flex-col bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
+            <article key={a.nombre} className="flex flex-col bg-white p-6 shadow-[0_10px_30px_rgba(14,42,59,.08)]">
               <div className="flex items-center gap-3">
                 {a.bandera ? <img src={a.bandera} alt="" className="h-6 w-9 rounded-[3px] object-cover" /> : <span className="text-2xl" aria-hidden="true">🇨🇲</span>}
-                <h3 className="font-display text-2xl font-bold uppercase text-[#0E2A3B]">{a.pais}</h3>
+                <h3 className="font-display text-2xl font-bold uppercase text-[#0E2A3B]">{a.nombre}</h3>
               </div>
               <p className="mt-3 text-[#55707C]">{a.direccion}<br />{a.ciudad}</p>
               <p className="mt-4 font-mono text-lg font-bold text-[#0E2A3B]">{a.telefono}</p>
-              {a.whatsapp && (
-                <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="mt-5 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
-              )}
+              <iframe
+                title={`Mapa de la oficina de ${a.nombre}`}
+                src={mapaIncrustado(a.mapa)}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="mt-5 h-44 w-full border-0 bg-[#E6EEF0]"
+              />
+              <div className="mt-auto flex flex-wrap gap-2 pt-5">
+                <a href={enlaceMapa(a.mapa)} target="_blank" rel="noreferrer" className="min-w-[7.5rem] flex-1 border border-[#0E2A3B] py-2.5 text-center text-xs font-black uppercase tracking-wider text-[#0E2A3B] hover:bg-[#0E2A3B] hover:text-white">Cómo llegar</a>
+                {a.whatsapp && (
+                  <a href={enlaceWhatsApp(a.telefono)} target="_blank" rel="noreferrer" className="min-w-[7.5rem] flex-1 bg-[#2E9E3E] py-2.5 text-center text-xs font-black uppercase tracking-wider text-white hover:bg-[#0E2A3B]">WhatsApp</a>
+                )}
+              </div>
             </article>
           ))}
         </div>
@@ -250,7 +260,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
             <p className="text-xs font-black uppercase tracking-[.2em] text-[#1E5A5E]">Puntos de recogida</p>
             <ul className="mt-3 grid gap-3 sm:grid-cols-3">
               {PUNTOS_RECOGIDA.map((p) => (
-                <li key={p.lugar}><span className="block font-display text-lg font-bold uppercase text-[#0E2A3B]">{p.lugar}</span><span className="text-sm text-[#55707C]">{p.detalle}</span></li>
+                <li key={p.lugar}><span className="block font-display text-lg font-bold uppercase text-[#0E2A3B]">{p.lugar}</span><span className="text-sm text-[#55707C]">{p.detalle}</span><a href={enlaceMapa(p.mapa)} target="_blank" rel="noreferrer" className="mt-1 block text-xs font-black uppercase tracking-wider text-[#1E5A5E] underline underline-offset-4 hover:text-[#0E2A3B]">Ver en el mapa</a></li>
               ))}
             </ul>
             <p className="mt-3 text-xs text-[#55707C]">Las fechas de recogida en Guinea dependen del despacho de cada aerolínea. Te las confirmamos por WhatsApp.</p>

@@ -47,7 +47,7 @@ const Footer: React.FC<FooterProps> = ({ config, onOpenCookies, onOpenContact, o
     {
       titulo: 'Contacto',
       enlaces: [
-        ...AGENCIAS.map((ag) => ({ label: `${ag.pais}: ${ag.telefono}`, href: ag.whatsapp ? enlaceWhatsApp(ag.telefono) : undefined })),
+        ...AGENCIAS.map((ag) => ({ label: `${ag.nombre}: ${ag.telefono}`, href: ag.whatsapp ? enlaceWhatsApp(ag.telefono) : undefined })),
         { label: EMAIL, href: `mailto:${EMAIL}` },
         { label: HORARIO },
       ],

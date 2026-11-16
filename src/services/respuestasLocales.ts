@@ -47,7 +47,7 @@ const TEMAS: { claves: string[]; respuesta: () => string }[] = [
     claves: ['direccion', 'donde estais', 'oficina', 'local', 'almacen', 'recogida', 'recoger', 'ubicacion', 'malabo', 'bata', 'camerun', 'yaunde'],
     respuesta: () =>
       'Nuestras oficinas: ' +
-      AGENCIAS.map((a) => `${a.pais}: ${a.direccion}, ${a.ciudad}, tel. ${a.telefono}`).join('. ') +
+      AGENCIAS.map((a) => `${a.nombre}: ${a.direccion}, ${a.ciudad}, tel. ${a.telefono}`).join('. ') +
       '. Puntos de recogida: ' +
       PUNTOS_RECOGIDA.map((p) => `${p.lugar}: ${p.detalle}`).join('; ') + '.',
   },
