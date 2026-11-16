@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { Product } from '../../types';
 import { fotosDe, precioEnEuros, equivalenciaFCFA } from '../utils/productos';
-import { CATALOGO_TIENDA, WHATSAPP_PEDIDOS } from '../constants/tienda';
+import { CATALOGO_TIENDA, WHATSAPP_PEDIDOS, PRODUCTOS_OCULTOS } from '../constants/tienda';
 
 interface StoreProps {
   products: Product[];
@@ -19,7 +19,7 @@ const Store: React.FC<StoreProps> = ({ products }) => {
   const [tallaElegida, setTallaElegida] = useState<Record<string, string>>({});
 
   // Primero el catálogo fijo, luego lo que se suba desde el panel
-  const articulos = [...CATALOGO_TIENDA, ...products.filter(p => !CATALOGO_TIENDA.some(c => c.id === p.id))];
+  const articulos = [...CATALOGO_TIENDA, ...products.filter(p => !CATALOGO_TIENDA.some(c => c.id === p.id) && !PRODUCTOS_OCULTOS.includes(p.id))];
 
   const enlacePedido = (product: Product) => {
     const talla = tallaElegida[product.id];
@@ -187,7 +187,7 @@ const Store: React.FC<StoreProps> = ({ products }) => {
         <div className="mt-14 bg-white/70 border border-gray-200 px-6 py-5 max-w-3xl">
           <p className="text-sm font-bold text-gray-900 mb-1">¿Cómo pedir?</p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Pulsa «Pedir por WhatsApp» o escríbenos al <a className="font-semibold text-gray-900 whitespace-nowrap" href={`https://wa.me/${WHATSAPP_PEDIDOS}`} target="_blank" rel="noopener noreferrer">+34 641 992 110</a>. Te confirmamos disponibilidad y entrega. El envío está incluido en todos los precios; los francos son orientativos.
+            Pulsa «Comprar vía WhatsApp» o escríbenos al <a className="font-semibold text-gray-900 whitespace-nowrap" href={`https://wa.me/${WHATSAPP_PEDIDOS}`} target="_blank" rel="noopener noreferrer">+34 641 992 110</a>. Te confirmamos disponibilidad y entrega. El envío está incluido en todos los precios; los francos son orientativos.
           </p>
         </div>
       </div>
