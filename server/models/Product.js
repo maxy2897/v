@@ -7,7 +7,7 @@ const ProductSchema = new mongoose.Schema({
     },
     color: {
         type: String,
-        required: true
+        default: ''
     },
     price: {
         type: String,
@@ -15,11 +15,16 @@ const ProductSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        default: ''
     },
     image: {
         type: String,
         required: true
+    },
+    // Todas las fotos del producto (la primera es la principal = image)
+    images: {
+        type: [String],
+        default: []
     },
     tag: {
         type: String,

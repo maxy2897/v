@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { Product } from '../../types';
+import { fotosDe, precioEnEuros } from '../utils/productos';
 
 interface StoreProps {
   products: Product[];
@@ -9,7 +10,13 @@ interface StoreProps {
 
 const Store: React.FC<StoreProps> = ({ products }) => {
   const { t } = useSettings();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  // Galería ampliada: fotos del producto abierto y cuál se ve
+  const [galeria, setGaleria] = useState<{ fotos: string[]; indice: number } | null>(null);
+  // Foto visible en cada tarjeta (por id de producto)
+  const [fotoTarjeta, setFotoTarjeta] = useState<Record<string, number>>({});
+
+  const moverGaleria = (paso: number) =>
+    setGaleria(g => (g ? { ...g, indice: (g.indice + paso + g.fotos.length) % g.fotos.length } : g));
 
   return (
     <section id="tienda" className="py-20 pt-24 bg-[#f5f1e8] relative overflow-hidden [clip-path:inset(0)]">
@@ -45,7 +52,10 @@ const Store: React.FC<StoreProps> = ({ products }) => {
           }}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-8 md:gap-x-4 md:gap-y-12"
         >
-          {products.map((product) => (
+          {products.map((product) => {
+            const fotos = fotosDe(product);
+            const indice = Math.min(fotoTarjeta[product.id] || 0, Math.max(fotos.length - 1, 0));
+            return (
             <motion.div
               key={product.id}
               variants={{
@@ -61,24 +71,46 @@ const Store: React.FC<StoreProps> = ({ products }) => {
             >
               <div
                 className="relative aspect-[3/4] overflow-hidden bg-gray-100 cursor-zoom-in"
-                onClick={() => setSelectedImage(product.image)}
+                onClick={() => setGaleria({ fotos, indice })}
               >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full w-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-700 ease-in-out"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800";
-                  }}
-                />
+                {fotos.map((foto, i) => (
+                  <img
+                    key={i}
+                    src={foto}
+                    alt={fotos.length > 1 ? `${product.name} (foto ${i + 1})` : product.name}
+                    loading="lazy"
+                    className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-105 ${i === indice ? 'opacity-100' : 'opacity-0'}`}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800";
+                    }}
+                  />
+                ))}
 
-                <div className="absolute top-2 left-2 pointer-events-none">
+                {fotos.length > 1 && (
+                  <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1.5">
+                    {fotos.map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        aria-label={`Ver foto ${i + 1}`}
+                        title={`Ver foto ${i + 1}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFotoTarjeta(prev => ({ ...prev, [product.id]: i }));
+                        }}
+                        className={`h-2.5 rounded-full shadow transition-all ${i === indice ? 'w-5 bg-white' : 'w-2.5 bg-white/60 hover:bg-white'}`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {product.tag && <div className="absolute top-2 left-2 pointer-events-none">
                   <div className="bg-white/90 backdrop-blur px-2 py-1 shadow-sm flex flex-col items-start">
                     <span className="text-[8px] font-semibold uppercase tracking-wider text-gray-900">
                       {product.tag}
                     </span>
                   </div>
-                </div>
+                </div>}
               </div>
 
               <div className="mt-3 px-1 flex flex-col flex-grow">
@@ -88,7 +120,7 @@ const Store: React.FC<StoreProps> = ({ products }) => {
                     <p className="text-[10px] text-gray-500 mt-0.5">{product.color}</p>
                   </div>
                   <div className="text-right shrink-0 relative top-[-1px]">
-                    <span className="text-xs font-medium text-gray-900 block">{product.price}</span>
+                    <span className="text-xs font-medium text-gray-900 block">{precioEnEuros(product.price)}</span>
                   </div>
                 </div>
 
@@ -112,19 +144,20 @@ const Store: React.FC<StoreProps> = ({ products }) => {
                 </div>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </motion.div>
       </div>
 
-      {/* Lightbox / Modal */}
-      {selectedImage && (
+      {/* Galería ampliada */}
+      {galeria && (
         <div
           className="fixed inset-0 z-[100] bg-[#00151a]/95 backdrop-blur-md flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setGaleria(null)}
         >
           <button
             className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setGaleria(null)}
             title="Cerrar vista"
             aria-label="Cerrar vista"
           >
@@ -133,11 +166,31 @@ const Store: React.FC<StoreProps> = ({ products }) => {
             </svg>
           </button>
 
+          {galeria.fotos.length > 1 && (
+            <>
+              <button
+                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white text-3xl flex items-center justify-center"
+                onClick={(e) => { e.stopPropagation(); moverGaleria(-1); }}
+                title="Foto anterior"
+                aria-label="Foto anterior"
+              >‹</button>
+              <button
+                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white text-3xl flex items-center justify-center"
+                onClick={(e) => { e.stopPropagation(); moverGaleria(1); }}
+                title="Foto siguiente"
+                aria-label="Foto siguiente"
+              >›</button>
+              <p className="absolute bottom-6 inset-x-0 text-center text-white/70 text-sm font-semibold">
+                {galeria.indice + 1} / {galeria.fotos.length}
+              </p>
+            </>
+          )}
+
           <img
-            src={selectedImage}
-            alt="Full size view"
-            className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300"
-            onClick={(e) => e.stopPropagation()}
+            src={galeria.fotos[galeria.indice]}
+            alt="Foto ampliada"
+            className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300"
+            onClick={(e) => { e.stopPropagation(); moverGaleria(1); }}
           />
         </div>
       )}
