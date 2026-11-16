@@ -3,6 +3,9 @@ import { Product } from '../../types';
 /** Cambio para mostrar el precio de la tienda en francos (1 € = TASA_FCFA). */
 export const TASA_FCFA = 750;
 
+/** Productos antiguos del panel que no deben salir en la tienda (por id). */
+export const PRODUCTOS_OCULTOS = ['699ce9d70db54a467668af02']; // gorra «Bodipo Urban» 10.000 FCFA, sustituida por la Gorra Bodipo Business
+
 /** WhatsApp de pedidos (atención al cliente España). */
 export const WHATSAPP_PEDIDOS = '34641992110';
 
