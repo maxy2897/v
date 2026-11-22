@@ -4,7 +4,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import ExcelTracking from '../components/ExcelTracking';
 import Nieve from '../components/Nieve';
-import { esNavidad } from '../constants/temporada';
+import { esNavidad, esSorteoNavidad } from '../constants/temporada';
+import SorteoNavidad from '../components/SorteoNavidad';
 import { AGENCIAS, EMAIL, HORARIO, PUNTOS_RECOGIDA, enlaceWhatsApp } from '../constants/empresa';
 
 interface HomePageProps {
@@ -159,6 +160,8 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenRegister, onOpenContact, onOp
           </motion.div>
         </div>
       </section>
+
+      {esSorteoNavidad() && <SorteoNavidad onOpenRegister={onOpenRegister} />}
 
       {codigoBuscado && (
         <section ref={resultado} id="seguimiento" className="scroll-mt-24 border-b border-[#d9d2c7] px-5 py-14 sm:px-8 lg:px-16 xl:px-24">
